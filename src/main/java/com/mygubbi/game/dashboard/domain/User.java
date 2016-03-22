@@ -1,0 +1,77 @@
+package com.mygubbi.game.dashboard.domain;
+
+public final class User {
+    private String role;
+    private String firstName;
+    private String lastName;
+    private String title;
+    private boolean male;
+    private String email;
+    private String location;
+    private String phone;
+
+
+    private String bio;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(final String email) {
+        this.email = email;
+    }
+
+
+    public void setLocation(final String location) {
+        this.location = location;
+    }
+
+
+    public void setPhone(final String phone) {
+        this.phone = phone;
+    }
+
+
+
+
+
+
+    public void setBio(final String bio) {
+        this.bio = bio;
+    }
+
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(final String title) {
+        this.title = title;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(final String role) {
+        this.role = role;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(final String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(final String lastName) {
+        this.lastName = lastName;
+    }
+
+}
