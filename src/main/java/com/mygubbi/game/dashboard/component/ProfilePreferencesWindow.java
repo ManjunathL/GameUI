@@ -111,24 +111,6 @@ public class ProfilePreferencesWindow extends Window {
         root.setMargin(true);
         root.addStyleName("profile-form");
 
-        VerticalLayout pic = new VerticalLayout();
-        pic.setSizeUndefined();
-        pic.setSpacing(true);
-        Image profilePic = new Image(null, new ThemeResource(
-                "img/profile-pic-300px.jpg"));
-        profilePic.setWidth(100.0f, Unit.PIXELS);
-        pic.addComponent(profilePic);
-
-        Button upload = new Button("Change…", new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                Notification.show("Not implemented");
-            }
-        });
-        upload.addStyleName(ValoTheme.BUTTON_TINY);
-        pic.addComponent(upload);
-
-        root.addComponent(pic);
 
         FormLayout details = new FormLayout();
         details.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
@@ -140,21 +122,6 @@ public class ProfilePreferencesWindow extends Window {
         lastNameField = new TextField("Last Name");
         details.addComponent(lastNameField);
 
-        titleField = new ComboBox("Title");
-        titleField.setInputPrompt("Please specify");
-        titleField.addItem("Mr.");
-        titleField.addItem("Mrs.");
-        titleField.addItem("Ms.");
-        titleField.setNewItemsAllowed(true);
-        details.addComponent(titleField);
-
-        sexField = new OptionGroup("Sex");
-        sexField.addItem(Boolean.FALSE);
-        sexField.setItemCaption(Boolean.FALSE, "Female");
-        sexField.addItem(Boolean.TRUE);
-        sexField.setItemCaption(Boolean.TRUE, "Male");
-        sexField.addStyleName("horizontal");
-        details.addComponent(sexField);
 
         Label section = new Label("Contact Info");
         section.addStyleName(ValoTheme.LABEL_H4);
@@ -163,8 +130,10 @@ public class ProfilePreferencesWindow extends Window {
 
         emailField = new TextField("Email");
         emailField.setWidth("100%");
-        emailField.setRequired(true);
-        emailField.setNullRepresentation("");
+       // emailField.setRequired(true);
+       // emailField.setNullRepresentation("");
+        emailField.setDescription("enter your username");
+        emailField.setReadOnly(true);
         details.addComponent(emailField);
 
 

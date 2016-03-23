@@ -142,7 +142,7 @@ public final class DashboardMenu extends CustomComponent {
         for (final DashboardViewType view : DashboardViewType.values()) {
             Component menuItemComponent = new ValoMenuItemButton(view);
 
-            if (view == DashboardViewType.DASHBOARD) {
+            if (view == DashboardViewType.PROPOSALS) {
                 // Add drop target to reports button
                 DragAndDropWrapper reports = new DragAndDropWrapper(
                         menuItemComponent);
@@ -155,7 +155,7 @@ public final class DashboardMenu extends CustomComponent {
                         UI.getCurrent()
                                 .getNavigator()
                                 .navigateTo(
-                                        DashboardViewType.DASHBOARD.getViewName());
+                                        DashboardViewType.PROPOSALS.getViewName());
                         Table table = (Table) event.getTransferable()
                                 .getSourceComponent();
 
@@ -170,13 +170,13 @@ public final class DashboardMenu extends CustomComponent {
                 menuItemComponent = reports;
             }
 
-            if (view == DashboardViewType.DASHBOARD) {
+            if (view == DashboardViewType.PROPOSALS) {
                 notificationsBadge = new Label();
                 notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
                 menuItemComponent = buildBadgeWrapper(menuItemComponent,
                         notificationsBadge);
             }
-            if (view == DashboardViewType.DASHBOARD) {
+            if (view == DashboardViewType.PROPOSALS) {
                 reportsBadge = new Label();
                 reportsBadge.setId(REPORTS_BADGE_ID);
                 menuItemComponent = buildBadgeWrapper(menuItemComponent,

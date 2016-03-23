@@ -1,5 +1,6 @@
 package com.mygubbi.game.dashboard.view;
 
+import com.mygubbi.game.dashboard.view.Catalog.CatalogView;
 import com.mygubbi.game.dashboard.view.proposals.ProposalsView;
 
 import com.vaadin.navigator.View;
@@ -7,7 +8,8 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 
 public enum DashboardViewType {
-    DASHBOARD("proposals", ProposalsView.class, FontAwesome.HOME, true);
+    PROPOSALS("Proposals", ProposalsView.class, FontAwesome.ANCHOR, false),CATALOG(
+            "Catalog", CatalogView.class, FontAwesome.BAR_CHART_O, false);
 
     private final String viewName;
     private final Class<? extends View> viewClass;
@@ -22,6 +24,8 @@ public enum DashboardViewType {
         this.icon = icon;
         this.stateful = stateful;
     }
+
+
 
     public boolean isStateful() {
         return stateful;
