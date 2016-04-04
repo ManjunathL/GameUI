@@ -1,0 +1,139 @@
+{
+  "class_master": [
+    {
+      "class": "active",
+      "count": "20"
+    },
+    {
+      "class": "converted",
+      "count": "20"
+    },
+    {
+      "class": "cancelled",
+      "count": "8"
+    },
+    {
+      "class": "assigned to me",
+      "count": "0"
+    }
+  ],
+  "status_master": [
+    {
+      "status": "Proposal Requested",
+      "count": "1"
+    },
+    {
+      "status": "Pending Design",
+      "count": "1"
+    },
+    {
+      "status": "Pending Costing",
+      "count": "1"
+    },
+    {
+      "status": "Pending Design Approval",
+      "count": "1"
+    },
+    {
+      "status": "Pending Sales Approval",
+      "count": "1"
+    },
+    {
+      "status": "Proposal Released",
+      "count": "1"
+    }
+  ],
+  "proposals": [
+    {
+      "proposal_id": "100",
+      "crm_id": "A0100",
+      "title": "Kitchen and Wardrobes for Pradeep Dubey, Prestige Ferns",
+      "create_dt": "2016-02-28",
+      "status": "Pending Design",
+      "total_amount": "",
+      "last_actioned_by": "Megha P",
+      "completion_dt": "",
+      "sales_contact": "Vimal K",
+      "designer": "Gaurav Sharma",
+      "project_city": "Bengaluru"
+    },
+    {
+      "proposal_id": "101",
+      "crm_id": "A0101",
+      "title": "Wardrobes for Anil Sharma, Prestige Shantiniketan",
+      "create_dt": "2016-03-15",
+      "status": "Pending Costing",
+      "total_amount": "215000",
+      "last_actioned_by": "Gaurav Sharma",
+      "completion_dt": "",
+      "sales_contact": "Vimal K",
+      "designer": "Gaurav Sharma",
+      "project_city": "Bengaluru"
+    },
+    {
+      "proposal_id": "102",
+      "crm_id": "A0102",
+      "title": "Kitchen, Wardrobes and TV Unit for Sanjay Mishra, SJR Watermark",
+      "create_dt": "2016-02-09",
+      "status": "Proposal Released",
+      "total_amount": "519000",
+      "last_actioned_by": "Sarabjit S",
+      "completion_dt": "",
+      "sales_contact": "Vimal K",
+      "designer": "Gaurav Sharma",
+      "project_city": "Bengaluru"
+    },
+    {
+      "proposal_id": "103",
+      "crm_id": "A0103",
+      "title": "Shoe Rack and Wardrobes for Sandeep Pandey, Purva Vantage",
+      "create_dt": "2016-02-13",
+      "status": "Proposal Requested",
+      "total_amount": "",
+      "last_actioned_by": "Vimal K",
+      "completion_dt": "",
+      "sales_contact": "Vimal K",
+      "designer": "",
+      "project_city": "Bengaluru"
+    },
+    {
+      "proposal_id": "104",
+      "crm_id": "A0104",
+      "title": "Crockery Unit, Kitchen, Wardrobes and Shoe Rack for Rajiv Khanna, Purva Whitehall",
+      "create_dt": "2016-01-15",
+      "status": "Pending Design Approval",
+      "total_amount": "750000",
+      "last_actioned_by": "Praveen Sagar",
+      "completion_dt": "",
+      "sales_contact": "Vimal K",
+      "designer": "Gaurav Sharma",
+      "project_city": "Bengaluru"
+    },
+    {
+      "proposal_id": "105",
+      "crm_id": "A0105",
+      "title": "Kitchen and Wardrobes for Nisha K, Heritage County",
+      "create_dt": "2016-01-28",
+      "status": "Pending Sales Approval",
+      "total_amount": "370000",
+      "last_actioned_by": "Megha P",
+      "completion_dt": "",
+      "sales_contact": "Vimal K",
+      "designer": "Gaurav Sharma",
+      "project_city": "Bengaluru"
+    },
+    {
+      "proposal_id": "106",
+      "crm_id": "A0106",
+      "title": "Wardrobes for Harvinder Kaur, Sobha City",
+      "create_dt": "2016-03-05",
+      "status": "Pending Design",
+      "total_amount": "",
+      "last_actioned_by": "Megha P",
+      "completion_dt": "",
+      "sales_contact": "Vimal K",
+      "designer": "Gaurav Sharma",
+      "project_city": "Bengaluru"
+    }
+  ]
+}

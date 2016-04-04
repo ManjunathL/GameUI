@@ -1,0 +1,73 @@
+[
+  {
+    "proposal_line_item_id": "120939",
+    "type": "assembled",
+    "name": "Albatross L Shaped Kitchen (based)",
+    "product_id": "23847",
+    "carcass_material": "MDF",
+    "shutter_material": "MDF",
+    "shutter_finish": "Foil",
+    "color": "Walnut",
+    "dimensions": "8\" x 10\" x 2.5\"",
+    "quantity": "1",
+    "amount": "266000",
+    "option_of_line_item_id": "",
+    "sub_line_items": [
+      {
+        "proposal_subline_item_id": "12001001",
+        "module_code": "K3DU6072",
+        "name": "Kitchen 3 Drawer unit",
+        "dimensions": "600 x 575 x 720",
+        "quantity": "3",
+        "amount": "4000"
+      },
+      {
+        "proposal_subline_item_id": "12001002",
+        "module_code": "K3DU8072",
+        "name": "Kitchen 3 Drawer unit",
+        "dimensions": "800 x 575 x 720",
+        "quantity": "2",
+        "amount": "9000"
+      },
+      {
+        "proposal_subline_item_id": "12001003",
+        "module_code": "K3DU9072",
+        "name": "Kitchen 3 Drawer unit",
+        "dimensions": "900 x 575 x 720",
+        "quantity": "1",
+        "amount": "11000"
+      },
+      {
+        "proposal_subline_item_id": "12001004",
+        "module_code": "K2DU4572",
+        "name": "Kitchen 2 Drawer unit",
+        "dimensions": "450 x 575 x 720",
+        "quantity": "4",
+        "amount": "4000"
+      },
+      {
+        "proposal_subline_item_id": "12001005",
+        "module_code": "K2DU5072",
+        "name": "Kitchen 2 Drawer unit",
+        "dimensions": "500 x 575 x 720",
+        "quantity": "2",
+        "amount": "4000"
+      }
+    ]
+  },
+  {
+    "proposal_line_item_id": "120940",
+    "type": "standard",
+    "name": "Skyler Entertainment Unit",
+    "product_id": "345875",
+    "carcass_material": "",
+    "shutter_material": "",
+    "shutter_finish": "",
+    "color": "",
+    "dimensions": "5\" x 4\" x 1\"",
+    "quantity": "1",
+    "amount": "30000",
+    "option_of_line_item_id": "",
+    "sub_line_items": []
+  }
+]

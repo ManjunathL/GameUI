@@ -1,0 +1,31 @@
+{
+  "proposal_id": "100",
+  "customer": {
+    "cust_id": "0115383",
+    "cust_name": "Ravi K.S.",
+    "city": "Bengaluru"
+  },
+  "project": {
+    "name": "Purva Whitehall",
+    "city": "Bengaluru"
+  },
+  "crm_id": "A0100",
+  "quotation_no": "BLR0383.0/1516",
+  "model_type": "Kitchen & Others",
+  "drawing_no": "OG/RKS/01",
+  "title": "Kitchen and TV Unit for Ramesh Kumar, Purva Whitehall",
+  "prepared_by": "Gaurav Sharma",
+  "create_dt": "2016-02-25",
+  "sales_contact_name": "Abhishek",
+  "sales_contact_number": "+91 8884442467",
+  "sales_contact_email": "abhishek@mygubbi.com",
+  "designer_name": "Gaurav Sharma",
+  "customer_notes": "Keep things minimal and functional",
+  "budget": "270000",
+  "total_amount": "296000",
+  "status": "Pending Costing",
+  "last_actioned_by": "Gaurav Sharma",
+  "last_actioned_on_dt": "2016-03-02",
+  "completion_dt": "",
+  ""
+}
