@@ -3,8 +3,8 @@ package com.mygubbi.game.dashboard;
 import java.util.Locale;
 
 import com.google.common.eventbus.Subscribe;
-import com.mygubbi.game.dashboard.data.DataProvider;
-import com.mygubbi.game.dashboard.data.dummy.DummyDataProvider;
+import com.mygubbi.game.dashboard.data.CommonDataProvider;
+import com.mygubbi.game.dashboard.data.dummy.CommonDummyDataProvider;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -35,7 +35,7 @@ public final class DashboardUI extends UI {
      * injection; and not in the UI but somewhere closer to where they're
      * actually accessed.
      */
-    private final DataProvider dataProvider = new DummyDataProvider();
+    private final CommonDataProvider dataProvider = new CommonDummyDataProvider();
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
     @Override
@@ -106,7 +106,7 @@ public final class DashboardUI extends UI {
     /**
      * @return An instance for accessing the (dummy) services layer.
      */
-    public static DataProvider getDataProvider() {
+    public static CommonDataProvider getDataProvider() {
         return ((DashboardUI) getCurrent()).dataProvider;
     }
 

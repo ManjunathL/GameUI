@@ -1,14 +1,14 @@
 package com.mygubbi.game.dashboard.data;
 
-import java.util.Collection;
-
 import com.mygubbi.game.dashboard.domain.DashboardNotification;
 import com.mygubbi.game.dashboard.domain.User;
 
+import java.util.Collection;
+
 /**
- * QuickTickets Dashboard backend API.
+ * Created by nitinpuri on 05-04-2016.
  */
-public interface DataProvider {
+public interface CommonDataProvider {
     /**
      * @param count
      *            Number of transactions to fetch.
@@ -31,7 +31,6 @@ public interface DataProvider {
      */
     Collection<DashboardNotification> getNotifications();
 
-
-  double getTotalSum();
+    double getTotalSum();
 
 }

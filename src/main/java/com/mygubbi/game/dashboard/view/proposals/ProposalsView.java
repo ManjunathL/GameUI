@@ -18,21 +18,12 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 
-import com.vaadin.ui.Button;
-
-import com.vaadin.ui.Component;
-
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-
-import com.vaadin.ui.Panel;
-
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
-public final class ProposalsView extends Panel implements View,
+public final class ProposalsView extends TabSheet implements View,
         DashboardEditListener {
 
     public static final String EDIT_ID = "proposals-edit";
@@ -42,20 +33,31 @@ public final class ProposalsView extends Panel implements View,
     private final VerticalLayout root;
 
     public ProposalsView() {
-        addStyleName(ValoTheme.PANEL_BORDERLESS);
+        addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
         setSizeFull();
         DashboardEventBus.register(this);
 
         root = new VerticalLayout();
         root.setSizeFull();
         root.setMargin(true);
+        root.setCaption("All Proposals");
         root.addStyleName("proposals-view");
-        setContent(root);
+        addTab(root);
         Responsive.makeResponsive(root);
 
         root.addComponent(buildHeader());
+/*
+        Button test = new Button("Open Proposal");
+        final String title = "Kitchen for Sanjay Gupta, Durga Solitaire";
+        final ProposalDetailsView proposalDetailsView = new ProposalDetailsView("123", title);
 
-
+        test.addClickListener(event -> {
+            addTab(proposalDetailsView).setClosable(true);
+            setSelectedTab(getComponentCount() - 1);
+            getTab(proposalDetailsView).setCaption(title);
+        });
+        root.addComponent(test);
+*/
 
         // All the open sub-windows should be closed whenever the root layout
         // gets clicked.

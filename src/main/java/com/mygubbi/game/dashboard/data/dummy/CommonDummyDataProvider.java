@@ -1,45 +1,27 @@
 package com.mygubbi.game.dashboard.data.dummy;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
-import java.nio.charset.Charset;
-
-import java.util.ArrayList;
-
-import java.util.Collection;
-import java.util.Collections;
-
-import java.util.Date;
-
-import java.util.List;
-
-import java.util.Random;
-
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-
 import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mygubbi.game.dashboard.data.CommonDataProvider;
 import com.mygubbi.game.dashboard.domain.DashboardNotification;
 import com.mygubbi.game.dashboard.domain.User;
-import com.mygubbi.game.dashboard.data.DataProvider;
+
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Random;
 
 /**
  * A dummy implementation for the backend API.
  */
-public class DummyDataProvider implements DataProvider {
+public class CommonDummyDataProvider implements CommonDataProvider {
 
     // TODO: Get API key from http://developer.rottentomatoes.com
     private static final String ROTTEN_TOMATOES_API_KEY = null;
