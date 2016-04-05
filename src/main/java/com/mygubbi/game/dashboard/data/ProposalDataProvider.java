@@ -3,7 +3,6 @@ package com.mygubbi.game.dashboard.data;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONObject;
-import us.monoid.web.JSONResource;
 
 import java.util.HashMap;
 
@@ -12,7 +11,11 @@ import java.util.HashMap;
  */
 public class ProposalDataProvider {
 
-    private DataProviderUtil dataProviderUtil = new FileDataProviderUtil();
+    private DataProviderUtil dataProviderUtil;
+
+    public ProposalDataProvider(DataProviderUtil dataProviderUtil) {
+        this.dataProviderUtil = dataProviderUtil;
+    }
 
     public JSONArray getProposals(String proposalClass) {
         return dataProviderUtil.getResourceArray("proposals", new HashMap<String, String>(){
@@ -30,8 +33,37 @@ public class ProposalDataProvider {
         });
     }
 
+    public JSONArray getProposalComments(String proposalId) {
+        return dataProviderUtil.getResourceArray("proposal_comments", new HashMap<String, String>(){
+            {
+                put("proposalId", proposalId);
+            }
+        });
+    }
+
+    public JSONArray getProposalHistory(String proposalId) {
+        return dataProviderUtil.getResourceArray("proposal_history", new HashMap<String, String>(){
+            {
+                put("proposalId", proposalId);
+            }
+        });
+    }
+
+    public JSONArray getProposalLineItems(String proposalId) {
+        return dataProviderUtil.getResourceArray("proposal_line_items", new HashMap<String, String>(){
+            {
+                put("proposalId", proposalId);
+            }
+        });
+    }
+
+    public JSONArray getProposalClasses() {
+        return dataProviderUtil.getResourceArray("proposal_classes", new HashMap<String, String>());
+    }
+
     public static void main(String[] args) {
-        JSONArray jsonArray = new ProposalDataProvider().getProposals("active");
+        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+        JSONArray jsonArray = proposalDataProvider.getProposals("active");
         System.out.println(jsonArray.toString());
     }
 }
