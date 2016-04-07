@@ -25,7 +25,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @Theme("dashboard")
 @Widgetset("com.mygubbi.game.dashboard.DashboardWidgetSet")
-@Title("QuickTickets Dashboard")
+@Title("Mygubbi GAME")
 @SuppressWarnings("serial")
 public final class DashboardUI extends UI {
 

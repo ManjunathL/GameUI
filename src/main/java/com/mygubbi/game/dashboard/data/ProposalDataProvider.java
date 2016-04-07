@@ -65,5 +65,6 @@ public class ProposalDataProvider {
         ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
         JSONArray jsonArray = proposalDataProvider.getProposals("active");
         System.out.println(jsonArray.toString());
+
     }
 }

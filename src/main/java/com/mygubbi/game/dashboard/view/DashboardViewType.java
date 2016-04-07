@@ -1,6 +1,6 @@
 package com.mygubbi.game.dashboard.view;
 
-import com.mygubbi.game.dashboard.view.Catalog.CatalogView;
+import com.mygubbi.game.dashboard.view.catalog.CatalogView;
 import com.mygubbi.game.dashboard.view.proposals.ProposalsView;
 
 import com.vaadin.navigator.View;

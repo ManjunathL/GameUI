@@ -17,9 +17,11 @@
 			<param-value>com.mygubbi.game.dashboard.DashboardUI</param-value>
 		</init-param>
 	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>GameDashboard</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
+
 
 </web-app>
