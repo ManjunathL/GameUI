@@ -30,7 +30,7 @@ public final class ProposalsView extends TabSheet implements View {
 
     private Window window;
 
-    private Grid grid;
+    private Table grid;
 
     private static final String ACTIVE = "active";
     private static final String CONVERTED = "converted";
@@ -76,12 +76,12 @@ public final class ProposalsView extends TabSheet implements View {
         root.addComponent(test);
 */
 
-        grid = new Grid();
+        grid = new Table();
 
         // grid.addStyleName(Reindeer.TABLE_STRONG);
-        grid.setWidth("800px");
+        //grid.setWidth("800px");
         // grid.setHeightMode(HeightMode.ROW);
-        grid.setHeight("300px");
+        //grid.setHeight("300px");
 
         //grid.setSizeFull();
         grid.addItemClickListener(new ItemClickEvent.ItemClickListener() {
@@ -111,7 +111,7 @@ public final class ProposalsView extends TabSheet implements View {
         HorizontalLayout header = new HorizontalLayout();
         header.setSpacing(true);
 
-        titleLabel = new Label("Proposal Listing");
+        titleLabel = new Label("Proposals");
         titleLabel.setId(TITLE_ID);
         titleLabel.setSizeUndefined();
         titleLabel.addStyleName(ValoTheme.LABEL_H1);
@@ -139,7 +139,7 @@ public final class ProposalsView extends TabSheet implements View {
                 /*updateTable(CONVERTED);*/
             }
         });
-        Button cancelled = new Button("Cancel");
+        Button cancelled = new Button("Cancelled");
 
         cancelled.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 
@@ -184,6 +184,10 @@ public final class ProposalsView extends TabSheet implements View {
 
 
             grid.setColumnReorderingAllowed(true);
+            grid.setVisibleColumns("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "create_dt", "project_city");
+            grid.setColumnHeaders("CRM#", "Title", "Status", "Last Updated By", "Design", "Sales", "Creation Date", "City");
+            grid.setWidth("98%");
+            //grid.setHeightByRows();
 
 
 /*

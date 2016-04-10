@@ -142,7 +142,7 @@ public final class DashboardMenu extends CustomComponent {
         for (final DashboardViewType view : DashboardViewType.values()) {
             Component menuItemComponent = new ValoMenuItemButton(view);
 
-            if (view == DashboardViewType.PROPOSALS) {
+ /*           if (view == DashboardViewType.PROPOSALS) {
                 // Add drop target to reports button
                 DragAndDropWrapper reports = new DragAndDropWrapper(
                         menuItemComponent);
@@ -181,7 +181,7 @@ public final class DashboardMenu extends CustomComponent {
                 reportsBadge.setId(REPORTS_BADGE_ID);
                 menuItemComponent = buildBadgeWrapper(menuItemComponent,
                         reportsBadge);
-            }
+            }*/
 
             menuItemsLayout.addComponent(menuItemComponent);
         }
