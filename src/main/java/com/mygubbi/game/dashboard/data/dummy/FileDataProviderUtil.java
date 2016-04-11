@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,6 +36,16 @@ public class FileDataProviderUtil implements DataProviderUtil {
             throw new RuntimeException("Error parsing file as json: " + urlFrag, e);
         }
 
+    }
+
+    @Override
+    public JSONObject postResource(String urlFrag, HashMap<String, String> params) {
+        return getResource(urlFrag, params);
+    }
+
+    @Override
+    public JSONArray postResourceGetMultiple(String urlFrag, HashMap<String, String> params) {
+        return getResourceArray(urlFrag, params);
     }
 
     private String readFile(String path) {

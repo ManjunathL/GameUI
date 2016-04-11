@@ -1,12 +1,10 @@
 package com.mygubbi.game.dashboard.data;
 
-import java.util.Collection;
-import java.util.Map;
-
-import com.mygubbi.game.dashboard.domain.DashboardNotification;
-import com.mygubbi.game.dashboard.domain.User;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Dashboard backend API.
@@ -14,6 +12,10 @@ import us.monoid.json.JSONObject;
 public interface DataProviderUtil {
 
     JSONObject getResource(String urlFrag, Map<String, String> params);
+
     JSONArray getResourceArray(String urlFrag, Map<String, String> params);
 
+    JSONObject postResource(String urlFrag, HashMap<String, String> params);
+
+    JSONArray postResourceGetMultiple(String urlFrag, HashMap<String, String> params);
 }
