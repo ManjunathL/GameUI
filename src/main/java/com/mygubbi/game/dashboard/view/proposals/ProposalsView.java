@@ -4,22 +4,19 @@ import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
-import com.vaadin.addon.charts.themes.VaadinTheme;
-import com.vaadin.addon.charts.themes.ValoDarkTheme;
-import com.vaadin.annotations.Theme;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.Reindeer;
+import com.vaadin.ui.themes.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.teemu.jsoncontainer.JsonContainer;
 import us.monoid.json.JSONArray;
+import us.monoid.json.JSONException;
+import us.monoid.json.JSONObject;
 
 @SuppressWarnings("serial")
 public final class ProposalsView extends TabSheet implements View {
@@ -37,6 +34,7 @@ public final class ProposalsView extends TabSheet implements View {
     private static final String CANCELLED = "cancelled";
     private final VerticalLayout root;
     private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+    private Object sortContainerPropertyId;
 
     public ProposalsView() {
         addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
@@ -64,7 +62,7 @@ public final class ProposalsView extends TabSheet implements View {
         root.addComponent(buildHeader());
         root.setSpacing(true);
 
-      /*  Button test = new Button("Open Proposal");
+     /*   Button test = new Button("Open Proposal");
         final String title = "Kitchen for Sanjay Gupta, Durga Solitaire";
         final ProposalDetailsView proposalDetailsView = new ProposalDetailsView("123", title);
 
@@ -75,8 +73,8 @@ public final class ProposalsView extends TabSheet implements View {
         });
         root.addComponent(test);
 */
-
         grid = new Table();
+
 
         // grid.addStyleName(Reindeer.TABLE_STRONG);
         //grid.setWidth("800px");
@@ -87,11 +85,23 @@ public final class ProposalsView extends TabSheet implements View {
         grid.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent itemClickEvent) {
+                final String title = "Kitchen for Sanjay Gupta, Durga Solitaire";
+                final ProposalDetailsView proposalDetailsView = new ProposalDetailsView("123", title);
+                addTab(proposalDetailsView).setClosable(true);
+                setSelectedTab(getComponentCount() - 1);
+                getTab(proposalDetailsView).setCaption(title);
 
             }
         });
 
         updateTable(ACTIVE);
+
+        grid.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+            @Override
+            public void itemClick(ItemClickEvent itemClickEvent) {
+                Notification.show("Clicked");
+            }
+        });
 
         //root.setSpacing(true);
         root.addComponent(grid);
@@ -105,9 +115,11 @@ public final class ProposalsView extends TabSheet implements View {
                 DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
             }
         });
+
     }
 
-    private Component buildHeader() {
+
+    public Component buildHeader() {
         HorizontalLayout header = new HorizontalLayout();
         header.setSpacing(true);
 
@@ -118,50 +130,26 @@ public final class ProposalsView extends TabSheet implements View {
         titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         header.addComponent(titleLabel);
 
-        Button active = new Button("Active");
+        JSONArray proposal_classes = proposalDataProvider.getProposalClasses();
 
-        active.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+        HorizontalLayout tools = new HorizontalLayout();
 
+        for(int i=0;i<proposal_classes.length();i++)
+        {
+            try {
+                JSONObject jsonObject = proposal_classes.getJSONObject(i);
+                int id = jsonObject.getInt("count");
+                String name=jsonObject.getString("class");
 
-        active.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                /*updateTable(ACTIVE);*/
+                Button status_button=new Button(name+" ("+id+")");
+                status_button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
+
+                tools.addComponent(status_button);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        });
-        Button converted = new Button("Converted");
-
-        converted.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-
-        converted.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                /*updateTable(CONVERTED);*/
-            }
-        });
-        Button cancelled = new Button("Cancelled");
-
-        cancelled.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-
-        cancelled.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                /*updateTable(CANCELLED);*/
-            }
-        });
-        Button assigned_to_me = new Button("Assigned to Me");
-        assigned_to_me.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
-
-        assigned_to_me.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-
-
-            }
-        });
-
-
-        HorizontalLayout tools = new HorizontalLayout(active,converted,cancelled,assigned_to_me);
+        }
 
         tools.setSpacing(true);
 
@@ -171,7 +159,7 @@ public final class ProposalsView extends TabSheet implements View {
         return header;
     }
 
-    private void updateTable(String proposalClass) {
+    public void updateTable(String proposalClass) {
         try {
             // Use the factory method of JsonContainer to instantiate the
             // data source for the table.
@@ -182,12 +170,17 @@ public final class ProposalsView extends TabSheet implements View {
             grid.setContainerDataSource(dataSource);
 
 
-
             grid.setColumnReorderingAllowed(true);
             grid.setVisibleColumns("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "create_dt", "project_city");
-            grid.setColumnHeaders("CRM#", "Title", "Status", "Last Updated By", "Design", "Sales", "Creation Date", "City");
+            grid.setColumnHeaders("CRM #", "Title", "Status", "Last Updated By", "Design", "Sales", "Creation Date", "City");
             grid.setWidth("98%");
-            //grid.setHeightByRows();
+
+
+
+
+
+
+        //grid.setHeightByRows();
 
 
 /*
@@ -198,11 +191,12 @@ public final class ProposalsView extends TabSheet implements View {
                 }
             });
 */
-        } catch (IllegalArgumentException ignored) {
+    } catch (IllegalArgumentException ignored) {
 
         }
 
     }
+
 
 
     @Override
@@ -210,4 +204,8 @@ public final class ProposalsView extends TabSheet implements View {
 
     }
 
+
+    public Object getSortContainerPropertyId() {
+        return sortContainerPropertyId;
+    }
 }

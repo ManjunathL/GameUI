@@ -1,10 +1,12 @@
 package com.mygubbi.game.dashboard.component;
 
+import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.mygubbi.game.dashboard.data.UserDataProvider;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
@@ -13,30 +15,20 @@ import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.Position;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import org.vaadin.teemu.jsoncontainer.JsonContainer;
+import us.monoid.json.JSONArray;
 
 @SuppressWarnings("serial")
 public class ProfilePreferencesWindow extends Window {
 
     public static final String ID = "profilepreferenceswindow";
+
+    public UserDataProvider userDataProvider=new UserDataProvider(new FileDataProviderUtil());
 
     private final BeanFieldGroup<User> fieldGroup;
     /*
@@ -60,6 +52,13 @@ public class ProfilePreferencesWindow extends Window {
     private TextField locationField;
     @PropertyId("phone")
     private TextField phoneField;
+    @PropertyId("Current Password")
+    private PasswordField currentPasswordField;
+    @PropertyId("New Password")
+    private PasswordField newPasswordField;
+    @PropertyId("Confirm Password")
+    private PasswordField confirmPasswordField;
+
 
 
 
@@ -89,6 +88,7 @@ public class ProfilePreferencesWindow extends Window {
         content.setExpandRatio(detailsWrapper, 1f);
 
         detailsWrapper.addComponent(buildProfileTab());
+        detailsWrapper.addComponent(buildSettingsTab());
 
         if (preferencesTabOpen) {
             detailsWrapper.setSelectedTab(1);
@@ -99,6 +99,49 @@ public class ProfilePreferencesWindow extends Window {
         fieldGroup = new BeanFieldGroup<User>(User.class);
         fieldGroup.bindMemberFields(this);
         fieldGroup.setItemDataSource(user);
+    }
+
+    private Component buildSettingsTab() {
+
+        VerticalLayout root = new VerticalLayout();
+        root.setCaption("Settings");
+        root.setIcon(FontAwesome.COGS);
+        root.setSpacing(true);
+        root.setMargin(true);
+        root.setSizeFull();
+
+        FormLayout details = new FormLayout();
+        details.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        root.addComponent(details);
+        root.setExpandRatio(details, 1);
+
+        Label message = new Label("Change Password");
+        details.addComponent(message);
+
+        currentPasswordField = new PasswordField("Currnet Password");
+        details.addComponent(currentPasswordField);
+        newPasswordField = new PasswordField("New Password");
+        details.addComponent(newPasswordField);
+        confirmPasswordField = new PasswordField("Confirm Password");
+        details.addComponent(confirmPasswordField);
+
+        String current_pwd=currentPasswordField.toString();
+
+        String new_pwd=newPasswordField.toString();
+
+        String confirm_pwd=confirmPasswordField.toString();
+
+
+        if(newPasswordField.equals(confirmPasswordField))
+        {
+            userDataProvider.changePassword(current_pwd,new_pwd,confirm_pwd);
+        }
+        else
+        Notification.show("Passwords Do not Match");
+
+
+        return root;
+
     }
 
 
