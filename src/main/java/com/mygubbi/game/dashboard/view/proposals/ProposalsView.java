@@ -1,6 +1,7 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
+import com.mygubbi.game.dashboard.component.CreateProposalsWindow;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -76,6 +77,7 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Table();
 
 
+
         // grid.addStyleName(Reindeer.TABLE_STRONG);
         //grid.setWidth("800px");
         // grid.setHeightMode(HeightMode.ROW);
@@ -129,6 +131,19 @@ public final class ProposalsView extends TabSheet implements View {
         titleLabel.addStyleName(ValoTheme.LABEL_H1);
         titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         header.addComponent(titleLabel);
+        header.setSpacing(true);
+
+        Button create_proposal=new Button("Create Proposal");
+        create_proposal.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                CreateProposalsWindow.open();
+
+            }
+        });
+        create_proposal.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        create_proposal.addStyleName(ValoTheme.TEXTAREA_ALIGN_RIGHT);
+        header.addComponent(create_proposal);
 
         JSONArray proposal_classes = proposalDataProvider.getProposalClasses();
 
@@ -174,6 +189,7 @@ public final class ProposalsView extends TabSheet implements View {
             grid.setVisibleColumns("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "create_dt", "project_city");
             grid.setColumnHeaders("CRM #", "Title", "Status", "Last Updated By", "Design", "Sales", "Creation Date", "City");
             grid.setWidth("98%");
+            grid.addStyleName(ChameleonTheme.TABLE_STRIPED);
 
 
 

@@ -1,6 +1,7 @@
 package com.mygubbi.game.dashboard.view;
 
 import com.google.common.eventbus.Subscribe;
+
 import com.mygubbi.game.dashboard.component.ProfilePreferencesWindow;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent.PostViewChangeEvent;
@@ -106,6 +107,8 @@ public final class DashboardMenu extends CustomComponent {
                 ProfilePreferencesWindow.open(user, false);
             }
         });
+
+
 
         settingsItem.addSeparator();
         settingsItem.addItem("Sign Out", new Command() {

@@ -4,6 +4,7 @@ import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.sun.org.apache.xpath.internal.axes.UnionPathIterator;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.mygubbi.game.dashboard.data.UserDataProvider;
@@ -64,6 +65,7 @@ public class ProfilePreferencesWindow extends Window {
 
     private ProfilePreferencesWindow(final User user,
             final boolean preferencesTabOpen) {
+
         addStyleName("profile-window");
         setId(ID);
         Responsive.makeResponsive(this);
@@ -125,11 +127,11 @@ public class ProfilePreferencesWindow extends Window {
         confirmPasswordField = new PasswordField("Confirm Password");
         details.addComponent(confirmPasswordField);
 
-        String current_pwd=currentPasswordField.toString();
+        String current_pwd=currentPasswordField.getValue();
 
-        String new_pwd=newPasswordField.toString();
+        String new_pwd=newPasswordField.getValue();
 
-        String confirm_pwd=confirmPasswordField.toString();
+        String confirm_pwd=confirmPasswordField.getValue();
 
 
         if(newPasswordField.equals(confirmPasswordField))
@@ -223,6 +225,19 @@ public class ProfilePreferencesWindow extends Window {
         ok.focus();
         footer.addComponent(ok);
         footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
+        footer.setSpacing(true);
+        Button close=new Button("Cancel");
+        close.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        close.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                close_window();
+            }
+        });
+        close.focus();
+        footer.addComponent(close);
+
+
         return footer;
     }
 
@@ -231,5 +246,12 @@ public class ProfilePreferencesWindow extends Window {
         Window w = new ProfilePreferencesWindow(user, preferencesTabActive);
         UI.getCurrent().addWindow(w);
         w.focus();
+    }
+    public static void close_window() {
+        DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
+        Window w = new CreateProposalsWindow();
+
+        UI.getCurrent().removeWindow(w);
+
     }
 }
