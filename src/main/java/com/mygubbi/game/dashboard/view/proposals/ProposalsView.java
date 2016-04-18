@@ -1,7 +1,7 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
+import com.mygubbi.game.dashboard.component.CreateProposalsView;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.component.CreateProposalsWindow;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -137,7 +137,7 @@ public final class ProposalsView extends TabSheet implements View {
         create_proposal.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                CreateProposalsWindow.open();
+                CreateProposalsView.open();
 
             }
         });

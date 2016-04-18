@@ -12,9 +12,12 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Position;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -27,11 +30,11 @@ import com.mygubbi.game.*;
 /**
  * Created by test on 31-03-2016.
  */
-public class CreateProposalsWindow extends Window {
+public class CreateProposalsView implements View {
 
     public static final String ID = "proposalswindow";
 
-    private final BeanFieldGroup<Proposal> fieldGroup ;
+    private BeanFieldGroup<Proposal> fieldGroup ;
 
 
     @PropertyId("proposal_title")
@@ -93,8 +96,9 @@ public class CreateProposalsWindow extends Window {
     @PropertyId("amount")
     private TextField amount_field;
 
-    public CreateProposalsWindow() {
+    public CreateProposalsView() {
 
+/*
         addStyleName("profile_window");
         setId(ID);
         Responsive.makeResponsive(this);
@@ -103,8 +107,8 @@ public class CreateProposalsWindow extends Window {
         setCloseShortcut(ShortcutAction.KeyCode.ESCAPE, null);
         setResizable(false);
         setClosable(false);
-        setHeight(90.0f, Unit.PERCENTAGE);
-        setWidth(45.0f, Unit.PERCENTAGE);
+        setHeight(90.0f, Sizeable.Unit.PERCENTAGE);
+        setWidth(45.0f, Sizeable.Unit.PERCENTAGE);
 
         VerticalLayout content = new VerticalLayout();
         content.setSizeFull();
@@ -125,6 +129,7 @@ public class CreateProposalsWindow extends Window {
 
         fieldGroup = new BeanFieldGroup<Proposal>(Proposal.class);
         fieldGroup.bindMemberFields(this);
+*/
 
     }
 
@@ -132,7 +137,7 @@ public class CreateProposalsWindow extends Window {
         VerticalLayout root = new VerticalLayout();
         root.setCaption("Proposals");
         root.setIcon(FontAwesome.PENCIL);
-        root.setWidth(100.0f, Unit.PERCENTAGE);
+        root.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
         root.setSpacing(true);
         root.setMargin(true);
         root.addStyleName("profile-form");
@@ -305,7 +310,7 @@ public class CreateProposalsWindow extends Window {
     public Component buildFooter() {
         HorizontalLayout footer = new HorizontalLayout();
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-        footer.setWidth(100.0f, Unit.PERCENTAGE);
+        footer.setWidth(100.0f, Sizeable.Unit.PERCENTAGE);
 
         Button close=new Button("Close");
         close.addStyleName(ValoTheme.BUTTON_PRIMARY);
@@ -324,17 +329,25 @@ public class CreateProposalsWindow extends Window {
 
     public static void open() {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        Window w = new CreateProposalsWindow();
+/*
+        Window w = new CreateProposalsView();
         UI.getCurrent().addWindow(w);
         w.focus();
+*/
     }
     public static void close_window() {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        Window w = new CreateProposalsWindow();
+/*
+        Window w = new CreateProposalsView();
         w.getParent();
         UI.getCurrent().removeWindow(w);
+*/
 
     }
 
 
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
+
+    }
 }

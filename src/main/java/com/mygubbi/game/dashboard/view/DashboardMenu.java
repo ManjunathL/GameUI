@@ -80,7 +80,7 @@ public final class DashboardMenu extends CustomComponent {
     }
 
     private Component buildTitle() {
-        Label logo = new Label("Mygubbi <strong>GAME</strong>",
+        Label logo = new Label("MyGubbi <strong>GAME</strong>",
                 ContentMode.HTML);
         logo.setSizeUndefined();
         HorizontalLayout logoWrapper = new HorizontalLayout(logo);
@@ -143,7 +143,7 @@ public final class DashboardMenu extends CustomComponent {
         menuItemsLayout.addStyleName("valo-menuitems");
 
         for (final DashboardViewType view : DashboardViewType.values()) {
-            Component menuItemComponent = new ValoMenuItemButton(view);
+            Component menuItemComponent = new ValoMenuItemButton(view.getViewType());
 
  /*           if (view == DashboardViewType.PROPOSALS) {
                 // Add drop target to reports button
@@ -187,6 +187,12 @@ public final class DashboardMenu extends CustomComponent {
             }*/
 
             menuItemsLayout.addComponent(menuItemComponent);
+
+            for (DashboardViewType.ViewType viewType : view.getViewType().getSubViewTypes()) {
+                Component subMenuItemComponent = new ValoMenuItemButton(viewType);
+                subMenuItemComponent.addStyleName("sub-menu");
+                menuItemsLayout.addComponent(subMenuItemComponent);
+            }
         }
         return menuItemsLayout;
 
@@ -224,9 +230,9 @@ public final class DashboardMenu extends CustomComponent {
 
         private static final String STYLE_SELECTED = "selected";
 
-        private final DashboardViewType view;
+        private final DashboardViewType.ViewType view;
 
-        public ValoMenuItemButton(final DashboardViewType view) {
+        public ValoMenuItemButton(final DashboardViewType.ViewType view) {
             this.view = view;
             setPrimaryStyleName("valo-menu-item");
             setIcon(view.getIcon());

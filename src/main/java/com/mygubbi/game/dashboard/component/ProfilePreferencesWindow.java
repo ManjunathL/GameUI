@@ -4,7 +4,6 @@ import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
-import com.sun.org.apache.xpath.internal.axes.UnionPathIterator;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.mygubbi.game.dashboard.data.UserDataProvider;
@@ -13,7 +12,6 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.Position;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -21,8 +19,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.teemu.jsoncontainer.JsonContainer;
-import us.monoid.json.JSONArray;
 
 @SuppressWarnings("serial")
 public class ProfilePreferencesWindow extends Window {
@@ -249,9 +245,11 @@ public class ProfilePreferencesWindow extends Window {
     }
     public static void close_window() {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        Window w = new CreateProposalsWindow();
+/*
+        Window w = new CreateProposalsView();
 
         UI.getCurrent().removeWindow(w);
+*/
 
     }
 }

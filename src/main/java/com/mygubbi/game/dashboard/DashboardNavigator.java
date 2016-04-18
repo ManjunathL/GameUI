@@ -75,7 +75,7 @@ public class DashboardNavigator extends Navigator {
         // A dedicated view provider is added for each separate view type
         for (final DashboardViewType viewType : DashboardViewType.values()) {
             ViewProvider viewProvider = new ClassBasedViewProvider(
-                    viewType.getViewName(), viewType.getViewClass()) {
+                    viewType.getViewType().getViewName(), viewType.getViewType().getViewClass()) {
 
                 // This field caches an already initialized view instance if the
                 // view should be cached (stateful views).
@@ -84,18 +84,18 @@ public class DashboardNavigator extends Navigator {
                 @Override
                 public View getView(final String viewName) {
                     View result = null;
-                    if (viewType.getViewName().equals(viewName)) {
-                        if (viewType.isStateful()) {
+                    if (viewType.getViewType().getViewName().equals(viewName)) {
+                        if (viewType.getViewType().isStateful()) {
                             // Stateful views get lazily instantiated
                             if (cachedInstance == null) {
-                                cachedInstance = super.getView(viewType
-                                        .getViewName());
+                                cachedInstance = super.getView(viewType.
+                                        getViewType().getViewName());
                             }
                             result = cachedInstance;
                         } else {
                             // Non-stateful views get instantiated every time
                             // they're navigated to
-                            result = super.getView(viewType.getViewName());
+                            result = super.getView(viewType.getViewType().getViewName());
                         }
                     }
                     return result;
@@ -112,12 +112,12 @@ public class DashboardNavigator extends Navigator {
         setErrorProvider(new ViewProvider() {
             @Override
             public String getViewName(final String viewAndParameters) {
-                return ERROR_VIEW.getViewName();
+                return ERROR_VIEW.getViewType().getViewName();
             }
 
             @Override
             public View getView(final String viewName) {
-                return errorViewProvider.getView(ERROR_VIEW.getViewName());
+                return errorViewProvider.getView(ERROR_VIEW.getViewType().getViewName());
             }
         });
     }
