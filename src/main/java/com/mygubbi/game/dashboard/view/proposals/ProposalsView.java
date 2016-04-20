@@ -1,6 +1,5 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
-import com.mygubbi.game.dashboard.component.CreateProposalsView;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
@@ -18,7 +17,6 @@ import org.vaadin.teemu.jsoncontainer.JsonContainer;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
-
 @SuppressWarnings("serial")
 public final class ProposalsView extends TabSheet implements View {
 
@@ -133,18 +131,6 @@ public final class ProposalsView extends TabSheet implements View {
         header.addComponent(titleLabel);
         header.setSpacing(true);
 
-        Button create_proposal=new Button("Create Proposal");
-        create_proposal.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                CreateProposalsView.open();
-
-            }
-        });
-        create_proposal.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        create_proposal.addStyleName(ValoTheme.TEXTAREA_ALIGN_RIGHT);
-        header.addComponent(create_proposal);
-
         JSONArray proposal_classes = proposalDataProvider.getProposalClasses();
 
         HorizontalLayout tools = new HorizontalLayout();
@@ -186,8 +172,8 @@ public final class ProposalsView extends TabSheet implements View {
 
 
             grid.setColumnReorderingAllowed(true);
-            grid.setVisibleColumns("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "create_dt", "project_city");
-            grid.setColumnHeaders("CRM #", "Title", "Status", "Last Updated By", "Design", "Sales", "Creation Date", "City");
+            grid.setVisibleColumns("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "create_dt", "project_city","total_amount");
+            grid.setColumnHeaders("CRM #", "Title", "Status", "Last Updated By", "Design", "Sales", "Creation Date", "City","Total Amount");
             grid.setWidth("98%");
             grid.addStyleName(ChameleonTheme.TABLE_STRIPED);
 

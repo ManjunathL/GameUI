@@ -1,6 +1,6 @@
 package com.mygubbi.game.dashboard.view;
 
-import com.mygubbi.game.dashboard.component.CreateProposalsView;
+import com.mygubbi.game.dashboard.view.proposals.CreateProposalsView;
 import com.mygubbi.game.dashboard.view.catalog.CatalogView;
 import com.mygubbi.game.dashboard.view.proposals.ProposalsView;
 
