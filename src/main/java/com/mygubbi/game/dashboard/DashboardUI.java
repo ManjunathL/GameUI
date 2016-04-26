@@ -1,11 +1,8 @@
 package com.mygubbi.game.dashboard;
 
-<<<<<<< Updated upstream
-=======
 import java.sql.SQLException;
 import java.util.Locale;
 
->>>>>>> Stashed changes
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
 import com.mygubbi.game.dashboard.data.UserDataProvider;

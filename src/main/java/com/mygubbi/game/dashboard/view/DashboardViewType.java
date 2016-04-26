@@ -1,7 +1,8 @@
 package com.mygubbi.game.dashboard.view;
 
+import com.mygubbi.game.dashboard.view.Catalog.CatalogProductsView;
 import com.mygubbi.game.dashboard.view.proposals.CreateProposalsView;
-import com.mygubbi.game.dashboard.view.catalog.CatalogView;
+import com.mygubbi.game.dashboard.view.Catalog.CatalogView;
 import com.mygubbi.game.dashboard.view.proposals.ProposalsView;
 
 import com.vaadin.navigator.View;
@@ -15,7 +16,7 @@ public enum DashboardViewType {
     PROPOSALS(new ViewType("Proposals", ProposalsView.class, FontAwesome.ANCHOR, false, new ArrayList<ViewType>() {{
         add(new ViewType("Create Proposal", CreateProposalsView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
     }})),
-    CATALOG(new ViewType("Catalog", CatalogView.class, FontAwesome.BAR_CHART_O, false, new ArrayList<ViewType>(){{
+    CATALOG(new ViewType("Catalog", CatalogProductsView.class, FontAwesome.BAR_CHART_O, false, new ArrayList<ViewType>(){{
         add(new ViewType("JSON", CatalogView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
     }}));
 
