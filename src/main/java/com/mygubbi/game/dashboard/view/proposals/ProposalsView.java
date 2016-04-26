@@ -170,20 +170,13 @@ public final class ProposalsView extends TabSheet implements View {
             JsonContainer dataSource = JsonContainer.Factory.newInstance(proposals.toString());
             grid.setContainerDataSource(dataSource);
 
-
             grid.setColumnReorderingAllowed(true);
             grid.setVisibleColumns("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "total_amount", "create_dt", "project_city");
             grid.setColumnHeaders("CRM #", "Title", "Status", "Last Updated By", "Design", "Sales", "Amount", "Creation Date", "City");
             grid.setWidth("98%");
             grid.addStyleName(ChameleonTheme.TABLE_STRIPED);
 
-
-
-
-
-
         //grid.setHeightByRows();
-
 
 /*
             grid.setCellStyleGenerator(new Table.CellStyleGenerator() {
@@ -198,8 +191,6 @@ public final class ProposalsView extends TabSheet implements View {
         }
 
     }
-
-
 
     @Override
     public void enter(ViewChangeEvent viewChangeEvent) {
