@@ -1,28 +1,16 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
 
-import com.mygubbi.game.dashboard.component.ItemDetailsWindow;
-import com.mygubbi.game.dashboard.component.ProfilePreferencesWindow;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.User;
-import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.vaadin.data.validator.EmailValidator;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.LayoutEvents;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ChameleonTheme;
-import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.teemu.jsoncontainer.JsonContainer;
-import us.monoid.json.JSONArray;
-import us.monoid.json.JSONException;
-import us.monoid.json.JSONObject;
 
 import java.util.Date;
 

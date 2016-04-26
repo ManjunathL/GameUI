@@ -1,4 +1,4 @@
-package com.mygubbi.game.dashboard.view.Catalog;
+package com.mygubbi.game.dashboard.view.catalog;
 
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;

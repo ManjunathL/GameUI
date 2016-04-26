@@ -1,7 +1,6 @@
 package com.mygubbi.game.dashboard.view;
 
 import com.google.common.eventbus.Subscribe;
-import com.mygubbi.game.dashboard.component.ProfilePreferencesWindow;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent.PostViewChangeEvent;
 import com.mygubbi.game.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
