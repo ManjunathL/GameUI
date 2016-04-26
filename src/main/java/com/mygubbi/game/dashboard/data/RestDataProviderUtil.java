@@ -66,7 +66,11 @@ public class RestDataProviderUtil implements DataProviderUtil {
     }
 
     private String getBaseURL() {
+<<<<<<< Updated upstream
         return "http://localhost:1443/gapi"; //todo: load from config
+=======
+        return "http://localhost:1443/gapi/"; //todo: load from config
+>>>>>>> Stashed changes
     }
 
     private String queryParams(Map<String, String> params) {

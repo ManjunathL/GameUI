@@ -1,5 +1,11 @@
 package com.mygubbi.game.dashboard;
 
+<<<<<<< Updated upstream
+=======
+import java.sql.SQLException;
+import java.util.Locale;
+
+>>>>>>> Stashed changes
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
 import com.mygubbi.game.dashboard.data.UserDataProvider;
@@ -12,6 +18,7 @@ import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
 import com.vaadin.server.Page.BrowserWindowResizeListener;
@@ -31,7 +38,7 @@ import java.util.Locale;
 @Title("Mygubbi GAME")
 @SuppressWarnings("serial")
 public final class DashboardUI extends UI {
-
+    private SimpleJDBCConnectionPool pool;
     /*
      * This field stores an access to the dummy backend layer. In real
      * applications you most likely gain access to your beans trough lookup or
@@ -44,6 +51,8 @@ public final class DashboardUI extends UI {
     @Override
     protected void init(final VaadinRequest request) {
         setLocale(Locale.US);
+        
+
 
         DashboardEventBus.register(this);
         Responsive.makeResponsive(this);
