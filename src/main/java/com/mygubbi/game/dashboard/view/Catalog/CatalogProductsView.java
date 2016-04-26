@@ -1,24 +1,34 @@
-package com.mygubbi.game.dashboard.view.proposals;
+package com.mygubbi.game.dashboard.view.Catalog;
 
-import com.mygubbi.game.dashboard.data.ProposalDataProvider;
+
+
+import com.mygubbi.game.dashboard.data.CatalogDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
-import com.mygubbi.game.dashboard.event.DashboardEvent;
-import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import org.vaadin.teemu.jsoncontainer.JsonContainer;
+
+import us.monoid.json.JSONArray;
+import us.monoid.json.JSONException;
+import us.monoid.json.JSONObject;
+
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.teemu.jsoncontainer.JsonContainer;
-import us.monoid.json.JSONArray;
-import us.monoid.json.JSONException;
-import us.monoid.json.JSONObject;
+
 @SuppressWarnings("serial")
-public final class ProposalsView extends TabSheet implements View {
+public class CatalogProductsView extends TabSheet implements View {
 
     public static final String TITLE_ID = "proposals-title";
 
@@ -32,18 +42,18 @@ public final class ProposalsView extends TabSheet implements View {
     private static final String CONVERTED = "converted";
     private static final String CANCELLED = "cancelled";
     private final VerticalLayout root;
-    private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+    private CatalogDataProvider productsDataProvider = new CatalogDataProvider(new FileDataProviderUtil());
     private Object sortContainerPropertyId;
 
-    public ProposalsView() {
+    public CatalogProductsView() {
         addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
-        DashboardEventBus.register(this);
-
+/*        DashboardEventBus.register(this);
+*/
 
         root = new VerticalLayout();
-        /*root.setSizeFull();*/
+        root.setWidth("100%");
         root.setMargin(true);
-        root.setCaption("All Proposals");
+        root.setCaption("All Products");
 
 
         addTab(root);
@@ -75,24 +85,23 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Table();
 
 
-
         // grid.addStyleName(Reindeer.TABLE_STRONG);
-        //grid.setWidth("800px");
+        grid.setWidth("100%");
         // grid.setHeightMode(HeightMode.ROW);
-        //grid.setHeight("300px");
+        grid.setHeight("100%");
 
         //grid.setSizeFull();
-        grid.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+        /*grid.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent itemClickEvent) {
                 final String title = "Kitchen for Sanjay Gupta, Durga Solitaire";
-                final ProposalDetailsView proposalDetailsView = new ProposalDetailsView("123", title);
+                final CatalogDetailsView proposalDetailsView = new ProposalDetailsView("123", title);
                 addTab(proposalDetailsView).setClosable(true);
                 setSelectedTab(getComponentCount() - 1);
                 getTab(proposalDetailsView).setCaption(title);
 
             }
-        });
+        });*/
 
         updateTable(ACTIVE);
 
@@ -112,8 +121,8 @@ public final class ProposalsView extends TabSheet implements View {
         root.addLayoutClickListener(new LayoutClickListener() {
             @Override
             public void layoutClick(final LayoutClickEvent event) {
-                DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-            }
+/*                DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
+*/            }
         });
 
     }
@@ -123,16 +132,14 @@ public final class ProposalsView extends TabSheet implements View {
         HorizontalLayout header = new HorizontalLayout();
         header.setSpacing(true);
 
-        titleLabel = new Label("Proposals");
+        titleLabel = new Label("Products");
         titleLabel.setId(TITLE_ID);
         titleLabel.setSizeUndefined();
         titleLabel.addStyleName(ValoTheme.LABEL_H1);
         titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         header.addComponent(titleLabel);
-        header.setSpacing(true);
 
-        JSONArray proposal_classes = proposalDataProvider.getProposalClasses();
-
+        JSONArray proposal_classes = productsDataProvider.getCatalogClasses();
         HorizontalLayout tools = new HorizontalLayout();
 
         for(int i=0;i<proposal_classes.length();i++)
@@ -160,22 +167,22 @@ public final class ProposalsView extends TabSheet implements View {
         return header;
     }
 
-    public void updateTable(String proposalClass) {
+    public void updateTable(String catalogClass) {
         try {
             // Use the factory method of JsonContainer to instantiate the
             // data source for the table.
 
-            JSONArray proposals = proposalDataProvider.getProposals(proposalClass);
+            JSONArray proposals = productsDataProvider.getCatalogs(catalogClass);
 
             JsonContainer dataSource = JsonContainer.Factory.newInstance(proposals.toString());
             grid.setContainerDataSource(dataSource);
 
 
             grid.setColumnReorderingAllowed(true);
-            grid.setVisibleColumns("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "total_amount", "create_dt", "project_city");
-            grid.setColumnHeaders("CRM #", "Title", "Status", "Last Updated By", "Design", "Sales", "Amount", "Creation Date", "City");
+            grid.setVisibleColumns("productId", "name", "defaultPrice", "dimension", "designer", "subcategory", "categoryId", "subcategoryId", "defaultMaterial");
+            grid.setColumnHeaders("Product ID #", "Name", "Description","Dimension", "Designer", "Subcategory", "CategoryId", "SubcategoryId", "Def_material");
+
             grid.setWidth("98%");
-            grid.addStyleName(ChameleonTheme.TABLE_STRIPED);
 
 
 
@@ -210,4 +217,6 @@ public final class ProposalsView extends TabSheet implements View {
     public Object getSortContainerPropertyId() {
         return sortContainerPropertyId;
     }
+
+
 }

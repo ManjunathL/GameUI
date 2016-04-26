@@ -218,6 +218,7 @@ public final class DashboardMenu extends CustomComponent {
             setIcon(view.getIcon());
             setCaption(view.getViewName().substring(0, 1).toUpperCase()
                     + view.getViewName().substring(1));
+
             DashboardEventBus.register(this);
             addClickListener(new ClickListener() {
                 @Override
