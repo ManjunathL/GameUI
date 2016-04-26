@@ -19,16 +19,16 @@ public class UserDataProvider {
     public JSONObject authUser(String username, String password) {
 
         try {
-            JSONObject result = dataProviderUtil.postResource("user.auth", new HashMap<String, String>() {
+            JSONObject result = dataProviderUtil.postResource("user.auth", JsonUtil.getJson(new HashMap<String, Object>() {
                 {
-                    put("username", username);
+                    put("email", username);
                     put("password", password);
                 }
-            });
-            boolean isValid = Boolean.valueOf(result.get("valid").toString());
+            }));
+            boolean isValid = result.getString("status").equals("success");
 
             if (isValid) {
-                return result.getJSONObject("user");
+                return new JSONObject(result.getString("user_data"));
             } else {
                 throw new RuntimeException("Invalid username/password");
             }
@@ -38,20 +38,20 @@ public class UserDataProvider {
         }
     }
 
-    public boolean changePassword (String username, String oldPassword, String newPassword) {
+    public boolean changePassword(String username, String oldPassword, String newPassword) {
         try {
-            JSONObject result = dataProviderUtil.postResource("user.change.pwd", new HashMap<String, String>() {
+            JSONObject result = dataProviderUtil.postResource("user.change_pwd", JsonUtil.getJson(new HashMap<String, Object>() {
                 {
-                    put("username", username);
+                    put("email", username);
                     put("old_password", oldPassword);
                     put("new_password", newPassword);
                 }
-            });
-            return Boolean.valueOf(result.get("success").toString());
+            }));
+            return result.getString("status").equals("success");
 
         } catch (JSONException e) {
             e.printStackTrace();
-            throw new RuntimeException("error while user auth", e);
+            throw new RuntimeException("Invalid user/password", e);
         }
 
     }

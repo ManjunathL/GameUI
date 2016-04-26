@@ -3,16 +3,13 @@ package com.mygubbi.game.dashboard.data;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
-import us.monoid.web.FormData;
 import us.monoid.web.Resty;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static us.monoid.web.Resty.data;
-import static us.monoid.web.Resty.form;
+import static us.monoid.web.Resty.content;
 
 /**
  * Created by nitinpuri on 05-04-2016.
@@ -42,14 +39,11 @@ public class RestDataProviderUtil implements DataProviderUtil {
     }
 
     @Override
-    public JSONObject postResource(String urlFrag, HashMap<String, String> params) {
+    public JSONObject postResource(String urlFrag, String jsonParams) {
 
         try {
             return resty.json(getBaseURL() + "/" + urlFrag,
-                    form(params.entrySet().stream()
-                            .map(entry -> data(entry.getKey(), entry.getValue()))
-                            .collect(Collectors.toList())
-                            .toArray(new FormData[0])))
+                    content(jsonParams))
                     .object();
 
         } catch (IOException | JSONException e) {
@@ -59,15 +53,11 @@ public class RestDataProviderUtil implements DataProviderUtil {
     }
 
     @Override
-    public JSONArray postResourceGetMultiple(String urlFrag, HashMap<String, String> params) {
+    public JSONArray postResourceGetMultiple(String urlFrag, String jsonParams) {
 
         try {
             return resty.json(getBaseURL() + "/" + urlFrag,
-                    form(params.entrySet().stream()
-                            .map(entry -> data(entry.getKey(), entry.getValue()))
-                            .collect(Collectors.toList())
-                            .toArray(new FormData[0])))
-                    .array();
+                    content(jsonParams)).array();
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -76,7 +66,7 @@ public class RestDataProviderUtil implements DataProviderUtil {
     }
 
     private String getBaseURL() {
-        return ""; //todo: load from config
+        return "http://localhost:1443/gapi"; //todo: load from config
     }
 
     private String queryParams(Map<String, String> params) {

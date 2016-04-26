@@ -1,18 +1,18 @@
 package com.mygubbi.game.dashboard.component;
 
-import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
+import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
+import com.mygubbi.game.dashboard.data.UserDataProvider;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
-import com.mygubbi.game.dashboard.data.UserDataProvider;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.Position;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -25,7 +25,7 @@ public class ProfilePreferencesWindow extends Window {
 
     public static final String ID = "profilepreferenceswindow";
 
-    public UserDataProvider userDataProvider=new UserDataProvider(new FileDataProviderUtil());
+    public UserDataProvider userDataProvider = new UserDataProvider(new RestDataProviderUtil());
 
     private final BeanFieldGroup<User> fieldGroup;
     /*
@@ -35,18 +35,10 @@ public class ProfilePreferencesWindow extends Window {
      * explicitly set, calling fieldGroup.setItemDataSource(user) synchronizes
      * the fields with the user object.
      */
-    @PropertyId("firstName")
-    private TextField firstNameField;
-    @PropertyId("lastName")
-    private TextField lastNameField;
-    @PropertyId("title")
-    private ComboBox titleField;
-    @PropertyId("male")
-    private OptionGroup sexField;
+    @PropertyId("name")
+    private TextField nameField;
     @PropertyId("email")
     private TextField emailField;
-    @PropertyId("location")
-    private TextField locationField;
     @PropertyId("phone")
     private TextField phoneField;
     @PropertyId("Current Password")
@@ -122,22 +114,6 @@ public class ProfilePreferencesWindow extends Window {
         details.addComponent(newPasswordField);
         confirmPasswordField = new PasswordField("Confirm Password");
         details.addComponent(confirmPasswordField);
-
-        String current_pwd=currentPasswordField.getValue();
-
-        String new_pwd=newPasswordField.getValue();
-
-        String confirm_pwd=confirmPasswordField.getValue();
-
-
-        if(newPasswordField.equals(confirmPasswordField))
-        {
-            userDataProvider.changePassword(current_pwd,new_pwd,confirm_pwd);
-        }
-        else
-        Notification.show("Passwords Do not Match");
-
-
         return root;
 
     }
@@ -158,11 +134,8 @@ public class ProfilePreferencesWindow extends Window {
         root.addComponent(details);
         root.setExpandRatio(details, 1);
 
-        firstNameField = new TextField("First Name");
-        details.addComponent(firstNameField);
-        lastNameField = new TextField("Last Name");
-        details.addComponent(lastNameField);
-
+        nameField = new TextField("Name");
+        details.addComponent(nameField);
 
         Label section = new Label("Contact Info");
         section.addStyleName(ValoTheme.LABEL_H4);
@@ -173,7 +146,7 @@ public class ProfilePreferencesWindow extends Window {
         emailField.setWidth("100%");
        // emailField.setRequired(true);
        // emailField.setNullRepresentation("");
-        emailField.setDescription("enter your username");
+        emailField.setDescription("enter your email");
         emailField.setReadOnly(true);
         details.addComponent(emailField);
 
@@ -199,20 +172,28 @@ public class ProfilePreferencesWindow extends Window {
             public void buttonClick(ClickEvent event) {
                 try {
                     fieldGroup.commit();
-                    // Updated user should also be persisted to database. But
-                    // not in this demo.
 
-                    Notification success = new Notification(
-                            "Profile updated successfully");
-                    success.setDelayMsec(2000);
-                    success.setStyleName("bar success small");
-                    success.setPosition(Position.BOTTOM_CENTER);
-                    success.show(Page.getCurrent());
+                    User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+                    String newPassword = newPasswordField.getValue();
+                    String confirmPassword = confirmPasswordField.getValue();
+                    String oldPassword = currentPasswordField.getValue();
 
-                    DashboardEventBus.post(new DashboardEvent.ProfileUpdatedEvent());
-                    close();
+                    if (!oldPassword.isEmpty() && !newPassword.isEmpty()) {
+                        if (newPassword.equals(confirmPassword)) {
+                            boolean success = userDataProvider.changePassword(user.getEmail(), oldPassword, newPassword);
+                            if (success) {
+                                NotificationUtil.showNotification("Password changed successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                                DashboardEventBus.post(new DashboardEvent.ProfileUpdatedEvent());
+                                close();
+                            } else {
+                                NotificationUtil.showNotification("Incorrect password, please check!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            }
+                        } else
+                            NotificationUtil.showNotification("New and Confirm Passwords do not match!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    }
+
                 } catch (CommitException e) {
-                    Notification.show("Error while updating profile",
+                    Notification.show("Error while updating password",
                             Type.ERROR_MESSAGE);
                 }
 

@@ -1,45 +1,28 @@
 package com.mygubbi.game.dashboard.view;
 
 import com.google.common.eventbus.Subscribe;
-
 import com.mygubbi.game.dashboard.component.ProfilePreferencesWindow;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent.PostViewChangeEvent;
 import com.mygubbi.game.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
-
 import com.mygubbi.game.dashboard.event.DashboardEvent.UserLoggedOutEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.event.dd.DropHandler;
-import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractSelect.AcceptItem;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.DragAndDropWrapper;
-import com.vaadin.ui.DragAndDropWrapper.DragStartMode;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * A responsive menu component providing user information and the controls for
  * primary navigation between the views.
  */
-@SuppressWarnings({ "serial", "unchecked" })
+@SuppressWarnings({"serial", "unchecked"})
 public final class DashboardMenu extends CustomComponent {
 
     public static final String ID = "dashboard-menu";
@@ -107,7 +90,6 @@ public final class DashboardMenu extends CustomComponent {
                 ProfilePreferencesWindow.open(user, false);
             }
         });
-
 
 
         settingsItem.addSeparator();
@@ -199,7 +181,7 @@ public final class DashboardMenu extends CustomComponent {
     }
 
     private Component buildBadgeWrapper(final Component menuItemButton,
-            final Component badgeLabel) {
+                                        final Component badgeLabel) {
         CssLayout dashboardWrapper = new CssLayout(menuItemButton);
         dashboardWrapper.addStyleName("badgewrapper");
         dashboardWrapper.addStyleName(ValoTheme.MENU_ITEM);
@@ -218,12 +200,10 @@ public final class DashboardMenu extends CustomComponent {
     }
 
 
-
-
     @Subscribe
     public void updateUserName(final ProfileUpdatedEvent event) {
         User user = getCurrentUser();
-        settingsItem.setText(user.getFirstName() + " " + user.getLastName());
+        settingsItem.setText(user.getName());
     }
 
     public final class ValoMenuItemButton extends Button {

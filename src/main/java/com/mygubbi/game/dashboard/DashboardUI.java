@@ -1,15 +1,14 @@
 package com.mygubbi.game.dashboard;
 
-import java.util.Locale;
-
 import com.google.common.eventbus.Subscribe;
-import com.mygubbi.game.dashboard.data.CommonDataProvider;
-import com.mygubbi.game.dashboard.data.dummy.CommonDummyDataProvider;
+import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
+import com.mygubbi.game.dashboard.data.UserDataProvider;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.view.LoginView;
 import com.mygubbi.game.dashboard.view.MainView;
+import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
@@ -22,6 +21,10 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import us.monoid.json.JSONException;
+import us.monoid.json.JSONObject;
+
+import java.util.Locale;
 
 @Theme("dashboard")
 @Widgetset("com.mygubbi.game.dashboard.DashboardWidgetSet")
@@ -35,7 +38,7 @@ public final class DashboardUI extends UI {
      * injection; and not in the UI but somewhere closer to where they're
      * actually accessed.
      */
-    private final CommonDataProvider dataProvider = new CommonDummyDataProvider();
+    private final UserDataProvider dataProvider = new UserDataProvider(new RestDataProviderUtil());
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
     @Override
@@ -81,10 +84,19 @@ public final class DashboardUI extends UI {
 
     @Subscribe
     public void userLoginRequested(final DashboardEvent.UserLoginRequestedEvent event) {
-        User user = getDataProvider().authenticate(event.getUserName(),
-                event.getPassword());
-        VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
-        updateContent();
+        try {
+            JSONObject userObject = getDataProvider().authUser(event.getUserName(), event.getPassword());
+            User user = getUser(userObject);
+            VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
+            updateContent();
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Invalid User or Password!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        }
+    }
+
+    private User getUser(JSONObject userObject) throws JSONException {
+        return new User(userObject.getString("email"), userObject.getString("role"), userObject.optString("phone", ""), userObject.getString("name"));
     }
 
     @Subscribe
@@ -106,7 +118,7 @@ public final class DashboardUI extends UI {
     /**
      * @return An instance for accessing the (dummy) services layer.
      */
-    public static CommonDataProvider getDataProvider() {
+    public static UserDataProvider getDataProvider() {
         return ((DashboardUI) getCurrent()).dataProvider;
     }
 

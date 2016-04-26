@@ -39,13 +39,13 @@ public class FileDataProviderUtil implements DataProviderUtil {
     }
 
     @Override
-    public JSONObject postResource(String urlFrag, HashMap<String, String> params) {
-        return getResource(urlFrag, params);
+    public JSONObject postResource(String urlFrag, String jsonParams) {
+        return getResource(urlFrag, null);
     }
 
     @Override
-    public JSONArray postResourceGetMultiple(String urlFrag, HashMap<String, String> params) {
-        return getResourceArray(urlFrag, params);
+    public JSONArray postResourceGetMultiple(String urlFrag, String jsonParams) {
+        return getResourceArray(urlFrag, null);
     }
 
     private String readFile(String path) {
