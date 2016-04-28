@@ -2,21 +2,37 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
+import com.mygubbi.game.dashboard.domain.JsonPojo.Dummy;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.vaadin.data.sort.Sort;
+import com.vaadin.data.sort.SortOrder;
+import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.NumberRenderer;
+import com.vaadin.ui.renderers.Renderer;
 import com.vaadin.ui.themes.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.vaadin.gridutil.cell.GridCellFilter;
 import org.vaadin.teemu.jsoncontainer.JsonContainer;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 @SuppressWarnings("serial")
 public final class ProposalsView extends TabSheet implements View {
 
@@ -26,7 +42,7 @@ public final class ProposalsView extends TabSheet implements View {
 
     private Window window;
 
-    private Table grid;
+    private Grid grid;
 
     private static final String ACTIVE = "active";
     private static final String CONVERTED = "converted";
@@ -34,6 +50,8 @@ public final class ProposalsView extends TabSheet implements View {
     private final VerticalLayout root;
     private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
     private Object sortContainerPropertyId;
+
+    private GridCellFilter filter;
 
     public ProposalsView() {
         addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
@@ -72,7 +90,31 @@ public final class ProposalsView extends TabSheet implements View {
         });
         root.addComponent(test);
 */
-        grid = new Table();
+        grid = new Grid();
+
+        grid.addColumn("Proposal ID",String.class);
+        grid.addColumn("CRM #",String.class);
+        grid.addColumn("Title",String.class);
+        grid.addColumn("Creation Date", Date.class);
+        grid.addColumn("Status",String.class);
+        grid.addColumn("Amount",Integer.class);
+        grid.addColumn("Last Updated By");
+        grid.addColumn("Completion Date");
+        grid.addColumn("Sales");
+        grid.addColumn("Design");
+        grid.addColumn("City");
+
+
+        Object[][] people = { {"Nicolaus Copernicus", 143},
+                {"Galileo Galilei", 1564},
+                {"Johannes Kepler", 11}};
+        for (Object[] person: people)
+            grid.addRow(person);
+
+    /*
+        grid.addRow(new Dummy("dkhc",200));
+        grid.addRow(new Dummy("dkhc",2));*/
+
 
 
 
@@ -94,7 +136,7 @@ public final class ProposalsView extends TabSheet implements View {
             }
         });
 
-        updateTable(ACTIVE);
+       // updateTable(ACTIVE);
 
         grid.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
@@ -165,14 +207,65 @@ public final class ProposalsView extends TabSheet implements View {
             // Use the factory method of JsonContainer to instantiate the
             // data source for the table.
 
+
+/*
             JSONArray proposals = proposalDataProvider.getProposals(proposalClass);
 
             JsonContainer dataSource = JsonContainer.Factory.newInstance(proposals.toString());
-            grid.setContainerDataSource(dataSource);
+            grid.setContainerDataSource(dataSource);*/
 
             grid.setColumnReorderingAllowed(true);
-            grid.setVisibleColumns("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "total_amount", "create_dt", "project_city");
+            grid.setColumnOrder("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "total_amount", "create_dt", "project_city");
+            grid.setColumnReorderingAllowed(true);
+
+            grid.addColumn("name",String.class);
+            grid.addColumn("age",Integer.class);
+
+
+            grid.addRow(new Dummy("dkhc",22));
+            grid.addRow(new Dummy("dkhc",200));
+            grid.addRow(new Dummy("dkhc",2));
+
+
+
+          /*  grid.getColumn("proposal_id").setHidden(true);
+
+            grid.getColumn("crm_id").setHeaderCaption("CRM #");
+            grid.getColumn("title").setHeaderCaption("Title");
+            grid.getColumn("status").setHeaderCaption("Status");
+            grid.getColumn("last_actioned_by").setHeaderCaption("Last Updated By");
+            grid.getColumn("designer").setHeaderCaption("Design");
+            grid.getColumn("sales_contact").setHeaderCaption("Sales");
+            grid.getColumn("total_amount").setHeaderCaption("Amount");
+            grid.getColumn("create_dt").setHeaderCaption("Creation Date");
+            grid.getColumn("project_city").setHeaderCaption("City");
+
+            grid.sort(Sort.by("total_amount", SortDirection.ASCENDING));
+*/
+
+
+
+/*
+            grid.getColumn("total_amount").setConverter(new StringToIntegerConverter());
+*/
+
+/*
+            this.filter=new GridCellFilter(grid);
+
+            filter.setNumberFilter("total_amount");
+            filter.setTextFilter("title",true,true);
+            filter.setTextFilter("status",true,true);
+            filter.setTextFilter("crm_id",true,true);
+            filter.setTextFilter("last_actioned_by",true,true);
+            filter.setTextFilter("designer",true,true);
+            filter.setTextFilter("sales_contact",true,true);
+            filter.setDateFilter("create_dt");
+*/
+
+
+/*
             grid.setColumnHeaders("CRM #", "Title", "Status", "Last Updated By", "Design", "Sales", "Amount", "Creation Date", "City");
+*/
             grid.setWidth("98%");
             grid.addStyleName(ChameleonTheme.TABLE_STRIPED);
 
