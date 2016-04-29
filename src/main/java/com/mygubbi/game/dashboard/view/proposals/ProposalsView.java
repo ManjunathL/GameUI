@@ -2,7 +2,6 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
-import com.mygubbi.game.dashboard.domain.JsonPojo.Dummy;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.vaadin.data.sort.Sort;
@@ -21,7 +20,6 @@ import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.renderers.Renderer;
 import com.vaadin.ui.themes.*;
 import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.gridutil.cell.GridCellFilter;
 import org.vaadin.teemu.jsoncontainer.JsonContainer;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
@@ -51,7 +49,9 @@ public final class ProposalsView extends TabSheet implements View {
     private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
     private Object sortContainerPropertyId;
 
+/*
     private GridCellFilter filter;
+*/
 
     public ProposalsView() {
         addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
@@ -222,9 +222,11 @@ public final class ProposalsView extends TabSheet implements View {
             grid.addColumn("age",Integer.class);
 
 
+/*
             grid.addRow(new Dummy("dkhc",22));
             grid.addRow(new Dummy("dkhc",200));
             grid.addRow(new Dummy("dkhc",2));
+*/
 
 
 
