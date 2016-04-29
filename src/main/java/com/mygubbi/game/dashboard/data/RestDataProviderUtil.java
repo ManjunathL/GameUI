@@ -31,6 +31,7 @@ public class RestDataProviderUtil implements DataProviderUtil {
     @Override
     public JSONArray getResourceArray(String urlFrag, Map<String, String> params) {
         try {
+            System.out.println("2");
             return resty.json(getBaseURL() + "/" + urlFrag + "?" + queryParams(params)).array();
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -65,7 +66,7 @@ public class RestDataProviderUtil implements DataProviderUtil {
         }
     }
 
-    private String getBaseURL() {
+    public String getBaseURL() {
       return "http://localhost:1443/gapi"; //todo: load from config
 
     }
@@ -73,4 +74,6 @@ public class RestDataProviderUtil implements DataProviderUtil {
     private String queryParams(Map<String, String> params) {
         return params.entrySet().stream().map(entry -> (entry.getKey() + "=" + entry.getValue())).collect(Collectors.joining("&"));
     }
+
+
 }

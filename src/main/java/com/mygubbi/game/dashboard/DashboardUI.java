@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Locale;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.gwt.logging.impl.DevModeLoggingFixes;
 import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
 import com.mygubbi.game.dashboard.data.UserDataProvider;
 import com.mygubbi.game.dashboard.domain.User;
@@ -92,7 +93,10 @@ public final class DashboardUI extends UI {
     public void userLoginRequested(final DashboardEvent.UserLoginRequestedEvent event) {
         try {
             JSONObject userObject = getDataProvider().authUser(event.getUserName(), event.getPassword());
+            System.out.println(userObject.toString());
+
             User user = getUser(userObject);
+            System.out.println(user.toString());
             VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
             updateContent();
         } catch (Exception e) {
