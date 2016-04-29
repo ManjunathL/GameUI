@@ -1,7 +1,6 @@
 package com.mygubbi.game.dashboard.domain;
 
 import java.util.Date;
-import java.util.stream.Stream;
 
 /**
  * Created by test on 28-04-2016.
@@ -9,47 +8,50 @@ import java.util.stream.Stream;
 public class ProposalListItem {
 
 
-    private String proposal_id;
-    private String crm_id;
+    private String proposalId;
+    private String crmId;
     private String title;
-    private Date creation_date;
+    private Date creationDate;
     private String status;
     private Integer amount;
-    private String last_updated_by;
-    private String completion_date;
+    private String lastUpdatedBy;
+    private String completionDate;
     private String sales;
-    private String design;
+    private String designer;
     private String city;
 
-    public ProposalListItem(String proposal_id, String crm_id, String title, Date creation_date, String status, String last_updated_by, Integer amount, String completion_date, String sales, String design, String city) {
-        this.proposal_id = proposal_id;
-        this.crm_id = crm_id;
+    public ProposalListItem() {
+    }
+
+    public ProposalListItem(String proposalId, String crmId, String title, Date creationDate, String status, String lastUpdatedBy, Integer amount, String completionDate, String sales, String designer, String city) {
+        this.proposalId = proposalId;
+        this.crmId = crmId;
         this.title = title;
-        this.creation_date = creation_date;
+        this.creationDate = creationDate;
         this.status = status;
-        this.last_updated_by = last_updated_by;
+        this.lastUpdatedBy = lastUpdatedBy;
         this.amount = amount;
-        this.completion_date = completion_date;
+        this.completionDate = completionDate;
         this.sales = sales;
-        this.design = design;
+        this.designer = designer;
         this.city = city;
 
     }
 
-    public String getProposal_id() {
-        return proposal_id;
+    public String getProposalId() {
+        return proposalId;
     }
 
-    public void setProposal_id(String proposal_id) {
-        this.proposal_id = proposal_id;
+    public void setProposalId(String proposalId) {
+        this.proposalId = proposalId;
     }
 
-    public String getCrm_id() {
-        return crm_id;
+    public String getCrmId() {
+        return crmId;
     }
 
-    public void setCrm_id(String crm_id) {
-        this.crm_id = crm_id;
+    public void setCrmId(String crmId) {
+        this.crmId = crmId;
     }
 
     public String getTitle() {
@@ -60,12 +62,12 @@ public class ProposalListItem {
         this.title = title;
     }
 
-    public Date getCreation_date() {
-        return creation_date;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    public void setCreation_date(Date creation_date) {
-        this.creation_date = creation_date;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public String getStatus() {
@@ -84,28 +86,28 @@ public class ProposalListItem {
         this.amount = amount;
     }
 
-    public String getLast_updated_by() {
-        return last_updated_by;
+    public String getLastUpdatedBy() {
+        return lastUpdatedBy;
     }
 
-    public void setLast_updated_by(String last_updated_by) {
-        this.last_updated_by = last_updated_by;
+    public void setLastUpdatedBy(String lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy;
     }
 
-    public String getCompletion_date() {
-        return completion_date;
+    public String getCompletionDate() {
+        return completionDate;
     }
 
-    public void setCompletion_date(String completion_date) {
-        this.completion_date = completion_date;
+    public void setCompletionDate(String completionDate) {
+        this.completionDate = completionDate;
     }
 
-    public String getDesign() {
-        return design;
+    public String getDesigner() {
+        return designer;
     }
 
-    public void setDesign(String design) {
-        this.design = design;
+    public void setDesigner(String design) {
+        this.designer = design;
     }
 
     public String getCity() {

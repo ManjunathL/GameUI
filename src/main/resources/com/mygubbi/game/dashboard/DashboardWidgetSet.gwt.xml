@@ -33,4 +33,6 @@
     
 
     <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
+
+    <inherits name="org.vaadin.gridutil.WidgetSet" />
 </module>

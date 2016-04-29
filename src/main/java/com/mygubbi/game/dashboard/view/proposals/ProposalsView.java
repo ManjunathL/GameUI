@@ -2,36 +2,29 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
-import com.mygubbi.game.dashboard.domain.JsonPojo.Dummy;
+import com.mygubbi.game.dashboard.domain.ProposalListItem;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
-import com.vaadin.data.sort.Sort;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.*;
-import com.vaadin.ui.renderers.DateRenderer;
-import com.vaadin.ui.renderers.NumberRenderer;
-import com.vaadin.ui.renderers.Renderer;
 import com.vaadin.ui.themes.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.gridutil.cell.GridCellFilter;
-import org.vaadin.teemu.jsoncontainer.JsonContainer;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public final class ProposalsView extends TabSheet implements View {
@@ -69,7 +62,6 @@ public final class ProposalsView extends TabSheet implements View {
         Responsive.makeResponsive(root);
 
 
-
         // root.addComponent(buildHeader());
 /*
         Label label = new Label("Proposal Listing");
@@ -90,32 +82,54 @@ public final class ProposalsView extends TabSheet implements View {
         });
         root.addComponent(test);
 */
-        grid = new Grid();
 
-        grid.addColumn("Proposal ID",String.class);
-        grid.addColumn("CRM #",String.class);
-        grid.addColumn("Title",String.class);
+/*
+        grid.addColumn("Proposal ID", String.class);
+        grid.addColumn("CRM #", String.class);
+        grid.addColumn("Title", String.class);
         grid.addColumn("Creation Date", Date.class);
-        grid.addColumn("Status",String.class);
-        grid.addColumn("Amount",Integer.class);
-        grid.addColumn("Last Updated By");
-        grid.addColumn("Completion Date");
-        grid.addColumn("Sales");
-        grid.addColumn("Design");
-        grid.addColumn("City");
+        grid.addColumn("Status", String.class);
+        grid.addColumn("Amount", Integer.class);
+        grid.addColumn("Last Updated By", String.class);
+        grid.addColumn("Completion Date", Date.class);
+        grid.addColumn("Sales", String.class);
+        grid.addColumn("Design", String.class);
+        grid.addColumn("City", String.class);
+*/
 
 
-        Object[][] people = { {"Nicolaus Copernicus", 143},
-                {"Galileo Galilei", 1564},
-                {"Johannes Kepler", 11}};
-        for (Object[] person: people)
-            grid.addRow(person);
+        List<ProposalListItem> proposalListItems = getProposalItems("active");
+        BeanItemContainer<ProposalListItem> container = new BeanItemContainer<ProposalListItem>(ProposalListItem.class, proposalListItems);
 
-    /*
-        grid.addRow(new Dummy("dkhc",200));
-        grid.addRow(new Dummy("dkhc",2));*/
+        grid = new Grid(container);
+        grid.setSizeFull();
+        //grid.setContainerDataSource(container);
 
+        grid.setColumnReorderingAllowed(true);
 
+        grid.setColumnOrder("crmId","title","status","sales","designer","amount","city","lastUpdatedBy","creationDate","completionDate");
+
+        grid.setColumnOrder("crmId");
+        grid.setColumnOrder("title");
+        grid.setColumnOrder("status");
+        grid.setColumnOrder("sales");
+        grid.setColumnOrder("designer");
+        grid.setColumnOrder("amount");
+        grid.setColumnOrder("city");
+        grid.setColumnOrder("lastUpdatedBy");
+        grid.setColumnOrder("creationDate");
+        grid.setColumnOrder("completionDate");
+
+        this.filter = new GridCellFilter(grid);
+
+        filter.setNumberFilter("amount");
+        filter.setTextFilter("title", true, true);
+        filter.setTextFilter("status", true, true);
+        filter.setTextFilter("crmId", true, true);
+        filter.setTextFilter("lastUpdatedBy", true, true);
+        filter.setTextFilter("designer", true, true);
+        filter.setTextFilter("sales", true, true);
+        filter.setDateFilter("creationDate");
 
 
         // grid.addStyleName(Reindeer.TABLE_STRONG);
@@ -136,7 +150,7 @@ public final class ProposalsView extends TabSheet implements View {
             }
         });
 
-       // updateTable(ACTIVE);
+        // updateTable(ACTIVE);
 
         grid.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
@@ -177,14 +191,13 @@ public final class ProposalsView extends TabSheet implements View {
 
         HorizontalLayout tools = new HorizontalLayout();
 
-        for(int i=0;i<proposal_classes.length();i++)
-        {
+        for (int i = 0; i < proposal_classes.length(); i++) {
             try {
                 JSONObject jsonObject = proposal_classes.getJSONObject(i);
                 int id = jsonObject.getInt("count");
-                String name=jsonObject.getString("class");
+                String name = jsonObject.getString("class");
 
-                Button status_button=new Button(name+" ("+id+")");
+                Button status_button = new Button(name + " (" + id + ")");
                 status_button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 
                 tools.addComponent(status_button);
@@ -202,87 +215,42 @@ public final class ProposalsView extends TabSheet implements View {
         return header;
     }
 
-    public void updateTable(String proposalClass) {
+    public List<ProposalListItem> getProposalItems(String proposalClass) {
+        List<ProposalListItem> proposalListItems = new ArrayList<>();
+
+        JSONArray proposals = proposalDataProvider.getProposals(proposalClass);
         try {
-            // Use the factory method of JsonContainer to instantiate the
-            // data source for the table.
+            for (int i = 0; i < proposals.length(); i++) {
 
+                ProposalListItem proposalListItem = new ProposalListItem();
+                JSONObject jsonObject = proposals.getJSONObject(i);
 
-/*
-            JSONArray proposals = proposalDataProvider.getProposals(proposalClass);
+                proposalListItem.setProposalId(jsonObject.getString("proposal_id"));
+                proposalListItem.setCrmId(jsonObject.getString("crm_id"));
+                proposalListItem.setTitle(jsonObject.getString("title"));
+                proposalListItem.setCreationDate(getDate(jsonObject));
+                proposalListItem.setStatus(jsonObject.getString("status"));
+                proposalListItem.setAmount(jsonObject.getInt("total_amount"));
+                proposalListItem.setLastUpdatedBy(jsonObject.getString("last_actioned_by"));
+                proposalListItem.setCompletionDate(jsonObject.getString("completion_dt"));
+                proposalListItem.setSales(jsonObject.getString("sales_contact"));
+                proposalListItem.setDesigner(jsonObject.getString("designer"));
+                proposalListItem.setCity(jsonObject.getString("project_city"));
 
-            JsonContainer dataSource = JsonContainer.Factory.newInstance(proposals.toString());
-            grid.setContainerDataSource(dataSource);*/
+                proposalListItems.add(proposalListItem);
+            }
 
-            grid.setColumnReorderingAllowed(true);
-            grid.setColumnOrder("crm_id", "title", "status", "last_actioned_by", "designer", "sales_contact", "total_amount", "create_dt", "project_city");
-            grid.setColumnReorderingAllowed(true);
+            return proposalListItems;
 
-            grid.addColumn("name",String.class);
-            grid.addColumn("age",Integer.class);
-
-
-            grid.addRow(new Dummy("dkhc",22));
-            grid.addRow(new Dummy("dkhc",200));
-            grid.addRow(new Dummy("dkhc",2));
-
-
-
-          /*  grid.getColumn("proposal_id").setHidden(true);
-
-            grid.getColumn("crm_id").setHeaderCaption("CRM #");
-            grid.getColumn("title").setHeaderCaption("Title");
-            grid.getColumn("status").setHeaderCaption("Status");
-            grid.getColumn("last_actioned_by").setHeaderCaption("Last Updated By");
-            grid.getColumn("designer").setHeaderCaption("Design");
-            grid.getColumn("sales_contact").setHeaderCaption("Sales");
-            grid.getColumn("total_amount").setHeaderCaption("Amount");
-            grid.getColumn("create_dt").setHeaderCaption("Creation Date");
-            grid.getColumn("project_city").setHeaderCaption("City");
-
-            grid.sort(Sort.by("total_amount", SortDirection.ASCENDING));
-*/
-
-
-
-/*
-            grid.getColumn("total_amount").setConverter(new StringToIntegerConverter());
-*/
-
-/*
-            this.filter=new GridCellFilter(grid);
-
-            filter.setNumberFilter("total_amount");
-            filter.setTextFilter("title",true,true);
-            filter.setTextFilter("status",true,true);
-            filter.setTextFilter("crm_id",true,true);
-            filter.setTextFilter("last_actioned_by",true,true);
-            filter.setTextFilter("designer",true,true);
-            filter.setTextFilter("sales_contact",true,true);
-            filter.setDateFilter("create_dt");
-*/
-
-
-/*
-            grid.setColumnHeaders("CRM #", "Title", "Status", "Last Updated By", "Design", "Sales", "Amount", "Creation Date", "City");
-*/
-            grid.setWidth("98%");
-            grid.addStyleName(ChameleonTheme.TABLE_STRIPED);
-
-        //grid.setHeightByRows();
-
-/*
-            grid.setCellStyleGenerator(new Table.CellStyleGenerator() {
-                @Override
-                public String getStyle(Table table, Object o, Object o1) {
-                    return null;
-                }
-            });
-*/
-    } catch (IllegalArgumentException ignored) {
-
+        } catch (JSONException | ParseException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Parse Exception", e);
         }
+    }
 
+    private Date getDate(JSONObject jsonObject) throws JSONException, ParseException {
+        String createDt = jsonObject.getString("create_dt");
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(createDt);
     }
 
     @Override

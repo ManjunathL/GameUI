@@ -10,7 +10,10 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ChameleonTheme;
 import com.vaadin.ui.themes.ValoTheme;
+import org.vaadin.teemu.jsoncontainer.JsonContainer;
+import us.monoid.json.JSONArray;
 
 import java.util.Date;
 
@@ -343,7 +346,6 @@ public class CreateProposalsView extends Panel implements View {
 
         return panel_line_items;
     }
-/*
     public void updateGrid(String proposalId) {
         try {
             // Use the factory method of JsonContainer to instantiate the
@@ -361,19 +363,19 @@ public class CreateProposalsView extends Panel implements View {
 
             //grid.setHeightByRows();
 
-*//*
+/*
             grid.setCellStyleGenerator(new Table.CellStyleGenerator() {
                 @Override
                 public String getStyle(Table table, Object o, Object o1) {
                     return null;
                 }
             });
-*//*
+*/
         } catch (IllegalArgumentException ignored) {
 
         }
 
-    }*/
+    }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
