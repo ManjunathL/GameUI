@@ -2,7 +2,6 @@ package com.mygubbi.game.dashboard.view.Catalog;
 
 import com.mygubbi.game.dashboard.data.CatalogDataProvider;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -34,14 +33,18 @@ public final class CatalogProductsView extends TabSheet implements View {
     private Window window;
 
     private Table grid;
-
+    Connection con;
+    PreparedStatement ps;
+    Statement cs;
+    ResultSet rs;
+    String dbUrl = "jdbc:mysql://localhost:3306/mg";
+    Window main = new Window("Sample");
 
     private static final String ACTIVE = "active";
     private static final String CONVERTED = "converted";
     private static final String CANCELLED = "cancelled";
     private final VerticalLayout root;
-    private CatalogDataProvider productsDataProvider = new CatalogDataProvider(new RestDataProviderUtil());
-
+    private CatalogDataProvider productsDataProvider = new CatalogDataProvider(new FileDataProviderUtil());
     private Object sortContainerPropertyId;
 
     public CatalogProductsView() {
@@ -132,7 +135,7 @@ public final class CatalogProductsView extends TabSheet implements View {
         HorizontalLayout header = new HorizontalLayout();
         header.setSpacing(true);
 
-        titleLabel = new Label("Catalogs");
+        titleLabel = new Label("Proposals");
         titleLabel.setId(TITLE_ID);
         titleLabel.setSizeUndefined();
         titleLabel.addStyleName(ValoTheme.LABEL_H1);
@@ -140,10 +143,10 @@ public final class CatalogProductsView extends TabSheet implements View {
         header.addComponent(titleLabel);
         header.setSpacing(true);
 
-        /*JSONArray catalog_classes = productsDataProvider.getCatalogClasses();
-*/
+        JSONArray catalog_classes = productsDataProvider.getCatalogClasses();
+
         HorizontalLayout tools = new HorizontalLayout();
-/*
+
         for(int i=0;i<catalog_classes.length();i++)
         {
             try {
@@ -159,7 +162,7 @@ public final class CatalogProductsView extends TabSheet implements View {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }*/
+        }
 
         tools.setSpacing(true);
 
@@ -172,12 +175,10 @@ public final class CatalogProductsView extends TabSheet implements View {
     public void updateTable(String catlogClass) {
         try {
 
-            JSONArray products = productsDataProvider.getCatalogs();
 
+            JSONArray catalogs = productsDataProvider.getCatalogs(catlogClass);
 
-            System.out.println(">>>" + products.toString());
-
-            JsonContainer dataSource = JsonContainer.Factory.newInstance(products.toString());
+            JsonContainer dataSource = JsonContainer.Factory.newInstance(catalogs.toString());
             grid.setContainerDataSource(dataSource);
 
 

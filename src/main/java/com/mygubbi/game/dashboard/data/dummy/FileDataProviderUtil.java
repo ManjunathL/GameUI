@@ -1,7 +1,6 @@
 package com.mygubbi.game.dashboard.data.dummy;
 
 import com.mygubbi.game.dashboard.data.DataProviderUtil;
-import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
