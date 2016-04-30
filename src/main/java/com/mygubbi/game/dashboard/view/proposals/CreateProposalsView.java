@@ -1,21 +1,19 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
 
+import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
-import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.*;
-import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ChameleonTheme;
 import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.teemu.jsoncontainer.JsonContainer;
-import us.monoid.json.JSONArray;
-
-import java.util.Date;
 
 
 /**
@@ -23,62 +21,56 @@ import java.util.Date;
  */
 public class CreateProposalsView extends Panel implements View {
 
-    public static final String EDIT_ID = "proposals-edit";
-    public static final String TITLE_ID = "proposals-title";
 
     private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
 
-    private TextField proposal_title_field;
-    private TextField crm_id;
-    private TextField proposal_version_field;
-    private TextField quotation_field;
+    private TextField proposalTitleField;
+    private TextField crmId;
+    private TextField proposalVersionField;
+    private TextField quotationField;
 
-    private TextField customer_id_field;
-    private TextField customer_name_field;
-    private TextField customer_address_line_1;
-    private TextField customer_address_line_2;
-    private TextField customer_address_line_3;
-    private TextField customer_city_field;
-    private TextField customer_email_field;
-    private TextField customer_number_field_1;
-    private TextField customer_number_field_2;
+    private TextField customerIdField;
+    private TextField customerNameField;
+    private TextField customerAddressLine1;
+    private TextField customerAddressLine2;
+    private TextField customerAddressLine3;
+    private TextField customerCityField;
+    private TextField customerEmailField;
+    private TextField customerNumberField1;
+    private TextField customerNumberField2;
 
-    private TextField project_name;
-    private TextField project_model_type;
-    private TextField project_drawing_id;
-    private TextField project_address_line_1;
-    private TextField project_address_line_2;
-    private TextField project_city_field;
+    private TextField projectName;
+    private TextField projectModelType;
+    private TextField projectDrawingId;
+    private TextField projectAddressLine1;
+    private TextField projectAddressLine2;
+    private TextField projectCityField;
 
-    private TextField sales_person;
-    private TextField sales_email;
-    private TextField sales_contact;
-    private TextField design_person;
-    private TextField design_email;
-    private TextField design_contact;
-
-    private static final String ACTIVE = "120939";
-
-    private Label titleLabel;
-    /*private final VerticalLayout root;*/
-    private Panel panel;
+    private TextField salesPerson;
+    private TextField salesEmail;
+    private TextField salesContact;
+    private TextField designPerson;
+    private TextField designEmail;
+    private TextField designContact;
 
     private Grid grid;
 
     public CreateProposalsView() {
 
+        DashboardEventBus.register(this);
         setSizeFull();
 
-        /*addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);*/
-        DashboardEventBus.register(this);
+        VerticalLayout vLayout = new VerticalLayout();
+
+        vLayout.addComponent(buildHeader());
 
         Accordion accordion = new Accordion();
-        accordion.setCaption("Create Proposal");
-        accordion.addTab(buildForm(),"Proposal Header");
-        accordion.addTab(buildItemDetails(),"Item Details");
-        accordion.addTab(buildForm(),"Terms and Conditions");
+        accordion.addTab(buildForm(), "HEADER");
+        accordion.addTab(buildItemDetails(), "ITEMS");
 
-        setContent(accordion);
+        vLayout.addComponent(accordion);
+
+        setContent(vLayout);
 
         Responsive.makeResponsive(accordion);
 
@@ -92,200 +84,213 @@ public class CreateProposalsView extends Panel implements View {
         });*/
     }
 
-    private Component buildTermsandConditions() {
-        return null;
-    }
+    private Component buildHeader() {
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeFull();
+        horizontalLayout.setMargin(new MarginInfo(false, true, false, true));
 
-    private Component buildAmount() {
-        return null;
-    }
+        HorizontalLayout horizontalLayout2 = new HorizontalLayout();
+        horizontalLayout.addComponent(horizontalLayout2);
 
+        Label label = new Label("New Proposal&nbsp;", ContentMode.HTML);
+        label.addStyleName(ValoTheme.LABEL_H1);
+        label.setWidth("1%");
+        horizontalLayout2.addComponent(label);
+        horizontalLayout2.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
 
+        Label draftLabel = new Label("[ Draft ]");
+        draftLabel.addStyleName(ValoTheme.LABEL_COLORED);
+        draftLabel.addStyleName(ValoTheme.LABEL_H1);
+        horizontalLayout2.addComponent(draftLabel);
+        horizontalLayout2.setComponentAlignment(draftLabel, Alignment.MIDDLE_LEFT);
 
-    public Component buildForm()
-    {
-        Panel panel_form=new Panel();
-
-        VerticalLayout verticalLayout1=new VerticalLayout();
-        verticalLayout1.setSizeFull();
-        verticalLayout1.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-
-        HorizontalLayout header = new HorizontalLayout();
-        header.setSizeFull();
-        header.setSpacing(true);
-/*
-
-        titleLabel = new Label("Create Proposal");
-        titleLabel.setId(TITLE_ID);
-        titleLabel.setSizeUndefined();
-        titleLabel.addStyleName(ValoTheme.LABEL_HUGE);
-        titleLabel.addStyleName(ValoTheme.LABEL_COLORED);
-        header.addComponent(titleLabel);
-        header.setSpacing(true);
-*/
-
-        DateField dateField = new DateField();
-        dateField.setResolution(Resolution.MINUTE);
-        dateField.setValue(new Date());
-        dateField.setReadOnly(true);
-        dateField.addStyleName(ValoTheme.DATEFIELD_ALIGN_CENTER);
-        dateField.addStyleName(ValoTheme.DATEFIELD_TINY);
-
-        Label label=new Label(dateField);
-        //label.addStyleName(ValoTheme.BUTTON_LINK);
-        label.addStyleName(ValoTheme.LABEL_COLORED);
-        header.addComponent(label);
-        header.setComponentAlignment(label, Alignment.BOTTOM_RIGHT);
-
-
-        verticalLayout1.addComponent(header);
+        VerticalLayout verticalLayout = new VerticalLayout();
+        horizontalLayout.addComponent(verticalLayout);
+        horizontalLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
 
         HorizontalLayout horizontalLayout1=new HorizontalLayout();
         horizontalLayout1.setSizeFull();
-
-        //Main Header
-        FormLayout formLayout1=new FormLayout();
-        formLayout1.setSizeFull();
-        formLayout1.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        proposal_title_field=new TextField("Proposal Title");
-        formLayout1.addComponent(proposal_title_field);
-        proposal_version_field=new TextField("Proposal Version");
-        formLayout1.addComponent(proposal_version_field);
-
-        horizontalLayout1.addComponent(formLayout1);
         horizontalLayout1.setSpacing(true);
+        verticalLayout.addComponent(horizontalLayout1);
+        verticalLayout.setComponentAlignment(horizontalLayout1, Alignment.MIDDLE_CENTER);
 
-        FormLayout formLayout2=new FormLayout();
-        formLayout2.setSizeFull();
-        formLayout2.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        Button submitButton = new Button("Submit");
+        submitButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        submitButton.addStyleName(ValoTheme.BUTTON_TINY);
+        horizontalLayout1.addComponent(submitButton);
+        horizontalLayout1.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
 
-        crm_id=new TextField("CRM ID");
-        formLayout2.addComponent(crm_id);
-        quotation_field=new TextField("Quotation");
-        formLayout2.addComponent(quotation_field);
+        Button saveButton = new Button("Save");
+        saveButton.addStyleName(ValoTheme.BUTTON_TINY);
+        horizontalLayout1.addComponent(saveButton);
+        horizontalLayout1.setComponentAlignment(saveButton, Alignment.MIDDLE_CENTER);
 
-        horizontalLayout1.addComponent(formLayout2);
-        verticalLayout1.addComponent(horizontalLayout1);
+        Button cancelButton = new Button("Cancel");
+        cancelButton.addStyleName(ValoTheme.BUTTON_TINY);
+        horizontalLayout1.addComponent(cancelButton);
+        horizontalLayout1.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
 
-        //Heading
-        AbsoluteLayout absoluteLayout1=new AbsoluteLayout();
-        absoluteLayout1.setWidth("1000px");
-        absoluteLayout1.setHeight("50px");
+        return horizontalLayout;
+    }
 
-        Label customer_details_menu=new Label("Customer Details");
-        customer_details_menu.addStyleName(ValoTheme.LABEL_HUGE);
-        customer_details_menu.addStyleName(ValoTheme.LABEL_COLORED);
-        absoluteLayout1.addComponent(customer_details_menu," left:20px; , top:10px;  ");
-        Label project_details_menu=new Label("Project Details");
-        project_details_menu.addStyleName(ValoTheme.LABEL_COLORED);
-        project_details_menu.addStyleName(ValoTheme.LABEL_HUGE);
-        absoluteLayout1.addComponent(project_details_menu," left:700px; , top:10px; ");
 
-        verticalLayout1.addComponent(absoluteLayout1);
+    private Component buildForm() {
+
+        VerticalLayout verticalLayout = new VerticalLayout();
+
+        HorizontalLayout horizontalLayout0 = new HorizontalLayout();
+        horizontalLayout0.setSizeFull();
+        verticalLayout.addComponent(horizontalLayout0);
+
+        HorizontalLayout horizontalLayout1 = new HorizontalLayout();
+        horizontalLayout1.setSizeFull();
+        horizontalLayout1.addComponent(buildMainFormLayoutLeft());
+        horizontalLayout1.addComponent(buildMainFormLayoutRight());
+        verticalLayout.addComponent(horizontalLayout1);
+
         HorizontalLayout horizontalLayout2=new HorizontalLayout();
         horizontalLayout2.setSizeFull();
-
-        //Customer Details
-        FormLayout formLayout3=new FormLayout();
-        formLayout3.setSizeFull();
-        formLayout3.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        customer_id_field=new TextField("Customer ID");
-        formLayout3.addComponent(customer_id_field);
-        customer_name_field=new TextField("Customer Name");
-        formLayout3.addComponent(customer_name_field);
-        customer_address_line_1=new TextField("Address Line 1");
-        formLayout3.addComponent(customer_address_line_1);
-        customer_address_line_2=new TextField("Address Line 2");
-        formLayout3.addComponent(customer_address_line_2);
-        customer_address_line_3=new TextField("Address Line 3");
-        formLayout3.addComponent(customer_address_line_3);
-        customer_city_field=new TextField("City");
-        formLayout3.addComponent(customer_city_field);
-        customer_email_field=new TextField("Email");
-        formLayout3.addComponent(customer_email_field);
-        customer_number_field_1=new TextField("Phone 1");
-        formLayout3.addComponent(customer_number_field_1);
-        customer_number_field_2=new TextField("Phone 2");
-        formLayout3.addComponent(customer_number_field_2);
-
-        horizontalLayout2.addComponent(formLayout3);
-        horizontalLayout2.setSpacing(true);
-
-
-
-        FormLayout formLayout4=new FormLayout();
-        formLayout4.setSizeFull();
-        formLayout4.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        project_name=new TextField("Project Name");
-        formLayout4.addComponent(project_name);
-        project_model_type=new TextField("Model Type");
-        formLayout4.addComponent(project_model_type);
-        project_drawing_id=new TextField("Drawing #");
-        formLayout4.addComponent(project_drawing_id);
-        project_address_line_1=new TextField("Address Line 1");
-        formLayout4.addComponent(project_address_line_1);
-        project_address_line_2=new TextField("Address Line 2");
-        formLayout4.addComponent(project_address_line_2);
-        project_city_field=new TextField("City");
-        formLayout4.addComponent(project_city_field);
-
-        horizontalLayout2.addComponent(formLayout4);
-        verticalLayout1.addComponent(horizontalLayout2);
-
-
-        //MyGubbi Contact Details
-        Label mygubbi_details=new Label("MyGubbi Conact Details");
-        mygubbi_details.addStyleName(ValoTheme.LABEL_HUGE);
-        mygubbi_details.addStyleName(ValoTheme.LABEL_COLORED);
-        verticalLayout1.addComponent(mygubbi_details);
+        horizontalLayout2.addComponent(buildDetailsLeft());
+        horizontalLayout2.addComponent(buildDetailsRight());
+        verticalLayout.addComponent(horizontalLayout2);
 
         HorizontalLayout horizontalLayout3=new HorizontalLayout();
         horizontalLayout3.setSizeFull();
+        horizontalLayout3.addComponent(buildContactDetailsLeft());
+        horizontalLayout3.addComponent(buildContactDetailsRight());
+        verticalLayout.addComponent(horizontalLayout3);
 
-        FormLayout formLayout5=new FormLayout();
-        formLayout5.setSizeFull();
-        formLayout5.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        return verticalLayout;
+    }
 
-        sales_person=new TextField("Sales Person");
-        formLayout5.addComponent(sales_person);
-        design_person=new TextField("Design Person");
-        formLayout5.addComponent(design_person);
+    private Component buildDetailsLeft() {
 
-        horizontalLayout3.addComponent(formLayout5);
-        horizontalLayout3.setSpacing(true);
+        FormLayout formLayoutLeft = new FormLayout();
+        formLayoutLeft.setSizeFull();
+        formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        FormLayout formLayout6=new FormLayout();
-        formLayout6.setSizeFull();
-        formLayout6.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        Label customerDetailsLabel = new Label("Customer Details");
+        customerDetailsLabel.addStyleName(ValoTheme.LABEL_HUGE);
+        customerDetailsLabel.addStyleName(ValoTheme.LABEL_COLORED);
+        formLayoutLeft.addComponent(customerDetailsLabel);
+        formLayoutLeft.setComponentAlignment(customerDetailsLabel, Alignment.MIDDLE_LEFT);
 
-        sales_email=new TextField("Email");
-        formLayout6.addComponent(sales_email);
-        design_email=new TextField("Email");
-        formLayout6.addComponent(design_email);
+        customerIdField = new TextField("Customer ID");
+        formLayoutLeft.addComponent(customerIdField);
+        customerNameField = new TextField("Customer Name");
+        formLayoutLeft.addComponent(customerNameField);
+        customerAddressLine1 = new TextField("Address Line 1");
+        formLayoutLeft.addComponent(customerAddressLine1);
+        customerAddressLine2 = new TextField("Address Line 2");
+        formLayoutLeft.addComponent(customerAddressLine2);
+        customerAddressLine3 = new TextField("Address Line 3");
+        formLayoutLeft.addComponent(customerAddressLine3);
+        customerCityField = new TextField("City");
+        formLayoutLeft.addComponent(customerCityField);
+        customerEmailField = new TextField("Email");
+        formLayoutLeft.addComponent(customerEmailField);
+        customerNumberField1 = new TextField("Phone 1");
+        formLayoutLeft.addComponent(customerNumberField1);
+        customerNumberField2 = new TextField("Phone 2");
+        formLayoutLeft.addComponent(customerNumberField2);
 
-        horizontalLayout3.addComponent(formLayout6);
-        horizontalLayout3.setSpacing(true);
+        return formLayoutLeft;
+    }
 
-        FormLayout formLayout7=new FormLayout();
-        formLayout7.setSizeFull();
-        formLayout7.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+    private Component buildDetailsRight() {
+        FormLayout formLayoutRight = new FormLayout();
+        formLayoutRight.setSizeFull();
+        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        sales_contact=new TextField("Phone");
-        formLayout7.addComponent(sales_contact);
-        design_contact=new TextField("Phone");
-        formLayout7.addComponent(design_contact);
+        Label projectDetailsLabel = new Label("Project Details");
+        projectDetailsLabel.addStyleName(ValoTheme.LABEL_COLORED);
+        projectDetailsLabel.addStyleName(ValoTheme.LABEL_HUGE);
+        formLayoutRight.addComponent(projectDetailsLabel);
+        formLayoutRight.setComponentAlignment(projectDetailsLabel, Alignment.MIDDLE_LEFT);
 
-        horizontalLayout3.addComponent(formLayout7);
-        horizontalLayout3.setSpacing(true);
+        projectName = new TextField("Project Name");
+        formLayoutRight.addComponent(projectName);
+        projectModelType = new TextField("Model Type");
+        formLayoutRight.addComponent(projectModelType);
+        projectDrawingId = new TextField("Drawing #");
+        formLayoutRight.addComponent(projectDrawingId);
+        projectAddressLine1 = new TextField("Address Line 1");
+        formLayoutRight.addComponent(projectAddressLine1);
+        projectAddressLine2 = new TextField("Address Line 2");
+        formLayoutRight.addComponent(projectAddressLine2);
+        projectCityField = new TextField("City");
+        formLayoutRight.addComponent(projectCityField);
 
-        verticalLayout1.addComponent(horizontalLayout3);
+        return formLayoutRight;
 
-        panel_form.setContent(verticalLayout1);
+    }
 
-        return panel_form;
+    private FormLayout buildContactDetailsRight() {
+        FormLayout formLayoutRight = new FormLayout();
+        formLayoutRight.setSizeFull();
+        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        Label mygubbiDetails = new Label("");
+        mygubbiDetails.addStyleName(ValoTheme.LABEL_HUGE);
+        mygubbiDetails.addStyleName(ValoTheme.LABEL_COLORED);
+        formLayoutRight.addComponent(mygubbiDetails);
+
+        designPerson = new TextField("Design Person");
+        formLayoutRight.addComponent(designPerson);
+        designEmail = new TextField("Email");
+        formLayoutRight.addComponent(designEmail);
+        designContact = new TextField("Phone");
+        formLayoutRight.addComponent(designContact);
+        return formLayoutRight;
+    }
+
+    private FormLayout buildContactDetailsLeft() {
+        FormLayout formLayoutLeft = new FormLayout();
+        formLayoutLeft.setSizeFull();
+        formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        Label mygubbiDetails = new Label("MyGubbi Contact");
+        mygubbiDetails.addStyleName(ValoTheme.LABEL_HUGE);
+        mygubbiDetails.addStyleName(ValoTheme.LABEL_COLORED);
+        formLayoutLeft.addComponent(mygubbiDetails);
+
+        salesPerson = new TextField("Sales Person");
+        formLayoutLeft.addComponent(salesPerson);
+        salesEmail = new TextField("Email");
+        formLayoutLeft.addComponent(salesEmail);
+        salesContact = new TextField("Phone");
+        formLayoutLeft.addComponent(salesContact);
+        return formLayoutLeft;
+    }
+
+    private FormLayout buildMainFormLayoutRight() {
+
+        FormLayout formLayoutRight = new FormLayout();
+        formLayoutRight.setSizeFull();
+        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        crmId = new TextField("CRM #");
+        formLayoutRight.addComponent(crmId);
+        quotationField = new TextField("Quotation #");
+        formLayoutRight.addComponent(quotationField);
+
+        return formLayoutRight;
+    }
+
+    private FormLayout buildMainFormLayoutLeft() {
+
+        FormLayout formLayoutLeft = new FormLayout();
+        formLayoutLeft.setSizeFull();
+        formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        proposalTitleField = new TextField("Proposal Title");
+        formLayoutLeft.addComponent(proposalTitleField);
+        proposalVersionField = new TextField("Proposal Version");
+        proposalVersionField.setValue("1.0");
+        proposalVersionField.setReadOnly(true);
+        formLayoutLeft.addComponent(proposalVersionField);
+
+        return formLayoutLeft;
     }
 
     private User getCurrentUser() {
@@ -345,36 +350,6 @@ public class CreateProposalsView extends Panel implements View {
         panel_line_items.setContent(verticalLayout1);
 
         return panel_line_items;
-    }
-    public void updateGrid(String proposalId) {
-        try {
-            // Use the factory method of JsonContainer to instantiate the
-            // data source for the table.
-
-            JSONArray proposals = proposalDataProvider.getProposalLineItems(proposalId);
-
-            JsonContainer dataSource = JsonContainer.Factory.newInstance(proposals.toString());
-            grid.setContainerDataSource(dataSource);
-
-            grid.setColumnReorderingAllowed(true);
-            grid.setColumnOrder("s_no", "name", "room", "category", "carcass_material", "make", "quantity", "amount","total_amount");
-            grid.setWidth("98%");
-            grid.addStyleName(ChameleonTheme.TABLE_STRIPED);
-
-            //grid.setHeightByRows();
-
-/*
-            grid.setCellStyleGenerator(new Table.CellStyleGenerator() {
-                @Override
-                public String getStyle(Table table, Object o, Object o1) {
-                    return null;
-                }
-            });
-*/
-        } catch (IllegalArgumentException ignored) {
-
-        }
-
     }
 
     @Override

@@ -1,10 +1,6 @@
 package com.mygubbi.game.dashboard;
 
-import java.sql.SQLException;
-import java.util.Locale;
-
 import com.google.common.eventbus.Subscribe;
-import com.google.gwt.logging.impl.DevModeLoggingFixes;
 import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
 import com.mygubbi.game.dashboard.data.UserDataProvider;
 import com.mygubbi.game.dashboard.domain.User;
@@ -16,7 +12,6 @@ import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
 import com.vaadin.server.Page.BrowserWindowResizeListener;
@@ -33,10 +28,9 @@ import java.util.Locale;
 
 @Theme("dashboard")
 @Widgetset("com.mygubbi.game.dashboard.DashboardWidgetSet")
-@Title("Mygubbi GAME")
+@Title("MyGubbi GAME")
 @SuppressWarnings("serial")
 public final class DashboardUI extends UI {
-    private SimpleJDBCConnectionPool pool;
     /*
      * This field stores an access to the dummy backend layer. In real
      * applications you most likely gain access to your beans trough lookup or
@@ -93,10 +87,7 @@ public final class DashboardUI extends UI {
     public void userLoginRequested(final DashboardEvent.UserLoginRequestedEvent event) {
         try {
             JSONObject userObject = getDataProvider().authUser(event.getUserName(), event.getPassword());
-            System.out.println(userObject.toString());
-
             User user = getUser(userObject);
-            System.out.println(user.toString());
             VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
             updateContent();
         } catch (Exception e) {
