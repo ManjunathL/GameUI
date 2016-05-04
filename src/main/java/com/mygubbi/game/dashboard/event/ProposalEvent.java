@@ -1,6 +1,6 @@
 package com.mygubbi.game.dashboard.event;
 
-import com.mygubbi.game.dashboard.domain.ProposalListItem;
+import com.mygubbi.game.dashboard.domain.ProposalListViewItem;
 
 /**
  * Created by nitinpuri on 04-05-2016.
@@ -11,12 +11,12 @@ public abstract class ProposalEvent {
     }
 
     public static class ListItemAdded {
-        private ProposalListItem proposalListItem;
-        public ListItemAdded(ProposalListItem proposalListItem) {
-            this.proposalListItem = proposalListItem;
+        private ProposalListViewItem proposalListViewItem;
+        public ListItemAdded(ProposalListViewItem proposalListViewItem) {
+            this.proposalListViewItem = proposalListViewItem;
         }
-        public ProposalListItem getProposalListItem() {
-            return proposalListItem;
+        public ProposalListViewItem getProposalListViewItem() {
+            return proposalListViewItem;
         }
     }
 

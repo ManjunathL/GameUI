@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by test on 28-04-2016.
  */
-public class ProposalListItem {
+public class ProposalListViewItem {
 
 
     private String proposalId;
@@ -20,10 +20,10 @@ public class ProposalListItem {
     private String designer;
     private String city;
 
-    public ProposalListItem() {
+    public ProposalListViewItem() {
     }
 
-    public ProposalListItem(String proposalId, String crmId, String title, Date creationDate, String status, String lastUpdatedBy, Integer amount, String completionDate, String sales, String designer, String city) {
+    public ProposalListViewItem(String proposalId, String crmId, String title, Date creationDate, String status, String lastUpdatedBy, Integer amount, String completionDate, String sales, String designer, String city) {
         this.proposalId = proposalId;
         this.crmId = crmId;
         this.title = title;

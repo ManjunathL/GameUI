@@ -5,7 +5,7 @@ package com.mygubbi.game.dashboard.domain;
  */
 public class Module {
 
-    public enum ImportStatus {MATCHED, DEFAULT_MATCHED, NO_MATCH};
+    public enum ImportStatus {MATCHED, DEFAULT_MATCHED, NOT_MATCHED};
 
     private int seqNo;
     private String importedModuleCode;

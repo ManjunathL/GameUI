@@ -3,7 +3,7 @@ package com.mygubbi.game.dashboard.view.proposals;
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
-import com.mygubbi.game.dashboard.domain.ProposalListItem;
+import com.mygubbi.game.dashboard.domain.ProposalListViewItem;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
@@ -64,8 +64,8 @@ public final class ProposalsView extends TabSheet implements View {
         root.addComponent(buildHeader());
         root.setSpacing(true);
 
-        List<ProposalListItem> proposalListItems = getProposalItems("active");
-        BeanItemContainer<ProposalListItem> container = new BeanItemContainer<ProposalListItem>(ProposalListItem.class, proposalListItems);
+        List<ProposalListViewItem> proposalListViewItems = getProposalItems("active");
+        BeanItemContainer<ProposalListViewItem> container = new BeanItemContainer<ProposalListViewItem>(ProposalListViewItem.class, proposalListViewItems);
 
         grid = new Grid(container);
         grid.setSizeFull();
@@ -121,8 +121,8 @@ public final class ProposalsView extends TabSheet implements View {
 
     @Subscribe
     public void proposalsDataUpdated(final ProposalEvent.ProposalUpdated event) {
-        List<ProposalListItem> proposalListItems = getProposalItems("active");
-        BeanItemContainer<ProposalListItem> container = new BeanItemContainer<ProposalListItem>(ProposalListItem.class, proposalListItems);
+        List<ProposalListViewItem> proposalListViewItems = getProposalItems("active");
+        BeanItemContainer<ProposalListViewItem> container = new BeanItemContainer<ProposalListViewItem>(ProposalListViewItem.class, proposalListViewItems);
         this.grid.setContainerDataSource(container);
     }
 
@@ -167,32 +167,32 @@ public final class ProposalsView extends TabSheet implements View {
         return header;
     }
 
-    public List<ProposalListItem> getProposalItems(String proposalClass) {
-        List<ProposalListItem> proposalListItems = new ArrayList<>();
+    public List<ProposalListViewItem> getProposalItems(String proposalClass) {
+        List<ProposalListViewItem> proposalListViewItems = new ArrayList<>();
 
         JSONArray proposals = proposalDataProvider.getProposals(proposalClass);
         try {
             for (int i = 0; i < proposals.length(); i++) {
 
-                ProposalListItem proposalListItem = new ProposalListItem();
+                ProposalListViewItem proposalListViewItem = new ProposalListViewItem();
                 JSONObject jsonObject = proposals.getJSONObject(i);
 
-                proposalListItem.setProposalId(jsonObject.getString("proposal_id"));
-                proposalListItem.setCrmId(jsonObject.getString("crm_id"));
-                proposalListItem.setTitle(jsonObject.getString("title"));
-                proposalListItem.setCreationDate(getDate(jsonObject));
-                proposalListItem.setStatus(jsonObject.getString("status"));
-                proposalListItem.setAmount(jsonObject.getInt("total_amount"));
-                proposalListItem.setLastUpdatedBy(jsonObject.getString("last_actioned_by"));
-                proposalListItem.setCompletionDate(jsonObject.getString("completion_dt"));
-                proposalListItem.setSales(jsonObject.getString("sales_contact"));
-                proposalListItem.setDesigner(jsonObject.getString("designer"));
-                proposalListItem.setCity(jsonObject.getString("project_city"));
+                proposalListViewItem.setProposalId(jsonObject.getString("proposal_id"));
+                proposalListViewItem.setCrmId(jsonObject.getString("crm_id"));
+                proposalListViewItem.setTitle(jsonObject.getString("title"));
+                proposalListViewItem.setCreationDate(getDate(jsonObject));
+                proposalListViewItem.setStatus(jsonObject.getString("status"));
+                proposalListViewItem.setAmount(jsonObject.getInt("total_amount"));
+                proposalListViewItem.setLastUpdatedBy(jsonObject.getString("last_actioned_by"));
+                proposalListViewItem.setCompletionDate(jsonObject.getString("completion_dt"));
+                proposalListViewItem.setSales(jsonObject.getString("sales_contact"));
+                proposalListViewItem.setDesigner(jsonObject.getString("designer"));
+                proposalListViewItem.setCity(jsonObject.getString("project_city"));
 
-                proposalListItems.add(proposalListItem);
+                proposalListViewItems.add(proposalListViewItem);
             }
 
-            return proposalListItems;
+            return proposalListViewItems;
 
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
