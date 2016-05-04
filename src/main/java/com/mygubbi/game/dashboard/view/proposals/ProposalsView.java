@@ -1,10 +1,12 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
+import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.ProposalListItem;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -13,7 +15,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.gridutil.cell.GridCellFilter;
 import us.monoid.json.JSONArray;
@@ -60,65 +61,16 @@ public final class ProposalsView extends TabSheet implements View {
         addTab(root);
 
         Responsive.makeResponsive(root);
-
-
-        // root.addComponent(buildHeader());
-/*
-        Label label = new Label("Proposal Listing");
-        label.addStyleName(ValoTheme.LABEL_H1);*/
-        //  label.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-
         root.addComponent(buildHeader());
         root.setSpacing(true);
-
-     /*   Button test = new Button("Open Proposal");
-        final String title = "Kitchen for Sanjay Gupta, Durga Solitaire";
-        final ProposalDetailsView proposalDetailsView = new ProposalDetailsView("123", title);
-
-        test.addClickListener(event -> {
-            addTab(proposalDetailsView).setClosable(true);
-            setSelectedTab(getComponentCount() - 1);
-            getTab(proposalDetailsView).setCaption(title);
-        });
-        root.addComponent(test);
-*/
-
-/*
-        grid.addColumn("Proposal ID", String.class);
-        grid.addColumn("CRM #", String.class);
-        grid.addColumn("Title", String.class);
-        grid.addColumn("Creation Date", Date.class);
-        grid.addColumn("Status", String.class);
-        grid.addColumn("Amount", Integer.class);
-        grid.addColumn("Last Updated By", String.class);
-        grid.addColumn("Completion Date", Date.class);
-        grid.addColumn("Sales", String.class);
-        grid.addColumn("Design", String.class);
-        grid.addColumn("City", String.class);
-*/
-
 
         List<ProposalListItem> proposalListItems = getProposalItems("active");
         BeanItemContainer<ProposalListItem> container = new BeanItemContainer<ProposalListItem>(ProposalListItem.class, proposalListItems);
 
         grid = new Grid(container);
         grid.setSizeFull();
-        //grid.setContainerDataSource(container);
-
         grid.setColumnReorderingAllowed(true);
-
-        grid.setColumnOrder("crmId","title","status","sales","designer","amount","city","lastUpdatedBy","creationDate","completionDate");
-
-        grid.setColumnOrder("crmId");
-        grid.setColumnOrder("title");
-        grid.setColumnOrder("status");
-        grid.setColumnOrder("sales");
-        grid.setColumnOrder("designer");
-        grid.setColumnOrder("amount");
-        grid.setColumnOrder("city");
-        grid.setColumnOrder("lastUpdatedBy");
-        grid.setColumnOrder("creationDate");
-        grid.setColumnOrder("completionDate");
+        grid.setColumnOrder("crmId", "title", "status", "sales", "designer", "amount", "city", "lastUpdatedBy", "creationDate", "completionDate");
 
         this.filter = new GridCellFilter(grid);
 
@@ -131,13 +83,6 @@ public final class ProposalsView extends TabSheet implements View {
         filter.setTextFilter("sales", true, true);
         filter.setDateFilter("creationDate");
 
-
-        // grid.addStyleName(Reindeer.TABLE_STRONG);
-        //grid.setWidth("800px");
-        // grid.setHeightMode(HeightMode.ROW);
-        //grid.setHeight("300px");
-
-        //grid.setSizeFull();
         grid.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(ItemClickEvent itemClickEvent) {
@@ -172,6 +117,13 @@ public final class ProposalsView extends TabSheet implements View {
             }
         });
 
+    }
+
+    @Subscribe
+    public void proposalsDataUpdated(final ProposalEvent.ProposalUpdated event) {
+        List<ProposalListItem> proposalListItems = getProposalItems("active");
+        BeanItemContainer<ProposalListItem> container = new BeanItemContainer<ProposalListItem>(ProposalListItem.class, proposalListItems);
+        this.grid.setContainerDataSource(container);
     }
 
 

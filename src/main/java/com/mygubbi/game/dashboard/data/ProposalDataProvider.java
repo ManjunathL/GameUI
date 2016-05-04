@@ -1,6 +1,7 @@
 package com.mygubbi.game.dashboard.data;
 
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
+import com.mygubbi.game.dashboard.domain.Proposal;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONObject;
 
@@ -66,5 +67,14 @@ public class ProposalDataProvider {
         JSONArray jsonArray = proposalDataProvider.getProposals("active");
         System.out.println(jsonArray.toString());
 
+    }
+
+    public Proposal createProposal() {
+
+        //todo: replace the below with a REST call and create proposal object from the json output. Use jackson lib to do that
+        Proposal proposal = new Proposal();
+        proposal.setProposalId(1234);
+        proposal.setUploadFolderPath("c://tmp//proposals_data//1234");
+        return proposal;
     }
 }

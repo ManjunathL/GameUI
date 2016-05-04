@@ -3,8 +3,10 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
+import com.mygubbi.game.dashboard.domain.Proposal;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -54,10 +56,15 @@ public class CreateProposalsView extends Panel implements View {
     private TextField designContact;
 
     private Grid grid;
+    private Proposal proposal;
 
     public CreateProposalsView() {
 
         DashboardEventBus.register(this);
+
+        this.proposal = proposalDataProvider.createProposal();
+        DashboardEventBus.post(new ProposalEvent.ProposalUpdated());
+
         setSizeFull();
 
         VerticalLayout vLayout = new VerticalLayout();
@@ -74,14 +81,6 @@ public class CreateProposalsView extends Panel implements View {
 
         Responsive.makeResponsive(accordion);
 
-        // All the open sub-windows should be closed whenever the root layout
-        // gets clicked.
-       /* root.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
-            @Override
-            public void layoutClick(final LayoutEvents.LayoutClickEvent event) {
-                DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-            }
-        });*/
     }
 
     private Component buildHeader() {
@@ -108,7 +107,7 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.addComponent(verticalLayout);
         horizontalLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
 
-        HorizontalLayout horizontalLayout1=new HorizontalLayout();
+        HorizontalLayout horizontalLayout1 = new HorizontalLayout();
         horizontalLayout1.setSizeFull();
         horizontalLayout1.setSpacing(true);
         verticalLayout.addComponent(horizontalLayout1);
@@ -148,13 +147,13 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.addComponent(buildMainFormLayoutRight());
         verticalLayout.addComponent(horizontalLayout1);
 
-        HorizontalLayout horizontalLayout2=new HorizontalLayout();
+        HorizontalLayout horizontalLayout2 = new HorizontalLayout();
         horizontalLayout2.setSizeFull();
         horizontalLayout2.addComponent(buildDetailsLeft());
         horizontalLayout2.addComponent(buildDetailsRight());
         verticalLayout.addComponent(horizontalLayout2);
 
-        HorizontalLayout horizontalLayout3=new HorizontalLayout();
+        HorizontalLayout horizontalLayout3 = new HorizontalLayout();
         horizontalLayout3.setSizeFull();
         horizontalLayout3.addComponent(buildContactDetailsLeft());
         horizontalLayout3.addComponent(buildContactDetailsRight());
@@ -301,38 +300,27 @@ public class CreateProposalsView extends Panel implements View {
 
     private Component buildItemDetails() {
 
-        Panel panel_line_items=new Panel();
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+        verticalLayout.setSpacing(true);
+        verticalLayout.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
-        VerticalLayout verticalLayout1=new VerticalLayout();
-        verticalLayout1.setSizeFull();
-        verticalLayout1.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeFull();
 
-        HorizontalLayout horizontalLayout1=new HorizontalLayout();
-        horizontalLayout1.setSizeFull();
-
-        Button button=new Button(FontAwesome.PLUS_CIRCLE);
+        Button button = new Button(FontAwesome.PLUS_CIRCLE);
         button.addStyleName(ValoTheme.BUTTON_HUGE);
         button.addStyleName(ValoTheme.BUTTON_LINK);
+        horizontalLayout.addComponent(button);
+        horizontalLayout.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
 
+        verticalLayout.addComponent(horizontalLayout);
 
-        final User user = getCurrentUser();
+        button.addClickListener(clickEvent ->
+                ItemDetailsWindow.open(CreateProposalsView.this.proposal)
+        );
 
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-
-                ItemDetailsWindow.open();
-
-
-            }
-        });
-        horizontalLayout1.addComponent(button);
-        horizontalLayout1.setComponentAlignment(button,Alignment.MIDDLE_RIGHT);
-
-        verticalLayout1.addComponent(horizontalLayout1);
-        verticalLayout1.setSpacing(true);
-
-        grid=new Grid();
+        grid = new Grid();
         grid.setSizeFull();
 
         grid.addColumn("Item #", String.class);
@@ -342,14 +330,12 @@ public class CreateProposalsView extends Panel implements View {
         grid.addColumn("Material & Finish", String.class);
         grid.addColumn("Make", String.class);
         grid.addColumn("Qty", Integer.class);
-        grid.addColumn("Amount(INR)", String.class);
+        grid.addColumn("Amount", String.class);
         grid.addColumn("Actions", String.class);
 
-        verticalLayout1.addComponent(grid);
+        verticalLayout.addComponent(grid);
 
-        panel_line_items.setContent(verticalLayout1);
-
-        return panel_line_items;
+        return verticalLayout;
     }
 
     @Override

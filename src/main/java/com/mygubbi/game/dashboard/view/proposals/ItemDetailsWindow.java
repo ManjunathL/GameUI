@@ -2,6 +2,7 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
+import com.mygubbi.game.dashboard.domain.Proposal;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -26,7 +27,7 @@ public class ItemDetailsWindow extends Window {
 
     public static final String ID = "profilepreferenceswindow";
 
-    public UserDataProvider userDataProvider=new UserDataProvider(new FileDataProviderUtil());
+    public UserDataProvider userDataProvider = new UserDataProvider(new FileDataProviderUtil());
 
     private final BeanFieldGroup<User> fieldGroup;
     /*
@@ -57,8 +58,11 @@ public class ItemDetailsWindow extends Window {
     @PropertyId("Confirm Password")
     private PasswordField confirmPasswordField;
 
+    private Proposal proposal;
 
-    private ItemDetailsWindow() {
+    private ItemDetailsWindow(Proposal proposal) {
+
+        this.proposal = proposal;
 
         addStyleName("profile-window");
         setId(ID);
@@ -154,7 +158,7 @@ public class ItemDetailsWindow extends Window {
         footer.addComponent(ok);
         footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
         footer.setSpacing(true);
-        Button close=new Button("Cancel");
+        Button close = new Button("Cancel");
         close.addStyleName(ValoTheme.BUTTON_PRIMARY);
         close.addClickListener(new Button.ClickListener() {
             @Override
@@ -164,24 +168,17 @@ public class ItemDetailsWindow extends Window {
         });
         close.focus();
         footer.addComponent(close);
-
-
         return footer;
     }
 
-    public static void open() {
+    public static void open(Proposal proposal) {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        Window w = new ItemDetailsWindow();
+        Window w = new ItemDetailsWindow(proposal);
         UI.getCurrent().addWindow(w);
         w.focus();
     }
+
     public static void close_window() {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-/*
-        Window w = new CreateProposalsView();
-
-        UI.getCurrent().removeWindow(w);
-*/
-
     }
 }

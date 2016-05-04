@@ -1,77 +1,83 @@
 package com.mygubbi.game.dashboard.domain;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by test on 30-03-2016.
  */
 public final class Proposal {
 
-    private String name;
-    private String proposal;
-    private Date create_date;
-    private String status;
-    private String last_assigned_to;
-    private String customer_name;
-    private Number amount;
+    private int proposalId;
+    private ProposalHeader proposalHeader;
+    private List<Product> products;
+    private double amount;
+    private String uploadFolderPath;
+    private List<FileAttachment> fileAttachments;
+    private Date createDate;
+    private String createdBy;
 
-    public Proposal() {
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getProposal() {
-        return proposal;
-    }
-
-    public void setProposal(String proposal) {
-        this.proposal = proposal;
-    }
-
-    public Date getCreate_date() {
-        return create_date;
-    }
-
-    public void setCreate_date(Date create_date) {
-        this.create_date = create_date;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getLast_assigned_to() {
-        return last_assigned_to;
-    }
-
-    public void setLast_assigned_to(String last_assigned_to) {
-        this.last_assigned_to = last_assigned_to;
-    }
-
-    public String getCustomer_name() {
-        return customer_name;
-    }
-
-    public void setCustomer_name(String customer_name) {
-        this.customer_name = customer_name;
-    }
-
-    public Number getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(Number amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public int getProposalId() {
+        return proposalId;
+    }
+
+    public void setProposalId(int proposalId) {
+        this.proposalId = proposalId;
+    }
+
+    public ProposalHeader getProposalHeader() {
+        return proposalHeader;
+    }
+
+    public void setProposalHeader(ProposalHeader proposalHeader) {
+        this.proposalHeader = proposalHeader;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public List<FileAttachment> getFileAttachments() {
+        return fileAttachments;
+    }
+
+    public void setFileAttachments(List<FileAttachment> fileAttachments) {
+        this.fileAttachments = fileAttachments;
+    }
+
+    public String getUploadFolderPath() {
+        return uploadFolderPath;
+    }
+
+    public void setUploadFolderPath(String uploadFolderPath) {
+        this.uploadFolderPath = uploadFolderPath;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }
