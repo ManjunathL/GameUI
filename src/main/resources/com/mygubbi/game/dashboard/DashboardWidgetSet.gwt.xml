@@ -7,6 +7,8 @@
 	
 	<!--  -->
 
+	<add-linker name="xsiframe" />
+
 	<set-configuration-property name="devModeRedirectEnabled"
 		value="true" />
 
@@ -35,4 +37,10 @@
     <inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
 
     <inherits name="org.vaadin.gridutil.WidgetSet" />
+
+    <inherits name="de.datenhahn.vaadin.componentrenderer.ComponentRendererWidgetSet" />
+
+    <inherits name="com.librishuffle.WidgetSet" />
+
+    <inherits name="com.zybnet.autocomplete.AutocompleteWidgetSet" />
 </module>

@@ -65,7 +65,7 @@ public abstract class DashboardEvent {
     public static class CloseOpenWindowsEvent {
     }
 
-    public static class ProfileUpdatedEvent {
+    public static class ItemDetailsEvent {
     }
 
 }

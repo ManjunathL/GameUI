@@ -9,12 +9,21 @@ import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 
@@ -71,9 +80,9 @@ public class CreateProposalsView extends Panel implements View {
 
         vLayout.addComponent(buildHeader());
 
-        Accordion accordion = new Accordion();
-        accordion.addTab(buildForm(), "HEADER");
-        accordion.addTab(buildItemDetails(), "ITEMS");
+        TabSheet accordion = new TabSheet();
+        accordion.addTab(buildForm(), "Header");
+        accordion.addTab(buildItemDetails(), "Items");
 
         vLayout.addComponent(accordion);
 
@@ -111,23 +120,33 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.setSizeFull();
         horizontalLayout1.setSpacing(true);
         verticalLayout.addComponent(horizontalLayout1);
-        verticalLayout.setComponentAlignment(horizontalLayout1, Alignment.MIDDLE_CENTER);
 
+        Label spacingLabel = new Label("&nbsp;", ContentMode.HTML);
+        horizontalLayout1.addComponent(spacingLabel);
+        horizontalLayout1.setExpandRatio(spacingLabel, 1.0f);
+
+
+        Button downloadButton = new Button("Download");
+        downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        horizontalLayout1.addComponent(downloadButton);
+        horizontalLayout1.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
+        
         Button submitButton = new Button("Submit");
         submitButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        submitButton.addStyleName(ValoTheme.BUTTON_TINY);
+        submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
         horizontalLayout1.addComponent(submitButton);
         horizontalLayout1.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
 
         Button saveButton = new Button("Save");
-        saveButton.addStyleName(ValoTheme.BUTTON_TINY);
+        saveButton.addStyleName(ValoTheme.BUTTON_SMALL);
         horizontalLayout1.addComponent(saveButton);
-        horizontalLayout1.setComponentAlignment(saveButton, Alignment.MIDDLE_CENTER);
+        horizontalLayout1.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
 
         Button cancelButton = new Button("Cancel");
-        cancelButton.addStyleName(ValoTheme.BUTTON_TINY);
+        cancelButton.addStyleName(ValoTheme.BUTTON_SMALL);
         horizontalLayout1.addComponent(cancelButton);
-        horizontalLayout1.setComponentAlignment(cancelButton, Alignment.MIDDLE_LEFT);
+        horizontalLayout1.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
 
         return horizontalLayout;
     }
@@ -303,22 +322,35 @@ public class CreateProposalsView extends Panel implements View {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
         verticalLayout.setSpacing(true);
+        verticalLayout.setMargin(new MarginInfo(true, true, true, true));
         verticalLayout.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
+        horizontalLayout.setSpacing(true);
+        horizontalLayout.setDefaultComponentAlignment(Alignment.TOP_RIGHT);
 
-        Button button = new Button(FontAwesome.PLUS_CIRCLE);
-        button.addStyleName(ValoTheme.BUTTON_HUGE);
-        button.addStyleName(ValoTheme.BUTTON_LINK);
+        Label spacingLabel = new Label("&nbsp;", ContentMode.HTML);
+        horizontalLayout.addComponent(spacingLabel);
+        horizontalLayout.setExpandRatio(spacingLabel, 1.0f);
+
+        Button button = new Button("Add Customized");
+        button.addStyleName(ValoTheme.BUTTON_SMALL);
         horizontalLayout.addComponent(button);
-        horizontalLayout.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
-
+        
+        Button standardItemBtn = new Button("Add from Catalogue");
+        standardItemBtn.addStyleName(ValoTheme.BUTTON_SMALL);
+        horizontalLayout.addComponent(standardItemBtn);
+        
         verticalLayout.addComponent(horizontalLayout);
 
         button.addClickListener(clickEvent ->
-                ItemDetailsWindow.open(CreateProposalsView.this.proposal)
+                CustomizedItemDetailsWindow.open(CreateProposalsView.this.proposal)
         );
+        
+        standardItemBtn.addClickListener(clickEvent ->
+        	CatalogItemDetailsWindow.open(CreateProposalsView.this.proposal)
+        );	
 
         grid = new Grid();
         grid.setSizeFull();
@@ -328,11 +360,11 @@ public class CreateProposalsView extends Panel implements View {
         grid.addColumn("Room", String.class);
         grid.addColumn("Category", String.class);
         grid.addColumn("Material & Finish", String.class);
-        grid.addColumn("Make", String.class);
         grid.addColumn("Qty", Integer.class);
         grid.addColumn("Amount", String.class);
         grid.addColumn("Actions", String.class);
 
+        
         verticalLayout.addComponent(grid);
 
         return verticalLayout;

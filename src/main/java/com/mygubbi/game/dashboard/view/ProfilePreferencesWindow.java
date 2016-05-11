@@ -182,7 +182,7 @@ public class ProfilePreferencesWindow extends Window {
                             boolean success = userDataProvider.changePassword(user.getEmail(), oldPassword, newPassword);
                             if (success) {
                                 NotificationUtil.showNotification("Password changed successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                                DashboardEventBus.post(new DashboardEvent.ProfileUpdatedEvent());
+                                DashboardEventBus.post(new DashboardEvent.ItemDetailsEvent());
                                 close();
                             } else {
                                 NotificationUtil.showNotification("Incorrect password, please check!", NotificationUtil.STYLE_BAR_ERROR_SMALL);

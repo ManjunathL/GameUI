@@ -1,0 +1,56 @@
+[
+	{
+		"code" : "MDF with PU",
+		"title" : "MDF with PU"
+	},
+	{
+		"code" : "MDF with PU B/W",
+		"title" : "MDF with PU B/W"
+	},
+	{
+		"code" : "PVC Foil",
+		"title" : "PVC Foil"
+	},
+		{
+		"code" : "Glossy Foil",
+		"title" : "Glossy Foil"
+	},
+		{
+		"code" : "PLY/LAM",
+		"title" : "PLY/LAM"
+	},
+		{
+		"code" : "Glossy Laminate/PLY",
+		"title" : "Glossy Laminate/PLY"
+	},
+		{
+		"code" : "Acrylic/MDF",
+		"title" : "Acrylic/MDF"
+	},
+		{
+		"code" : "Glossy Laminate/MDF",
+		"title" : "Glossy Laminate/MDF"
+	},
+		{
+		"code" : "MDF/Mat LAM",
+		"title" : "MDF/Mat LAM"
+	},
+		{
+		"code" : "Solid Wood",
+		"title" : "Solid Wood"
+	},
+			{
+		"code" : "MDF Pre LAM",
+		"title" : "MDF Pre LAM"
+	}
+	,		{
+		"code" : "PLY Pre LAM",
+		"title" : "PLY Pre LAM"
+	},
+			{
+		"code" : "PLY Veneer",
+		"title" : "PLY Veneer"
+	}
+	
+	
+]

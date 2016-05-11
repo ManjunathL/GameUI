@@ -3,7 +3,7 @@ package com.mygubbi.game.dashboard.view;
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent.PostViewChangeEvent;
-import com.mygubbi.game.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
+import com.mygubbi.game.dashboard.event.DashboardEvent.ItemDetailsEvent;
 import com.mygubbi.game.dashboard.event.DashboardEvent.UserLoggedOutEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.vaadin.server.FontAwesome;
@@ -200,7 +200,7 @@ public final class DashboardMenu extends CustomComponent {
 
 
     @Subscribe
-    public void updateUserName(final ProfileUpdatedEvent event) {
+    public void updateUserName(final ItemDetailsEvent event) {
         User user = getCurrentUser();
         settingsItem.setText(user.getName());
     }

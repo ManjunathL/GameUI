@@ -18,8 +18,7 @@ public class Product {
     private String finish;
     private int finishId;
     private String materialFinish;
-    private String make;
-    private int makeId;
+    private String color;
     private int qty;
     private double amount;
     private String type;
@@ -127,20 +126,12 @@ public class Product {
         this.materialFinish = materialFinish;
     }
 
-    public String getMake() {
-        return make;
+    public String getColor() {
+        return color;
     }
 
-    public void setMake(String make) {
-        this.make = make;
-    }
-
-    public int getMakeId() {
-        return makeId;
-    }
-
-    public void setMakeId(int makeId) {
-        this.makeId = makeId;
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public int getQty() {

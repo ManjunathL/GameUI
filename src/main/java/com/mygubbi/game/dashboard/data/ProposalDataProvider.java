@@ -1,11 +1,19 @@
 package com.mygubbi.game.dashboard.data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
+import com.mygubbi.game.dashboard.domain.ProductItem;
+import com.mygubbi.game.dashboard.domain.ProductSuggest;
 import com.mygubbi.game.dashboard.domain.Proposal;
+import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
+
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONObject;
-
-import java.util.HashMap;
 
 /**
  * Created by nitinpuri on 05-04-2016.
@@ -13,9 +21,11 @@ import java.util.HashMap;
 public class ProposalDataProvider {
 
     private DataProviderUtil dataProviderUtil;
+    private ObjectMapper mapper;
 
     public ProposalDataProvider(DataProviderUtil dataProviderUtil) {
         this.dataProviderUtil = dataProviderUtil;
+        this.mapper = new ObjectMapper();
     }
 
     public JSONArray getProposals(String proposalClass) {
@@ -77,4 +87,86 @@ public class ProposalDataProvider {
         proposal.setUploadFolderPath("c://tmp//proposals_data//1234");
         return proposal;
     }
+    
+    /**
+     * Product Section
+     */
+    
+    public List<SimpleComboItem> getComboItems(String type)
+    {
+    	JSONArray array = dataProviderUtil.getResourceArray(type, new HashMap<String, String>());
+    	try
+    	{
+    		SimpleComboItem [] items = this.mapper.readValue(array.toString(), SimpleComboItem[].class);
+    		return Arrays.asList(items);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    		return new ArrayList<SimpleComboItem>();
+    	}
+    }
+    
+    public List<ProductSuggest> getProductSuggestions(String inputTerm)
+    {
+    	JSONArray array = dataProviderUtil.getResourceArray("product_auto_complete", new HashMap<String, String>());
+    	try
+    	{
+    		ProductSuggest [] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
+    		return Arrays.asList(items);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    		return new ArrayList<ProductSuggest>();
+    	}
+    }
+    
+    public List<ProductSuggest> getProductSearchResults(String inputTerm)
+    {
+    	JSONArray array = dataProviderUtil.getResourceArray("product_search_data", new HashMap<String, String>());
+    	try
+    	{
+    		ProductSuggest [] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
+    		return Arrays.asList(items);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    		return new ArrayList<ProductSuggest>();
+    	}
+    }
+    
+    public ProductItem getProduct(int productId)
+    {
+    	JSONArray array = dataProviderUtil.getResourceArray("product_search_data", new HashMap<String, String>());
+    	try
+    	{
+    		ProductItem [] items = this.mapper.readValue(array.toString(), ProductItem[].class);
+    		if ( items.length == 0) return null;
+    		return Arrays.asList(items).get(0);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    		return null;
+    	}
+    }
+    
+    public List<String> getAddonTypes()
+    {
+    	JSONObject obj = dataProviderUtil.getResource("addon_type", new HashMap<String, String>());
+    	try
+    	{
+    		String typeStr = obj.getJSONArray("addon_type").toString();
+    		String [] typeL = this.mapper.readValue(typeStr, String[].class);
+    		return Arrays.asList(typeL);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    		return new ArrayList<String>();
+    	}
+    }
+    
 }

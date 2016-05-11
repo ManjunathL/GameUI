@@ -1,5 +1,13 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.vaadin.gridutil.cell.GridCellFilter;
+
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
@@ -14,18 +22,20 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import org.vaadin.gridutil.cell.GridCellFilter;
+
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @SuppressWarnings("serial")
 public final class ProposalsView extends TabSheet implements View {
@@ -38,8 +48,8 @@ public final class ProposalsView extends TabSheet implements View {
 
     private Grid grid;
 
-    private static final String ACTIVE = "active";
-    private static final String CONVERTED = "converted";
+    private static final String ACTIVE = "draft";
+    private static final String CONVERTED = "submitted";
     private static final String CANCELLED = "cancelled";
     private final VerticalLayout root;
     private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
@@ -70,13 +80,13 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Grid(container);
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
-        grid.setColumnOrder("crmId", "title", "status", "sales", "designer", "amount", "city", "lastUpdatedBy", "creationDate", "completionDate");
-
+        grid.setColumnOrder("crmId", "title", "sales", "designer", "amount", "city", "lastUpdatedBy", "creationDate", "completionDate");
+        grid.setColumns("crmId", "title", "sales", "designer", "amount", "city", "lastUpdatedBy", "creationDate", "completionDate");
+        
         this.filter = new GridCellFilter(grid);
 
         filter.setNumberFilter("amount");
         filter.setTextFilter("title", true, true);
-        filter.setTextFilter("status", true, true);
         filter.setTextFilter("crmId", true, true);
         filter.setTextFilter("lastUpdatedBy", true, true);
         filter.setTextFilter("designer", true, true);

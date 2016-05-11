@@ -1,10 +1,10 @@
 [
   {
-    "class": "active",
-    "count": "20"
+    "class": "draft",
+    "count": "7"
   },
   {
-    "class": "converted",
+    "class": "submitted",
     "count": "20"
   },
   {
