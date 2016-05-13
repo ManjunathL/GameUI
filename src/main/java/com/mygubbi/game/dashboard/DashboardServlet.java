@@ -1,8 +1,9 @@
 package com.mygubbi.game.dashboard;
 
-import javax.servlet.ServletException;
-
+import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.vaadin.server.VaadinServlet;
+
+import javax.servlet.ServletException;
 
 @SuppressWarnings("serial")
 public class DashboardServlet extends VaadinServlet {
@@ -10,6 +11,7 @@ public class DashboardServlet extends VaadinServlet {
     @Override
     protected final void servletInitialized() throws ServletException {
         super.servletInitialized();
+        ConfigHolder.getInstance();
         getService().addSessionInitListener(new DashboardSessionInitListener());
     }
 }

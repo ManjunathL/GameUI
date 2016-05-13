@@ -1,6 +1,7 @@
 package com.mygubbi.game.dashboard.data.dummy;
 
 import com.mygubbi.game.dashboard.data.DataProviderUtil;
+import com.mygubbi.game.dashboard.util.FileUtil;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
@@ -19,7 +20,7 @@ public class FileDataProviderUtil implements DataProviderUtil {
     @Override
     public JSONObject getResource(String urlFrag, Map<String, String> params) {
         try {
-            return new JSONObject(readFile("jsons/" + urlFrag + ".json"));
+            return new JSONObject(new FileUtil().readFile("jsons/" + urlFrag + ".json"));
         } catch (JSONException e) {
             e.printStackTrace();
             throw new RuntimeException("Error parsing file as json: " + urlFrag, e);
@@ -29,7 +30,7 @@ public class FileDataProviderUtil implements DataProviderUtil {
     @Override
     public JSONArray getResourceArray(String urlFrag, Map<String, String> params) {
         try {
-            return new JSONArray(readFile("jsons/" + urlFrag + ".json"));
+            return new JSONArray(new FileUtil().readFile("jsons/" + urlFrag + ".json"));
         } catch (JSONException e) {
             e.printStackTrace();
             throw new RuntimeException("Error parsing file as json: " + urlFrag, e);
@@ -47,25 +48,4 @@ public class FileDataProviderUtil implements DataProviderUtil {
         return getResourceArray(urlFrag, null);
     }
 
-    private String readFile(String path) {
-
-        InputStream in = getClass().getClassLoader().getResourceAsStream(path);
-        if (in != null) {
-            try (BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
-                String l;
-                String val = "";
-                while ((l = r.readLine()) != null) {
-                    val = val + l;
-                }
-
-                return val;
-
-            } catch (IOException e) {
-                throw new RuntimeException("Error reading file: " + path, e);
-            }
-        } else {
-            throw new RuntimeException("Error reading file: " + path);
-        }
-
-    }
 }

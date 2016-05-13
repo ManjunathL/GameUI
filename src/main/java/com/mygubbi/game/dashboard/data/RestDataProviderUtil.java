@@ -1,5 +1,6 @@
 package com.mygubbi.game.dashboard.data;
 
+import com.mygubbi.game.dashboard.config.ConfigHolder;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
@@ -66,7 +67,7 @@ public class RestDataProviderUtil implements DataProviderUtil {
     }
 
     private String getBaseURL() {
-        return "http://localhost:1443/gapi"; //todo: load from config
+        return ConfigHolder.getInstance().getStringValue("restUrl", "");
     }
 
     private String queryParams(Map<String, String> params) {
