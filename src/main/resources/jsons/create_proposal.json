@@ -1,0 +1,10 @@
+{
+  "proposalHeader": {
+    "proposalId": 1234,
+    "createDate": null,
+    "createdBy": null
+  },
+  "products": null,
+  "uploadFolderPath": "c://tmp//proposals_data//1234",
+  "fileAttachments": null
+}

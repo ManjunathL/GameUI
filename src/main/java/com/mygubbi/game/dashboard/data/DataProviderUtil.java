@@ -15,7 +15,7 @@ public interface DataProviderUtil {
 
     JSONArray getResourceArray(String urlFrag, Map<String, String> params);
 
-    JSONObject postResource(String urlFrag, String jsonParams);
+    JSONObject postResource(String urlFrag, String json);
 
     JSONArray postResourceGetMultiple(String urlFrag, String jsonParams);
 }

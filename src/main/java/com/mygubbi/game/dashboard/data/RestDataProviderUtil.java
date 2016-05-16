@@ -40,11 +40,11 @@ public class RestDataProviderUtil implements DataProviderUtil {
     }
 
     @Override
-    public JSONObject postResource(String urlFrag, String jsonParams) {
+    public JSONObject postResource(String urlFrag, String json) {
 
         try {
             return resty.json(getBaseURL() + "/" + urlFrag,
-                    content(jsonParams))
+                    content(json))
                     .object();
 
         } catch (IOException | JSONException e) {

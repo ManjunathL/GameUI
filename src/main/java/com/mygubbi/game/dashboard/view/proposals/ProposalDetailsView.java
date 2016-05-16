@@ -10,10 +10,10 @@ import com.vaadin.ui.themes.ValoTheme;
  * Created by nitinpuri on 05-04-2016.
  */
 public class ProposalDetailsView extends VerticalLayout {
-    private String proposalId;
+    private int proposalId;
     private String title;
 
-    public ProposalDetailsView(String proposalId, String title) {
+    public ProposalDetailsView(int proposalId, String title) {
 
         this.proposalId = proposalId;
         this.title = title;

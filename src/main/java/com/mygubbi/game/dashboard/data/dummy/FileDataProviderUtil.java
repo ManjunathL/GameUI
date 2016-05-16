@@ -39,7 +39,7 @@ public class FileDataProviderUtil implements DataProviderUtil {
     }
 
     @Override
-    public JSONObject postResource(String urlFrag, String jsonParams) {
+    public JSONObject postResource(String urlFrag, String json) {
         return getResource(urlFrag, null);
     }
 

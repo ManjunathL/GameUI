@@ -8,30 +8,10 @@ import java.util.List;
  */
 public final class Proposal {
 
-    private int proposalId;
     private ProposalHeader proposalHeader;
     private List<Product> products;
-    private double amount;
     private String uploadFolderPath;
     private List<FileAttachment> fileAttachments;
-    private Date createDate;
-    private String createdBy;
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public int getProposalId() {
-        return proposalId;
-    }
-
-    public void setProposalId(int proposalId) {
-        this.proposalId = proposalId;
-    }
 
     public ProposalHeader getProposalHeader() {
         return proposalHeader;
@@ -65,19 +45,4 @@ public final class Proposal {
         this.uploadFolderPath = uploadFolderPath;
     }
 
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
 }
