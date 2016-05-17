@@ -3,7 +3,6 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
-import com.mygubbi.game.dashboard.domain.Proposal;
 import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -61,19 +60,17 @@ public class CreateProposalsView extends Panel implements View {
     private Field<?> designContact;
 
     private Grid grid;
-    private Proposal proposal;
     private Label proposalTitleLabel;
     private final BeanFieldGroup<ProposalHeader> binder = new BeanFieldGroup<>(ProposalHeader.class);
     ;
     private Button submitButton;
     private Label draftLabel;
+    private final ProposalHeader proposalHeader;
 
     public CreateProposalsView() {
 
         DashboardEventBus.register(this);
-
-        this.proposal = proposalDataProvider.createProposal();
-        ProposalHeader proposalHeader = this.proposal.getProposalHeader();
+        proposalHeader = proposalDataProvider.createProposal();
         initHeader(proposalHeader);
         this.binder.setItemDataSource(proposalHeader);
 
@@ -144,7 +141,7 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
 
         submitButton = new Button("Submit");
-        submitButton.setVisible(!"active".equals(proposal.getProposalHeader().getStatus()));
+        submitButton.setVisible(!"active".equals(proposalHeader.getStatus()));
         submitButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
         submitButton.addClickListener(this::submit);
@@ -172,7 +169,7 @@ public class CreateProposalsView extends Panel implements View {
                 "Save & Close", "Cancel", "Close", dialog -> {
                     if (!dialog.isCanceled()) {
                         if (dialog.isConfirmed()) {
-                            boolean success = proposalDataProvider.saveProposal(proposal.getProposalHeader());
+                            boolean success = proposalDataProvider.saveProposal(proposalHeader);
                             if (success) {
                                 NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                             } else {
@@ -186,11 +183,10 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void save(Button.ClickEvent clickEvent) {
-        ProposalHeader header = proposal.getProposalHeader();
-        if (StringUtils.isEmpty(header.getProposalTitle())) {
-            header.setProposalTitle("New Proposal");
+        if (StringUtils.isEmpty(proposalHeader.getProposalTitle())) {
+            proposalHeader.setProposalTitle("New Proposal");
         }
-        boolean success = proposalDataProvider.saveProposal(header);
+        boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
         if (success) {
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
@@ -203,11 +199,10 @@ public class CreateProposalsView extends Panel implements View {
     private void submit(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
-            ProposalHeader header = proposal.getProposalHeader();
-            header.setStatus("active");
-            boolean success = proposalDataProvider.saveProposal(header);
+            proposalHeader.setStatus("active");
+            boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
-                success = proposalDataProvider.submitProposal(header.getProposalId());
+                success = proposalDataProvider.submitProposal(proposalHeader.getProposalId());
                 if (success) {
                     submitButton.setVisible(false);
                     draftLabel.setValue("[ Active ]");
@@ -449,11 +444,11 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.addComponent(horizontalLayout);
 
         button.addClickListener(clickEvent ->
-                CustomizedItemDetailsWindow.open(CreateProposalsView.this.proposal)
+                CustomizedProductDetailsWindow.open(CreateProposalsView.this.proposalHeader)
         );
 
         standardItemBtn.addClickListener(clickEvent ->
-                CatalogItemDetailsWindow.open(CreateProposalsView.this.proposal)
+                CatalogItemDetailsWindow.open(CreateProposalsView.this.proposalHeader)
         );
 
         grid = new Grid();

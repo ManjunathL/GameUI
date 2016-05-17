@@ -4,7 +4,8 @@ public class SimpleComboItem {
 	
 	public String code;
 	public String title;
-	
+	public String type;
+
 	
 	public SimpleComboItem() {
 	}
@@ -30,5 +31,13 @@ public class SimpleComboItem {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

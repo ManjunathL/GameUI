@@ -1,0 +1,26 @@
+[
+  {
+    "code": "LAMINATE",
+    "title": "Laminate"
+  },
+  {
+    "code": "FOIL",
+    "title": "Foil"
+  },
+  {
+    "code": "PAINT",
+    "title": "Paint"
+  },
+  {
+    "code": "ACRYLIC",
+    "title": "Acrylic"
+  },
+  {
+    "code": "VENEER",
+    "title": "Veneer"
+  },
+  {
+    "code": "SOLID_WOOD",
+    "title": "Solid Wood"
+  }
+]

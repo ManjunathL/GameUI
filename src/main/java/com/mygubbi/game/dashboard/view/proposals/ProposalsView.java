@@ -60,12 +60,12 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Grid(container);
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
-        grid.setColumns("crmId", "proposalTitle", "status", "salesContactName", "designContactName", "amount", "createDate", "createdBy");
+        grid.setColumns("crmId", "quotationNo", "proposalTitle", "status", "salesContactName", "designContactName", "amount", "createDate", "createdBy");
 
         List<Grid.Column> columns = grid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("CRM #");
-
+        columns.get(idx++).setHeaderCaption("Quotation #");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Status");
         columns.get(idx++).setHeaderCaption("Sales");
@@ -79,6 +79,7 @@ public final class ProposalsView extends TabSheet implements View {
         filter.setNumberFilter("amount");
         filter.setTextFilter("proposalTitle", true, false);
         filter.setTextFilter("crmId", true, true);
+        filter.setTextFilter("quotationNo", true, true);
         filter.setTextFilter("status", true, true);
         filter.setTextFilter("createdBy", true, true);
         filter.setTextFilter("designContactName", true, true);

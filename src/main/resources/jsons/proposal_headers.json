@@ -2,6 +2,7 @@
   {
     "proposalId": 100,
     "crmId": "A0100",
+    "quotationNo": "T100",
     "proposalTitle": "Kitchen and Wardrobes for Pradeep Dubey, Prestige Ferns",
     "createDate": "2016-02-28 00:00:00",
     "status": "draft",
@@ -17,6 +18,7 @@
   {
     "proposalId": 101,
     "crmId": "A0101",
+    "quotationNo": "T101",
     "proposalTitle": "Wardrobes for Harvinder Kaur, Sobha City",
     "createDate": "2016-01-28 00:00:00",
     "status": "active",
@@ -32,6 +34,7 @@
   {
     "proposalId": 102,
     "crmId": "A0102",
+    "quotationNo": "T102",
     "proposalTitle": "Kitchen and Wardrobes for Nisha K, Heritage County",
     "createDate": "2016-04-20 00:00:00",
     "status": "draft",
@@ -47,6 +50,7 @@
   {
     "proposalId": 103,
     "crmId": "A0103",
+    "quotationNo": "T103",
     "proposalTitle": "Crockery Unit, Kitchen, Wardrobes and Shoe Rack for Rajiv Khanna, Purva Whitehall",
     "createDate": "2016-02-28 00:00:00",
     "status": "draft",
@@ -62,6 +66,7 @@
   {
     "proposalId": 104,
     "crmId": "A0104",
+    "quotationNo": "T104",
     "proposalTitle": "Shoe Rack and Wardrobes for Sandeep Pandey, Purva Vantage",
     "createDate": "2016-01-15 00:00:00",
     "status": "active",
@@ -77,6 +82,7 @@
   {
     "proposalId": 105,
     "crmId": "A0105",
+    "quotationNo": "T105",
     "proposalTitle": "Kitchen, Wardrobes and TV Unit for Sanjay Mishra, SJR Watermark",
     "createDate": "2016-03-28 00:00:00",
     "status": "draft",
@@ -92,6 +98,7 @@
   {
     "proposalId": 106,
     "crmId": "A0106",
+    "quotationNo": "T106",
     "proposalTitle": "Wardrobes for Anil Sharma, Prestige Shantiniketan",
     "createDate": "2016-03-09 00:00:00",
     "status": "active",

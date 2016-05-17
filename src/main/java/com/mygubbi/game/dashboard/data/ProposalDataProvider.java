@@ -17,6 +17,7 @@ import com.mygubbi.game.dashboard.domain.Proposal;
 import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
 
 import com.mygubbi.game.dashboard.domain.ProposalHeader;
+import com.vaadin.shared.ui.colorpicker.Color;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
@@ -56,43 +57,58 @@ public class ProposalDataProvider {
         return proposalHeaderList;
     }
 
-    public JSONObject getProposal(String proposalId) {
-        return dataProviderUtil.getResource("proposal", new HashMap<String, String>(){
+    public JSONObject getProposalHeader(String proposalId) {
+        return dataProviderUtil.getResource("proposal_header", new HashMap<String, String>(){
             {
                 put("proposalId", proposalId);
             }
         });
     }
 
-    public JSONArray getProposalComments(String proposalId) {
-        return dataProviderUtil.getResourceArray("proposal_comments", new HashMap<String, String>(){
+    public JSONArray getProposalProducts(String proposalId) {
+        return dataProviderUtil.getResourceArray("proposal_products", new HashMap<String, String>(){
             {
                 put("proposalId", proposalId);
             }
         });
     }
 
-    public JSONArray getProposalLineItems(String proposalId) {
-        return dataProviderUtil.getResourceArray("proposal_line_items", new HashMap<String, String>(){
+    public JSONArray getProposalProductDetails(String proposalId, String productId) {
+        return dataProviderUtil.getResourceArray("proposal_product_details", new HashMap<String, String>(){
+            {
+                put("proposalId", proposalId);
+                put("productId", proposalId);
+            }
+        });
+    }
+
+    public JSONArray getProposalProductDocuments(String proposalId, String productId) {
+        return dataProviderUtil.getResourceArray("proposal_product_documents", new HashMap<String, String>(){
+            {
+                put("proposalId", proposalId);
+                put("productId", proposalId);
+            }
+        });
+    }
+
+    public JSONArray getProposalDocuments(String proposalId) {
+        return dataProviderUtil.getResourceArray("proposal_documents", new HashMap<String, String>(){
             {
                 put("proposalId", proposalId);
             }
         });
     }
-
-    public JSONArray getProposalClasses() {
-        return dataProviderUtil.getResourceArray("proposal_classes", new HashMap<String, String>());
-    }
-
-    public Proposal createProposal() {
+//todo: add userid to all post calls
+    public ProposalHeader createProposal() {
 
         try {
-            JSONObject jsonObject = dataProviderUtil.postResource("create_proposal", "");
-            return this.mapper.readValue(jsonObject.toString(), Proposal.class);
+            JSONObject jsonObject = dataProviderUtil.postResource("create_proposal", "{\"title\": \"New Proposal\"}");
+            return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);
         }
     }
+//todo: add calls for adding documents, one each - proposal/add.file
 
     public boolean saveProposal(ProposalHeader proposalHeader) {
 
@@ -105,7 +121,7 @@ public class ProposalDataProvider {
             throw new RuntimeException("Couldn't save proposal", e);
         }
     }
-    
+    //todo: handle status=error and error=<message description>
     public boolean submitProposal(int proposalId) {
 
         try {
@@ -128,10 +144,25 @@ public class ProposalDataProvider {
         }
     }
 
+    public boolean cancelProposal(int proposalId) {
+
+        try {
+            JSONObject jsonObject = dataProviderUtil.postResource("cancel_proposal", "\"proposalId\": " + proposalId);
+            return jsonObject.has("status") && jsonObject.getString("status").equals("success");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Couldn't cancel proposal", e);
+        }
+    }
+
     /**
      * Product Section
      */
-    
+
+    public List<Color> getColorSwatch(String shutterFinishCode) {
+        return null;
+    }
+
     public List<SimpleComboItem> getComboItems(String type)
     {
     	JSONArray array = dataProviderUtil.getResourceArray(type, new HashMap<String, String>());
@@ -146,6 +177,24 @@ public class ProposalDataProvider {
     		return new ArrayList<SimpleComboItem>();
     	}
     }
+
+    public JSONArray mapAndUpdateProduct(int proposalId, String filePath) {
+        return null; //product json containing modules, addons
+    }
+
+    public JSONArray updateProduct(String productJson) { //includes modules json, header and addons json
+        return null;
+    }
+
+    public JSONArray getMGModules(String importedModuleCode) { //includes both module code nad default code
+        return null;//includes module description, image, code, dimensions
+    }
+
+    public JSONArray getModulePrice(String moduleCode, String carcassMaterial, String shutterFinish, String makeType) { //includes both module code nad default code
+        return null;//gives back price
+    }
+
+
     
     public List<ProductSuggest> getProductSuggestions(String inputTerm)
     {
@@ -211,7 +260,7 @@ public class ProposalDataProvider {
 
     public static void main(String[] args) {
         ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
-        Proposal proposal = proposalDataProvider.createProposal();
+        ProposalHeader proposal = proposalDataProvider.createProposal();
 
         try {
             proposalDataProvider.mapper.writeValue(System.out, proposal);

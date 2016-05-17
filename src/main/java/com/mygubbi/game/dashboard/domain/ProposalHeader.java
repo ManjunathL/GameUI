@@ -16,6 +16,7 @@ public class ProposalHeader {
     private Date createDate;
     private String createdBy;
     private String status;
+    private String folderPath;
 
     private String customerId;
     private String customerName;
@@ -262,5 +263,13 @@ public class ProposalHeader {
 
     public void setDesignContactPhone(String designContactPhone) {
         this.designContactPhone = designContactPhone;
+    }
+
+    public String getFolderPath() {
+        return folderPath;
+    }
+
+    public void setFolderPath(String folderPath) {
+        this.folderPath = folderPath;
     }
 }

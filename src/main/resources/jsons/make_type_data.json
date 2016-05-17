@@ -1,0 +1,14 @@
+[
+	{
+		"code" : "ECONOMY",
+		"title" : "Economy"
+	},
+	{
+		"code" : "STANDARD",
+		"title" : "Standard"
+	},
+	{
+		"code" : "LUXURY",
+		"title" : "Luxury"
+	}
+]

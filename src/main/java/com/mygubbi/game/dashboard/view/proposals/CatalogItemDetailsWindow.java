@@ -8,6 +8,7 @@ import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.ProductItem;
 import com.mygubbi.game.dashboard.domain.ProductSuggest;
 import com.mygubbi.game.dashboard.domain.Proposal;
+import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.vaadin.event.FieldEvents;
@@ -242,8 +243,10 @@ public class CatalogItemDetailsWindow extends Window {
         return footer;
     }
 
-    public static void open(Proposal proposal) {
+    public static void open(ProposalHeader proposalHeader) {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
+        Proposal proposal = new Proposal();
+        proposal.setProposalHeader(proposalHeader);
         Window w = new CatalogItemDetailsWindow(proposal);
         UI.getCurrent().addWindow(w);
         w.focus();
