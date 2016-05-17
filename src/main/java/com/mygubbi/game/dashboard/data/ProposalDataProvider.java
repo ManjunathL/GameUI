@@ -94,10 +94,10 @@ public class ProposalDataProvider {
         }
     }
 
-    public boolean saveProposal(Proposal proposal) {
+    public boolean saveProposal(ProposalHeader proposalHeader) {
 
         try {
-            String proposalJson = this.mapper.writeValueAsString(proposal);
+            String proposalJson = this.mapper.writeValueAsString(proposalHeader);
             JSONObject jsonObject = dataProviderUtil.postResource("save_proposal", proposalJson);
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException | JsonProcessingException e) {
@@ -109,11 +109,11 @@ public class ProposalDataProvider {
     public boolean submitProposal(int proposalId) {
 
         try {
-            JSONObject jsonObject = dataProviderUtil.postResource("save_proposal", "\"proposalId\": " + proposalId);
+            JSONObject jsonObject = dataProviderUtil.postResource("submit_proposal", "\"proposalId\": " + proposalId);
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException e) {
             e.printStackTrace();
-            throw new RuntimeException("Couldn't save proposal", e);
+            throw new RuntimeException("Couldn't activate proposal", e);
         }
     }
 

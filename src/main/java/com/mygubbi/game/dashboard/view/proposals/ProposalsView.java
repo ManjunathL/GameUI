@@ -60,7 +60,7 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Grid(container);
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
-        grid.setColumns("crmId", "proposalTitle", "status", "salesContact.name", "designContact.name", "amount", "createDate", "createdBy");
+        grid.setColumns("crmId", "proposalTitle", "status", "salesContactName", "designContactName", "amount", "createDate", "createdBy");
 
         List<Grid.Column> columns = grid.getColumns();
         int idx = 0;
@@ -81,8 +81,8 @@ public final class ProposalsView extends TabSheet implements View {
         filter.setTextFilter("crmId", true, true);
         filter.setTextFilter("status", true, true);
         filter.setTextFilter("createdBy", true, true);
-        filter.setTextFilter("designContact.name", true, true);
-        filter.setTextFilter("salesContact.name", true, true);
+        filter.setTextFilter("designContactName", true, true);
+        filter.setTextFilter("salesContactName", true, true);
         filter.setDateFilter("createDate");
 
         grid.addSelectionListener(selectionEvent -> {
@@ -103,8 +103,6 @@ public final class ProposalsView extends TabSheet implements View {
 
     private BeanItemContainer<ProposalHeader> buildDataContainer(List<ProposalHeader> proposalHeaders) {
         BeanItemContainer<ProposalHeader> container = new BeanItemContainer<>(ProposalHeader.class);
-        container.addNestedContainerProperty("salesContact.name");
-        container.addNestedContainerProperty("designContact.name");
         container.addAll(proposalHeaders);
         return container;
     }

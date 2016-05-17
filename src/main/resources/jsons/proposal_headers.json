@@ -7,16 +7,12 @@
     "status": "draft",
     "amount": 200000,
     "createdBy": "Gaurav Sharma",
-    "salesContact": {
-      "name": "Vimal K",
-      "email": "abc@og.com",
-      "phone": "000"
-    },
-    "designContact": {
-      "name": "Gaurav Sharma",
-      "email": "abc@og.com",
-      "phone": "000"
-    }
+    "salesContactName": "Vimal K",
+    "salesContactEmail": "abc@og.com",
+    "salesContactPhone": "000",
+    "designContactName": "Gaurav Sharma",
+    "designContactEmail": "abc@og.com",
+    "designContactPhone": "000"
   },
   {
     "proposalId": 101,
@@ -26,12 +22,12 @@
     "status": "active",
     "amount": 300000,
     "createdBy": "Gaurav Sharma",
-    "salesContact": {
-      "name": "Vimal K"
-    },
-    "designContact": {
-      "name": "Gaurav Sharma"
-    }
+    "salesContactName": "Vimal K",
+    "salesContactEmail": "abc@og.com",
+    "salesContactPhone": "000",
+    "designContactName": "Gaurav Sharma",
+    "designContactEmail": "abc@og.com",
+    "designContactPhone": "000"
   },
   {
     "proposalId": 102,
@@ -41,12 +37,12 @@
     "status": "draft",
     "amount": 350000,
     "createdBy": "Gaurav Sharma",
-    "salesContact": {
-      "name": "Vimal K"
-    },
-    "designContact": {
-      "name": "Gaurav Sharma"
-    }
+    "salesContactName": "Vimal K",
+    "salesContactEmail": "abc@og.com",
+    "salesContactPhone": "000",
+    "designContactName": "Gaurav Sharma",
+    "designContactEmail": "abc@og.com",
+    "designContactPhone": "000"
   },
   {
     "proposalId": 103,
@@ -56,12 +52,12 @@
     "status": "draft",
     "amount": 180000,
     "createdBy": "Gaurav Sharma",
-    "salesContact": {
-      "name": "Vimal K"
-    },
-    "designContact": {
-      "name": "Gaurav Sharma"
-    }
+    "salesContactName": "Vimal K",
+    "salesContactEmail": "abc@og.com",
+    "salesContactPhone": "000",
+    "designContactName": "Gaurav Sharma",
+    "designContactEmail": "abc@og.com",
+    "designContactPhone": "000"
   },
   {
     "proposalId": 104,
@@ -71,12 +67,12 @@
     "status": "active",
     "amount": 404000,
     "createdBy": "Gaurav Sharma",
-    "salesContact": {
-      "name": "Vimal K"
-    },
-    "designContact": {
-      "name": "Gaurav Sharma"
-    }
+    "salesContactName": "Vimal K",
+    "salesContactEmail": "abc@og.com",
+    "salesContactPhone": "000",
+    "designContactName": "Gaurav Sharma",
+    "designContactEmail": "abc@og.com",
+    "designContactPhone": "000"
   },
   {
     "proposalId": 105,
@@ -86,12 +82,12 @@
     "status": "draft",
     "amount": 280000,
     "createdBy": "Gaurav Sharma",
-    "salesContact": {
-      "name": "Vimal K"
-    },
-    "designContact": {
-      "name": "Gaurav Sharma"
-    }
+    "salesContactName": "Vimal K",
+    "salesContactEmail": "abc@og.com",
+    "salesContactPhone": "000",
+    "designContactName": "Gaurav Sharma",
+    "designContactEmail": "abc@og.com",
+    "designContactPhone": "000"
   },
   {
     "proposalId": 106,
@@ -101,11 +97,11 @@
     "status": "active",
     "amount": 195000,
     "createdBy": "Gaurav Sharma",
-    "salesContact": {
-      "name": "Vimal K"
-    },
-    "designContact": {
-      "name": "Gaurav Sharma"
-    }
+    "salesContactName": "Vimal K",
+    "salesContactEmail": "abc@og.com",
+    "salesContactPhone": "000",
+    "designContactName": "Gaurav Sharma",
+    "designContactEmail": "abc@og.com",
+    "designContactPhone": "000"
   }
 ]

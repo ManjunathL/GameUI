@@ -17,10 +17,28 @@ public class ProposalHeader {
     private String createdBy;
     private String status;
 
-    private CustomerDetails customerDetails;
-    private ProjectDetails projectDetails;
-    private MGContact salesContact;
-    private MGContact designContact;
+    private String customerId;
+    private String customerName;
+    private String customerAddressLine1;
+    private String customerAddressLine2;
+    private String customerAddressLine3;
+    private String customerCity;
+    private String customerEmail;
+    private String customerPhone1;
+    private String customerPhone2;
+
+    private String projectName;
+    private String projectAddressLine1;
+    private String projectAddressLine2;
+    private String projectCity;
+
+    private String salesContactName;
+    private String salesContactEmail;
+    private String salesContactPhone;
+
+    private String designContactName;
+    private String designContactEmail;
+    private String designContactPhone;
 
     public int getProposalId() {
         return proposalId;
@@ -94,215 +112,155 @@ public class ProposalHeader {
         this.createdBy = createdBy;
     }
 
-    public CustomerDetails getCustomerDetails() {
-        return customerDetails;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomerDetails(CustomerDetails customerDetails) {
-        this.customerDetails = customerDetails;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
-    public ProjectDetails getProjectDetails() {
-        return projectDetails;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setProjectDetails(ProjectDetails projectDetails) {
-        this.projectDetails = projectDetails;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
-    public MGContact getSalesContact() {
-        return salesContact;
+    public String getCustomerAddressLine1() {
+        return customerAddressLine1;
     }
 
-    public void setSalesContact(MGContact salesContact) {
-        this.salesContact = salesContact;
+    public void setCustomerAddressLine1(String customerAddressLine1) {
+        this.customerAddressLine1 = customerAddressLine1;
     }
 
-    public MGContact getDesignContact() {
-        return designContact;
+    public String getCustomerAddressLine2() {
+        return customerAddressLine2;
     }
 
-    public void setDesignContact(MGContact designContact) {
-        this.designContact = designContact;
+    public void setCustomerAddressLine2(String customerAddressLine2) {
+        this.customerAddressLine2 = customerAddressLine2;
     }
 
-    public static class CustomerDetails {
-        private String customerId;
-        private String customerName;
-        private String addressLine1;
-        private String addressLine2;
-        private String addressLine3;
-        private String city;
-        private String email;
-        private String phone1;
-        private String phone2;
-
-        public CustomerDetails() {
-        }
-
-        public String getCustomerId() {
-            return customerId;
-        }
-
-        public void setCustomerId(String customerId) {
-            this.customerId = customerId;
-        }
-
-        public String getCustomerName() {
-            return customerName;
-        }
-
-        public void setCustomerName(String customerName) {
-            this.customerName = customerName;
-        }
-
-        public String getAddressLine1() {
-            return addressLine1;
-        }
-
-        public void setAddressLine1(String addressLine1) {
-            this.addressLine1 = addressLine1;
-        }
-
-        public String getAddressLine2() {
-            return addressLine2;
-        }
-
-        public void setAddressLine2(String addressLine2) {
-            this.addressLine2 = addressLine2;
-        }
-
-        public String getAddressLine3() {
-            return addressLine3;
-        }
-
-        public void setAddressLine3(String addressLine3) {
-            this.addressLine3 = addressLine3;
-        }
-
-        public String getCity() {
-            return city;
-        }
-
-        public void setCity(String city) {
-            this.city = city;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public String getPhone1() {
-            return phone1;
-        }
-
-        public void setPhone1(String phone1) {
-            this.phone1 = phone1;
-        }
-
-        public String getPhone2() {
-            return phone2;
-        }
-
-        public void setPhone2(String phone2) {
-            this.phone2 = phone2;
-        }
+    public String getCustomerAddressLine3() {
+        return customerAddressLine3;
     }
 
-    public static class ProjectDetails {
-        private String projectName;
-        private String modelType;
-        private String drawingNo;
-        private String addressLine1;
-        private String addressLine2;
-        private String city;
-
-        public ProjectDetails() {
-        }
-
-        public String getProjectName() {
-            return projectName;
-        }
-
-        public void setProjectName(String projectName) {
-            this.projectName = projectName;
-        }
-
-        public String getModelType() {
-            return modelType;
-        }
-
-        public void setModelType(String modelType) {
-            this.modelType = modelType;
-        }
-
-        public String getDrawingNo() {
-            return drawingNo;
-        }
-
-        public void setDrawingNo(String drawingNo) {
-            this.drawingNo = drawingNo;
-        }
-
-        public String getAddressLine1() {
-            return addressLine1;
-        }
-
-        public void setAddressLine1(String addressLine1) {
-            this.addressLine1 = addressLine1;
-        }
-
-        public String getAddressLine2() {
-            return addressLine2;
-        }
-
-        public void setAddressLine2(String addressLine2) {
-            this.addressLine2 = addressLine2;
-        }
-
-        public String getCity() {
-            return city;
-        }
-
-        public void setCity(String city) {
-            this.city = city;
-        }
+    public void setCustomerAddressLine3(String customerAddressLine3) {
+        this.customerAddressLine3 = customerAddressLine3;
     }
 
-    public static class MGContact {
-        private String name;
-        private String email;
-        private String phone;
+    public String getCustomerCity() {
+        return customerCity;
+    }
 
-        public MGContact() {
-        }
+    public void setCustomerCity(String customerCity) {
+        this.customerCity = customerCity;
+    }
 
-        public String getName() {
-            return name;
-        }
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
 
-        public void setName(String name) {
-            this.name = name;
-        }
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
 
-        public String getEmail() {
-            return email;
-        }
+    public String getCustomerPhone1() {
+        return customerPhone1;
+    }
 
-        public void setEmail(String email) {
-            this.email = email;
-        }
+    public void setCustomerPhone1(String customerPhone1) {
+        this.customerPhone1 = customerPhone1;
+    }
 
-        public String getPhone() {
-            return phone;
-        }
+    public String getCustomerPhone2() {
+        return customerPhone2;
+    }
 
-        public void setPhone(String phone) {
-            this.phone = phone;
-        }
+    public void setCustomerPhone2(String customerPhone2) {
+        this.customerPhone2 = customerPhone2;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getProjectAddressLine1() {
+        return projectAddressLine1;
+    }
+
+    public void setProjectAddressLine1(String projectAddressLine1) {
+        this.projectAddressLine1 = projectAddressLine1;
+    }
+
+    public String getProjectAddressLine2() {
+        return projectAddressLine2;
+    }
+
+    public void setProjectAddressLine2(String projectAddressLine2) {
+        this.projectAddressLine2 = projectAddressLine2;
+    }
+
+    public String getProjectCity() {
+        return projectCity;
+    }
+
+    public void setProjectCity(String projectCity) {
+        this.projectCity = projectCity;
+    }
+
+    public String getSalesContactName() {
+        return salesContactName;
+    }
+
+    public void setSalesContactName(String salesContactName) {
+        this.salesContactName = salesContactName;
+    }
+
+    public String getSalesContactEmail() {
+        return salesContactEmail;
+    }
+
+    public void setSalesContactEmail(String salesContactEmail) {
+        this.salesContactEmail = salesContactEmail;
+    }
+
+    public String getSalesContactPhone() {
+        return salesContactPhone;
+    }
+
+    public void setSalesContactPhone(String salesContactPhone) {
+        this.salesContactPhone = salesContactPhone;
+    }
+
+    public String getDesignContactName() {
+        return designContactName;
+    }
+
+    public void setDesignContactName(String designContactName) {
+        this.designContactName = designContactName;
+    }
+
+    public String getDesignContactEmail() {
+        return designContactEmail;
+    }
+
+    public void setDesignContactEmail(String designContactEmail) {
+        this.designContactEmail = designContactEmail;
+    }
+
+    public String getDesignContactPhone() {
+        return designContactPhone;
+    }
+
+    public void setDesignContactPhone(String designContactPhone) {
+        this.designContactPhone = designContactPhone;
     }
 }

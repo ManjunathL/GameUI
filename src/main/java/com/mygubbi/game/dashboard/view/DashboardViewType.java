@@ -3,7 +3,7 @@ package com.mygubbi.game.dashboard.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mygubbi.game.dashboard.view.Catalog.CatalogView;
+import com.mygubbi.game.dashboard.view.catalog.CatalogView;
 import com.mygubbi.game.dashboard.view.proposals.CreateProposalsView;
 import com.mygubbi.game.dashboard.view.proposals.ProposalsView;
 import com.vaadin.navigator.View;
