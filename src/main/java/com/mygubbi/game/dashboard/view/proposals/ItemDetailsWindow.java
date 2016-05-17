@@ -64,7 +64,7 @@ public class ItemDetailsWindow extends Window {
     /**
      * Add Item Section
      */
-    private TextField itemTitleField;
+/*    private TextField itemTitleField;
     private ComboBox productSelection;
     private ComboBox carcassMaterialSelection;
     private ComboBox colorSelection;
@@ -124,9 +124,9 @@ public class ItemDetailsWindow extends Window {
         Responsive.makeResponsive(accordion);
     }
 
-    /*
+    *//*
      * Add Item basic section
-     */
+     *//*
     private FormLayout buildAddItemBasicFormLeft() 
     {
         FormLayout formLayoutLeft = new FormLayout();
@@ -171,9 +171,9 @@ public class ItemDetailsWindow extends Window {
         return formLayoutRight;
     }
 
-    /*
+    *//*
      * Upload section
-     */
+     *//*
     private Component buildUploadForm()
     {
     	FormLayout formLayout = new FormLayout();
@@ -234,9 +234,9 @@ public class ItemDetailsWindow extends Window {
         return formLayout;
     }
     
-    /*
+    *//*
      * Modules Section
-     */
+     *//*
     List<String> carcassMaterialL = new ArrayList<>();
     List<String> shutterMaterialL = new ArrayList<>();
     List<String> finishL = new ArrayList<>();
@@ -422,7 +422,7 @@ public class ItemDetailsWindow extends Window {
     	
     	List<Module> moduleL = new ArrayList<>(); 
     	Module module = new Module();
-    	module.setSeqNo(1);
+    	module.setSeq(1);
     	module.setImportedModuleCode("ADD1_536");
         module.setMgModuleCode("K2DU4572");
         module.setDescription("Kitche 2 drawer unit");
@@ -443,7 +443,7 @@ public class ItemDetailsWindow extends Window {
         moduleL.add(module);
         
         Module module2 = new Module();
-        module2.setSeqNo(2);
+        module2.setSeq(2);
         module2.setImportedModuleCode("FUL1_536");
         module2.setMgModuleCode("K2DU4571");
         module2.setDescription("Kitche 2 drawer unit");
@@ -464,7 +464,7 @@ public class ItemDetailsWindow extends Window {
         moduleL.add(module2);
         
         Module module3 = new Module();
-        module3.setSeqNo(3);
+        module3.setSeq(3);
         module3.setImportedModuleCode("FUL1_537");
         module3.setMgModuleCode("");
         module3.setDescription("Kitche 2 drawer unit");
@@ -487,9 +487,9 @@ public class ItemDetailsWindow extends Window {
 		return moduleL;
 	}
 
-    /*
+    *//*
      * Addons section
-     */
+     *//*
     
 	private Component buildAddonsForm() 
     {
@@ -674,9 +674,9 @@ public class ItemDetailsWindow extends Window {
 		return addons;
 	}
 
-	/*
+	*//*
 	 * Summary Section 
-	 */
+	 *//*
 	
     private Component buildSummaryForm() 
     {
@@ -689,9 +689,9 @@ public class ItemDetailsWindow extends Window {
         return verticalLayout;
     }
 
-    /*
+    *//*
      * Attachment section
-     */
+     *//*
     private Component buildAttachmentsForm() 
     {
         VerticalLayout verticalLayout = new VerticalLayout();
@@ -787,5 +787,5 @@ public class ItemDetailsWindow extends Window {
     	SimpleComboItem selectedProductType = (container.size() > 0) ? container.getItemIds().get(0) : null;
     	select.setValue(selectedProductType);
     	return select; 
-    }
+    }*/
 }

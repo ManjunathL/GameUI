@@ -1,57 +1,61 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by nitinpuri on 01-05-2016.
  */
 public class Product {
-    private int lineItemId;
-    private int seqNo;
-    private String description;
+
+    public enum TYPE {CUSTOM, CATALOGUE};
+
+    private int productId;
+    private int seq;
+    private String title;
+    private String productCategory;
+    private String productCategoryCode;
     private String room;
-    private String category;
+    private String roomCode;
+    private String makeType;
+    private String makeTypeCode;
     private String carcassMaterial;
-    private int carcassMaterialId;
-    private String shutterMaterial;
-    private int shutterMaterialId;
-    private String finish;
-    private int finishId;
-    private String materialFinish;
-    private String color;
-    private int qty;
+    private String carcassMaterialCode;
+    private String finishType;
+    private String finishTypeCode;
+    private String shutterFinish;
+    private String shutterFinishCode;
     private double amount;
     private String type;
 
-    private String uploadPath;
-    private String uploadFileName;
+    private String quoteFilePath;
 
-    private List<Module> modules;
-    private List<Addon> addons;
-    private List<FileAttachment> fileAttachmentList;
+    private List<Module> modules = new ArrayList<>();
+    private List<Addon> addons = new ArrayList<>();
+    private List<FileAttachment> fileAttachmentList = new ArrayList<>();
 
-    public int getLineItemId() {
-        return lineItemId;
+    public int getProductId() {
+        return productId;
     }
 
-    public void setLineItemId(int lineItemId) {
-        this.lineItemId = lineItemId;
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
-    public int getSeqNo() {
-        return seqNo;
+    public int getSeq() {
+        return seq;
     }
 
-    public void setSeqNo(int seqNo) {
-        this.seqNo = seqNo;
+    public void setSeq(int seq) {
+        this.seq = seq;
     }
 
-    public String getDescription() {
-        return description;
+    public String getTitle() {
+        return title;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getRoom() {
@@ -62,12 +66,12 @@ public class Product {
         this.room = room;
     }
 
-    public String getCategory() {
-        return category;
+    public String getProductCategory() {
+        return productCategory;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
     }
 
     public String getCarcassMaterial() {
@@ -78,68 +82,20 @@ public class Product {
         this.carcassMaterial = carcassMaterial;
     }
 
-    public int getCarcassMaterialId() {
-        return carcassMaterialId;
+    public String getShutterFinish() {
+        return shutterFinish;
     }
 
-    public void setCarcassMaterialId(int carcassMaterialId) {
-        this.carcassMaterialId = carcassMaterialId;
+    public void setShutterFinish(String shutterFinish) {
+        this.shutterFinish = shutterFinish;
     }
 
-    public String getShutterMaterial() {
-        return shutterMaterial;
+    public String getFinishType() {
+        return finishType;
     }
 
-    public void setShutterMaterial(String shutterMaterial) {
-        this.shutterMaterial = shutterMaterial;
-    }
-
-    public int getShutterMaterialId() {
-        return shutterMaterialId;
-    }
-
-    public void setShutterMaterialId(int shutterMaterialId) {
-        this.shutterMaterialId = shutterMaterialId;
-    }
-
-    public String getFinish() {
-        return finish;
-    }
-
-    public void setFinish(String finish) {
-        this.finish = finish;
-    }
-
-    public int getFinishId() {
-        return finishId;
-    }
-
-    public void setFinishId(int finishId) {
-        this.finishId = finishId;
-    }
-
-    public String getMaterialFinish() {
-        return materialFinish;
-    }
-
-    public void setMaterialFinish(String materialFinish) {
-        this.materialFinish = materialFinish;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public int getQty() {
-        return qty;
-    }
-
-    public void setQty(int qty) {
-        this.qty = qty;
+    public void setFinishType(String finishType) {
+        this.finishType = finishType;
     }
 
     public double getAmount() {
@@ -154,24 +110,72 @@ public class Product {
         return type;
     }
 
+    public String getQuoteFilePath() {
+        return quoteFilePath;
+    }
+
+    public void setQuoteFilePath(String uploadFileName) {
+        this.quoteFilePath = uploadFileName;
+    }
+
+    public String getProductCategoryCode() {
+        return productCategoryCode;
+    }
+
+    public void setProductCategoryCode(String productCategoryCode) {
+        this.productCategoryCode = productCategoryCode;
+    }
+
+    public String getRoomCode() {
+        return roomCode;
+    }
+
+    public void setRoomCode(String roomCode) {
+        this.roomCode = roomCode;
+    }
+
+    public String getMakeType() {
+        return makeType;
+    }
+
+    public void setMakeType(String makeType) {
+        this.makeType = makeType;
+    }
+
+    public String getMakeTypeCode() {
+        return makeTypeCode;
+    }
+
+    public void setMakeTypeCode(String makeTypeCode) {
+        this.makeTypeCode = makeTypeCode;
+    }
+
+    public String getCarcassMaterialCode() {
+        return carcassMaterialCode;
+    }
+
+    public void setCarcassMaterialCode(String carcassMaterialCode) {
+        this.carcassMaterialCode = carcassMaterialCode;
+    }
+
+    public String getFinishTypeCode() {
+        return finishTypeCode;
+    }
+
+    public void setFinishTypeCode(String finishTypeCode) {
+        this.finishTypeCode = finishTypeCode;
+    }
+
+    public String getShutterFinishCode() {
+        return shutterFinishCode;
+    }
+
+    public void setShutterFinishCode(String shutterFinishCode) {
+        this.shutterFinishCode = shutterFinishCode;
+    }
+
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getUploadPath() {
-        return uploadPath;
-    }
-
-    public void setUploadPath(String uploadPath) {
-        this.uploadPath = uploadPath;
-    }
-
-    public String getUploadFileName() {
-        return uploadFileName;
-    }
-
-    public void setUploadFileName(String uploadFileName) {
-        this.uploadFileName = uploadFileName;
     }
 
     public List<Module> getModules() {

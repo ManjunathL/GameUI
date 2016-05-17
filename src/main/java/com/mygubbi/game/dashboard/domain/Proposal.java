@@ -1,5 +1,6 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,10 +9,9 @@ import java.util.List;
  */
 public final class Proposal {
 
-    private ProposalHeader proposalHeader;
-    private List<Product> products;
-    private String uploadFolderPath;
-    private List<FileAttachment> fileAttachments;
+    private ProposalHeader proposalHeader = new ProposalHeader();
+    private List<Product> products = new ArrayList<>();
+    private List<FileAttachment> fileAttachments = new ArrayList<>();
 
     public ProposalHeader getProposalHeader() {
         return proposalHeader;
@@ -35,14 +35,6 @@ public final class Proposal {
 
     public void setFileAttachments(List<FileAttachment> fileAttachments) {
         this.fileAttachments = fileAttachments;
-    }
-
-    public String getUploadFolderPath() {
-        return uploadFolderPath;
-    }
-
-    public void setUploadFolderPath(String uploadFolderPath) {
-        this.uploadFolderPath = uploadFolderPath;
     }
 
 }

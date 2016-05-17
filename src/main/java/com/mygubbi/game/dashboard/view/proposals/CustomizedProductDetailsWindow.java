@@ -3,17 +3,19 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
-import com.mygubbi.game.dashboard.domain.Addon;
+import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
-import com.mygubbi.game.dashboard.domain.Module;
 import com.mygubbi.game.dashboard.domain.Module.ImportStatus;
-import com.mygubbi.game.dashboard.domain.Proposal;
-import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.mygubbi.game.dashboard.view.NotificationUtil;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.server.*;
 import com.vaadin.shared.Position;
@@ -23,21 +25,18 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Upload.FailedEvent;
-import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.renderers.ImageRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import de.datenhahn.vaadin.componentrenderer.grid.ComponentGrid;
 import de.datenhahn.vaadin.componentrenderer.grid.ComponentGridDecorator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("serial")
 public class CustomizedProductDetailsWindow extends Window {
@@ -56,16 +55,17 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private Upload uploadCtrl;
     private File uploadFile;
-    private String uploadPath = "/tmp/";
 
     private TabSheet tabSheet;
     private Button closeBtn;
     private Button saveBtn;
 
     private Proposal proposal;
+    private Product product = new Product();
 
     private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
     private List<SimpleComboItem> shutterFinishMasterList;
+    private BeanItemContainer<Module> moduleContainer;
 
     private CustomizedProductDetailsWindow(Proposal proposal) {
 
@@ -122,7 +122,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.itemTitleField = new TextField("Product Title");
         formLayoutLeft.addComponent(itemTitleField);
 
-        this.productSelection = getSimpleItemFilledCombo("Product", "product_data");
+        this.productSelection = getSimpleItemFilledCombo("Product Category", "product_data");
         formLayoutLeft.addComponent(this.productSelection);
 
         this.roomSelection = getSimpleItemFilledCombo("Room", "room_data");
@@ -179,56 +179,139 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private Component getUploadControl() {
         this.uploadCtrl = new Upload("Import Quotation Sheet", (filename, mimeType) -> {
-            LOG.info("Received upload - " + filename);
+            LOG.debug("Received upload - " + filename);
             FileOutputStream fos = null;
-            uploadFile = new File(uploadPath + filename);
+            uploadFile = new File(getUploadPath() + "/" + filename);
+            uploadFile.getParentFile().mkdirs();
             try {
                 fos = new FileOutputStream(uploadFile);
             } catch (final FileNotFoundException e) {
                 e.printStackTrace();
-                return null;
+                throw new RuntimeException(e);
             }
             return fos;
         });
 
         this.uploadCtrl.setStyleName("upload-btn");
 
-        this.uploadCtrl.addProgressListener(new Upload.ProgressListener() {
+        this.uploadCtrl.addProgressListener((Upload.ProgressListener) (readBytes, contentLength) -> LOG.debug("Progress " + (readBytes * 100 / contentLength)));
 
-            @Override
-            public void updateProgress(long readBytes, long contentLength) {
-                System.out.println("Progress " + (readBytes * 100 / contentLength));
-            }
+        this.uploadCtrl.addSucceededListener((Upload.SucceededListener) event -> {
+            String filename = event.getFilename();
+            String quoteFilePath = getUploadPath() + "/" + filename;
+            product = proposalDataProvider.mapAndUpdateProduct(proposal.getProposalHeader().getProposalId(), quoteFilePath);
+            //product.setQuoteFilePath(quoteFilePath);
+            product.setSeq(proposal.getProducts().size() + 1);
+            product.setType(Product.TYPE.CUSTOM.name());
+            proposal.getProducts().add(product);
+            moduleContainer.addAll(product.getModules());
+            enableSave();
+            LOG.debug("Successfully uploaded - " + filename);
+            NotificationUtil.showNotification("File uploaded successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
         });
 
-        this.uploadCtrl.addSucceededListener(new Upload.SucceededListener() {
-            @Override
-            public void uploadSucceeded(SucceededEvent event) {
-                System.out.println("Successfully uploaded - " + event.getFilename());
-            }
-        });
-
-        this.uploadCtrl.addFailedListener(new Upload.FailedListener() {
-            @Override
-            public void uploadFailed(FailedEvent event) {
-                System.out.println("Error upload - " + event.getFilename() + " :" + event.getReason().getMessage());
-            }
+        this.uploadCtrl.addFailedListener((Upload.FailedListener) event -> {
+            LOG.error("Error upload - " + event.getFilename() + " :" + event.getReason().getMessage());
+            NotificationUtil.showNotification("File upload failed - " + event.getReason().getMessage(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
         });
         return uploadCtrl;
     }
 
-    /*
-     * Modules Section
-     */
-    List<String> carcassMaterialL = new ArrayList<>();
-    List<String> shutterFinishL = new ArrayList<>();
-    List<String> finishL = new ArrayList<>();
-    List<String> colorL = new ArrayList<>();
+    private void enableSave() {
+        saveBtn.setEnabled(true);
+    }
+
+    private void disableSave() {
+        saveBtn.setEnabled(false);
+    }
+
+    private String getUploadPath() {
+        return proposal.getProposalHeader().getFolderPath() + "/product_imports";
+    }
 
     private Component buildModulesForm() {
         HorizontalLayout hLayout = new HorizontalLayout();
         hLayout.setSizeFull();
 
+        moduleContainer = new BeanItemContainer<>(Module.class);
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(moduleContainer);
+
+        genContainer.addGeneratedProperty("importedModuleText", new PropertyValueGenerator<String>() {
+            @Override
+            public String getValue(Item item, Object o, Object o1) {
+
+                String importedModuleCode = item.getItemProperty("importedModuleCode").getValue().toString();
+                String importedModuleDefaultCode = item.getItemProperty("importedModuleDefaultCode").getValue().toString();
+                String importStatus = item.getItemProperty("importStatus").getValue().toString();
+
+                if (importStatus.equals(ImportStatus.default_matched.name())) {
+                    return importedModuleCode + " / " + importedModuleDefaultCode;
+                }
+
+                return importedModuleCode;
+            }
+
+            @Override
+            public Class<String> getType() {
+                return String.class;
+            }
+        });
+        //container.addAll(proposalHeaders);
+
+        Grid grid = new Grid(genContainer);
+        grid.setSizeFull();
+        grid.setColumnReorderingAllowed(true);
+        grid.setColumns("importStatus", "seq", "importedModuleText", "mgModuleCode", "makeType", "carcassMaterial", "finishType", "shutterFinish", "color", "amount");
+
+        List<Grid.Column> columns = grid.getColumns();
+        int idx = 0;
+        Grid.Column statusColumn = columns.get(idx++);
+        statusColumn.setHeaderCaption("");
+        statusColumn.setRenderer(new ImageRenderer(), new Converter<Resource, String>() {
+            @Override
+            public String convertToModel(Resource resource, Class<? extends String> aClass, Locale locale) throws ConversionException {
+                return "not needed";
+            }
+
+            @Override
+            public Resource convertToPresentation(String s, Class<? extends Resource> aClass, Locale locale) throws ConversionException {
+                return getImportStatusResource(s);
+            }
+
+            @Override
+            public Class<String> getModelType() {
+                return String.class;
+            }
+
+            @Override
+            public Class<Resource> getPresentationType() {
+                return Resource.class;
+            }
+        });
+
+        columns.get(idx++).setHeaderCaption("#");
+        columns.get(idx++).setHeaderCaption("Imported Module");
+        columns.get(idx++).setHeaderCaption("MG Module");
+        columns.get(idx++).setHeaderCaption("Make Type");
+        columns.get(idx++).setHeaderCaption("Carcass Material");
+        columns.get(idx++).setHeaderCaption("Finish Type");
+        columns.get(idx++).setHeaderCaption("Shutter Finish");
+        columns.get(idx++).setHeaderCaption("Color");
+        columns.get(idx++).setHeaderCaption("Amount");
+
+        hLayout.addComponent(grid);
+        hLayout.setExpandRatio(grid, 1);
+
+        return grid;
+    }
+
+/*
+    private Component buildModulesForm() {
+        HorizontalLayout hLayout = new HorizontalLayout();
+        hLayout.setSizeFull();
+
+*/
+/*
         List<SimpleComboItem> carcassMaterials = proposalDataProvider.getComboItems("carcass_material_data");
         carcassMaterials.forEach(item -> carcassMaterialL.add(item.title));
 
@@ -237,14 +320,16 @@ public class CustomizedProductDetailsWindow extends Window {
 
         List<SimpleComboItem> colors = proposalDataProvider.getComboItems("color_data");
         colors.forEach(item -> colorL.add(item.title));
+*//*
+
 
         ComponentGrid<Module> componentGrid = new ComponentGrid<>(Module.class);
         componentGrid.setSizeFull();
 
-        componentGrid.setRows(getModules(""));
+        //componentGrid.setRows(getModules(""));
         componentGrid.setDetailsGenerator(new ModulesDetailGenerator());
 
-        componentGrid.addComponentColumn("importStatus", module -> createModuleStatus(componentGrid.getComponentGridDecorator(), module));
+        componentGrid.addComponentColumn("importStatus", module -> getImportStatusResource(componentGrid.getComponentGridDecorator(), module));
 
         componentGrid.addComponentColumn("mgModuleCode", module ->
                 createMgModuleSelector(componentGrid.getComponentGridDecorator(), module));
@@ -270,176 +355,25 @@ public class CustomizedProductDetailsWindow extends Window {
         mainHeader.getCell("amount").setText("Amount");
 
         hLayout.addComponent(componentGrid);
+
         hLayout.setExpandRatio(componentGrid, 1);
 
         return componentGrid;
     }
 
+*/
     public enum Status {DEFAULT_MATCHED, MATCHED, NOT_MATCHED}
 
-    private Component createModuleStatus(ComponentGridDecorator<Module> componentGridDecorator, Module module) {
-        Image image = new Image("");
-
-        switch (module.getImportStatus()) {
-            case DEFAULT_MATCHED:
-                image.setSource(new ThemeResource("img/default-matched.png"));
-                break;
-
-            case MATCHED:
-                image.setSource(new ThemeResource("img/active.png"));
-                break;
-
-            case NOT_MATCHED:
-                image.setSource(new ThemeResource("img/not_matched.png"));
-                break;
+    private Resource getImportStatusResource(String importStatus) {
+        switch (ImportStatus.valueOf(importStatus)) {
+            case default_matched:
+                return new ThemeResource("img/default-matched.png");
+            case success:
+                return new ThemeResource("img/active.png");
+            case error:
+                return new ThemeResource("img/not_matched.png");
         }
-        image.setHeight(15, Sizeable.Unit.PIXELS);
-        image.setWidth(15, Sizeable.Unit.PIXELS);
-        return image;
-    }
-
-    private Component createModuleCM(ComponentGridDecorator<Module> componentGridDecorator, Module module) {
-        ComboBox select = new ComboBox();
-        select.setWidth("150px");
-        select.setHeight("30px");
-        select.addItems(carcassMaterialL);
-        select.setPropertyDataSource(new BeanItem<>(module).getItemProperty("carcassMaterial"));
-        select.addValueChangeListener(e ->
-        {
-            componentGridDecorator.refresh();
-        });
-        return select;
-    }
-
-    private Component createModuleSM(ComponentGridDecorator<Module> componentGridDecorator, Module module) {
-        ComboBox select = new ComboBox();
-        select.setWidth("150px");
-        select.setHeight("30px");
-        select.addItems(shutterFinishL);
-        select.setPropertyDataSource(new BeanItem<>(module).getItemProperty("shutterMaterial"));
-        select.addValueChangeListener(e ->
-        {
-            componentGridDecorator.refresh();
-        });
-        return select;
-    }
-
-    private Component createModuleColor(ComponentGridDecorator<Module> componentGridDecorator, Module module) {
-        ComboBox select = new ComboBox();
-        select.setWidth("150px");
-        select.setHeight("30px");
-        select.addItems(colorL);
-        select.setPropertyDataSource(new BeanItem<>(module).getItemProperty("color"));
-        select.addValueChangeListener(e ->
-        {
-            componentGridDecorator.refresh();
-        });
-        return select;
-    }
-
-    public Component createModuleImage(ComponentGridDecorator<Module> componentGridDecorator, Module module) {
-        ExternalResource resource =
-                new ExternalResource(module.getImagePath());
-        Embedded image = new Embedded("", resource);
-        image.setHeight(32, Sizeable.Unit.PIXELS);
-        image.setWidth(32, Sizeable.Unit.PIXELS);
-        return image;
-    }
-
-
-    public Component createMgModuleSelector(ComponentGridDecorator<Module> componentGridDecorator, Module
-            module) {
-        ComboBox select = new ComboBox();
-        select.setWidth("150px");
-        select.setHeight("30px");
-
-        if (module.getMgModuleImageMap() != null)
-            select.addItems(module.getMgModuleImageMap().keySet());
-
-        select.setPropertyDataSource(new BeanItem<>(module).getItemProperty("mgModuleCode"));
-        select.addValueChangeListener(e ->
-        {
-            int index = componentGridDecorator.getGrid().getContainerDataSource().indexOfId(module);
-            System.out.println("" + e.getProperty().getValue().toString() + ":" + index);
-
-            componentGridDecorator.getGrid().getContainerDataSource().removeItem(module);
-            module.setImagePath(module.getMgModuleImageMap().get(e.getProperty().getValue()));
-            componentGridDecorator.getGrid().getContainerDataSource().addItemAt(index, module);
-            componentGridDecorator.refresh();
-        });
-        return select;
-    }
-
-    private List<Module> getModules(String string) {
-        Map<String, String> map = new HashMap<>();
-        map.put("K2DU4572", "http://ecx.images-amazon.com/images/I/5182QOOr2oL._SS40_.jpg");
-        map.put("K2DU4571", "http://ecx.images-amazon.com/images/I/41n4ib0WvdL._SS36_.jpg");
-        map.put("SINK1072", "http://i.ebayimg.com/images/g/N9QAAOxyBjBTWAe1/s-l64.jpg");
-
-        List<Module> moduleL = new ArrayList<>();
-        Module module = new Module();
-        module.setSeqNo(1);
-        module.setImportedModuleCode("ADD1_536");
-        module.setMgModuleCode("K2DU4572");
-        module.setDescription("Kitche 2 drawer unit");
-        module.setW(440.100);
-        module.setD(100.00);
-        module.setH(200.00);
-        module.setImagePath(map.get("K2DU4572"));
-        module.setCarcassMaterial("PLY");
-        module.setCarcassMaterialId(1);
-        module.setShutterMaterial("PLY/LAM");
-        module.setShutterMaterialId(5);
-        module.setFinishId(1);
-        module.setColor("20191 HGL FROSTY WHITE");
-        module.setQty(1);
-        module.setAmount(1300.00);
-        module.setImportStatus(ImportStatus.MATCHED);
-        module.setMgModuleImageMap(map);
-        moduleL.add(module);
-
-        Module module2 = new Module();
-        module2.setSeqNo(2);
-        module2.setImportedModuleCode("FUL1_536");
-        module2.setMgModuleCode("K2DU4571");
-        module2.setDescription("Kitche 2 drawer unit");
-        module2.setW(440.100);
-        module2.setD(100.00);
-        module2.setH(200.00);
-        module2.setImagePath(map.get("K2DU4571"));
-        module2.setCarcassMaterial("PLY");
-        module2.setCarcassMaterialId(2);
-        module2.setShutterMaterial("PLY/LAM");
-        module2.setShutterMaterialId(6);
-        module2.setFinishId(1);
-        module2.setColor("20191 HGL FROSTY WHITE");
-        module2.setQty(2);
-        module2.setAmount(2600.00);
-        module2.setImportStatus(ImportStatus.DEFAULT_MATCHED);
-        module2.setMgModuleImageMap(map);
-        moduleL.add(module2);
-
-        Module module3 = new Module();
-        module3.setSeqNo(3);
-        module3.setImportedModuleCode("FUL1_537");
-        module3.setMgModuleCode("");
-        module3.setDescription("Kitche 2 drawer unit");
-        module3.setW(440.100);
-        module3.setD(100.00);
-        module3.setH(200.00);
-        module3.setImagePath("");
-        module3.setCarcassMaterial("PLY");
-        module3.setCarcassMaterialId(2);
-        module3.setShutterMaterial("PLY/LAM");
-        module3.setShutterMaterialId(6);
-        module3.setFinishId(1);
-        module3.setColor("20191 HGL FROSTY WHITE");
-        module3.setQty(2);
-        module3.setAmount(2600.00);
-        module3.setImportStatus(ImportStatus.NOT_MATCHED);
-        moduleL.add(module3);
-
-        return moduleL;
+        return null;
     }
 
     /*
@@ -722,6 +656,11 @@ public class CustomizedProductDetailsWindow extends Window {
         });
         saveBtn.focus();
         saveBtn.setVisible(true);
+
+        if (StringUtils.isEmpty(product.getQuoteFilePath())) {
+            disableSave();
+        }
+
         footer.addComponent(saveBtn);
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 

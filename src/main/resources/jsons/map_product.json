@@ -1,0 +1,30 @@
+{
+  "productId": 12345,
+  "quoteFilePath": "c://tmp//proposals_data//1234/283764.xlsx",
+  "modules": [
+    {
+      "importStatus": "success",
+      "seq": 1,
+      "importedModuleCode": "ADD1_536",
+      "importedModuleDefaultCode": "ADD1_536"
+    },
+    {
+      "importStatus": "default_matched",
+      "seq": 2,
+      "importedModuleCode": "FUL1_536",
+      "importedModuleDefaultCode": "ADD1_536"
+    },
+    {
+      "importStatus": "success",
+      "seq": 3,
+      "importedModuleCode": "FUL1_537",
+      "importedModuleDefaultCode": "ADD1_536"
+    },
+    {
+      "importStatus": "error",
+      "seq": 4,
+      "importedModuleCode": "ADD1_537",
+      "importedModuleDefaultCode": ""
+    }
+  ]
+}

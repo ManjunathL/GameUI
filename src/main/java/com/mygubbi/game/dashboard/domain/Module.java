@@ -1,5 +1,7 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -7,33 +9,44 @@ import java.util.Map;
  */
 public class Module {
 
-    public enum ImportStatus {MATCHED, DEFAULT_MATCHED, NOT_MATCHED};
+    public enum ImportStatus {success, default_matched, error};
 
-    private int seqNo;
+    private int seq;
     private String importedModuleCode;
+    private String importedModuleDefaultCode;
     private String mgModuleCode;
     private String description;
     private double w;
     private double d;
     private double h;
     private String imagePath;
-    private String carcassMaterial;
-    private int carcassMaterialId;
-    private String shutterMaterial;
-    private int shutterMaterialId;
-    private String finish;
-    private int finishId;
+	private String makeType;
+	private String makeTypeCode;
+	private String carcassMaterial;
+	private String carcassMaterialCode;
+	private String finishType;
+	private String finishTypeCode;
+	private String shutterFinish;
+	private String shutterFinishCode;
     private String color;
-    private int qty;
     private double amount;
-    private ImportStatus importStatus;
+    private String importStatus;
+	private List<ModuleAccessory> moduleAccessories = new ArrayList<>();
     private Map<String, String> mgModuleImageMap;
-    
-	public int getSeqNo() {
-		return seqNo;
+
+	public List<ModuleAccessory> getModuleAccessories() {
+		return moduleAccessories;
 	}
-	public void setSeqNo(int seqNo) {
-		this.seqNo = seqNo;
+
+	public void setModuleAccessories(List<ModuleAccessory> moduleAccessories) {
+		this.moduleAccessories = moduleAccessories;
+	}
+
+	public int getSeq() {
+		return seq;
+	}
+	public void setSeq(int seq) {
+		this.seq = seq;
 	}
 	public String getImportedModuleCode() {
 		return importedModuleCode;
@@ -83,47 +96,11 @@ public class Module {
 	public void setCarcassMaterial(String carcassMaterial) {
 		this.carcassMaterial = carcassMaterial;
 	}
-	public int getCarcassMaterialId() {
-		return carcassMaterialId;
-	}
-	public void setCarcassMaterialId(int carcassMaterialId) {
-		this.carcassMaterialId = carcassMaterialId;
-	}
-	public String getShutterMaterial() {
-		return shutterMaterial;
-	}
-	public void setShutterMaterial(String shutterMaterial) {
-		this.shutterMaterial = shutterMaterial;
-	}
-	public int getShutterMaterialId() {
-		return shutterMaterialId;
-	}
-	public void setShutterMaterialId(int shutterMaterialId) {
-		this.shutterMaterialId = shutterMaterialId;
-	}
-	public String getFinish() {
-		return finish;
-	}
-	public void setFinish(String finish) {
-		this.finish = finish;
-	}
-	public int getFinishId() {
-		return finishId;
-	}
-	public void setFinishId(int finishId) {
-		this.finishId = finishId;
-	}
 	public String getColor() {
 		return color;
 	}
 	public void setColor(String color) {
 		this.color = color;
-	}
-	public int getQty() {
-		return qty;
-	}
-	public void setQty(int qty) {
-		this.qty = qty;
 	}
 	public double getAmount() {
 		return amount;
@@ -131,10 +108,10 @@ public class Module {
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
-	public ImportStatus getImportStatus() {
+	public String getImportStatus() {
 		return importStatus;
 	}
-	public void setImportStatus(ImportStatus importStatus) {
+	public void setImportStatus(String importStatus) {
 		this.importStatus = importStatus;
 	}
 	public Map<String, String> getMgModuleImageMap() {
@@ -143,7 +120,68 @@ public class Module {
 	public void setMgModuleImageMap(Map<String, String> mgModuleImageMap) {
 		this.mgModuleImageMap = mgModuleImageMap;
 	}
-    
-	
-    
+
+	public String getImportedModuleDefaultCode() {
+		return importedModuleDefaultCode;
+	}
+
+	public void setImportedModuleDefaultCode(String importedModuleDefaultCode) {
+		this.importedModuleDefaultCode = importedModuleDefaultCode;
+	}
+
+	public String getMakeType() {
+		return makeType;
+	}
+
+	public void setMakeType(String makeType) {
+		this.makeType = makeType;
+	}
+
+	public String getMakeTypeCode() {
+		return makeTypeCode;
+	}
+
+	public void setMakeTypeCode(String makeTypeCode) {
+		this.makeTypeCode = makeTypeCode;
+	}
+
+	public String getCarcassMaterialCode() {
+		return carcassMaterialCode;
+	}
+
+	public void setCarcassMaterialCode(String carcassMaterialCode) {
+		this.carcassMaterialCode = carcassMaterialCode;
+	}
+
+	public String getFinishType() {
+		return finishType;
+	}
+
+	public void setFinishType(String finishType) {
+		this.finishType = finishType;
+	}
+
+	public String getFinishTypeCode() {
+		return finishTypeCode;
+	}
+
+	public void setFinishTypeCode(String finishTypeCode) {
+		this.finishTypeCode = finishTypeCode;
+	}
+
+	public String getShutterFinish() {
+		return shutterFinish;
+	}
+
+	public void setShutterFinish(String shutterFinish) {
+		this.shutterFinish = shutterFinish;
+	}
+
+	public String getShutterFinishCode() {
+		return shutterFinishCode;
+	}
+
+	public void setShutterFinishCode(String shutterFinishCode) {
+		this.shutterFinishCode = shutterFinishCode;
+	}
 }

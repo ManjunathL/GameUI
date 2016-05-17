@@ -11,12 +11,9 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
-import com.mygubbi.game.dashboard.domain.ProductItem;
-import com.mygubbi.game.dashboard.domain.ProductSuggest;
-import com.mygubbi.game.dashboard.domain.Proposal;
+import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
 
-import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.vaadin.shared.ui.colorpicker.Color;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
@@ -178,8 +175,18 @@ public class ProposalDataProvider {
     	}
     }
 
-    public JSONArray mapAndUpdateProduct(int proposalId, String filePath) {
-        return null; //product json containing modules, addons
+    public Product mapAndUpdateProduct(int proposalId, String quoteFilePath) {
+        //returns product json containing header, modules, addons
+        try {
+            JSONObject jsonObject = dataProviderUtil.postResource(
+                    "map_product",
+                    "{\"proposalId\": "+ proposalId +", \"filePath\": \"" + quoteFilePath + "\"}");
+
+            return this.mapper.readValue(jsonObject.toString(), Product.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
+
     }
 
     public JSONArray updateProduct(String productJson) { //includes modules json, header and addons json

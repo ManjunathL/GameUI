@@ -66,6 +66,7 @@ public class CreateProposalsView extends Panel implements View {
     private Button submitButton;
     private Label draftLabel;
     private final ProposalHeader proposalHeader;
+    private Button saveButton;
 
     public CreateProposalsView() {
 
@@ -80,14 +81,32 @@ public class CreateProposalsView extends Panel implements View {
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.addComponent(buildHeader());
 
-        TabSheet accordion = new TabSheet();
-        accordion.addTab(buildForm(), "Header");
-        accordion.addTab(buildProductDetails(), "Products");
+        TabSheet tabs = new TabSheet();
+        tabs.addTab(buildForm(), "Header");
+        tabs.addTab(buildProductDetails(), "Products");
+        tabs.addTab(buildAttachmentsTab(), "Attachments");
 
-        vLayout.addComponent(accordion);
+        tabs.addSelectedTabChangeListener(selectedTabChangeEvent -> {
+            TabSheet tabsheet = selectedTabChangeEvent.getTabSheet();
+            Layout tab = (Layout) tabsheet.getSelectedTab();
+            String caption = tabsheet.getTab(tab).getCaption();
+            if (caption.equals("Header")) {
+                saveButton.setVisible(true);
+            } else {
+                saveButton.setVisible(false);
+            }
+        });
+
+        vLayout.addComponent(tabs);
         setContent(vLayout);
-        Responsive.makeResponsive(accordion);
+        Responsive.makeResponsive(tabs);
 
+    }
+
+    private Component buildAttachmentsTab() {
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+        return verticalLayout;
     }
 
     private BeanItem<ProposalHeader> getProposalHeaderBeanItem(ProposalHeader proposalHeader) {
@@ -148,7 +167,7 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.addComponent(submitButton);
         horizontalLayout1.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
 
-        Button saveButton = new Button("Save");
+        saveButton = new Button("Save");
         saveButton.addStyleName(ValoTheme.BUTTON_SMALL);
         saveButton.addClickListener(this::save);
         horizontalLayout1.addComponent(saveButton);
@@ -463,7 +482,7 @@ public class CreateProposalsView extends Panel implements View {
         grid.addColumn("Amount", String.class);
         grid.addColumn("Actions", String.class);
 
-        verticalLayout.addComponent(grid);
+        verticalLayout.addComponent(grid    );
 
         return verticalLayout;
     }
