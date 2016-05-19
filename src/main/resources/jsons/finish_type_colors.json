@@ -1,0 +1,32 @@
+[
+  {
+    "finishTypeCode": "LAMINATE",
+    "colors": [
+      {
+        "code": "CC123",
+        "name": "Frosty White",
+        "imagePath": "colors/cc123.jpg"
+      },
+      {
+        "code": "CC234",
+        "name": "Sunset Orange",
+        "imagePath": "colors/cc234.png"
+      }
+    ]
+  },
+  {
+    "finishTypeCode": "FOIL",
+    "colors": [
+      {
+        "code": "CC123",
+        "name": "Frosty White",
+        "imagePath": "colors/cc123.jpg"
+      },
+      {
+        "code": "CC234",
+        "name": "Sunset Orange",
+        "imagePath": "colors/cc234.png"
+      }
+    ]
+  }
+]

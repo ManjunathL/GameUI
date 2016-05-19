@@ -6,25 +6,29 @@
       "importStatus": "success",
       "seq": 1,
       "importedModuleCode": "ADD1_536",
-      "importedModuleDefaultCode": "ADD1_536"
+      "importedModuleDefaultCode": "ADD1_536",
+      "colorCode": "CC123"
     },
     {
       "importStatus": "default_matched",
       "seq": 2,
       "importedModuleCode": "FUL1_536",
-      "importedModuleDefaultCode": "ADD1_536"
+      "importedModuleDefaultCode": "ADD1_536",
+      "colorCode": "CC254"
     },
     {
       "importStatus": "success",
       "seq": 3,
       "importedModuleCode": "FUL1_537",
-      "importedModuleDefaultCode": "ADD1_536"
+      "importedModuleDefaultCode": "ADD1_536",
+      "colorCode": "CC234"
     },
     {
       "importStatus": "error",
       "seq": 4,
       "importedModuleCode": "ADD1_537",
-      "importedModuleDefaultCode": ""
+      "importedModuleDefaultCode": "",
+      "colorCode": "CC876"
     }
   ]
 }
