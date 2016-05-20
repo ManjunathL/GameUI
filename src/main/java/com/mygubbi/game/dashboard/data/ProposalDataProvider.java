@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.*;
@@ -35,7 +36,7 @@ public class ProposalDataProvider {
     }
 
     public List<ProposalHeader> getProposalHeaders(String proposalClass) {
-        JSONArray proposalHeaders = dataProviderUtil.getResourceArray("proposal_headers", new HashMap<String, String>(){
+        JSONArray proposalHeaders = dataProviderUtil.getResourceArray("proposal_headers", new HashMap<String, String>() {
             {
                 put("class", proposalClass);
             }
@@ -55,7 +56,7 @@ public class ProposalDataProvider {
     }
 
     public JSONObject getProposalHeader(String proposalId) {
-        return dataProviderUtil.getResource("proposal_header", new HashMap<String, String>(){
+        return dataProviderUtil.getResource("proposal_header", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
             }
@@ -63,7 +64,7 @@ public class ProposalDataProvider {
     }
 
     public JSONArray getProposalProducts(String proposalId) {
-        return dataProviderUtil.getResourceArray("proposal_products", new HashMap<String, String>(){
+        return dataProviderUtil.getResourceArray("proposal_products", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
             }
@@ -71,7 +72,7 @@ public class ProposalDataProvider {
     }
 
     public JSONArray getProposalProductDetails(String proposalId, String productId) {
-        return dataProviderUtil.getResourceArray("proposal_product_details", new HashMap<String, String>(){
+        return dataProviderUtil.getResourceArray("proposal_product_details", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
                 put("productId", proposalId);
@@ -80,7 +81,7 @@ public class ProposalDataProvider {
     }
 
     public JSONArray getProposalProductDocuments(String proposalId, String productId) {
-        return dataProviderUtil.getResourceArray("proposal_product_documents", new HashMap<String, String>(){
+        return dataProviderUtil.getResourceArray("proposal_product_documents", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
                 put("productId", proposalId);
@@ -89,13 +90,14 @@ public class ProposalDataProvider {
     }
 
     public JSONArray getProposalDocuments(String proposalId) {
-        return dataProviderUtil.getResourceArray("proposal_documents", new HashMap<String, String>(){
+        return dataProviderUtil.getResourceArray("proposal_documents", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
             }
         });
     }
-//todo: add userid to all post calls
+
+    //todo: add userid to all post calls
     public ProposalHeader createProposal() {
 
         try {
@@ -118,6 +120,7 @@ public class ProposalDataProvider {
             throw new RuntimeException("Couldn't save proposal", e);
         }
     }
+
     //todo: handle status=error and error=<message description>
     public boolean submitProposal(int proposalId) {
 
@@ -152,37 +155,38 @@ public class ProposalDataProvider {
         }
     }
 
-    /**
-     * Product Section
-     */
-
-    public List<Color> getColorSwatch(String shutterFinishCode) {
-        return null;
+    public List<FinishTypeColor> getFinishTypeColors() {
+        JSONArray array = dataProviderUtil.getResourceArray("finish_type_colors", new HashMap<String, String>());
+        try {
+            FinishTypeColor[] items = this.mapper.readValue(array.toString(), FinishTypeColor[].class);
+            return Arrays.asList(items);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
-    public List<SimpleComboItem> getComboItems(String type)
-    {
-    	JSONArray array = dataProviderUtil.getResourceArray(type, new HashMap<String, String>());
-    	try
-    	{
-    		SimpleComboItem [] items = this.mapper.readValue(array.toString(), SimpleComboItem[].class);
-    		return Arrays.asList(items);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    		return new ArrayList<SimpleComboItem>();
-    	}
+    public List<SimpleComboItem> getComboItems(String type) {
+        JSONArray array = dataProviderUtil.getResourceArray(type, new HashMap<String, String>());
+        try {
+            SimpleComboItem[] items = this.mapper.readValue(array.toString(), SimpleComboItem[].class);
+            return Arrays.asList(items);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<SimpleComboItem>();
+        }
     }
 
-    public Product mapAndUpdateProduct(int proposalId, String quoteFilePath) {
+    public Product mapAndUpdateProduct(Product product) {
         //returns product json containing header, modules, addons
         try {
+            String productJson = this.mapper.writeValueAsString(product);
             JSONObject jsonObject = dataProviderUtil.postResource(
-                    "map_product",
-                    "{\"proposalId\": "+ proposalId +", \"filePath\": \"" + quoteFilePath + "\"}");
+                    "map_product", productJson);
 
-            return this.mapper.readValue(jsonObject.toString(), Product.class);
+            Product product1 = this.mapper.readValue(jsonObject.toString(), Product.class);
+            product1.setGenerated();
+            return product1;
         } catch (IOException e) {
             throw new RuntimeException("Couldn't map modules", e);
         }
@@ -193,76 +197,68 @@ public class ProposalDataProvider {
         return null;
     }
 
-    public JSONArray getMGModules(String importedModuleCode) { //includes both module code nad default code
-        return null;//includes module description, image, code, dimensions
+    public List<MGModule> getMGModules(String importedModuleCode, String importedModuleDefaultCode) {
+        try {
+            JSONArray jsonArray = dataProviderUtil.getResourceArray(
+                    "mg_modules", new HashMap<String, String>() {
+                        {
+                            put("importedModuleCode", importedModuleCode);
+                            put("importedModuleDefaultCode", importedModuleDefaultCode);
+                        }
+                    });
+
+            return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<MGModule>>() {
+            });
+
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
     }
 
-    public JSONArray getModulePrice(String moduleCode, String carcassMaterial, String shutterFinish, String makeType) { //includes both module code nad default code
-        return null;//gives back price
+    public List<ProductSuggest> getProductSuggestions(String inputTerm) {
+        JSONArray array = dataProviderUtil.getResourceArray("product_auto_complete", new HashMap<String, String>());
+        try {
+            ProductSuggest[] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
+            return Arrays.asList(items);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<ProductSuggest>();
+        }
     }
 
+    public List<ProductSuggest> getProductSearchResults(String inputTerm) {
+        JSONArray array = dataProviderUtil.getResourceArray("product_search_data", new HashMap<String, String>());
+        try {
+            ProductSuggest[] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
+            return Arrays.asList(items);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<ProductSuggest>();
+        }
+    }
 
-    
-    public List<ProductSuggest> getProductSuggestions(String inputTerm)
-    {
-    	JSONArray array = dataProviderUtil.getResourceArray("product_auto_complete", new HashMap<String, String>());
-    	try
-    	{
-    		ProductSuggest [] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
-    		return Arrays.asList(items);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    		return new ArrayList<ProductSuggest>();
-    	}
+    public ProductItem getProduct(int productId) {
+        JSONArray array = dataProviderUtil.getResourceArray("product_search_data", new HashMap<String, String>());
+        try {
+            ProductItem[] items = this.mapper.readValue(array.toString(), ProductItem[].class);
+            if (items.length == 0) return null;
+            return Arrays.asList(items).get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-    
-    public List<ProductSuggest> getProductSearchResults(String inputTerm)
-    {
-    	JSONArray array = dataProviderUtil.getResourceArray("product_search_data", new HashMap<String, String>());
-    	try
-    	{
-    		ProductSuggest [] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
-    		return Arrays.asList(items);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    		return new ArrayList<ProductSuggest>();
-    	}
-    }
-    
-    public ProductItem getProduct(int productId)
-    {
-    	JSONArray array = dataProviderUtil.getResourceArray("product_search_data", new HashMap<String, String>());
-    	try
-    	{
-    		ProductItem [] items = this.mapper.readValue(array.toString(), ProductItem[].class);
-    		if ( items.length == 0) return null;
-    		return Arrays.asList(items).get(0);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    		return null;
-    	}
-    }
-    
-    public List<String> getAddonTypes()
-    {
-    	JSONObject obj = dataProviderUtil.getResource("addon_type", new HashMap<String, String>());
-    	try
-    	{
-    		String typeStr = obj.getJSONArray("addon_type").toString();
-    		String [] typeL = this.mapper.readValue(typeStr, String[].class);
-    		return Arrays.asList(typeL);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    		return new ArrayList<String>();
-    	}
+
+    public List<String> getAddonTypes() {
+        JSONObject obj = dataProviderUtil.getResource("addon_type", new HashMap<String, String>());
+        try {
+            String typeStr = obj.getJSONArray("addon_type").toString();
+            String[] typeL = this.mapper.readValue(typeStr, String[].class);
+            return Arrays.asList(typeL);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<String>();
+        }
     }
 
     public static void main(String[] args) {
@@ -278,4 +274,15 @@ public class ProposalDataProvider {
     }
 
 
+    public ModulePrice getModulePrice(Module module) {
+        try {
+            String moduleJson = this.mapper.writeValueAsString(module);
+            JSONObject jsonObject = dataProviderUtil.postResource(
+                    "module_price", moduleJson);
+            return this.mapper.readValue(jsonObject.toString(), ModulePrice.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't get module price", e);
+        }
+
+    }
 }

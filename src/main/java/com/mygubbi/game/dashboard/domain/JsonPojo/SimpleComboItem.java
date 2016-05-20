@@ -17,6 +17,22 @@ public class SimpleComboItem {
 	}
 
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		SimpleComboItem that = (SimpleComboItem) o;
+
+		return code.equals(that.code);
+
+	}
+
+	@Override
+	public int hashCode() {
+		return code.hashCode();
+	}
+
 	public String getCode() {
 		return code;
 	}

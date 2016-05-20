@@ -9,179 +9,257 @@ import java.util.Map;
  */
 public class Module {
 
-    public enum ImportStatus {success, default_matched, error};
+    public static final String DEFAULT = "default";
+
+    public void setGenerated() {
+        if (importStatus.equals(ImportStatus.default_matched.name())) {
+            importedModuleText = importedModuleCode + " / " + importedModuleDefaultCode;
+        } else {
+            importedModuleText = importedModuleCode;
+        }
+    }
+
+    public enum ImportStatus {success, default_matched, error}
 
     private int seq;
     private String importedModuleCode;
     private String importedModuleDefaultCode;
+    private String importedModuleText;
     private String mgModuleCode;
-    private String description;
-    private double w;
-    private double d;
-    private double h;
-    private String imagePath;
-	private String makeType;
-	private String makeTypeCode;
-	private String carcassMaterial;
-	private String carcassMaterialCode;
-	private String finishType;
-	private String finishTypeCode;
-	private String shutterFinish;
-	private String shutterFinishCode;
-    private String color;
+    private String makeType;
+    private String makeTypeCode;
+    private String makeTypeText;
+    private String carcassMaterial;
+    private String carcassMaterialCode;
+    private String carcassMaterialText;
+    private String finishType;
+    private String finishTypeCode;
+    private String finishTypeText;
+    private String shutterFinish;
+    private String shutterFinishCode;
+    private String shutterFinishText;
+    private String colorCode;
+    private String colorName;
+    private String colorImagePath;
     private double amount;
     private String importStatus;
-	private List<ModuleAccessory> moduleAccessories = new ArrayList<>();
+    private List<MGModule> mgModules = new ArrayList<>();
     private Map<String, String> mgModuleImageMap;
+    private ModulePrice modulePrice;
 
-	public List<ModuleAccessory> getModuleAccessories() {
-		return moduleAccessories;
-	}
+    public int getSeq() {
+        return seq;
+    }
 
-	public void setModuleAccessories(List<ModuleAccessory> moduleAccessories) {
-		this.moduleAccessories = moduleAccessories;
-	}
+    public void setSeq(int seq) {
+        this.seq = seq;
+    }
 
-	public int getSeq() {
-		return seq;
-	}
-	public void setSeq(int seq) {
-		this.seq = seq;
-	}
-	public String getImportedModuleCode() {
-		return importedModuleCode;
-	}
-	public void setImportedModuleCode(String importedModuleCode) {
-		this.importedModuleCode = importedModuleCode;
-	}
-	public String getMgModuleCode() {
-		return mgModuleCode;
-	}
-	public void setMgModuleCode(String mgModuleCode) {
-		this.mgModuleCode = mgModuleCode;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public double getW() {
-		return w;
-	}
-	public void setW(double w) {
-		this.w = w;
-	}
-	public double getD() {
-		return d;
-	}
-	public void setD(double d) {
-		this.d = d;
-	}
-	public double getH() {
-		return h;
-	}
-	public void setH(double h) {
-		this.h = h;
-	}
-	public String getImagePath() {
-		return imagePath;
-	}
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
-	}
-	public String getCarcassMaterial() {
-		return carcassMaterial;
-	}
-	public void setCarcassMaterial(String carcassMaterial) {
-		this.carcassMaterial = carcassMaterial;
-	}
-	public String getColor() {
-		return color;
-	}
-	public void setColor(String color) {
-		this.color = color;
-	}
-	public double getAmount() {
-		return amount;
-	}
-	public void setAmount(double amount) {
-		this.amount = amount;
-	}
-	public String getImportStatus() {
-		return importStatus;
-	}
-	public void setImportStatus(String importStatus) {
-		this.importStatus = importStatus;
-	}
-	public Map<String, String> getMgModuleImageMap() {
-		return mgModuleImageMap;
-	}
-	public void setMgModuleImageMap(Map<String, String> mgModuleImageMap) {
-		this.mgModuleImageMap = mgModuleImageMap;
-	}
+    public String getImportedModuleCode() {
+        return importedModuleCode;
+    }
 
-	public String getImportedModuleDefaultCode() {
-		return importedModuleDefaultCode;
-	}
+    public void setImportedModuleCode(String importedModuleCode) {
+        this.importedModuleCode = importedModuleCode;
+    }
 
-	public void setImportedModuleDefaultCode(String importedModuleDefaultCode) {
-		this.importedModuleDefaultCode = importedModuleDefaultCode;
-	}
+    public String getMgModuleCode() {
+        return mgModuleCode;
+    }
 
-	public String getMakeType() {
-		return makeType;
-	}
+    public void setMgModuleCode(String mgModuleCode) {
+        this.mgModuleCode = mgModuleCode;
+    }
 
-	public void setMakeType(String makeType) {
-		this.makeType = makeType;
-	}
+    public String getCarcassMaterial() {
+        return carcassMaterial;
+    }
 
-	public String getMakeTypeCode() {
-		return makeTypeCode;
-	}
+    public void setCarcassMaterial(String carcassMaterial) {
+        this.carcassMaterial = carcassMaterial;
+    }
 
-	public void setMakeTypeCode(String makeTypeCode) {
-		this.makeTypeCode = makeTypeCode;
-	}
+    public String getColorCode() {
+        return colorCode;
+    }
 
-	public String getCarcassMaterialCode() {
-		return carcassMaterialCode;
-	}
+    public void setColorCode(String colorCode) {
+        this.colorCode = colorCode;
+    }
 
-	public void setCarcassMaterialCode(String carcassMaterialCode) {
-		this.carcassMaterialCode = carcassMaterialCode;
-	}
+    public double getAmount() {
+        return amount;
+    }
 
-	public String getFinishType() {
-		return finishType;
-	}
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
 
-	public void setFinishType(String finishType) {
-		this.finishType = finishType;
-	}
+    public String getImportStatus() {
+        return importStatus;
+    }
 
-	public String getFinishTypeCode() {
-		return finishTypeCode;
-	}
+    public void setImportStatus(String importStatus) {
+        this.importStatus = importStatus;
+    }
 
-	public void setFinishTypeCode(String finishTypeCode) {
-		this.finishTypeCode = finishTypeCode;
-	}
+    public Map<String, String> getMgModuleImageMap() {
+        return mgModuleImageMap;
+    }
 
-	public String getShutterFinish() {
-		return shutterFinish;
-	}
+    public void setMgModuleImageMap(Map<String, String> mgModuleImageMap) {
+        this.mgModuleImageMap = mgModuleImageMap;
+    }
 
-	public void setShutterFinish(String shutterFinish) {
-		this.shutterFinish = shutterFinish;
-	}
+    public String getImportedModuleDefaultCode() {
+        return importedModuleDefaultCode;
+    }
 
-	public String getShutterFinishCode() {
-		return shutterFinishCode;
-	}
+    public void setImportedModuleDefaultCode(String importedModuleDefaultCode) {
+        this.importedModuleDefaultCode = importedModuleDefaultCode;
+    }
 
-	public void setShutterFinishCode(String shutterFinishCode) {
-		this.shutterFinishCode = shutterFinishCode;
-	}
+    public String getMakeType() {
+        return makeType;
+    }
+
+    public void setMakeType(String makeType) {
+        this.makeType = makeType;
+    }
+
+    public String getMakeTypeCode() {
+        return makeTypeCode;
+    }
+
+    public void setMakeTypeCode(String makeTypeCode) {
+        this.makeTypeCode = makeTypeCode;
+    }
+
+    public String getCarcassMaterialCode() {
+        return carcassMaterialCode;
+    }
+
+    public void setCarcassMaterialCode(String carcassMaterialCode) {
+        this.carcassMaterialCode = carcassMaterialCode;
+    }
+
+    public String getFinishType() {
+        return finishType;
+    }
+
+    public void setFinishType(String finishType) {
+        this.finishType = finishType;
+    }
+
+    public String getFinishTypeCode() {
+        return finishTypeCode;
+    }
+
+    public void setFinishTypeCode(String finishTypeCode) {
+        this.finishTypeCode = finishTypeCode;
+    }
+
+    public String getShutterFinish() {
+        return shutterFinish;
+    }
+
+    public void setShutterFinish(String shutterFinish) {
+        this.shutterFinish = shutterFinish;
+    }
+
+    public String getShutterFinishCode() {
+        return shutterFinishCode;
+    }
+
+    public void setShutterFinishCode(String shutterFinishCode) {
+        this.shutterFinishCode = shutterFinishCode;
+    }
+
+    public String getImportedModuleText() {
+        return importedModuleText;
+    }
+
+    public void setImportedModuleText(String importedModuleText) {
+        this.importedModuleText = importedModuleText;
+    }
+
+    public String getMakeTypeText() {
+        return makeTypeText;
+    }
+
+    public void setMakeTypeText(String makeTypeText) {
+        this.makeTypeText = makeTypeText;
+    }
+
+    public String getCarcassMaterialText() {
+        return carcassMaterialText;
+    }
+
+    public void setCarcassMaterialText(String carcassMaterialText) {
+        this.carcassMaterialText = carcassMaterialText;
+    }
+
+    public String getFinishTypeText() {
+        return finishTypeText;
+    }
+
+    public void setFinishTypeText(String finishTypeText) {
+        this.finishTypeText = finishTypeText;
+    }
+
+    public String getShutterFinishText() {
+        return shutterFinishText;
+    }
+
+    public void setShutterFinishText(String shutterFinishText) {
+        this.shutterFinishText = shutterFinishText;
+    }
+
+    public List<MGModule> getMgModules() {
+        return mgModules;
+    }
+
+    public void setMgModules(List<MGModule> mgModules) {
+        this.mgModules = mgModules;
+    }
+
+    public String getColorName() {
+        return colorName;
+    }
+
+    public void setColorName(String colorName) {
+        this.colorName = colorName;
+    }
+
+    public String getColorImagePath() {
+        return colorImagePath;
+    }
+
+    public void setColorImagePath(String colorImagePath) {
+        this.colorImagePath = colorImagePath;
+    }
+
+    public ModulePrice getModulePrice() {
+        return modulePrice;
+    }
+
+    public void setModulePrice(ModulePrice modulePrice) {
+        this.modulePrice = modulePrice;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Module module = (Module) o;
+
+        return seq == module.seq;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return seq;
+    }
 }

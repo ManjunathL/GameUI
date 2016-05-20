@@ -11,6 +11,11 @@
         "code": "CC234",
         "name": "Sunset Orange",
         "imagePath": "colors/cc234.png"
+      },
+      {
+        "code": "CC876",
+        "name": "Sunset Orange",
+        "imagePath": "colors/cc234.png"
       }
     ]
   },
@@ -24,6 +29,11 @@
       },
       {
         "code": "CC234",
+        "name": "Sunset Orange",
+        "imagePath": "colors/cc234.png"
+      },
+      {
+        "code": "CC254",
         "name": "Sunset Orange",
         "imagePath": "colors/cc234.png"
       }

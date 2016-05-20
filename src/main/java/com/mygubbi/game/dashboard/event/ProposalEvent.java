@@ -1,5 +1,6 @@
 package com.mygubbi.game.dashboard.event;
 
+import com.mygubbi.game.dashboard.domain.Module;
 import com.mygubbi.game.dashboard.domain.ProposalListViewItem;
 
 /**
@@ -20,5 +21,16 @@ public abstract class ProposalEvent {
         }
     }
 
+    public static class ModuleUpdated {
+        private Module module;
+
+        public ModuleUpdated(Module module) {
+            this.module = module;
+        }
+
+        public Module getModule() {
+            return module;
+        }
+    }
 
 }

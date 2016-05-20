@@ -8,8 +8,15 @@ import java.util.List;
  */
 public class Product {
 
+    public void setGenerated() {
+        for (Module module : modules) {
+            module.setGenerated();
+        }
+    }
+
     public enum TYPE {CUSTOM, CATALOGUE};
 
+    private int proposalId;
     private int productId;
     private int seq;
     private String title;
@@ -200,5 +207,13 @@ public class Product {
 
     public void setFileAttachmentList(List<FileAttachment> fileAttachmentList) {
         this.fileAttachmentList = fileAttachmentList;
+    }
+
+    public int getProposalId() {
+        return proposalId;
+    }
+
+    public void setProposalId(int proposalId) {
+        this.proposalId = proposalId;
     }
 }

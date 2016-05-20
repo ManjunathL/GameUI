@@ -62,7 +62,6 @@ public class CreateProposalsView extends Panel implements View {
     private Grid grid;
     private Label proposalTitleLabel;
     private final BeanFieldGroup<ProposalHeader> binder = new BeanFieldGroup<>(ProposalHeader.class);
-    ;
     private Button submitButton;
     private Label draftLabel;
     private final ProposalHeader proposalHeader;
@@ -116,7 +115,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private void initHeader(ProposalHeader proposalHeader) {
         proposalHeader.setProposalTitle("New Proposal");
-        proposalHeader.setProposalVersion("--auto--");
+        proposalHeader.setProposalVersion("1.0.");
     }
 
     private Component buildHeader() {

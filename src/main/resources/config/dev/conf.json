@@ -1,3 +1,4 @@
 {
-  "restUrl" : "http://localhost:1443/gapi"
+  "restUrl" : "http://localhost:1443/gapi",
+  "imageBasePath" : "C:\\tmp\\images\\"
 }
