@@ -14,7 +14,7 @@ public class Product {
         }
     }
 
-    public enum TYPE {CUSTOM, CATALOGUE};
+    public enum TYPE {CUSTOMIZED, CATALOGUE};
 
     private int proposalId;
     private int productId;
@@ -34,6 +34,7 @@ public class Product {
     private String shutterFinishCode;
     private double amount;
     private String type;
+    private int qty = 1;
 
     private String quoteFilePath;
 
@@ -215,5 +216,13 @@ public class Product {
 
     public void setProposalId(int proposalId) {
         this.proposalId = proposalId;
+    }
+
+    public int getQty() {
+        return qty;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
     }
 }

@@ -20,12 +20,9 @@ import com.vaadin.data.util.*;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.server.*;
-import com.vaadin.shared.Position;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.renderers.HtmlRenderer;
@@ -71,6 +68,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private List<SimpleComboItem> shutterFinishMasterList;
     private BeanItemContainer<Module> moduleContainer;
     private Grid modulesGrid;
+    private TextField totalAmount;
 
     private CustomizedProductDetailsWindow(Proposal proposal) {
 
@@ -129,22 +127,29 @@ public class CustomizedProductDetailsWindow extends Window {
 
         itemTitleField = (TextField) binder.buildAndBind("Product Title", "title");
         itemTitleField.setRequired(true);
-        //this.itemTitleField = new TextField("Product Title");
         itemTitleField.setNullRepresentation("");
         itemTitleField.setImmediate(true);
-        //this.binder.bind(itemTitleField, "title");
-
         formLayoutLeft.addComponent(itemTitleField);
 
         this.productSelection = getSimpleItemFilledCombo("Product Category", "product_data", null);
         productSelection.setRequired(true);
         binder.bind(productSelection, "productCategoryCode");
+        productSelection.addValueChangeListener(valueChangeEvent -> {
+            String code = (String) valueChangeEvent.getProperty().getValue();
+            String title = (String) ((ComboBox)((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
+            product.setProductCategory(title);
+        });
         if (productSelection.size() > 0) productSelection.setValue(productSelection.getItemIds().iterator().next());
         formLayoutLeft.addComponent(this.productSelection);
 
         this.roomSelection = getSimpleItemFilledCombo("Room", "room_data", null);
         roomSelection.setRequired(true);
         binder.bind(roomSelection, "roomCode");
+        roomSelection.addValueChangeListener(valueChangeEvent -> {
+            String code = (String) valueChangeEvent.getProperty().getValue();
+            String title = (String) ((ComboBox)((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
+            product.setRoom(title);
+        });
         if (roomSelection.size() > 0) roomSelection.setValue(roomSelection.getItemIds().iterator().next());
         formLayoutLeft.addComponent(this.roomSelection);
 
@@ -190,6 +195,15 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
         formLayoutRight.addComponent(getUploadControl());
+
+        totalAmount = new TextField("<h2>Total Amount</h2>");
+        totalAmount.setValue("0");
+        totalAmount.setImmediate(true);
+        binder.bind(totalAmount, "amount");
+        totalAmount.setReadOnly(true);
+        totalAmount.setCaptionAsHtml(true);
+        formLayoutRight.addComponent(totalAmount);
+
         return formLayoutRight;
     }
 
@@ -248,16 +262,23 @@ public class CustomizedProductDetailsWindow extends Window {
             binder.getItemDataSource().getItemProperty("productId").setValue(productResult.getProductId());
             binder.getItemDataSource().getItemProperty("modules").setValue(productResult.getModules());
             //product.setQuoteFilePath(quoteFilePath);
-            product.setSeq(proposal.getProducts().size() + 1);
-            product.setType(Product.TYPE.CUSTOM.name());
+            product.setType(Product.TYPE.CUSTOMIZED.name());
             proposal.getProducts().add(product);
             initModules(product);
             moduleContainer.removeAllItems();
             moduleContainer.addAll(product.getModules());
             modulesGrid.sort("seq", SortDirection.ASCENDING);
-            enableSave();
+
+            boolean hasError = product.getModules().stream().anyMatch(module -> module.getImportStatus().equals(ImportStatus.error.name()));
+
+            if (hasError) {
+                NotificationUtil.showNotification("Error in mapping module(s), please upload new sheet!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            } else {
+                enableSave();
+                NotificationUtil.showNotification("File uploaded successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+            }
+
             LOG.debug("Successfully uploaded - " + filename);
-            NotificationUtil.showNotification("File uploaded successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
         });
 
         this.uploadCtrl.addFailedListener((Upload.FailedListener) event -> {
@@ -655,7 +676,6 @@ public class CustomizedProductDetailsWindow extends Window {
         footer.setWidth(100.0f, Unit.PERCENTAGE);
 
         closeBtn = new Button("Close");
-        closeBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
         closeBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -668,28 +688,16 @@ public class CustomizedProductDetailsWindow extends Window {
 
         saveBtn = new Button("Save");
         saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        saveBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                try {
-                    // Updated user should also be persisted to database. But
-                    // not in this demo.
-
-                    Notification success = new Notification(
-                            "Item details saved successfully");
-                    success.setDelayMsec(2000);
-                    success.setStyleName("bar success small");
-                    success.setPosition(Position.BOTTOM_CENTER);
-                    success.show(Page.getCurrent());
-
-                    DashboardEventBus.post(new DashboardEvent.ItemDetailsEvent());
-                    close();
-                } catch (Exception e) {
-                    Notification.show("Error while saving Item details",
-                            Type.ERROR_MESSAGE);
-                }
-
+        saveBtn.addClickListener(event -> {
+            try {
+                NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                DashboardEventBus.post(new ProposalEvent.ProductCreatedEvent(product));
+                close();
+            } catch (Exception e) {
+                Notification.show("Error while saving Item details",
+                        Type.ERROR_MESSAGE);
             }
+
         });
         saveBtn.focus();
         saveBtn.setVisible(true);
@@ -739,6 +747,22 @@ public class CustomizedProductDetailsWindow extends Window {
         return getSimpleItemFilledCombo(caption, list, listener);
     }
 
+    private void updateTotalAmount() {
+        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+
+        double amount = 0;
+        for (Module module : modules) {
+            amount += module.getAmount();
+        }
+
+        totalAmount.setReadOnly(false);
+        totalAmount.setValue(amount + "");
+        totalAmount.setReadOnly(true);
+
+        product.setAmount(amount);
+
+    }
+
     @Subscribe
     public void moduleUpdated(final ProposalEvent.ModuleUpdated event) {
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
@@ -747,6 +771,7 @@ public class CustomizedProductDetailsWindow extends Window {
         moduleContainer.removeAllItems();
         moduleContainer.addAll(modules);
         modulesGrid.sort("seq", SortDirection.ASCENDING);
+        updateTotalAmount();
     }
 
 }

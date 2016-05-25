@@ -6,7 +6,6 @@ import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
-import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
@@ -105,11 +104,9 @@ public class ModuleDetailsWindow extends Window {
         horizontalLayout2.addComponent(buildModuleSelectionsComponent());
         vLayout.addComponent(horizontalLayout2);
         horizontalLayout2.setHeightUndefined();
-        //vLayout.setExpandRatio(horizontalLayout0, 0.9f);
 
         Component footerLayOut = buildFooter();
         vLayout.addComponent(footerLayOut);
-        //vLayout.setExpandRatio(footerLayOut, 0.1f);
 
         updateValues();
     }
@@ -248,7 +245,6 @@ public class ModuleDetailsWindow extends Window {
             }
 
             ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
-            module.setAmount(modulePrice.getTotalCost());
             totalAmount.setReadOnly(false);
             totalAmount.setValue(modulePrice.getTotalCost() + "");
             totalAmount.setReadOnly(true);
@@ -295,6 +291,7 @@ public class ModuleDetailsWindow extends Window {
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
         totalAmount = new TextField("Total Amount");
+        binder.bind(totalAmount, "amount");
         totalAmount.setReadOnly(true);
         formLayoutRight.addComponent(totalAmount);
 
@@ -376,7 +373,10 @@ public class ModuleDetailsWindow extends Window {
         footer.setWidth(100.0f, Unit.PERCENTAGE);
 
         cancelBtn = new Button("Cancel");
-        cancelBtn.addClickListener((ClickListener) clickEvent -> close());
+        cancelBtn.addClickListener((ClickListener) clickEvent -> {
+            binder.discard();
+            close();
+        });
         cancelBtn.focus();
         footer.addComponent(cancelBtn);
         footer.setSpacing(true);

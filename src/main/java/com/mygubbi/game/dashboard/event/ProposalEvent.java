@@ -1,6 +1,7 @@
 package com.mygubbi.game.dashboard.event;
 
 import com.mygubbi.game.dashboard.domain.Module;
+import com.mygubbi.game.dashboard.domain.Product;
 import com.mygubbi.game.dashboard.domain.ProposalListViewItem;
 
 /**
@@ -33,4 +34,14 @@ public abstract class ProposalEvent {
         }
     }
 
+    public static class ProductCreatedEvent {
+        private Product product;
+        public ProductCreatedEvent(Product product) {
+            this.product = product;
+        }
+
+        public Product getProduct() {
+            return product;
+        }
+    }
 }

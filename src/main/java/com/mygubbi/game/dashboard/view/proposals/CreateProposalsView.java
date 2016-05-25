@@ -1,27 +1,35 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
 
+import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
-import com.mygubbi.game.dashboard.domain.ProposalHeader;
-import com.mygubbi.game.dashboard.domain.User;
+import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.DashboardViewType;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
+import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
+
+import java.util.List;
 
 
 /**
@@ -59,18 +67,22 @@ public class CreateProposalsView extends Panel implements View {
     private Field<?> designEmail;
     private Field<?> designContact;
 
-    private Grid grid;
+    private Grid productsGrid;
     private Label proposalTitleLabel;
     private final BeanFieldGroup<ProposalHeader> binder = new BeanFieldGroup<>(ProposalHeader.class);
     private Button submitButton;
     private Label draftLabel;
     private final ProposalHeader proposalHeader;
+    private final Proposal proposal;
     private Button saveButton;
+    private BeanItemContainer productContainer;
 
     public CreateProposalsView() {
 
         DashboardEventBus.register(this);
         proposalHeader = proposalDataProvider.createProposal();
+        proposal = new Proposal();
+        proposal.setProposalHeader(proposalHeader);
         initHeader(proposalHeader);
         this.binder.setItemDataSource(proposalHeader);
 
@@ -85,6 +97,7 @@ public class CreateProposalsView extends Panel implements View {
         tabs.addTab(buildProductDetails(), "Products");
         tabs.addTab(buildAttachmentsTab(), "Attachments");
 
+/*
         tabs.addSelectedTabChangeListener(selectedTabChangeEvent -> {
             TabSheet tabsheet = selectedTabChangeEvent.getTabSheet();
             Layout tab = (Layout) tabsheet.getSelectedTab();
@@ -95,6 +108,7 @@ public class CreateProposalsView extends Panel implements View {
                 saveButton.setVisible(false);
             }
         });
+*/
 
         vLayout.addComponent(tabs);
         setContent(vLayout);
@@ -469,19 +483,29 @@ public class CreateProposalsView extends Panel implements View {
                 CatalogItemDetailsWindow.open(CreateProposalsView.this.proposalHeader)
         );
 
-        grid = new Grid();
-        grid.setSizeFull();
+        productContainer = new BeanItemContainer<>(Product.class);
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productContainer);
+        genContainer.addGeneratedProperty("actions", getActionTextGenerator());
 
-        grid.addColumn("Item #", String.class);
-        grid.addColumn("Description", String.class);
-        grid.addColumn("Room", String.class);
-        grid.addColumn("Category", String.class);
-        grid.addColumn("Material & Finish", String.class);
-        grid.addColumn("Qty", Integer.class);
-        grid.addColumn("Amount", String.class);
-        grid.addColumn("Actions", String.class);
+        productsGrid = new Grid(genContainer);
+        productsGrid.setSizeFull();
+        productsGrid.setColumnReorderingAllowed(true);
+        productsGrid.setColumns("seq", "room", "title", "productCategory", "qty", "amount", "type", "actions");
 
-        verticalLayout.addComponent(grid    );
+        List<Grid.Column> columns = productsGrid.getColumns();
+        int idx = 0;
+
+        columns.get(idx++).setHeaderCaption("Seq");
+        columns.get(idx++).setHeaderCaption("Room");
+        columns.get(idx++).setHeaderCaption("Title");
+        columns.get(idx++).setHeaderCaption("Category");
+        columns.get(idx++).setHeaderCaption("Qty");
+        columns.get(idx++).setHeaderCaption("Amount");
+        columns.get(idx++).setHeaderCaption("Type");
+        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditButtonValueRenderer(rendererClickEvent -> {
+        }));
+
+        verticalLayout.addComponent(productsGrid);
 
         return verticalLayout;
     }
@@ -489,6 +513,36 @@ public class CreateProposalsView extends Panel implements View {
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
 
+    }
+
+    private PropertyValueGenerator<String> getActionTextGenerator() {
+        return new PropertyValueGenerator<String>() {
+
+            @Override
+            public String getValue(Item item, Object o, Object o1) {
+                return "Edit";
+            }
+
+            @Override
+            public Class<String> getType() {
+                return String.class;
+            }
+        };
+    }
+
+
+    @Subscribe
+    public void productCreated(final ProposalEvent.ProductCreatedEvent event) {
+        List<Product> products = proposal.getProducts();
+        boolean removed = products.remove(event.getProduct());
+        if (!removed) {
+            event.getProduct().setSeq(products.size() + 1);
+        }
+        products.add(event.getProduct());
+        productContainer.removeAllItems();
+        productContainer.addAll(products);
+        productsGrid.sort("seq", SortDirection.ASCENDING);
+        //updateTotalAmount();
     }
 }
 
