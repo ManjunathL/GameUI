@@ -167,8 +167,25 @@ public class CustomizedProductDetailsWindow extends Window {
         totalAmount.setReadOnly(true);
         totalAmount.setCaptionAsHtml(true);
         formLayoutLeft.addComponent(totalAmount);
+        makeType.addValueChangeListener(this::refreshPrice);
 
         return formLayoutLeft;
+    }
+
+    //todo: include addons price
+    private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
+        List<Module> modules = product.getModules();
+        double total = 0;
+
+        for (Module module : modules) {
+            if (StringUtils.isNotEmpty(module.getMgCode())) {
+                ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
+                total += modulePrice.getTotalCost();
+            }
+        }
+        totalAmount.setReadOnly(false);
+        totalAmount.setValue(total + "");
+        totalAmount.setReadOnly(true);
     }
 
     private FormLayout buildAddItemBasicFormRight() {
@@ -179,6 +196,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.baseCarcassSelection = getSimpleItemFilledCombo("Base Carcass", "carcass_material_data", null);
         baseCarcassSelection.setRequired(true);
         binder.bind(baseCarcassSelection, BASE_CARCASS_CODE);
+        baseCarcassSelection.addValueChangeListener(this::refreshPrice);
         if (baseCarcassSelection.size() > 0)
             baseCarcassSelection.setValue(baseCarcassSelection.getItemIds().iterator().next());
         formLayoutRight.addComponent(this.baseCarcassSelection);
@@ -186,6 +204,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.wallCarcassSelection = getSimpleItemFilledCombo("Wall Carcass", "carcass_material_data", null);
         wallCarcassSelection.setRequired(true);
         binder.bind(wallCarcassSelection, WALL_CARCASS_CODE);
+        wallCarcassSelection.addValueChangeListener(this::refreshPrice);
         if (wallCarcassSelection.size() > 0)
             wallCarcassSelection.setValue(wallCarcassSelection.getItemIds().iterator().next());
         formLayoutRight.addComponent(this.wallCarcassSelection);
@@ -203,6 +222,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.shutterFinishSelection = getSimpleItemFilledCombo("Finish", filteredShutterFinish, null);
         shutterFinishSelection.setRequired(true);
         binder.bind(shutterFinishSelection, SHUTTER_FINISH_CODE);
+        shutterFinishSelection.addValueChangeListener(this::refreshPrice);
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, SimpleComboItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
         if (shutterFinishSelection.size() > 0)
@@ -704,9 +724,16 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
         saveBtn.addClickListener(event -> {
             try {
-                NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                DashboardEventBus.post(new ProposalEvent.ProductCreatedEvent(product));
-                close();
+
+                boolean success = proposalDataProvider.updateProduct(product);
+
+                if (success) {
+                    NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    DashboardEventBus.post(new ProposalEvent.ProductCreatedEvent(product));
+                    close();
+                } else {
+                    NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                }
             } catch (Exception e) {
                 Notification.show("Error while saving Item details",
                         Type.ERROR_MESSAGE);

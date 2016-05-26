@@ -195,8 +195,15 @@ public class ProposalDataProvider {
 
     }
 
-    public JSONArray updateProduct(String productJson) { //includes modules json, header and addons json
-        return null;
+    public boolean updateProduct(Product product) {
+        try {
+            String productJson = this.mapper.writeValueAsString(product);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "update_product", productJson);
+            return !jsonObject.has("error");
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't update product", e);
+        }
     }
 
     public List<Module> getMGModules(String extCode, String extDefCode) {
