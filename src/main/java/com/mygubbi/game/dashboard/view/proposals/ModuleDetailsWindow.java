@@ -37,7 +37,7 @@ import java.util.List;
 public class ModuleDetailsWindow extends Window {
 
     private static final Logger LOG = LogManager.getLogger(ModuleDetailsWindow.class);
-    private final List<MGModule> mgModules;
+    private final List<Module> mgModules;
     private final Product product;
 
     private TextField importedModule;
@@ -56,7 +56,7 @@ public class ModuleDetailsWindow extends Window {
 
     private Module module;
 
-    private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+    private ProposalDataProvider proposalDataProvider = ConfigHolder.getInstance().getProposalDataProvider();
     private final BeanFieldGroup<Module> binder = new BeanFieldGroup<>(Module.class);
 
     private List<SimpleComboItem> shutterFinishMasterList;
@@ -72,7 +72,7 @@ public class ModuleDetailsWindow extends Window {
         this.product = product;
         this.module = module;
         initModule();
-        this.mgModules = proposalDataProvider.getMGModules(module.getImportedModuleCode(), module.getImportedModuleDefaultCode());
+        this.mgModules = proposalDataProvider.getMGModules(module.getExtCode(), module.getExtDefCode());
         this.binder.setItemDataSource(this.module);
 
         setModal(true);
@@ -112,30 +112,29 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void updateValues() {
-        if (!StringUtils.isEmpty(module.getMgModuleCode())) {
-            mgModuleCombo.setValue(module.getMgModuleCode());
+        if (!StringUtils.isEmpty(module.getMgCode())) {
+            mgModuleCombo.setValue(module.getMgCode());
             mgModuleChanged(null);
         }
 
         makeType.setValue(module.getMakeTypeCode());
-        carcassMaterialSelection.setValue(module.getCarcassMaterialCode());
+        carcassMaterialSelection.setValue(module.getCarcassCode());
         finishTypeSelection.setValue(module.getFinishTypeCode());
-        shutterFinishSelection.setValue(module.getShutterFinishCode());
+        shutterFinishSelection.setValue(module.getFinishCode());
     }
 
     private void initModule() {
         if (Module.DEFAULT.equals(module.getMakeTypeText())) {
             module.setMakeTypeCode(product.getMakeTypeCode());
-            //makeType
         }
-        if (Module.DEFAULT.equals(module.getCarcassMaterialText())) {
-            module.setCarcassMaterialCode(product.getCarcassMaterialCode());
+        if (Module.DEFAULT.equals(module.getCarcassText())) {
+            module.setCarcassCode(product.getBaseCarcassCode());
         }
         if (Module.DEFAULT.equals(module.getFinishTypeText())) {
             module.setFinishTypeCode(product.getFinishTypeCode());
         }
-        if (Module.DEFAULT.equals(module.getShutterFinishText())) {
-            module.setShutterFinishCode(product.getShutterFinishCode());
+        if (Module.DEFAULT.equals(module.getFinishText())) {
+            module.setFinishCode(product.getFinishCode());
         }
     }
 
@@ -143,7 +142,7 @@ public class ModuleDetailsWindow extends Window {
         FormLayout formLayoutLeft = new FormLayout();
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-        this.importedModule = (TextField) binder.buildAndBind("Imported Module", "importedModuleText");
+        this.importedModule = (TextField) binder.buildAndBind("Imported Module", Module.IMPORTED_MODULE_TEXT);
         this.importedModule.setReadOnly(true);
         formLayoutLeft.addComponent(importedModule);
         return formLayoutLeft;
@@ -164,7 +163,7 @@ public class ModuleDetailsWindow extends Window {
         horizontalLayout.addComponent(formLayoutLeft);
 
         this.mgModuleCombo = getMGModuleCombo("MG Module");
-        binder.bind(this.mgModuleCombo, "mgModuleCode");
+        binder.bind(this.mgModuleCombo, Module.MG_MODULE_CODE);
         this.mgModuleCombo.addValueChangeListener(this::mgModuleChanged);
         formLayoutLeft.addComponent(this.mgModuleCombo);
 
@@ -211,7 +210,7 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void mgModuleChanged(Property.ValueChangeEvent valueChangeEvent) {
-        MGModule mgModule = ((BeanItem<MGModule>)this.mgModuleCombo.getItem(this.mgModuleCombo.getValue())).getBean();
+        Module mgModule = ((BeanItem<Module>)this.mgModuleCombo.getItem(this.mgModuleCombo.getValue())).getBean();
         if (mgModule == null) {
             this.description.setReadOnly(false);
             this.description.setValue("");
@@ -227,12 +226,12 @@ public class ModuleDetailsWindow extends Window {
             disableApply();
         } else {
             this.description.setReadOnly(false);
-            this.description.setValue(mgModule.getDescription());
+            this.description.setValue(mgModule.getMgDescription());
             this.description.setReadOnly(true);
             this.dimensions.setReadOnly(false);
-            this.dimensions.setValue(mgModule.getDimensions());
+            this.dimensions.setValue(mgModule.getMgDimension());
             this.dimensions.setReadOnly(true);
-            this.moduleImage.setSource(new FileResource(new File(basePath + mgModule.getImagePath())));
+            this.moduleImage.setSource(new FileResource(new File(basePath + mgModule.getMgImage())));
             mgModuleCombo.setNullSelectionAllowed(false);
 
             HorizontalLayout parent = (HorizontalLayout) this.accessoryImageStrip.getParent();
@@ -240,7 +239,9 @@ public class ModuleDetailsWindow extends Window {
             createAccessoryImageStrip();
             parent.addComponent(accessoryImageStrip);
 
-            for (ModuleAccessory moduleAccessory : mgModule.getAccessories()) {
+            mgModule.setMgAccessories(proposalDataProvider.getModuleAccessories(mgModule.getMgCode()));
+
+            for (ModuleAccessory moduleAccessory : mgModule.getMgAccessories()) {
                 accessoryImageStrip.addImage(new FileResource(new File(basePath + moduleAccessory.getImagePath())));
             }
 
@@ -266,12 +267,12 @@ public class ModuleDetailsWindow extends Window {
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         horizontalLayout.addComponent(formLayoutLeft);
 
-        this.makeType = getSimpleItemFilledCombo("Make Type", "make_type_data", null);
-        binder.bind(makeType, "makeTypeCode");
+        this.makeType = getSimpleItemFilledCombo("Make Type", "make_type_data", null, product.getMakeTypeCode());
+        binder.bind(makeType, Module.MAKE_TYPE_CODE);
         formLayoutLeft.addComponent(this.makeType);
 
-        this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", "carcass_material_data", null);
-        binder.bind(carcassMaterialSelection, "carcassMaterialCode");
+        this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", "carcass_material_data", null, product.getBaseCarcassCode());
+        binder.bind(carcassMaterialSelection, Module.CARCASS_MATERIAL_CODE);
         formLayoutLeft.addComponent(this.carcassMaterialSelection);
 
         FormLayout formLayoutRight = new FormLayout();
@@ -279,19 +280,21 @@ public class ModuleDetailsWindow extends Window {
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         horizontalLayout.addComponent(formLayoutRight);
 
-        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", "finish_type_data", null);
-        binder.bind(finishTypeSelection, "finishTypeCode");
+        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", "finish_type_data", null, product.getFinishTypeCode());
+        binder.bind(finishTypeSelection, Module.FINISH_TYPE_CODE);
         formLayoutRight.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
         shutterFinishMasterList = proposalDataProvider.getComboItems("shutter_material_data");
         List<SimpleComboItem> filteredShutterFinish = filterShutterFinishByType();
+        SimpleComboItem defaultItem = filteredShutterFinish.stream().filter(simpleComboItem -> simpleComboItem.getCode().equals(product.getFinishCode())).findFirst().get();
+        defaultItem.setTitle(defaultItem.getTitle() + " (default)");
         this.shutterFinishSelection = getSimpleItemFilledCombo("Finish", filteredShutterFinish, null);
-        binder.bind(shutterFinishSelection, "shutterFinishCode");
+        binder.bind(shutterFinishSelection, Module.SHUTTER_FINISH_CODE);
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
         totalAmount = new TextField("Total Amount");
-        binder.bind(totalAmount, "amount");
+        binder.bind(totalAmount, Module.AMOUNT);
         totalAmount.setReadOnly(true);
         formLayoutRight.addComponent(totalAmount);
 
@@ -300,7 +303,7 @@ public class ModuleDetailsWindow extends Window {
         verticalLayout.addComponent(colorLayout);
 
         this.colorCombo = getColorsCombo("Colors", ConfigHolder.getInstance().getFinishTypeColors().get(module.getFinishTypeCode()).getColors());
-        binder.bind(colorCombo, "colorCode");
+        binder.bind(colorCombo, Module.COLOR_CODE);
         formLayoutLeft.addComponent(this.colorCombo);
 
         return verticalLayout;
@@ -392,20 +395,28 @@ public class ModuleDetailsWindow extends Window {
                 NotificationUtil.showNotification("Problem while applying changes. Please contact GAME Admin", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
 
-            if (!product.getMakeTypeCode().equals(module.getMakeTypeCode())) {
-                module.setMakeTypeText((String) makeType.getItem(module.getMakeTypeCode()).getItemProperty("title").getValue());
+            if (!product.getMakeTypeCode().equals(module.getMakeTypeCode()) || !module.getMakeTypeText().equals(Module.DEFAULT)) {
+                String title = (String) makeType.getItem(module.getMakeTypeCode()).getItemProperty("title").getValue();
+                title = removeDefault(title);
+                module.setMakeTypeText(title);
             }
 
-            if (!product.getCarcassMaterialCode().equals(module.getCarcassMaterialCode())) {
-                module.setCarcassMaterialText((String) carcassMaterialSelection.getItem(module.getCarcassMaterialCode()).getItemProperty("title").getValue());
+            if (!product.getBaseCarcassCode().equals(module.getCarcassCode()) || !module.getCarcassText().equals(Module.DEFAULT)) {
+                String title = (String) carcassMaterialSelection.getItem(module.getCarcassCode()).getItemProperty("title").getValue();
+                title = removeDefault(title);
+                module.setCarcassText(title);
             }
 
-            if (!product.getFinishTypeCode().equals(module.getFinishTypeCode())) {
-                module.setFinishTypeText((String) finishTypeSelection.getItem(module.getFinishTypeCode()).getItemProperty("title").getValue());
+            if (!product.getFinishTypeCode().equals(module.getFinishTypeCode()) || !module.getFinishTypeText().equals(Module.DEFAULT)) {
+                String title = (String) finishTypeSelection.getItem(module.getFinishTypeCode()).getItemProperty("title").getValue();
+                title = removeDefault(title);
+                module.setFinishTypeText(title);
             }
 
-            if (!product.getShutterFinishCode().equals(module.getShutterFinishCode())) {
-                module.setShutterFinishText((String) shutterFinishSelection.getItem(module.getShutterFinishCode()).getItemProperty("title").getValue());
+            if (!product.getFinishCode().equals(module.getFinishCode()) || !module.getFinishText().equals(Module.DEFAULT)) {
+                String title = (String) shutterFinishSelection.getItem(module.getFinishCode()).getItemProperty("title").getValue();
+                title = removeDefault(title);
+                module.setFinishText(title);
             }
 
             mgModuleCombo.removeValueChangeListener(this::mgModuleChanged);
@@ -427,8 +438,12 @@ public class ModuleDetailsWindow extends Window {
         return footer;
     }
 
+    private String removeDefault(String title) {
+        int defaultIndex = title.indexOf(" (default)");
+        return defaultIndex == -1 ? title : title.substring(0, defaultIndex);
+    }
+
     public static void open(Module module, Product product) {
-        //DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
         Window w = new ModuleDetailsWindow(module, product);
         UI.getCurrent().addWindow(w);
         w.focus();
@@ -469,21 +484,29 @@ public class ModuleDetailsWindow extends Window {
         return select;
     }
 
-    private ComboBox getSimpleItemFilledCombo(String caption, String dataType, Property.ValueChangeListener listener) {
+    private ComboBox getSimpleItemFilledCombo(String caption, String dataType, Property.ValueChangeListener listener, String defaultCode) {
         List<SimpleComboItem> list = proposalDataProvider.getComboItems(dataType);
+
+        if (StringUtils.isNotEmpty(defaultCode)) {
+            for (SimpleComboItem item : list) {
+                if (item.getCode().equals(defaultCode)) {
+                    item.setTitle(item.getTitle() + " (default)");
+                }
+            }
+        }
         return getSimpleItemFilledCombo(caption, list, listener);
     }
 
     private ComboBox getMGModuleCombo(String caption) {
-        final BeanContainer<String, MGModule> container =
-                new BeanContainer<>(MGModule.class);
-        container.setBeanIdProperty("code");
+        final BeanContainer<String, Module> container =
+                new BeanContainer<>(Module.class);
+        container.setBeanIdProperty(Module.MG_MODULE_CODE);
         container.addAll(mgModules);
         ComboBox select = new ComboBox(caption);
         select.setNullSelectionAllowed(true);
         select.setWidth("250px");
         select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId("code");
+        select.setItemCaptionPropertyId(Module.MG_MODULE_CODE);
         return select;
     }
 }

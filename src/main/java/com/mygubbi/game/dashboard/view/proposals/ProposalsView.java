@@ -1,7 +1,9 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
 import com.google.common.eventbus.Subscribe;
+import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
+import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
@@ -26,7 +28,7 @@ import java.util.Map;
 public final class ProposalsView extends TabSheet implements View {
 
     private Grid grid;
-    private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+    private ProposalDataProvider proposalDataProvider = ConfigHolder.getInstance().getProposalDataProvider();
 
     public ProposalsView() {
         addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
@@ -38,7 +40,7 @@ public final class ProposalsView extends TabSheet implements View {
 
         addTab(root);
         Responsive.makeResponsive(root);
-        List<ProposalHeader> proposalHeaders = getProposalsListing(null);
+        List<ProposalHeader> proposalHeaders = getProposalsListing();
         root.addComponent(buildHeader(proposalHeaders));
         root.setSpacing(true);
 
@@ -60,7 +62,9 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Grid(container);
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
-        grid.setColumns("crmId", "quotationNo", "proposalTitle", "status", "salesContactName", "designContactName", "amount", "createDate", "createdBy");
+        grid.setColumns(ProposalHeader.CRM_ID, ProposalHeader.QUOTE_NO, ProposalHeader.TITLE, ProposalHeader.STATUS,
+                ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.AMOUNT, ProposalHeader.CREATED_ON,
+                ProposalHeader.CREATED_BY);
 
         List<Grid.Column> columns = grid.getColumns();
         int idx = 0;
@@ -76,21 +80,21 @@ public final class ProposalsView extends TabSheet implements View {
 
         GridCellFilter filter = new GridCellFilter(grid);
 
-        filter.setNumberFilter("amount");
-        filter.setTextFilter("proposalTitle", true, false);
-        filter.setTextFilter("crmId", true, true);
-        filter.setTextFilter("quotationNo", true, true);
-        filter.setTextFilter("status", true, true);
-        filter.setTextFilter("createdBy", true, true);
-        filter.setTextFilter("designContactName", true, true);
-        filter.setTextFilter("salesContactName", true, true);
-        filter.setDateFilter("createDate");
+        filter.setNumberFilter(ProposalHeader.AMOUNT);
+        filter.setTextFilter(ProposalHeader.TITLE, true, false);
+        filter.setTextFilter(ProposalHeader.CRM_ID, true, true);
+        filter.setTextFilter(ProposalHeader.QUOTE_NO, true, true);
+        filter.setTextFilter(ProposalHeader.STATUS, true, true);
+        filter.setTextFilter(ProposalHeader.CREATED_BY, true, true);
+        filter.setTextFilter(ProposalHeader.DESIGNER_NAME, true, true);
+        filter.setTextFilter(ProposalHeader.SALES_NAME, true, true);
+        filter.setDateFilter(ProposalHeader.CREATED_ON);
 
         grid.addSelectionListener(selectionEvent -> {
                     if (!selectionEvent.getAdded().isEmpty()) {
                         Object selected = ((Grid.SingleSelectionModel) grid.getSelectionModel()).getSelectedRow();
-                        String title = grid.getContainerDataSource().getItem(selected).getItemProperty("proposalTitle").getValue().toString();
-                        int proposalId = (Integer) grid.getContainerDataSource().getItem(selected).getItemProperty("proposalId").getValue();
+                        String title = grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.TITLE).getValue().toString();
+                        int proposalId = (Integer) grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.ID).getValue();
                         final ProposalDetailsView proposalDetailsView = new ProposalDetailsView(proposalId, title);
                         addTab(proposalDetailsView).setClosable(true);
                         setSelectedTab(getComponentCount() - 1);
@@ -110,7 +114,7 @@ public final class ProposalsView extends TabSheet implements View {
 
     @Subscribe
     public void proposalsDataUpdated(final ProposalEvent.ProposalUpdated event) {
-        List<ProposalHeader> proposalHeaders = getProposalsListing(null);
+        List<ProposalHeader> proposalHeaders = getProposalsListing();
         this.grid.setContainerDataSource(buildDataContainer(proposalHeaders));
     }
 
@@ -164,15 +168,19 @@ public final class ProposalsView extends TabSheet implements View {
     private void filterByStatus(Button.ClickEvent clickEvent) {
         String status = (String) clickEvent.getButton().getData();
         BeanItemContainer containerDataSource = (BeanItemContainer) this.grid.getContainerDataSource();
-        containerDataSource.removeContainerFilters("status");
+        containerDataSource.removeContainerFilters(ProposalHeader.STATUS);
 
         if (!status.equals("all")) {
-            containerDataSource.addContainerFilter(new SimpleStringFilter("status", status, true, true));
+            containerDataSource.addContainerFilter(new SimpleStringFilter(ProposalHeader.STATUS, status, true, true));
         }
     }
 
-    private List<ProposalHeader> getProposalsListing(String proposalClass) {
-        return proposalDataProvider.getProposalHeaders(proposalClass);
+    private List<ProposalHeader> getProposalsListing() {
+        return proposalDataProvider.getProposalHeaders();
+    }
+
+    private List<ProposalHeader> getProposalsListingByStatus(String proposalStatus) {
+        return proposalDataProvider.getProposalHeadersByStatus(proposalStatus);
     }
 
     @Override

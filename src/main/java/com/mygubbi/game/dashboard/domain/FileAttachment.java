@@ -1,17 +1,20 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.Date;
+
 /**
  * Created by nitinpuri on 01-05-2016.
  */
 public class FileAttachment {
-    private String fileName;
+    private int id;
     private String title;
-    private String uploadPath;
+    private String fileName;
+    private String uploadedBy;
+    private Date uploadedOn;
 
-    public FileAttachment(String fileName, String title, String uploadPath) {
+    public FileAttachment(String fileName, String title) {
         this.fileName = fileName;
         this.title = title;
-        this.uploadPath = uploadPath;
     }
 
     public String getFileName() {
@@ -30,11 +33,4 @@ public class FileAttachment {
         this.title = title;
     }
 
-    public String getUploadPath() {
-        return uploadPath;
-    }
-
-    public void setUploadPath(String uploadPath) {
-        this.uploadPath = uploadPath;
-    }
 }

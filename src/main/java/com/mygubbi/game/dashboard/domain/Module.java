@@ -12,40 +12,81 @@ public class Module {
     public static final String DEFAULT = "default";
 
     public void setGenerated() {
-        if (importStatus.equals(ImportStatus.default_matched.name())) {
-            importedModuleText = importedModuleCode + " / " + importedModuleDefaultCode;
+        if (importStatus.equals(ImportStatusType.d.name())) {
+            extText = extCode + " / " + extDefCode;
         } else {
-            importedModuleText = importedModuleCode;
+            extText = extCode;
         }
     }
 
-    public enum ImportStatus {success, default_matched, error}
+    public enum ImportStatusType {m, d, n}
+
+    public static final String SEQ = "seq";
+    public static final String UNIT_TYPE = "unitType";
+    public static final String IMPORTED_MODULE_CODE = "extCode";
+    public static final String IMPORTED_MODULE_DEFAULT_CODE = "extDefCode";
+    public static final String IMPORTED_MODULE_TEXT = "extText";
+    public static final String MG_MODULE_CODE = "mgCode";
+    public static final String MG_TYPE = "mgType";
+    public static final String MG_IMAGE = "mgImage";
+    public static final String MG_DIMENSION = "mgDimension";
+    public static final String MG_DESCRIPTION = "mgDescription";
+    public static final String MG_ACCESSORIES = "mgAccessories";
+    public static final String MAKE_TYPE = "makeType";
+    public static final String MAKE_TYPE_CODE = "makeTypeCode";
+    public static final String MAKE_TYPE_TEXT = "makeTypeText";
+    public static final String CARCASS_MATERIAL = "carcass";
+    public static final String CARCASS_MATERIAL_CODE = "carcassCode";
+    public static final String CARCASS_MATERIAL_TEXT = "carcassText";
+    public static final String FINISH_TYPE = "finishType";
+    public static final String FINISH_TYPE_CODE = "finishTypeCode";
+    public static final String FINISH_TYPE_TEXT = "finishTypeText";
+    public static final String SHUTTER_FINISH = "finish";
+    public static final String SHUTTER_FINISH_CODE = "finishCode";
+    public static final String SHUTTER_FINISH_TEXT = "finishText";
+    public static final String COLOR_CODE = "colorCode";
+    public static final String COLOR_NAME = "colorName";
+    public static final String COLOR_IMAGE_PATH = "colorImagePath";
+    public static final String AMOUNT = "amount";
+    public static final String IMPORT_STATUS = "importStatus";
+    public static final String MG_MODULES = "mgModules";
+    public static final String MODULE_PRICE = "modulePrice";
+    public static final String REMARKS = "remarks";
 
     private int seq;
-    private String importedModuleCode;
-    private String importedModuleDefaultCode;
-    private String importedModuleText;
-    private String mgModuleCode;
-    private String makeType;
-    private String makeTypeCode;
-    private String makeTypeText;
-    private String carcassMaterial;
-    private String carcassMaterialCode;
-    private String carcassMaterialText;
+    private String unitType;
+    private String extCode;
+    private String extDefCode;
+    private String extText;
+    private String mgCode;
+    private String mgType;
+    private String mgImage;
+    private String mgDimension;
+    private String mgDescription;
+    private List<ModuleAccessory> mgAccessories; //todo: make transient
+
+    private String carcass;
+    private String carcassCode;
+    private String carcassText;
     private String finishType;
     private String finishTypeCode;
     private String finishTypeText;
-    private String shutterFinish;
-    private String shutterFinishCode;
-    private String shutterFinishText;
+    private String finish;
+    private String finishCode;
+    private String finishText;
     private String colorCode;
     private String colorName;
     private String colorImagePath;
+    private String makeType;
+    private String makeTypeCode;
+    private String makeTypeText;
     private double amount;
+    private String remarks;
     private String importStatus;
-    private List<MGModule> mgModules = new ArrayList<>();
-    private Map<String, String> mgModuleImageMap;
-    private ModulePrice modulePrice;
+
+    private List<MGModule> mgModules = new ArrayList<>();  //todo: make transient
+    private Map<String, String> mgModuleImageMap;  //todo: make transient
+    private ModulePrice modulePrice;  //todo: make transient
 
     public int getSeq() {
         return seq;
@@ -55,28 +96,28 @@ public class Module {
         this.seq = seq;
     }
 
-    public String getImportedModuleCode() {
-        return importedModuleCode;
+    public String getExtCode() {
+        return extCode;
     }
 
-    public void setImportedModuleCode(String importedModuleCode) {
-        this.importedModuleCode = importedModuleCode;
+    public void setExtCode(String extCode) {
+        this.extCode = extCode;
     }
 
-    public String getMgModuleCode() {
-        return mgModuleCode;
+    public String getMgCode() {
+        return mgCode;
     }
 
-    public void setMgModuleCode(String mgModuleCode) {
-        this.mgModuleCode = mgModuleCode;
+    public void setMgCode(String mgCode) {
+        this.mgCode = mgCode;
     }
 
-    public String getCarcassMaterial() {
-        return carcassMaterial;
+    public String getCarcass() {
+        return carcass;
     }
 
-    public void setCarcassMaterial(String carcassMaterial) {
-        this.carcassMaterial = carcassMaterial;
+    public void setCarcass(String carcass) {
+        this.carcass = carcass;
     }
 
     public String getColorCode() {
@@ -111,12 +152,12 @@ public class Module {
         this.mgModuleImageMap = mgModuleImageMap;
     }
 
-    public String getImportedModuleDefaultCode() {
-        return importedModuleDefaultCode;
+    public String getExtDefCode() {
+        return extDefCode;
     }
 
-    public void setImportedModuleDefaultCode(String importedModuleDefaultCode) {
-        this.importedModuleDefaultCode = importedModuleDefaultCode;
+    public void setExtDefCode(String extDefCode) {
+        this.extDefCode = extDefCode;
     }
 
     public String getMakeType() {
@@ -135,12 +176,12 @@ public class Module {
         this.makeTypeCode = makeTypeCode;
     }
 
-    public String getCarcassMaterialCode() {
-        return carcassMaterialCode;
+    public String getCarcassCode() {
+        return carcassCode;
     }
 
-    public void setCarcassMaterialCode(String carcassMaterialCode) {
-        this.carcassMaterialCode = carcassMaterialCode;
+    public void setCarcassCode(String carcassCode) {
+        this.carcassCode = carcassCode;
     }
 
     public String getFinishType() {
@@ -159,28 +200,28 @@ public class Module {
         this.finishTypeCode = finishTypeCode;
     }
 
-    public String getShutterFinish() {
-        return shutterFinish;
+    public String getFinish() {
+        return finish;
     }
 
-    public void setShutterFinish(String shutterFinish) {
-        this.shutterFinish = shutterFinish;
+    public void setFinish(String finish) {
+        this.finish = finish;
     }
 
-    public String getShutterFinishCode() {
-        return shutterFinishCode;
+    public String getFinishCode() {
+        return finishCode;
     }
 
-    public void setShutterFinishCode(String shutterFinishCode) {
-        this.shutterFinishCode = shutterFinishCode;
+    public void setFinishCode(String finishCode) {
+        this.finishCode = finishCode;
     }
 
-    public String getImportedModuleText() {
-        return importedModuleText;
+    public String getExtText() {
+        return extText;
     }
 
-    public void setImportedModuleText(String importedModuleText) {
-        this.importedModuleText = importedModuleText;
+    public void setExtText(String extText) {
+        this.extText = extText;
     }
 
     public String getMakeTypeText() {
@@ -191,12 +232,12 @@ public class Module {
         this.makeTypeText = makeTypeText;
     }
 
-    public String getCarcassMaterialText() {
-        return carcassMaterialText;
+    public String getCarcassText() {
+        return carcassText;
     }
 
-    public void setCarcassMaterialText(String carcassMaterialText) {
-        this.carcassMaterialText = carcassMaterialText;
+    public void setCarcassText(String carcassText) {
+        this.carcassText = carcassText;
     }
 
     public String getFinishTypeText() {
@@ -207,12 +248,12 @@ public class Module {
         this.finishTypeText = finishTypeText;
     }
 
-    public String getShutterFinishText() {
-        return shutterFinishText;
+    public String getFinishText() {
+        return finishText;
     }
 
-    public void setShutterFinishText(String shutterFinishText) {
-        this.shutterFinishText = shutterFinishText;
+    public void setFinishText(String finishText) {
+        this.finishText = finishText;
     }
 
     public List<MGModule> getMgModules() {
@@ -245,6 +286,62 @@ public class Module {
 
     public void setModulePrice(ModulePrice modulePrice) {
         this.modulePrice = modulePrice;
+    }
+
+    public String getUnitType() {
+        return unitType;
+    }
+
+    public void setUnitType(String unitType) {
+        this.unitType = unitType;
+    }
+
+    public String getMgType() {
+        return mgType;
+    }
+
+    public void setMgType(String mgType) {
+        this.mgType = mgType;
+    }
+
+    public String getMgImage() {
+        return mgImage;
+    }
+
+    public void setMgImage(String mgImage) {
+        this.mgImage = mgImage;
+    }
+
+    public String getMgDimension() {
+        return mgDimension;
+    }
+
+    public void setMgDimension(String mgDimension) {
+        this.mgDimension = mgDimension;
+    }
+
+    public List<ModuleAccessory> getMgAccessories() {
+        return mgAccessories;
+    }
+
+    public void setMgAccessories(List<ModuleAccessory> mgAccessories) {
+        this.mgAccessories = mgAccessories;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public String getMgDescription() {
+        return mgDescription;
+    }
+
+    public void setMgDescription(String mgDescription) {
+        this.mgDescription = mgDescription;
     }
 
     @Override

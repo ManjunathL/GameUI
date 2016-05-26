@@ -1,6 +1,9 @@
 package com.mygubbi.game.dashboard.domain;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,40 +17,80 @@ public class Product {
         }
     }
 
-    public enum TYPE {CUSTOMIZED, CATALOGUE};
+    public boolean hasImportErrorStatus() {
+        return this.getModules().stream().anyMatch(module -> module.getImportStatus().equals(Module.ImportStatusType.n.name()));
+    }
 
+    public boolean allModulesMapped() {
+        return this.getModules().stream().allMatch(module -> StringUtils.isNotEmpty(module.getMgCode()));
+    }
+
+    public enum TYPES {CUSTOMIZED, CATALOGUE};
+
+    public static final String PROPOSAL_ID = "proposalId";
+    public static final String PRODUCT_ID = "id";
+    public static final String SEQ = "seq";
+    public static final String TITLE = "title";
+    public static final String PRODUCT_CATEGORY = "productCategory";
+    public static final String PRODUCT_CATEGORY_CODE = "productCategoryCode";
+    public static final String ROOM = "room";
+    public static final String ROOM_CODE = "roomCode";
+    public static final String MAKE_TYPE = "makeType";
+    public static final String MAKE_TYPE_CODE = "makeTypeCode";
+    public static final String CARCASS_MATERIAL = "baseCarcass";
+    public static final String CARCASS_MATERIAL_CODE = "baseCarcassCode";
+    public static final String FINISH_TYPE = "finishType";
+    public static final String FINISH_TYPE_CODE = "finishTypeCode";
+    public static final String SHUTTER_FINISH = "finish";
+    public static final String SHUTTER_FINISH_CODE = "finishCode";
+    public static final String AMOUNT = "amount";
+    public static final String TYPE = "type";
+    public static final String QTY = "quantity";
+    public static final String QUOTE_FILE_PATH = "quoteFilePath";
+    public static final String MODULES = "modules";
+    public static final String ADDONS = "addons";
+    public static final String FILE_ATTACHMENT_LIST = "fileAttachmentList";
+
+    private int id;
     private int proposalId;
-    private int productId;
-    private int seq;
     private String title;
+    private int seq;
     private String productCategory;
     private String productCategoryCode;
     private String room;
     private String roomCode;
+    private String catalogueName;
+    private String catalogueId;
     private String makeType;
     private String makeTypeCode;
-    private String carcassMaterial;
-    private String carcassMaterialCode;
+    private String baseCarcass;
+    private String baseCarcassCode;
+    private String wallCarcass;
+    private String wallCarcassCode;
     private String finishType;
     private String finishTypeCode;
-    private String shutterFinish;
-    private String shutterFinishCode;
+    private String finish;
+    private String finishCode;
+    private String dimension;
     private double amount;
+    private int quantity = 1;
     private String type;
-    private int qty = 1;
-
     private String quoteFilePath;
+    private Date createdOn;
+    private String createdBy;
+    private Date updatedOn;
+    private String updatedBy;
 
     private List<Module> modules = new ArrayList<>();
     private List<Addon> addons = new ArrayList<>();
     private List<FileAttachment> fileAttachmentList = new ArrayList<>();
 
-    public int getProductId() {
-        return productId;
+    public int getId() {
+        return id;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getSeq() {
@@ -82,20 +125,20 @@ public class Product {
         this.productCategory = productCategory;
     }
 
-    public String getCarcassMaterial() {
-        return carcassMaterial;
+    public String getBaseCarcass() {
+        return baseCarcass;
     }
 
-    public void setCarcassMaterial(String carcassMaterial) {
-        this.carcassMaterial = carcassMaterial;
+    public void setBaseCarcass(String baseCarcass) {
+        this.baseCarcass = baseCarcass;
     }
 
-    public String getShutterFinish() {
-        return shutterFinish;
+    public String getFinish() {
+        return finish;
     }
 
-    public void setShutterFinish(String shutterFinish) {
-        this.shutterFinish = shutterFinish;
+    public void setFinish(String finish) {
+        this.finish = finish;
     }
 
     public String getFinishType() {
@@ -158,12 +201,12 @@ public class Product {
         this.makeTypeCode = makeTypeCode;
     }
 
-    public String getCarcassMaterialCode() {
-        return carcassMaterialCode;
+    public String getBaseCarcassCode() {
+        return baseCarcassCode;
     }
 
-    public void setCarcassMaterialCode(String carcassMaterialCode) {
-        this.carcassMaterialCode = carcassMaterialCode;
+    public void setBaseCarcassCode(String baseCarcassCode) {
+        this.baseCarcassCode = baseCarcassCode;
     }
 
     public String getFinishTypeCode() {
@@ -174,12 +217,12 @@ public class Product {
         this.finishTypeCode = finishTypeCode;
     }
 
-    public String getShutterFinishCode() {
-        return shutterFinishCode;
+    public String getFinishCode() {
+        return finishCode;
     }
 
-    public void setShutterFinishCode(String shutterFinishCode) {
-        this.shutterFinishCode = shutterFinishCode;
+    public void setFinishCode(String finishCode) {
+        this.finishCode = finishCode;
     }
 
     public void setType(String type) {
@@ -218,11 +261,11 @@ public class Product {
         this.proposalId = proposalId;
     }
 
-    public int getQty() {
-        return qty;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setQty(int qty) {
-        this.qty = qty;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

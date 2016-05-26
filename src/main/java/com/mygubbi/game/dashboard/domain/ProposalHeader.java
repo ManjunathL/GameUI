@@ -7,62 +7,92 @@ import java.util.Date;
  */
 public class ProposalHeader {
 
-    private int proposalId;
-    private String proposalTitle;
-    private String proposalVersion;
-    private String crmId;
-    private String quotationNo;
-    private double amount;
-    private Date createDate;
-    private String createdBy;
+    public static final String ID = "id";
+    public static final String STATUS = "status";
+    public static final String TITLE = "title";
+    public static final String VERSION = "version";
+    public static final String CRM_ID = "crmId";
+    public static final String QUOTE_NO = "quoteNo";
+    public static final String CUSTOMER_ID = "customerId";
+    public static final String C_NAME = "cname";
+    public static final String C_ADDRESS1 = "caddress1";
+    public static final String C_ADDRESS2 = "caddress2";
+    public static final String C_ADDRESS3 = "caddress3";
+    public static final String C_CITY = "ccity";
+    public static final String C_EMAIL = "cemail";
+    public static final String C_PHONE1 = "cphone1";
+    public static final String C_PHONE2 = "cphone2";
+    public static final String PROJECT_NAME = "projectName";
+    public static final String P_ADDRESS1 = "paddress1";
+    public static final String P_ADDRESS2 = "paddress2";
+    public static final String P_CITY = "pcity";
+    public static final String SALES_NAME = "salesName";
+    public static final String SALES_EMAIL = "salesEmail";
+    public static final String SALES_PHONE = "salesPhone";
+    public static final String DESIGNER_NAME = "designerName";
+    public static final String DESIGNER_EMAIL = "designerEmail";
+    public static final String DESIGNER_PHONE = "designerPhone";
+    public static final String AMOUNT = "amount";
+    public static final String FOLDER_PATH = "folderPath";
+    public static final String CREATED_ON = "createdOn";
+    public static final String CREATED_BY = "createdBy";
+    public static final String UPDATED_ON = "updatedOn";
+    public static final String UPDATED_BY = "updatedBy";
+
+    private int id;
     private String status;
-    private String folderPath;
-
+    private String title;
+    private String version;
+    private String crmId;
+    private String quoteNo;
     private String customerId;
-    private String customerName;
-    private String customerAddressLine1;
-    private String customerAddressLine2;
-    private String customerAddressLine3;
-    private String customerCity;
-    private String customerEmail;
-    private String customerPhone1;
-    private String customerPhone2;
-
+    private String cname;
+    private String caddress1;
+    private String caddress2;
+    private String caddress3;
+    private String ccity;
+    private String cemail;
+    private String cphone1;
+    private String cphone2;
     private String projectName;
-    private String projectAddressLine1;
-    private String projectAddressLine2;
-    private String projectCity;
+    private String paddress1;
+    private String paddress2;
+    private String pcity;
+    private String salesName;
+    private String salesEmail;
+    private String salesPhone;
+    private String designerName;
+    private String designerEmail;
+    private String designerPhone;
+    private double amount;
+    private String folderPath;
+    private Date createdOn;
+    private String createdBy;
+    private Date updatedOn;
+    private String updatedBy;
 
-    private String salesContactName;
-    private String salesContactEmail;
-    private String salesContactPhone;
-
-    private String designContactName;
-    private String designContactEmail;
-    private String designContactPhone;
-
-    public int getProposalId() {
-        return proposalId;
+    public int getId() {
+        return id;
     }
 
-    public void setProposalId(int proposalId) {
-        this.proposalId = proposalId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getProposalTitle() {
-        return proposalTitle;
+    public String getTitle() {
+        return title;
     }
 
-    public void setProposalTitle(String proposalTitle) {
-        this.proposalTitle = proposalTitle;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getProposalVersion() {
-        return proposalVersion;
+    public String getVersion() {
+        return version;
     }
 
-    public void setProposalVersion(String proposalVersion) {
-        this.proposalVersion = proposalVersion;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public String getCrmId() {
@@ -73,12 +103,12 @@ public class ProposalHeader {
         this.crmId = crmId;
     }
 
-    public String getQuotationNo() {
-        return quotationNo;
+    public String getQuoteNo() {
+        return quoteNo;
     }
 
-    public void setQuotationNo(String quotationNo) {
-        this.quotationNo = quotationNo;
+    public void setQuoteNo(String quoteNo) {
+        this.quoteNo = quoteNo;
     }
 
     public double getAmount() {
@@ -97,12 +127,12 @@ public class ProposalHeader {
         this.status = status;
     }
 
-    public Date getCreateDate() {
-        return createDate;
+    public Date getCreatedOn() {
+        return createdOn;
     }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
     }
 
     public String getCreatedBy() {
@@ -121,68 +151,68 @@ public class ProposalHeader {
         this.customerId = customerId;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getCname() {
+        return cname;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setCname(String cname) {
+        this.cname = cname;
     }
 
-    public String getCustomerAddressLine1() {
-        return customerAddressLine1;
+    public String getCaddress1() {
+        return caddress1;
     }
 
-    public void setCustomerAddressLine1(String customerAddressLine1) {
-        this.customerAddressLine1 = customerAddressLine1;
+    public void setCaddress1(String caddress1) {
+        this.caddress1 = caddress1;
     }
 
-    public String getCustomerAddressLine2() {
-        return customerAddressLine2;
+    public String getCaddress2() {
+        return caddress2;
     }
 
-    public void setCustomerAddressLine2(String customerAddressLine2) {
-        this.customerAddressLine2 = customerAddressLine2;
+    public void setCaddress2(String caddress2) {
+        this.caddress2 = caddress2;
     }
 
-    public String getCustomerAddressLine3() {
-        return customerAddressLine3;
+    public String getCaddress3() {
+        return caddress3;
     }
 
-    public void setCustomerAddressLine3(String customerAddressLine3) {
-        this.customerAddressLine3 = customerAddressLine3;
+    public void setCaddress3(String caddress3) {
+        this.caddress3 = caddress3;
     }
 
-    public String getCustomerCity() {
-        return customerCity;
+    public String getCcity() {
+        return ccity;
     }
 
-    public void setCustomerCity(String customerCity) {
-        this.customerCity = customerCity;
+    public void setCcity(String ccity) {
+        this.ccity = ccity;
     }
 
-    public String getCustomerEmail() {
-        return customerEmail;
+    public String getCemail() {
+        return cemail;
     }
 
-    public void setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
+    public void setCemail(String cemail) {
+        this.cemail = cemail;
     }
 
-    public String getCustomerPhone1() {
-        return customerPhone1;
+    public String getCphone1() {
+        return cphone1;
     }
 
-    public void setCustomerPhone1(String customerPhone1) {
-        this.customerPhone1 = customerPhone1;
+    public void setCphone1(String cphone1) {
+        this.cphone1 = cphone1;
     }
 
-    public String getCustomerPhone2() {
-        return customerPhone2;
+    public String getCphone2() {
+        return cphone2;
     }
 
-    public void setCustomerPhone2(String customerPhone2) {
-        this.customerPhone2 = customerPhone2;
+    public void setCphone2(String cphone2) {
+        this.cphone2 = cphone2;
     }
 
     public String getProjectName() {
@@ -193,76 +223,76 @@ public class ProposalHeader {
         this.projectName = projectName;
     }
 
-    public String getProjectAddressLine1() {
-        return projectAddressLine1;
+    public String getPaddress1() {
+        return paddress1;
     }
 
-    public void setProjectAddressLine1(String projectAddressLine1) {
-        this.projectAddressLine1 = projectAddressLine1;
+    public void setPaddress1(String paddress1) {
+        this.paddress1 = paddress1;
     }
 
-    public String getProjectAddressLine2() {
-        return projectAddressLine2;
+    public String getPaddress2() {
+        return paddress2;
     }
 
-    public void setProjectAddressLine2(String projectAddressLine2) {
-        this.projectAddressLine2 = projectAddressLine2;
+    public void setPaddress2(String paddress2) {
+        this.paddress2 = paddress2;
     }
 
-    public String getProjectCity() {
-        return projectCity;
+    public String getPcity() {
+        return pcity;
     }
 
-    public void setProjectCity(String projectCity) {
-        this.projectCity = projectCity;
+    public void setPcity(String pcity) {
+        this.pcity = pcity;
     }
 
-    public String getSalesContactName() {
-        return salesContactName;
+    public String getSalesName() {
+        return salesName;
     }
 
-    public void setSalesContactName(String salesContactName) {
-        this.salesContactName = salesContactName;
+    public void setSalesName(String salesName) {
+        this.salesName = salesName;
     }
 
-    public String getSalesContactEmail() {
-        return salesContactEmail;
+    public String getSalesEmail() {
+        return salesEmail;
     }
 
-    public void setSalesContactEmail(String salesContactEmail) {
-        this.salesContactEmail = salesContactEmail;
+    public void setSalesEmail(String salesEmail) {
+        this.salesEmail = salesEmail;
     }
 
-    public String getSalesContactPhone() {
-        return salesContactPhone;
+    public String getSalesPhone() {
+        return salesPhone;
     }
 
-    public void setSalesContactPhone(String salesContactPhone) {
-        this.salesContactPhone = salesContactPhone;
+    public void setSalesPhone(String salesPhone) {
+        this.salesPhone = salesPhone;
     }
 
-    public String getDesignContactName() {
-        return designContactName;
+    public String getDesignerName() {
+        return designerName;
     }
 
-    public void setDesignContactName(String designContactName) {
-        this.designContactName = designContactName;
+    public void setDesignerName(String designerName) {
+        this.designerName = designerName;
     }
 
-    public String getDesignContactEmail() {
-        return designContactEmail;
+    public String getDesignerEmail() {
+        return designerEmail;
     }
 
-    public void setDesignContactEmail(String designContactEmail) {
-        this.designContactEmail = designContactEmail;
+    public void setDesignerEmail(String designerEmail) {
+        this.designerEmail = designerEmail;
     }
 
-    public String getDesignContactPhone() {
-        return designContactPhone;
+    public String getDesignerPhone() {
+        return designerPhone;
     }
 
-    public void setDesignContactPhone(String designContactPhone) {
-        this.designContactPhone = designContactPhone;
+    public void setDesignerPhone(String designerPhone) {
+        this.designerPhone = designerPhone;
     }
 
     public String getFolderPath() {
@@ -271,5 +301,21 @@ public class ProposalHeader {
 
     public void setFolderPath(String folderPath) {
         this.folderPath = folderPath;
+    }
+
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

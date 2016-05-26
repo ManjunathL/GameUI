@@ -34,6 +34,8 @@ public class ConfigHolder {
     private Map<String, FinishTypeColor> finishTypeColors;
     private Map<String, Color> colors;
     private final String imageBasePath;
+    private final String dataProviderUtilName;
+    private final ProposalDataProvider proposalDataProvider;
 
     private ConfigHolder() {
 
@@ -42,8 +44,9 @@ public class ConfigHolder {
         loadConfig(configFileList);
 
         imageBasePath = getStringValue("imageBasePath", "");
+        dataProviderUtilName = getStringValue("dataProviderUtil", "");
 
-        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+        proposalDataProvider = new ProposalDataProvider(dataProviderUtilName);
 
         finishTypeColors = proposalDataProvider.getFinishTypeColors().stream().collect(
                 Collectors.toMap(FinishTypeColor::getFinishTypeCode, Function.identity()));
@@ -58,6 +61,10 @@ public class ConfigHolder {
                     }
             );
         }
+    }
+
+    public ProposalDataProvider getProposalDataProvider() {
+        return proposalDataProvider;
     }
 
     public static ConfigHolder getInstance() {

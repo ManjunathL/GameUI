@@ -7,7 +7,7 @@ import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
-import com.mygubbi.game.dashboard.domain.Module.ImportStatus;
+import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
@@ -39,6 +39,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.*;
 
+import static com.mygubbi.game.dashboard.domain.Product.*;
+
 @SuppressWarnings("serial")
 public class CustomizedProductDetailsWindow extends Window {
 
@@ -64,7 +66,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private Product product = new Product();
     private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
 
-    private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+    private ProposalDataProvider proposalDataProvider = ConfigHolder.getInstance().getProposalDataProvider();
     private List<SimpleComboItem> shutterFinishMasterList;
     private BeanItemContainer<Module> moduleContainer;
     private Grid modulesGrid;
@@ -75,7 +77,7 @@ public class CustomizedProductDetailsWindow extends Window {
         DashboardEventBus.register(this);
 
         this.proposal = proposal;
-        this.product.setProposalId(proposal.getProposalHeader().getProposalId());
+        this.product.setProposalId(proposal.getProposalHeader().getId());
         this.binder.setItemDataSource(this.product);
 
         setModal(true);
@@ -125,7 +127,7 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        itemTitleField = (TextField) binder.buildAndBind("Product Title", "title");
+        itemTitleField = (TextField) binder.buildAndBind("Product Title", TITLE);
         itemTitleField.setRequired(true);
         itemTitleField.setNullRepresentation("");
         itemTitleField.setImmediate(true);
@@ -133,10 +135,10 @@ public class CustomizedProductDetailsWindow extends Window {
 
         this.productSelection = getSimpleItemFilledCombo("Product Category", "product_data", null);
         productSelection.setRequired(true);
-        binder.bind(productSelection, "productCategoryCode");
+        binder.bind(productSelection, PRODUCT_CATEGORY_CODE);
         productSelection.addValueChangeListener(valueChangeEvent -> {
             String code = (String) valueChangeEvent.getProperty().getValue();
-            String title = (String) ((ComboBox)((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
+            String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
             product.setProductCategory(title);
         });
         if (productSelection.size() > 0) productSelection.setValue(productSelection.getItemIds().iterator().next());
@@ -144,10 +146,10 @@ public class CustomizedProductDetailsWindow extends Window {
 
         this.roomSelection = getSimpleItemFilledCombo("Room", "room_data", null);
         roomSelection.setRequired(true);
-        binder.bind(roomSelection, "roomCode");
+        binder.bind(roomSelection, ROOM_CODE);
         roomSelection.addValueChangeListener(valueChangeEvent -> {
             String code = (String) valueChangeEvent.getProperty().getValue();
-            String title = (String) ((ComboBox)((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
+            String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
             product.setRoom(title);
         });
         if (roomSelection.size() > 0) roomSelection.setValue(roomSelection.getItemIds().iterator().next());
@@ -155,7 +157,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         this.makeType = getSimpleItemFilledCombo("Make Type", "make_type_data", null);
         makeType.setRequired(true);
-        binder.bind(makeType, "makeTypeCode");
+        binder.bind(makeType, MAKE_TYPE_CODE);
         if (makeType.size() > 0) makeType.setValue(makeType.getItemIds().iterator().next());
         formLayoutLeft.addComponent(this.makeType);
 
@@ -169,7 +171,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", "carcass_material_data", null);
         carcassMaterialSelection.setRequired(true);
-        binder.bind(carcassMaterialSelection, "carcassMaterialCode");
+        binder.bind(carcassMaterialSelection, CARCASS_MATERIAL_CODE);
         if (carcassMaterialSelection.size() > 0)
             carcassMaterialSelection.setValue(carcassMaterialSelection.getItemIds().iterator().next());
 
@@ -177,7 +179,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", "finish_type_data", null);
         finishTypeSelection.setRequired(true);
-        binder.bind(finishTypeSelection, "finishTypeCode");
+        binder.bind(finishTypeSelection, FINISH_TYPE_CODE);
         if (finishTypeSelection.size() > 0)
             finishTypeSelection.setValue(finishTypeSelection.getItemIds().iterator().next());
         formLayoutRight.addComponent(this.finishTypeSelection);
@@ -187,7 +189,7 @@ public class CustomizedProductDetailsWindow extends Window {
         List<SimpleComboItem> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection = getSimpleItemFilledCombo("Finish", filteredShutterFinish, null);
         shutterFinishSelection.setRequired(true);
-        binder.bind(shutterFinishSelection, "shutterFinishCode");
+        binder.bind(shutterFinishSelection, SHUTTER_FINISH_CODE);
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, SimpleComboItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
         if (shutterFinishSelection.size() > 0)
@@ -199,7 +201,7 @@ public class CustomizedProductDetailsWindow extends Window {
         totalAmount = new TextField("<h2>Total Amount</h2>");
         totalAmount.setValue("0");
         totalAmount.setImmediate(true);
-        binder.bind(totalAmount, "amount");
+        binder.bind(totalAmount, AMOUNT);
         totalAmount.setReadOnly(true);
         totalAmount.setCaptionAsHtml(true);
         formLayoutRight.addComponent(totalAmount);
@@ -224,66 +226,72 @@ public class CustomizedProductDetailsWindow extends Window {
         List<SimpleComboItem> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, SimpleComboItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
-        if (filteredShutterFinish.size() > 0) shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
+        if (filteredShutterFinish.size() > 0)
+            shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
 
     }
 
     private Component getUploadControl() {
         this.uploadCtrl = new Upload("Import Quotation Sheet", (filename, mimeType) -> {
+            LOG.debug("Received upload - " + filename);
+
             try {
                 binder.commit();
             } catch (FieldGroup.CommitException e) {
-                e.printStackTrace();
                 NotificationUtil.showNotification("Please fill all mandatory fields before upload!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return null;
             }
-            LOG.debug("Received upload - " + filename);
+
+            if (StringUtils.isEmpty(filename)) {
+                NotificationUtil.showNotification("Please specify the file.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return null;
+            }
+
             FileOutputStream fos = null;
             uploadFile = new File(getUploadPath() + "/" + filename);
             uploadFile.getParentFile().mkdirs();
             try {
                 fos = new FileOutputStream(uploadFile);
             } catch (final FileNotFoundException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                NotificationUtil.showNotification("Please specify the file path correctly.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
             return fos;
         });
+
+/*
+        uploadCtrl.setButtonCaption(null);
+
+        uploadCtrl.addChangeListener(changeEvent -> {
+            if (changeEvent.getFilename() != null) uploadCtrl.setButtonCaption("Upload");
+        });
+*/
 
         this.uploadCtrl.setStyleName("upload-btn");
 
         this.uploadCtrl.addProgressListener((Upload.ProgressListener) (readBytes, contentLength) -> LOG.debug("Progress " + (readBytes * 100 / contentLength)));
 
         this.uploadCtrl.addSucceededListener((Upload.SucceededListener) event -> {
+
             String filename = event.getFilename();
             String quoteFilePath = getUploadPath() + "/" + filename;
             product.setQuoteFilePath(quoteFilePath);
             Product productResult = proposalDataProvider.mapAndUpdateProduct(product);
-            binder.getItemDataSource().getItemProperty("productId").setValue(productResult.getProductId());
+            binder.getItemDataSource().getItemProperty("productId").setValue(productResult.getId());
             binder.getItemDataSource().getItemProperty("modules").setValue(productResult.getModules());
-            //product.setQuoteFilePath(quoteFilePath);
-            product.setType(Product.TYPE.CUSTOMIZED.name());
+            product.setType(TYPES.CUSTOMIZED.name());
             proposal.getProducts().add(product);
             initModules(product);
             moduleContainer.removeAllItems();
             moduleContainer.addAll(product.getModules());
-            modulesGrid.sort("seq", SortDirection.ASCENDING);
+            modulesGrid.sort(SEQ, SortDirection.ASCENDING);
 
-            boolean hasError = product.getModules().stream().anyMatch(module -> module.getImportStatus().equals(ImportStatus.error.name()));
-
-            if (hasError) {
+            if (product.hasImportErrorStatus()) {
                 NotificationUtil.showNotification("Error in mapping module(s), please upload new sheet!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            } else {
+            } else if (product.allModulesMapped()) {
                 enableSave();
                 NotificationUtil.showNotification("File uploaded successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             }
-
             LOG.debug("Successfully uploaded - " + filename);
-        });
-
-        this.uploadCtrl.addFailedListener((Upload.FailedListener) event -> {
-            LOG.error("Error uploading - " + event.getFilename());
-            NotificationUtil.showNotification("File upload failed. Please try again.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         });
         return uploadCtrl;
     }
@@ -292,14 +300,14 @@ public class CustomizedProductDetailsWindow extends Window {
         for (Module module : product.getModules()) {
 
             module.setMakeTypeText(Module.DEFAULT);
-            module.setCarcassMaterialText(Module.DEFAULT);
+            module.setCarcassText(Module.DEFAULT);
             module.setFinishTypeText(Module.DEFAULT);
-            module.setShutterFinishText(Module.DEFAULT);
+            module.setFinishText(Module.DEFAULT);
 
             module.setMakeTypeCode(product.getMakeTypeCode());
-            module.setCarcassMaterialCode(product.getCarcassMaterialCode());
+            module.setCarcassCode(product.getBaseCarcassCode());
             module.setFinishTypeCode(product.getFinishTypeCode());
-            module.setShutterFinishCode(product.getShutterFinishCode());
+            module.setFinishCode(product.getFinishCode());
         }
     }
 
@@ -329,7 +337,8 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setStyleName("modules-grid");
         modulesGrid.setSizeFull();
         modulesGrid.setColumnReorderingAllowed(true);
-        modulesGrid.setColumns("importStatus", "seq", "importedModuleText", "mgModuleCode", "makeTypeText", "carcassMaterialText", "finishTypeText", "shutterFinishText", "colorName", "amount", "action");
+        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE,
+                Module.MAKE_TYPE_TEXT, Module.CARCASS_MATERIAL_TEXT, Module.FINISH_TYPE_TEXT, Module.SHUTTER_FINISH_TEXT, "colorName", Module.AMOUNT, "action");
 
         List<Grid.Column> columns = modulesGrid.getColumns();
         int idx = 0;
@@ -352,7 +361,6 @@ public class CustomizedProductDetailsWindow extends Window {
             try {
                 binder.commit();
             } catch (FieldGroup.CommitException e) {
-                e.printStackTrace();
                 NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
@@ -386,7 +394,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
             @Override
             public String getValue(Item item, Object o, Object o1) {
-                String colorCode = (String) item.getItemProperty("colorCode").getValue();
+                String colorCode = (String) item.getItemProperty(Module.COLOR_CODE).getValue();
                 Color color = ConfigHolder.getInstance().getColors().get(colorCode);
                 return color.getName();
             }
@@ -423,12 +431,12 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private String getImportStatusResource(String importStatus) {
-        switch (ImportStatus.valueOf(importStatus)) {
-            case default_matched:
+        switch (ImportStatusType.valueOf(importStatus)) {
+            case d:
                 return "<font color=\"orange\">" + FontAwesome.EXCLAMATION_CIRCLE.getHtml() + "</font>";
-            case success:
+            case m:
                 return "<font color=\"green\">" + FontAwesome.CHECK.getHtml() + "</font>";
-            case error:
+            case n:
                 return "<font color=\"red\">" + FontAwesome.TIMES_CIRCLE.getHtml() + "</font>";
         }
         return null;
@@ -513,7 +521,7 @@ public class CustomizedProductDetailsWindow extends Window {
         select.setPropertyDataSource(new BeanItem<>(addon).getItemProperty("type"));
         select.addValueChangeListener(e -> {
             componentGridDecorator.refresh();
-            System.out.println("" + e.getProperty().getValue().toString());
+            //System.out.println("" + e.getProperty().getValue().toString());
         });
         return select;
     }
@@ -529,7 +537,7 @@ public class CustomizedProductDetailsWindow extends Window {
         select.setPropertyDataSource(new BeanItem<>(addon).getItemProperty("name"));
         select.addValueChangeListener(e -> {
             componentGridDecorator.refresh();
-            System.out.println("" + e.getProperty().getValue().toString());
+            //System.out.println("" + e.getProperty().getValue().toString());
         });
         return select;
     }
@@ -770,8 +778,12 @@ public class CustomizedProductDetailsWindow extends Window {
         modules.add(event.getModule());
         moduleContainer.removeAllItems();
         moduleContainer.addAll(modules);
-        modulesGrid.sort("seq", SortDirection.ASCENDING);
+        modulesGrid.sort(Module.SEQ, SortDirection.ASCENDING);
         updateTotalAmount();
+
+        if (product.allModulesMapped()) {
+            enableSave();
+        }
     }
 
 }

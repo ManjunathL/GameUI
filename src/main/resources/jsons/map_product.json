@@ -1,33 +1,33 @@
 {
-  "productId": 12345,
+  "id": 12345,
   "quoteFilePath": "c://tmp//proposals_data//1234/283764.xlsx",
   "modules": [
     {
       "importStatus": "success",
       "seq": 1,
-      "importedModuleCode": "ADD1_536",
-      "importedModuleDefaultCode": "ADD1_536",
+      "extCode": "ADD1_536",
+      "extDefCode": "ADD1_536",
       "colorCode": "CC123"
     },
     {
       "importStatus": "default_matched",
       "seq": 2,
-      "importedModuleCode": "FUL1_536",
-      "importedModuleDefaultCode": "ADD1_536",
+      "extCode": "FUL1_536",
+      "extDefCode": "ADD1_536",
       "colorCode": "CC254"
     },
     {
       "importStatus": "success",
       "seq": 3,
-      "importedModuleCode": "FUL1_537",
-      "importedModuleDefaultCode": "ADD1_536",
+      "extCode": "FUL1_537",
+      "extDefCode": "ADD1_536",
       "colorCode": "CC234"
     },
     {
       "importStatus": "success",
       "seq": 4,
-      "importedModuleCode": "ADD1_537",
-      "importedModuleDefaultCode": "",
+      "extCode": "ADD1_537",
+      "extDefCode": "",
       "colorCode": "CC876"
     }
   ]

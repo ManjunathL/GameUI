@@ -1,47 +1,8 @@
 [
   {
-    "code": "KDMG1234",
-    "description": "2 drawer standard module",
-    "w": "60",
-    "d": "75",
-    "h": "90",
-    "imagePath": "w1530-specs-1.png",
-    "accessories": [
-      {
-        "name": "A1",
-        "brand": "H1",
-        "imagePath": "accessories/acsimages.jpg"
-      },
-      {
-        "name": "A2",
-        "brand": "H1",
-        "imagePath": "accessories/cultery-tray-hauss.jpg"
-      },
-      {
-        "name": "A3",
-        "brand": "H1",
-        "imagePath": "accessories/deutschland.jpg"
-      },
-      {
-        "name": "A4",
-        "brand": "H1",
-        "imagePath": "accessories/drawer-dustbin-mobel.jpg"
-      },
-      {
-        "name": "A1",
-        "brand": "H1",
-        "imagePath": "accessories/glider.jpg"
-      },
-      {
-        "name": "A1",
-        "brand": "H1",
-        "imagePath": "accessories/kitchen-moving-corner-250x250.jpg"
-      },
-      {
-        "name": "A1",
-        "brand": "H1",
-        "imagePath": "accessories/pull-out-basket-hauss.jpg"
-      }
-    ]
+    "mgCode": "KDMG1234",
+    "mgDescription": "2 drawer standard module",
+    "mgDimension": "w60 x d75 x h90",
+    "mgImage": "w1530-specs-1.png"
   }
 ]

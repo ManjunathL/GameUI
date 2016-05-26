@@ -20,32 +20,36 @@ public class FileDataProviderUtil implements DataProviderUtil {
     @Override
     public JSONObject getResource(String urlFrag, Map<String, String> params) {
         try {
-            return new JSONObject(new FileUtil().readFile("jsons/" + urlFrag + ".json"));
+            return new JSONObject(new FileUtil().readFile("jsons/" + formPath(urlFrag) + ".json"));
         } catch (JSONException e) {
             e.printStackTrace();
-            throw new RuntimeException("Error parsing file as json: " + urlFrag, e);
+            throw new RuntimeException("Error parsing file as json: " + formPath(urlFrag), e);
         }
     }
 
     @Override
     public JSONArray getResourceArray(String urlFrag, Map<String, String> params) {
         try {
-            return new JSONArray(new FileUtil().readFile("jsons/" + urlFrag + ".json"));
+            return new JSONArray(new FileUtil().readFile("jsons/" + formPath(urlFrag) + ".json"));
         } catch (JSONException e) {
             e.printStackTrace();
-            throw new RuntimeException("Error parsing file as json: " + urlFrag, e);
+            throw new RuntimeException("Error parsing file as json: " + formPath(urlFrag), e);
         }
 
     }
 
     @Override
     public JSONObject postResource(String urlFrag, String json) {
-        return getResource(urlFrag, null);
+        return getResource(formPath(urlFrag), null);
     }
 
     @Override
     public JSONArray postResourceGetMultiple(String urlFrag, String jsonParams) {
-        return getResourceArray(urlFrag, null);
+        return getResourceArray(formPath(urlFrag), null);
+    }
+
+    private String formPath(String urlFrag) {
+        return urlFrag.replaceAll("/", "_");
     }
 
 }

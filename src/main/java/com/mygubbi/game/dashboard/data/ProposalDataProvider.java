@@ -15,7 +15,9 @@ import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
 
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.colorpicker.Color;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
@@ -28,20 +30,18 @@ public class ProposalDataProvider {
     private DataProviderUtil dataProviderUtil;
     private ObjectMapper mapper;
 
-    public ProposalDataProvider(DataProviderUtil dataProviderUtil) {
-        this.dataProviderUtil = dataProviderUtil;
-        this.mapper = new ObjectMapper();
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        this.mapper.setDateFormat(df);
+    public ProposalDataProvider(String classRef) {
+        try {
+            Class<?> clazz = Class.forName(classRef);
+            this.dataProviderUtil = (DataProviderUtil) clazz.newInstance();
+            this.mapper = new ObjectMapper();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
-    public List<ProposalHeader> getProposalHeaders(String proposalClass) {
-        JSONArray proposalHeaders = dataProviderUtil.getResourceArray("proposal_headers", new HashMap<String, String>() {
-            {
-                put("class", proposalClass);
-            }
-        });
-
+    private List<ProposalHeader> getProposalHeaders(JSONArray proposalHeaders) {
         List<ProposalHeader> proposalHeaderList = new ArrayList<>();
         for (int i = 0; i < proposalHeaders.length(); i++) {
             try {
@@ -53,6 +53,21 @@ public class ProposalDataProvider {
         }
 
         return proposalHeaderList;
+
+    }
+
+    public List<ProposalHeader> getProposalHeaders() {
+        JSONArray proposalHeaders = dataProviderUtil.getResourceArray("proposal/list", new HashMap<>());
+        return getProposalHeaders(proposalHeaders);
+    }
+
+    public List<ProposalHeader> getProposalHeadersByStatus(String proposalStatus) {
+        JSONArray proposalHeaders = dataProviderUtil.getResourceArray("proposal/listbystatus", new HashMap<String, String>() {
+            {
+                put("status", proposalStatus);
+            }
+        });
+        return getProposalHeaders(proposalHeaders);
     }
 
     public JSONObject getProposalHeader(String proposalId) {
@@ -97,40 +112,37 @@ public class ProposalDataProvider {
         });
     }
 
-    //todo: add userid to all post calls
     public ProposalHeader createProposal() {
 
         try {
-            JSONObject jsonObject = dataProviderUtil.postResource("create_proposal", "{\"title\": \"New Proposal\"}");
+            JSONObject jsonObject = dataProviderUtil.postResource("proposal/create", "{\"title\": \"New Proposal\", \"createdBy\": \"" + getUserId() + "\"}");
             return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);
         }
+    }
+
+    private String getUserId() {
+        return ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
     }
 //todo: add calls for adding documents, one each - proposal/add.file
 
     public boolean saveProposal(ProposalHeader proposalHeader) {
 
         try {
+            proposalHeader.setUpdatedBy(getUserId());
             String proposalJson = this.mapper.writeValueAsString(proposalHeader);
-            JSONObject jsonObject = dataProviderUtil.postResource("save_proposal", proposalJson);
-            return jsonObject.has("status") && jsonObject.getString("status").equals("success");
-        } catch (JSONException | JsonProcessingException e) {
+            JSONObject jsonObject = dataProviderUtil.postResource("proposal/update", proposalJson);
+            return !jsonObject.has("error");
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new RuntimeException("Couldn't save proposal", e);
         }
     }
 
-    //todo: handle status=error and error=<message description>
     public boolean submitProposal(int proposalId) {
-
-        try {
-            JSONObject jsonObject = dataProviderUtil.postResource("submit_proposal", "\"proposalId\": " + proposalId);
-            return jsonObject.has("status") && jsonObject.getString("status").equals("success");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Couldn't activate proposal", e);
-        }
+        JSONObject jsonObject = dataProviderUtil.postResource("proposal/submit", "{\"id\": " + proposalId + "}");
+        return !jsonObject.has("error");
     }
 
     public boolean deleteProposal(int proposalId) {
@@ -197,17 +209,17 @@ public class ProposalDataProvider {
         return null;
     }
 
-    public List<MGModule> getMGModules(String importedModuleCode, String importedModuleDefaultCode) {
+    public List<Module> getMGModules(String extCode, String extDefCode) {
         try {
             JSONArray jsonArray = dataProviderUtil.getResourceArray(
                     "mg_modules", new HashMap<String, String>() {
                         {
-                            put("importedModuleCode", importedModuleCode);
-                            put("importedModuleDefaultCode", importedModuleDefaultCode);
+                            put("extCode", extCode);
+                            put("extDefCode", extDefCode);
                         }
                     });
 
-            return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<MGModule>>() {
+            return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<Module>>() {
             });
 
         } catch (IOException e) {
@@ -262,7 +274,7 @@ public class ProposalDataProvider {
     }
 
     public static void main(String[] args) {
-        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+        ProposalDataProvider proposalDataProvider = new ProposalDataProvider("com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil");
         ProposalHeader proposal = proposalDataProvider.createProposal();
 
         try {
@@ -282,6 +294,24 @@ public class ProposalDataProvider {
             return this.mapper.readValue(jsonObject.toString(), ModulePrice.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't get module price", e);
+        }
+
+    }
+
+    public List<ModuleAccessory> getModuleAccessories(String mgCode) {
+        try {
+            JSONArray jsonArray = dataProviderUtil.getResourceArray(
+                    "module/accessories", new HashMap<String, String>() {
+                        {
+                            put("mgCode", mgCode);
+                        }
+                    });
+
+            return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<ModuleAccessory>>() {
+            });
+
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't get module accessories", e);
         }
 
     }

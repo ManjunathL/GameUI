@@ -2,9 +2,13 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 
 import com.google.common.eventbus.Subscribe;
+import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
-import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
+import com.mygubbi.game.dashboard.domain.Product;
+import com.mygubbi.game.dashboard.domain.Proposal;
+import com.mygubbi.game.dashboard.domain.ProposalHeader;
+import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.DashboardViewType;
@@ -31,6 +35,9 @@ import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 
 import java.util.List;
 
+import static com.mygubbi.game.dashboard.domain.Product.TYPE;
+import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
+
 
 /**
  * Created by test on 31-03-2016.
@@ -38,7 +45,7 @@ import java.util.List;
 public class CreateProposalsView extends Panel implements View {
 
 
-    private ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+    private ProposalDataProvider proposalDataProvider = ConfigHolder.getInstance().getProposalDataProvider();
 
     private Field<?> proposalTitleField;
     private Field<?> crmId;
@@ -128,8 +135,8 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void initHeader(ProposalHeader proposalHeader) {
-        proposalHeader.setProposalTitle("New Proposal");
-        proposalHeader.setProposalVersion("1.0.");
+        proposalHeader.setTitle("New Proposal");
+        proposalHeader.setVersion("1.0");
     }
 
     private Component buildHeader() {
@@ -215,9 +222,16 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void save(Button.ClickEvent clickEvent) {
-        if (StringUtils.isEmpty(proposalHeader.getProposalTitle())) {
-            proposalHeader.setProposalTitle("New Proposal");
+        if (StringUtils.isEmpty(proposalHeader.getTitle())) {
+            proposalHeader.setTitle("New Proposal");
         }
+        try {
+            binder.commit();
+        } catch (FieldGroup.CommitException e) {
+            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
+
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
         if (success) {
@@ -234,7 +248,7 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeader.setStatus("active");
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
-                success = proposalDataProvider.submitProposal(proposalHeader.getProposalId());
+                success = proposalDataProvider.submitProposal(proposalHeader.getId());
                 if (success) {
                     submitButton.setVisible(false);
                     draftLabel.setValue("[ Active ]");
@@ -292,33 +306,33 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.addComponent(customerDetailsLabel);
         formLayoutLeft.setComponentAlignment(customerDetailsLabel, Alignment.MIDDLE_LEFT);
 
-        customerIdField = binder.buildAndBind("Customer ID", "customerId");
+        customerIdField = binder.buildAndBind("Customer ID", CUSTOMER_ID);
         customerIdField.setRequired(true);
         ((TextField) customerIdField).setNullRepresentation("");
         formLayoutLeft.addComponent(customerIdField);
-        customerNameField = binder.buildAndBind("Customer Name", "customerName");
+        customerNameField = binder.buildAndBind("Customer Name", C_NAME);
         customerNameField.setRequired(true);
         ((TextField) customerNameField).setNullRepresentation("");
         formLayoutLeft.addComponent(customerNameField);
-        customerAddressLine1 = binder.buildAndBind("Address Line 1", "customerAddressLine1");
+        customerAddressLine1 = binder.buildAndBind("Address Line 1", C_ADDRESS1);
         ((TextField) customerAddressLine1).setNullRepresentation("");
         formLayoutLeft.addComponent(customerAddressLine1);
-        customerAddressLine2 = binder.buildAndBind("Address Line 2", "customerAddressLine2");
+        customerAddressLine2 = binder.buildAndBind("Address Line 2", C_ADDRESS2);
         ((TextField) customerAddressLine2).setNullRepresentation("");
         formLayoutLeft.addComponent(customerAddressLine2);
-        customerAddressLine3 = binder.buildAndBind("Address Line 3", "customerAddressLine3");
+        customerAddressLine3 = binder.buildAndBind("Address Line 3", C_ADDRESS3);
         ((TextField) customerAddressLine3).setNullRepresentation("");
         formLayoutLeft.addComponent(customerAddressLine3);
-        customerCityField = binder.buildAndBind("City", "customerCity");
+        customerCityField = binder.buildAndBind("City", C_CITY);
         ((TextField) customerCityField).setNullRepresentation("");
         formLayoutLeft.addComponent(customerCityField);
-        customerEmailField = binder.buildAndBind("Email", "customerEmail");
+        customerEmailField = binder.buildAndBind("Email", C_EMAIL);
         ((TextField) customerEmailField).setNullRepresentation("");
         formLayoutLeft.addComponent(customerEmailField);
-        customerNumberField1 = binder.buildAndBind("Phone 1", "customerPhone1");
+        customerNumberField1 = binder.buildAndBind("Phone 1", C_PHONE1);
         ((TextField) customerNumberField1).setNullRepresentation("");
         formLayoutLeft.addComponent(customerNumberField1);
-        customerNumberField2 = binder.buildAndBind("Phone 2", "customerPhone2");
+        customerNumberField2 = binder.buildAndBind("Phone 2", C_PHONE2);
         ((TextField) customerNumberField2).setNullRepresentation("");
         formLayoutLeft.addComponent(customerNumberField2);
 
@@ -336,16 +350,16 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.addComponent(projectDetailsLabel);
         formLayoutRight.setComponentAlignment(projectDetailsLabel, Alignment.MIDDLE_LEFT);
 
-        projectName = binder.buildAndBind("Project Name", "projectName");
+        projectName = binder.buildAndBind("Project Name", PROJECT_NAME);
         ((TextField) projectName).setNullRepresentation("");
         formLayoutRight.addComponent(projectName);
-        projectAddressLine1 = binder.buildAndBind("Address Line 1", "projectAddressLine1");
+        projectAddressLine1 = binder.buildAndBind("Address Line 1", P_ADDRESS1);
         ((TextField) projectAddressLine1).setNullRepresentation("");
         formLayoutRight.addComponent(projectAddressLine1);
-        projectAddressLine2 = binder.buildAndBind("Address Line 2", "projectAddressLine2");
+        projectAddressLine2 = binder.buildAndBind("Address Line 2", P_ADDRESS2);
         ((TextField) projectAddressLine2).setNullRepresentation("");
         formLayoutRight.addComponent(projectAddressLine2);
-        projectCityField = binder.buildAndBind("City", "projectCity");
+        projectCityField = binder.buildAndBind("City", P_CITY);
         ((TextField) projectCityField).setNullRepresentation("");
         formLayoutRight.addComponent(projectCityField);
 
@@ -363,14 +377,14 @@ public class CreateProposalsView extends Panel implements View {
         mygubbiDetails.addStyleName(ValoTheme.LABEL_COLORED);
         formLayoutRight.addComponent(mygubbiDetails);
 
-        designPerson = binder.buildAndBind("Design Person", "designContactName");
+        designPerson = binder.buildAndBind("Design Person", DESIGNER_NAME);
         designPerson.setRequired(true);
         ((TextField) designPerson).setNullRepresentation("");
         formLayoutRight.addComponent(designPerson);
-        designEmail = binder.buildAndBind("Email", "designContactEmail");
+        designEmail = binder.buildAndBind("Email", DESIGNER_EMAIL);
         ((TextField) designEmail).setNullRepresentation("");
         formLayoutRight.addComponent(designEmail);
-        designContact = binder.buildAndBind("Phone", "designContactPhone");
+        designContact = binder.buildAndBind("Phone", DESIGNER_PHONE);
         ((TextField) designContact).setNullRepresentation("");
         formLayoutRight.addComponent(designContact);
         return formLayoutRight;
@@ -386,14 +400,14 @@ public class CreateProposalsView extends Panel implements View {
         mygubbiDetails.addStyleName(ValoTheme.LABEL_COLORED);
         formLayoutLeft.addComponent(mygubbiDetails);
 
-        salesPerson = binder.buildAndBind("Sales Person", "salesContactName");
+        salesPerson = binder.buildAndBind("Sales Person", SALES_NAME);
         ((TextField) salesPerson).setNullRepresentation("");
         salesPerson.setRequired(true);
         formLayoutLeft.addComponent(salesPerson);
-        salesEmail = binder.buildAndBind("Email", "salesContactEmail");
+        salesEmail = binder.buildAndBind("Email", SALES_EMAIL);
         ((TextField) salesEmail).setNullRepresentation("");
         formLayoutLeft.addComponent(salesEmail);
-        salesContact = binder.buildAndBind("Phone", "salesContactPhone");
+        salesContact = binder.buildAndBind("Phone", SALES_PHONE);
         ((TextField) salesContact).setNullRepresentation("");
         formLayoutLeft.addComponent(salesContact);
         return formLayoutLeft;
@@ -405,12 +419,12 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        crmId = binder.buildAndBind("CRM #", "crmId");
+        crmId = binder.buildAndBind("CRM #", CRM_ID);
         crmId.setRequired(true);
         ((TextField) crmId).setNullRepresentation("");
         formLayoutRight.addComponent(crmId);
 
-        quotationField = binder.buildAndBind("Quotation #", "quotationNo");
+        quotationField = binder.buildAndBind("Quotation #", QUOTE_NO);
         ((TextField) quotationField).setNullRepresentation("");
         quotationField.setRequired(true);
 
@@ -425,7 +439,7 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        proposalTitleField = binder.buildAndBind("Proposal Title", "proposalTitle");
+        proposalTitleField = binder.buildAndBind("Proposal Title", ProposalHeader.TITLE);
         proposalTitleField.setRequired(true);
         ((TextField) proposalTitleField).setNullRepresentation("");
 
@@ -435,7 +449,7 @@ public class CreateProposalsView extends Panel implements View {
         });
 
         formLayoutLeft.addComponent(proposalTitleField);
-        proposalVersionField = binder.buildAndBind("Proposal Version", "proposalVersion");
+        proposalVersionField = binder.buildAndBind("Proposal Version", VERSION);
         proposalVersionField.setReadOnly(true);
         formLayoutLeft.addComponent(proposalVersionField);
 
@@ -490,7 +504,7 @@ public class CreateProposalsView extends Panel implements View {
         productsGrid = new Grid(genContainer);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
-        productsGrid.setColumns("seq", "room", "title", "productCategory", "qty", "amount", "type", "actions");
+        productsGrid.setColumns(Product.SEQ, Product.ROOM, Product.TITLE, Product.PRODUCT_CATEGORY, Product.QTY, Product.AMOUNT, TYPE, "actions");
 
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
@@ -541,7 +555,7 @@ public class CreateProposalsView extends Panel implements View {
         products.add(event.getProduct());
         productContainer.removeAllItems();
         productContainer.addAll(products);
-        productsGrid.sort("seq", SortDirection.ASCENDING);
+        productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         //updateTotalAmount();
     }
 }
