@@ -2,66 +2,66 @@
   {
     "code": "MDF with PU",
     "title": "MDF with PU",
-    "type": "PAINT"
+    "additionalType": "PAINT"
   },
   {
     "code": "MDF with PU B/W",
     "title": "MDF with PU B/W",
-    "type": "PAINT"
+    "additionalType": "PAINT"
   },
   {
     "code": "PVC Foil",
     "title": "PVC Foil",
-    "type": "FOIL"
+    "additionalType": "FOIL"
   },
   {
     "code": "Glossy Foil",
     "title": "Glossy Foil",
-    "type": "FOIL"
+    "additionalType": "FOIL"
   },
   {
     "code": "PLY/LAM",
     "title": "PLY/LAM",
-    "type": "LAMINATE"
+    "additionalType": "LAMINATE"
   },
   {
     "code": "Glossy Laminate/PLY",
     "title": "Glossy Laminate/PLY",
-    "type": "LAMINATE"
+    "additionalType": "LAMINATE"
   },
   {
     "code": "Acrylic/MDF",
     "title": "Acrylic/MDF",
-    "type": "ACRYLIC"
+    "additionalType": "ACRYLIC"
   },
   {
     "code": "Glossy Laminate/MDF",
     "title": "Glossy Laminate/MDF",
-    "type": "LAMINATE"
+    "additionalType": "LAMINATE"
   },
   {
     "code": "MDF/Mat LAM",
     "title": "MDF/Mat LAM",
-    "type": "LAMINATE"
+    "additionalType": "LAMINATE"
   },
   {
     "code": "Solid Wood",
     "title": "Solid Wood",
-    "type": "SOLIDWOOD"
+    "additionalType": "SOLIDWOOD"
   },
   {
     "code": "MDF Pre LAM",
     "title": "MDF Pre LAM",
-    "type": "LAMINATE"
+    "additionalType": "LAMINATE"
   },
   {
     "code": "PLY Pre LAM",
     "title": "PLY Pre LAM",
-    "type": "LAMINATE"
+    "additionalType": "LAMINATE"
   },
   {
     "code": "PLY Veneer",
     "title": "PLY Veneer",
-    "type": "VENEER"
+    "additionalType": "VENEER"
   }
 ]

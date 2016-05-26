@@ -75,7 +75,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         DashboardEventBus.register(this);
 
-        proposal = proposal;
+        this.proposal = proposal;
         product.setProposalId(proposal.getProposalHeader().getId());
         product.setSeq(proposal.getProducts().size() + 1);
 

@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
@@ -37,6 +38,7 @@ public class ProposalDataProvider {
     public ProposalDataProvider(DataProviderMode dataProviderMode) {
         this.dataProviderMode = dataProviderMode;
         this.mapper = new ObjectMapper();
+        this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     private List<ProposalHeader> getProposalHeaders(JSONArray proposalHeaders) {

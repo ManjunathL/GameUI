@@ -1,8 +1,10 @@
 [
   {
-    "mgCode": "KDMG1234",
-    "mgDescription": "2 drawer standard module",
-    "mgDimension": "w60 x d75 x h90",
-    "mgImage": "w1530-specs-1.png"
+    "code": "KDMG1234",
+    "description": "2 drawer standard module",
+    "width": "60",
+    "depth": "75",
+    "height": "90",
+    "imagePath": "w1530-specs-1.png"
   }
 ]
