@@ -209,12 +209,12 @@ public class ProposalDataProvider {
 
     }
 
-    public String getProposalQuoteFile(String proposalId) {
+    public String getProposalQuoteFile(int proposalId) {
 
         try {
             JSONObject obj = dataProviderMode.getResource("proposal/downloadquote", new HashMap<String, String>() {
                 {
-                    put("proposalId", proposalId);
+                    put("proposalId", proposalId + "");
                 }
             });
             return obj.getString("quoteFile");

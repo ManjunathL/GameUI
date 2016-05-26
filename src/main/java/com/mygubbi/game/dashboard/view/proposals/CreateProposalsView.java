@@ -21,17 +21,25 @@ import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
@@ -175,6 +183,10 @@ public class CreateProposalsView extends Panel implements View {
         Button downloadButton = new Button("Download");
         downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
+
+        StreamResource myResource = createResource();
+        FileDownloader fileDownloader = new FileDownloader(myResource);
+        fileDownloader.extend(downloadButton);
         horizontalLayout1.addComponent(downloadButton);
         horizontalLayout1.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
 
@@ -199,6 +211,20 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
 
         return horizontalLayout;
+    }
+
+    private StreamResource createResource() {
+        StreamResource.StreamSource source = () -> {
+            String quoteFile = proposalDataProvider.getProposalQuoteFile(proposalHeader.getId());
+            InputStream input = null;
+            try {
+                input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return input;
+        };
+        return new StreamResource(source, "Quotation.xlsx");
     }
 
     private void close(Button.ClickEvent clickEvent) {

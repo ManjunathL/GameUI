@@ -33,7 +33,7 @@ public class ServerManager {
             DataProviderMode dataProviderModeFromConfig = (DataProviderMode) clazz.newInstance();
 
             proposalDataProvider = new ProposalDataProvider(dataProviderModeFromConfig);
-            userDataProvider = new UserDataProvider(new RestDataProviderMode());
+            userDataProvider = new UserDataProvider(new RestDataProviderMode()); //todo: change this
 
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
