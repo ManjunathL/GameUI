@@ -2,9 +2,9 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 
 import com.google.common.eventbus.Subscribe;
+import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
 import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
@@ -50,23 +50,22 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox roomSelection;
     private ComboBox makeType;
     private ComboBox productSelection;
-    private ComboBox carcassMaterialSelection;
-
+    private ComboBox baseCarcassSelection;
+    private ComboBox wallCarcassSelection;
     private ComboBox shutterFinishSelection;
     private ComboBox finishTypeSelection;
-
     private Upload uploadCtrl;
-    private File uploadFile;
 
+    private File uploadFile;
     private TabSheet tabSheet;
     private Button closeBtn;
-    private Button saveBtn;
 
+    private Button saveBtn;
     private Proposal proposal;
     private Product product = new Product();
-    private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
 
-    private ProposalDataProvider proposalDataProvider = ConfigHolder.getInstance().getProposalDataProvider();
+    private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
+    private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private List<SimpleComboItem> shutterFinishMasterList;
     private BeanItemContainer<Module> moduleContainer;
     private Grid modulesGrid;
@@ -161,6 +160,14 @@ public class CustomizedProductDetailsWindow extends Window {
         if (makeType.size() > 0) makeType.setValue(makeType.getItemIds().iterator().next());
         formLayoutLeft.addComponent(this.makeType);
 
+        totalAmount = new TextField("<h2>Total Amount</h2>");
+        totalAmount.setValue("0");
+        totalAmount.setImmediate(true);
+        binder.bind(totalAmount, AMOUNT);
+        totalAmount.setReadOnly(true);
+        totalAmount.setCaptionAsHtml(true);
+        formLayoutLeft.addComponent(totalAmount);
+
         return formLayoutLeft;
     }
 
@@ -169,13 +176,19 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", "carcass_material_data", null);
-        carcassMaterialSelection.setRequired(true);
-        binder.bind(carcassMaterialSelection, CARCASS_MATERIAL_CODE);
-        if (carcassMaterialSelection.size() > 0)
-            carcassMaterialSelection.setValue(carcassMaterialSelection.getItemIds().iterator().next());
+        this.baseCarcassSelection = getSimpleItemFilledCombo("Base Carcass", "carcass_material_data", null);
+        baseCarcassSelection.setRequired(true);
+        binder.bind(baseCarcassSelection, BASE_CARCASS_CODE);
+        if (baseCarcassSelection.size() > 0)
+            baseCarcassSelection.setValue(baseCarcassSelection.getItemIds().iterator().next());
+        formLayoutRight.addComponent(this.baseCarcassSelection);
 
-        formLayoutRight.addComponent(this.carcassMaterialSelection);
+        this.wallCarcassSelection = getSimpleItemFilledCombo("Wall Carcass", "carcass_material_data", null);
+        wallCarcassSelection.setRequired(true);
+        binder.bind(wallCarcassSelection, WALL_CARCASS_CODE);
+        if (wallCarcassSelection.size() > 0)
+            wallCarcassSelection.setValue(wallCarcassSelection.getItemIds().iterator().next());
+        formLayoutRight.addComponent(this.wallCarcassSelection);
 
         this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", "finish_type_data", null);
         finishTypeSelection.setRequired(true);
@@ -197,14 +210,6 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
         formLayoutRight.addComponent(getUploadControl());
-
-        totalAmount = new TextField("<h2>Total Amount</h2>");
-        totalAmount.setValue("0");
-        totalAmount.setImmediate(true);
-        binder.bind(totalAmount, AMOUNT);
-        totalAmount.setReadOnly(true);
-        totalAmount.setCaptionAsHtml(true);
-        formLayoutRight.addComponent(totalAmount);
 
         return formLayoutRight;
     }
@@ -276,8 +281,8 @@ public class CustomizedProductDetailsWindow extends Window {
             String quoteFilePath = getUploadPath() + "/" + filename;
             product.setQuoteFilePath(quoteFilePath);
             Product productResult = proposalDataProvider.mapAndUpdateProduct(product);
-            binder.getItemDataSource().getItemProperty("productId").setValue(productResult.getId());
-            binder.getItemDataSource().getItemProperty("modules").setValue(productResult.getModules());
+            binder.getItemDataSource().getItemProperty(Product.ID).setValue(productResult.getId());
+            binder.getItemDataSource().getItemProperty(Product.MODULES).setValue(productResult.getModules());
             product.setType(TYPES.CUSTOMIZED.name());
             proposal.getProducts().add(product);
             initModules(product);
@@ -305,7 +310,7 @@ public class CustomizedProductDetailsWindow extends Window {
             module.setFinishText(Module.DEFAULT);
 
             module.setMakeTypeCode(product.getMakeTypeCode());
-            module.setCarcassCode(product.getBaseCarcassCode());
+            module.setCarcassCodeBasedOnUnitType(product);
             module.setFinishTypeCode(product.getFinishTypeCode());
             module.setFinishCode(product.getFinishCode());
         }
@@ -321,7 +326,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private String getUploadPath() {
         return proposal.getProposalHeader().getFolderPath() + "/product_imports";
-    }
+    } // todo: check this
 
     private Component buildModulesForm() {
         HorizontalLayout hLayout = new HorizontalLayout();
@@ -337,7 +342,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setStyleName("modules-grid");
         modulesGrid.setSizeFull();
         modulesGrid.setColumnReorderingAllowed(true);
-        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE,
+        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE,
                 Module.MAKE_TYPE_TEXT, Module.CARCASS_MATERIAL_TEXT, Module.FINISH_TYPE_TEXT, Module.SHUTTER_FINISH_TEXT, "colorName", Module.AMOUNT, "action");
 
         List<Grid.Column> columns = modulesGrid.getColumns();
@@ -347,6 +352,7 @@ public class CustomizedProductDetailsWindow extends Window {
         statusColumn.setRenderer(new HtmlRenderer(), getResourceConverter());
 
         columns.get(idx++).setHeaderCaption("#");
+        columns.get(idx++).setHeaderCaption("Unit Type");
         columns.get(idx++).setHeaderCaption("Imported Module");
         columns.get(idx++).setHeaderCaption("MG Module");
         columns.get(idx++).setHeaderCaption("Make Type");

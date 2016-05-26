@@ -29,7 +29,7 @@ public class ItemDetailsWindow extends Window {
     
     private Proposal proposal;
 
-    private final ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderUtil());
+    private final ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
     
     private ItemDetailsWindow(Proposal proposal) {
 

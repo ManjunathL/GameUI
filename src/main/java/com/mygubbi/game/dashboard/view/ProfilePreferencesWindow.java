@@ -1,6 +1,6 @@
 package com.mygubbi.game.dashboard.view;
 
-import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
+import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.UserDataProvider;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
@@ -24,7 +24,7 @@ public class ProfilePreferencesWindow extends Window {
 
     public static final String ID = "profilepreferenceswindow";
 
-    public UserDataProvider userDataProvider = new UserDataProvider(new RestDataProviderUtil());
+    public UserDataProvider userDataProvider = ServerManager.getInstance().getUserDataProvider();
 
     private final BeanFieldGroup<User> fieldGroup;
     /*

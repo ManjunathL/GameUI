@@ -1,9 +1,9 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
 
+import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -56,7 +56,7 @@ public class ModuleDetailsWindow extends Window {
 
     private Module module;
 
-    private ProposalDataProvider proposalDataProvider = ConfigHolder.getInstance().getProposalDataProvider();
+    private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final BeanFieldGroup<Module> binder = new BeanFieldGroup<>(Module.class);
 
     private List<SimpleComboItem> shutterFinishMasterList;
@@ -128,7 +128,7 @@ public class ModuleDetailsWindow extends Window {
             module.setMakeTypeCode(product.getMakeTypeCode());
         }
         if (Module.DEFAULT.equals(module.getCarcassText())) {
-            module.setCarcassCode(product.getBaseCarcassCode());
+            module.setCarcassCodeBasedOnUnitType(product);
         }
         if (Module.DEFAULT.equals(module.getFinishTypeText())) {
             module.setFinishTypeCode(product.getFinishTypeCode());
@@ -245,12 +245,16 @@ public class ModuleDetailsWindow extends Window {
                 accessoryImageStrip.addImage(new FileResource(new File(basePath + moduleAccessory.getImagePath())));
             }
 
-            ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
-            totalAmount.setReadOnly(false);
-            totalAmount.setValue(modulePrice.getTotalCost() + "");
-            totalAmount.setReadOnly(true);
+            refreshPrice();
             enableApply();
         }
+    }
+
+    private void refreshPrice() {
+        ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
+        totalAmount.setReadOnly(false);
+        totalAmount.setValue(modulePrice.getTotalCost() + "");
+        totalAmount.setReadOnly(true);
     }
 
     private Component buildModuleSelectionsComponent() {
@@ -269,10 +273,12 @@ public class ModuleDetailsWindow extends Window {
 
         this.makeType = getSimpleItemFilledCombo("Make Type", "make_type_data", null, product.getMakeTypeCode());
         binder.bind(makeType, Module.MAKE_TYPE_CODE);
+        makeType.addValueChangeListener(this::refreshPrice);
         formLayoutLeft.addComponent(this.makeType);
 
-        this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", "carcass_material_data", null, product.getBaseCarcassCode());
+        this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", "carcass_material_data", null, getCarcassCodeBasedOnType());
         binder.bind(carcassMaterialSelection, Module.CARCASS_MATERIAL_CODE);
+        carcassMaterialSelection.addValueChangeListener(this::refreshPrice);
         formLayoutLeft.addComponent(this.carcassMaterialSelection);
 
         FormLayout formLayoutRight = new FormLayout();
@@ -291,6 +297,7 @@ public class ModuleDetailsWindow extends Window {
         defaultItem.setTitle(defaultItem.getTitle() + " (default)");
         this.shutterFinishSelection = getSimpleItemFilledCombo("Finish", filteredShutterFinish, null);
         binder.bind(shutterFinishSelection, Module.SHUTTER_FINISH_CODE);
+        shutterFinishSelection.addValueChangeListener(this::refreshPrice);
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
         totalAmount = new TextField("Total Amount");
@@ -307,6 +314,10 @@ public class ModuleDetailsWindow extends Window {
         formLayoutLeft.addComponent(this.colorCombo);
 
         return verticalLayout;
+    }
+
+    private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
+        refreshPrice();
     }
 
     private List<SimpleComboItem> filterShutterFinishByType() {
@@ -401,7 +412,8 @@ public class ModuleDetailsWindow extends Window {
                 module.setMakeTypeText(title);
             }
 
-            if (!product.getBaseCarcassCode().equals(module.getCarcassCode()) || !module.getCarcassText().equals(Module.DEFAULT)) {
+            String carcassCodeBasedOnType = getCarcassCodeBasedOnType();
+            if (!carcassCodeBasedOnType.equals(module.getCarcassCode()) || !module.getCarcassText().equals(Module.DEFAULT)) {
                 String title = (String) carcassMaterialSelection.getItem(module.getCarcassCode()).getItemProperty("title").getValue();
                 title = removeDefault(title);
                 module.setCarcassText(title);
@@ -436,6 +448,10 @@ public class ModuleDetailsWindow extends Window {
         footer.setComponentAlignment(cancelBtn, Alignment.TOP_RIGHT);
 
         return footer;
+    }
+
+    private String getCarcassCodeBasedOnType() {
+        return module.getUnitType().equals(Module.UnitTypes.Wall.name()) ? product.getWallCarcassCode() : product.getBaseCarcassCode();
     }
 
     private String removeDefault(String title) {

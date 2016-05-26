@@ -1,8 +1,6 @@
 package com.mygubbi.game.dashboard.data;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,13 +9,11 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
+import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
 
 import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.ui.colorpicker.Color;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
@@ -27,18 +23,12 @@ import us.monoid.json.JSONObject;
  */
 public class ProposalDataProvider {
 
-    private DataProviderUtil dataProviderUtil;
-    private ObjectMapper mapper;
+    private final DataProviderMode dataProviderMode;
+    private final ObjectMapper mapper;
 
-    public ProposalDataProvider(String classRef) {
-        try {
-            Class<?> clazz = Class.forName(classRef);
-            this.dataProviderUtil = (DataProviderUtil) clazz.newInstance();
-            this.mapper = new ObjectMapper();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+    public ProposalDataProvider(DataProviderMode dataProviderMode) {
+        this.dataProviderMode = dataProviderMode;
+        this.mapper = new ObjectMapper();
     }
 
     private List<ProposalHeader> getProposalHeaders(JSONArray proposalHeaders) {
@@ -57,12 +47,12 @@ public class ProposalDataProvider {
     }
 
     public List<ProposalHeader> getProposalHeaders() {
-        JSONArray proposalHeaders = dataProviderUtil.getResourceArray("proposal/list", new HashMap<>());
+        JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/list", new HashMap<>());
         return getProposalHeaders(proposalHeaders);
     }
 
     public List<ProposalHeader> getProposalHeadersByStatus(String proposalStatus) {
-        JSONArray proposalHeaders = dataProviderUtil.getResourceArray("proposal/listbystatus", new HashMap<String, String>() {
+        JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/listbystatus", new HashMap<String, String>() {
             {
                 put("status", proposalStatus);
             }
@@ -71,7 +61,7 @@ public class ProposalDataProvider {
     }
 
     public JSONObject getProposalHeader(String proposalId) {
-        return dataProviderUtil.getResource("proposal_header", new HashMap<String, String>() {
+        return dataProviderMode.getResource("proposal_header", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
             }
@@ -79,7 +69,7 @@ public class ProposalDataProvider {
     }
 
     public JSONArray getProposalProducts(String proposalId) {
-        return dataProviderUtil.getResourceArray("proposal_products", new HashMap<String, String>() {
+        return dataProviderMode.getResourceArray("proposal_products", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
             }
@@ -87,7 +77,7 @@ public class ProposalDataProvider {
     }
 
     public JSONArray getProposalProductDetails(String proposalId, String productId) {
-        return dataProviderUtil.getResourceArray("proposal_product_details", new HashMap<String, String>() {
+        return dataProviderMode.getResourceArray("proposal_product_details", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
                 put("productId", proposalId);
@@ -96,7 +86,7 @@ public class ProposalDataProvider {
     }
 
     public JSONArray getProposalProductDocuments(String proposalId, String productId) {
-        return dataProviderUtil.getResourceArray("proposal_product_documents", new HashMap<String, String>() {
+        return dataProviderMode.getResourceArray("proposal_product_documents", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
                 put("productId", proposalId);
@@ -105,7 +95,7 @@ public class ProposalDataProvider {
     }
 
     public JSONArray getProposalDocuments(String proposalId) {
-        return dataProviderUtil.getResourceArray("proposal_documents", new HashMap<String, String>() {
+        return dataProviderMode.getResourceArray("proposal_documents", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId);
             }
@@ -115,7 +105,7 @@ public class ProposalDataProvider {
     public ProposalHeader createProposal() {
 
         try {
-            JSONObject jsonObject = dataProviderUtil.postResource("proposal/create", "{\"title\": \"New Proposal\", \"createdBy\": \"" + getUserId() + "\"}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/create", "{\"title\": \"New Proposal\", \"createdBy\": \"" + getUserId() + "\"}");
             return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);
@@ -132,7 +122,7 @@ public class ProposalDataProvider {
         try {
             proposalHeader.setUpdatedBy(getUserId());
             String proposalJson = this.mapper.writeValueAsString(proposalHeader);
-            JSONObject jsonObject = dataProviderUtil.postResource("proposal/update", proposalJson);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/update", proposalJson);
             return !jsonObject.has("error");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -141,14 +131,14 @@ public class ProposalDataProvider {
     }
 
     public boolean submitProposal(int proposalId) {
-        JSONObject jsonObject = dataProviderUtil.postResource("proposal/submit", "{\"id\": " + proposalId + "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/submit", "{\"id\": " + proposalId + "}");
         return !jsonObject.has("error");
     }
 
     public boolean deleteProposal(int proposalId) {
 
         try {
-            JSONObject jsonObject = dataProviderUtil.postResource("delete_proposal", "\"proposalId\": " + proposalId);
+            JSONObject jsonObject = dataProviderMode.postResource("delete_proposal", "\"proposalId\": " + proposalId);
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -159,7 +149,7 @@ public class ProposalDataProvider {
     public boolean cancelProposal(int proposalId) {
 
         try {
-            JSONObject jsonObject = dataProviderUtil.postResource("cancel_proposal", "\"proposalId\": " + proposalId);
+            JSONObject jsonObject = dataProviderMode.postResource("cancel_proposal", "\"proposalId\": " + proposalId);
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -168,7 +158,7 @@ public class ProposalDataProvider {
     }
 
     public List<FinishTypeColor> getFinishTypeColors() {
-        JSONArray array = dataProviderUtil.getResourceArray("finish_type_colors", new HashMap<String, String>());
+        JSONArray array = dataProviderMode.getResourceArray("finish_type_colors", new HashMap<String, String>());
         try {
             FinishTypeColor[] items = this.mapper.readValue(array.toString(), FinishTypeColor[].class);
             return Arrays.asList(items);
@@ -179,7 +169,7 @@ public class ProposalDataProvider {
     }
 
     public List<SimpleComboItem> getComboItems(String type) {
-        JSONArray array = dataProviderUtil.getResourceArray(type, new HashMap<String, String>());
+        JSONArray array = dataProviderMode.getResourceArray(type, new HashMap<String, String>());
         try {
             SimpleComboItem[] items = this.mapper.readValue(array.toString(), SimpleComboItem[].class);
             return Arrays.asList(items);
@@ -193,7 +183,7 @@ public class ProposalDataProvider {
         //returns product json containing header, modules, addons
         try {
             String productJson = this.mapper.writeValueAsString(product);
-            JSONObject jsonObject = dataProviderUtil.postResource(
+            JSONObject jsonObject = dataProviderMode.postResource(
                     "map_product", productJson);
 
             Product product1 = this.mapper.readValue(jsonObject.toString(), Product.class);
@@ -211,7 +201,7 @@ public class ProposalDataProvider {
 
     public List<Module> getMGModules(String extCode, String extDefCode) {
         try {
-            JSONArray jsonArray = dataProviderUtil.getResourceArray(
+            JSONArray jsonArray = dataProviderMode.getResourceArray(
                     "mg_modules", new HashMap<String, String>() {
                         {
                             put("extCode", extCode);
@@ -228,7 +218,7 @@ public class ProposalDataProvider {
     }
 
     public List<ProductSuggest> getProductSuggestions(String inputTerm) {
-        JSONArray array = dataProviderUtil.getResourceArray("product_auto_complete", new HashMap<String, String>());
+        JSONArray array = dataProviderMode.getResourceArray("product_auto_complete", new HashMap<String, String>());
         try {
             ProductSuggest[] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
             return Arrays.asList(items);
@@ -239,7 +229,7 @@ public class ProposalDataProvider {
     }
 
     public List<ProductSuggest> getProductSearchResults(String inputTerm) {
-        JSONArray array = dataProviderUtil.getResourceArray("product_search_data", new HashMap<String, String>());
+        JSONArray array = dataProviderMode.getResourceArray("product_search_data", new HashMap<String, String>());
         try {
             ProductSuggest[] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
             return Arrays.asList(items);
@@ -250,7 +240,7 @@ public class ProposalDataProvider {
     }
 
     public ProductItem getProduct(int productId) {
-        JSONArray array = dataProviderUtil.getResourceArray("product_search_data", new HashMap<String, String>());
+        JSONArray array = dataProviderMode.getResourceArray("product_search_data", new HashMap<String, String>());
         try {
             ProductItem[] items = this.mapper.readValue(array.toString(), ProductItem[].class);
             if (items.length == 0) return null;
@@ -262,7 +252,7 @@ public class ProposalDataProvider {
     }
 
     public List<String> getAddonTypes() {
-        JSONObject obj = dataProviderUtil.getResource("addon_type", new HashMap<String, String>());
+        JSONObject obj = dataProviderMode.getResource("addon_type", new HashMap<String, String>());
         try {
             String typeStr = obj.getJSONArray("addon_type").toString();
             String[] typeL = this.mapper.readValue(typeStr, String[].class);
@@ -274,7 +264,7 @@ public class ProposalDataProvider {
     }
 
     public static void main(String[] args) {
-        ProposalDataProvider proposalDataProvider = new ProposalDataProvider("com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil");
+        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
         ProposalHeader proposal = proposalDataProvider.createProposal();
 
         try {
@@ -289,7 +279,7 @@ public class ProposalDataProvider {
     public ModulePrice getModulePrice(Module module) {
         try {
             String moduleJson = this.mapper.writeValueAsString(module);
-            JSONObject jsonObject = dataProviderUtil.postResource(
+            JSONObject jsonObject = dataProviderMode.postResource(
                     "module_price", moduleJson);
             return this.mapper.readValue(jsonObject.toString(), ModulePrice.class);
         } catch (IOException e) {
@@ -300,7 +290,7 @@ public class ProposalDataProvider {
 
     public List<ModuleAccessory> getModuleAccessories(String mgCode) {
         try {
-            JSONArray jsonArray = dataProviderUtil.getResourceArray(
+            JSONArray jsonArray = dataProviderMode.getResourceArray(
                     "module/accessories", new HashMap<String, String>() {
                         {
                             put("mgCode", mgCode);

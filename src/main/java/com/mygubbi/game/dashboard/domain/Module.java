@@ -19,7 +19,15 @@ public class Module {
         }
     }
 
+    public void setCarcassCodeBasedOnUnitType(Product product) {
+        this.setCarcassCode(
+                this.getUnitType().equals(Module.UnitTypes.Wall.name())
+                        ? product.getWallCarcassCode()
+                        : product.getBaseCarcassCode());
+    }
+
     public enum ImportStatusType {m, d, n}
+    public enum UnitTypes {Base, Wall}
 
     public static final String SEQ = "seq";
     public static final String UNIT_TYPE = "unitType";

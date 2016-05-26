@@ -2,9 +2,8 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 
 import com.google.common.eventbus.Subscribe;
-import com.mygubbi.game.dashboard.config.ConfigHolder;
+import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.Product;
 import com.mygubbi.game.dashboard.domain.Proposal;
 import com.mygubbi.game.dashboard.domain.ProposalHeader;
@@ -45,7 +44,7 @@ import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
 public class CreateProposalsView extends Panel implements View {
 
 
-    private ProposalDataProvider proposalDataProvider = ConfigHolder.getInstance().getProposalDataProvider();
+    private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
     private Field<?> proposalTitleField;
     private Field<?> crmId;

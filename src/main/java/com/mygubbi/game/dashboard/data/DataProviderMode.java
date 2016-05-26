@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Dashboard backend API.
  */
-public interface DataProviderUtil {
+public interface DataProviderMode {
 
     JSONObject getResource(String urlFrag, Map<String, String> params);
 

@@ -1,7 +1,6 @@
 package com.mygubbi.game.dashboard;
 
 import com.google.common.eventbus.Subscribe;
-import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
 import com.mygubbi.game.dashboard.data.UserDataProvider;
 import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
@@ -37,7 +36,7 @@ public final class DashboardUI extends UI {
      * injection; and not in the UI but somewhere closer to where they're
      * actually accessed.
      */
-    private final UserDataProvider dataProvider = new UserDataProvider(new RestDataProviderUtil());
+    private final UserDataProvider dataProvider = ServerManager.getInstance().getUserDataProvider();
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
 
     @Override

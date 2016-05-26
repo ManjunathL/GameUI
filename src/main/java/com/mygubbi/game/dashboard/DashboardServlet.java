@@ -11,7 +11,7 @@ public class DashboardServlet extends VaadinServlet {
     @Override
     protected final void servletInitialized() throws ServletException {
         super.servletInitialized();
-        ConfigHolder.getInstance();
+        ServerManager.getInstance();
         getService().addSessionInitListener(new DashboardSessionInitListener());
     }
 }

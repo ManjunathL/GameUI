@@ -10,16 +10,16 @@ import java.util.HashMap;
  */
 public class UserDataProvider {
 
-    private DataProviderUtil dataProviderUtil;
+    private DataProviderMode dataProviderMode;
 
-    public UserDataProvider(DataProviderUtil dataProviderUtil) {
-        this.dataProviderUtil = dataProviderUtil;
+    public UserDataProvider(DataProviderMode dataProviderMode) {
+        this.dataProviderMode = dataProviderMode;
     }
 
     public JSONObject authUser(String username, String password) {
 
         try {
-            JSONObject result = dataProviderUtil.postResource("user.auth", JsonUtil.getJson(new HashMap<String, Object>() {
+            JSONObject result = dataProviderMode.postResource("user.auth", JsonUtil.getJson(new HashMap<String, Object>() {
                 {
                     put("email", username);
                     put("password", password);
@@ -40,7 +40,7 @@ public class UserDataProvider {
 
     public boolean changePassword(String username, String oldPassword, String newPassword) {
         try {
-            JSONObject result = dataProviderUtil.postResource("user.change_pwd", JsonUtil.getJson(new HashMap<String, Object>() {
+            JSONObject result = dataProviderMode.postResource("user.change_pwd", JsonUtil.getJson(new HashMap<String, Object>() {
                 {
                     put("email", username);
                     put("old_password", oldPassword);

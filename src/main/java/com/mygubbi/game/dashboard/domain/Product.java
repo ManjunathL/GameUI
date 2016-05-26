@@ -28,7 +28,7 @@ public class Product {
     public enum TYPES {CUSTOMIZED, CATALOGUE};
 
     public static final String PROPOSAL_ID = "proposalId";
-    public static final String PRODUCT_ID = "id";
+    public static final String ID = "id";
     public static final String SEQ = "seq";
     public static final String TITLE = "title";
     public static final String PRODUCT_CATEGORY = "productCategory";
@@ -37,8 +37,10 @@ public class Product {
     public static final String ROOM_CODE = "roomCode";
     public static final String MAKE_TYPE = "makeType";
     public static final String MAKE_TYPE_CODE = "makeTypeCode";
-    public static final String CARCASS_MATERIAL = "baseCarcass";
-    public static final String CARCASS_MATERIAL_CODE = "baseCarcassCode";
+    public static final String BASE_CARCASS = "baseCarcass";
+    public static final String BASE_CARCASS_CODE = "baseCarcassCode";
+    public static final String WALL_CARCASS = "wallCarcass";
+    public static final String WALL_CARCASS_CODE = "wallCarcassCode";
     public static final String FINISH_TYPE = "finishType";
     public static final String FINISH_TYPE_CODE = "finishTypeCode";
     public static final String SHUTTER_FINISH = "finish";
@@ -267,5 +269,61 @@ public class Product {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getCatalogueName() {
+        return catalogueName;
+    }
+
+    public void setCatalogueName(String catalogueName) {
+        this.catalogueName = catalogueName;
+    }
+
+    public String getCatalogueId() {
+        return catalogueId;
+    }
+
+    public void setCatalogueId(String catalogueId) {
+        this.catalogueId = catalogueId;
+    }
+
+    public String getWallCarcass() {
+        return wallCarcass;
+    }
+
+    public void setWallCarcass(String wallCarcass) {
+        this.wallCarcass = wallCarcass;
+    }
+
+    public String getWallCarcassCode() {
+        return wallCarcassCode;
+    }
+
+    public void setWallCarcassCode(String wallCarcassCode) {
+        this.wallCarcassCode = wallCarcassCode;
+    }
+
+    public String getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(String dimension) {
+        this.dimension = dimension;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

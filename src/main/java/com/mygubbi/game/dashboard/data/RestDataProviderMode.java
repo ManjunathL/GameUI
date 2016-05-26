@@ -15,7 +15,7 @@ import static us.monoid.web.Resty.content;
 /**
  * Created by nitinpuri on 05-04-2016.
  */
-public class RestDataProviderUtil implements DataProviderUtil {
+public class RestDataProviderMode implements DataProviderMode {
 
     private final Resty resty = new Resty();
 

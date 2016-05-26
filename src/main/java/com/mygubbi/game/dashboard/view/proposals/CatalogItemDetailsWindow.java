@@ -3,9 +3,8 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import java.util.List;
 
-import com.mygubbi.game.dashboard.config.ConfigHolder;
+import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.ProductItem;
 import com.mygubbi.game.dashboard.domain.ProductSuggest;
 import com.mygubbi.game.dashboard.domain.Proposal;
@@ -60,7 +59,7 @@ public class CatalogItemDetailsWindow extends Window {
 
     private Proposal proposal;
 
-    private ProposalDataProvider proposalDataProvider = ConfigHolder.getInstance().getProposalDataProvider();
+    private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     
 
     

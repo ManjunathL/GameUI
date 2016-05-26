@@ -7,15 +7,13 @@ package com.mygubbi.game.dashboard.config;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
+import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.Color;
 import com.mygubbi.game.dashboard.domain.FinishTypeColor;
 import com.mygubbi.game.dashboard.util.FileUtil;
 import com.mygubbi.game.dashboard.util.JsonMerger;
 import com.mygubbi.game.dashboard.util.StringUtils;
 import com.vaadin.server.FileResource;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Image;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,8 +32,6 @@ public class ConfigHolder {
     private Map<String, FinishTypeColor> finishTypeColors;
     private Map<String, Color> colors;
     private final String imageBasePath;
-    private final String dataProviderUtilName;
-    private final ProposalDataProvider proposalDataProvider;
 
     private ConfigHolder() {
 
@@ -44,9 +40,8 @@ public class ConfigHolder {
         loadConfig(configFileList);
 
         imageBasePath = getStringValue("imageBasePath", "");
-        dataProviderUtilName = getStringValue("dataProviderUtil", "");
 
-        proposalDataProvider = new ProposalDataProvider(dataProviderUtilName);
+        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
 
         finishTypeColors = proposalDataProvider.getFinishTypeColors().stream().collect(
                 Collectors.toMap(FinishTypeColor::getFinishTypeCode, Function.identity()));
@@ -61,10 +56,6 @@ public class ConfigHolder {
                     }
             );
         }
-    }
-
-    public ProposalDataProvider getProposalDataProvider() {
-        return proposalDataProvider;
     }
 
     public static ConfigHolder getInstance() {

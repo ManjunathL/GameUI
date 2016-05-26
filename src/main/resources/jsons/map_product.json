@@ -3,32 +3,36 @@
   "quoteFilePath": "c://tmp//proposals_data//1234/283764.xlsx",
   "modules": [
     {
-      "importStatus": "success",
+      "importStatus": "m",
       "seq": 1,
       "extCode": "ADD1_536",
       "extDefCode": "ADD1_536",
-      "colorCode": "CC123"
+      "colorCode": "CC123",
+      "unitType": "Base"
     },
     {
-      "importStatus": "default_matched",
+      "importStatus": "d",
       "seq": 2,
       "extCode": "FUL1_536",
       "extDefCode": "ADD1_536",
-      "colorCode": "CC254"
+      "colorCode": "CC254",
+      "unitType": "Wall"
     },
     {
-      "importStatus": "success",
+      "importStatus": "m",
       "seq": 3,
       "extCode": "FUL1_537",
       "extDefCode": "ADD1_536",
-      "colorCode": "CC234"
+      "colorCode": "CC234",
+      "unitType": "Base"
     },
     {
-      "importStatus": "success",
+      "importStatus": "m",
       "seq": 4,
       "extCode": "ADD1_537",
       "extDefCode": "",
-      "colorCode": "CC876"
+      "colorCode": "CC876",
+      "unitType": "Base"
     }
   ]
 }

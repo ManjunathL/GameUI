@@ -1,10 +1,8 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
 import com.google.common.eventbus.Subscribe;
-import com.mygubbi.game.dashboard.config.ConfigHolder;
+import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.data.RestDataProviderUtil;
-import com.mygubbi.game.dashboard.data.dummy.FileDataProviderUtil;
 import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -28,7 +26,7 @@ import java.util.Map;
 public final class ProposalsView extends TabSheet implements View {
 
     private Grid grid;
-    private ProposalDataProvider proposalDataProvider = ConfigHolder.getInstance().getProposalDataProvider();
+    private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
     public ProposalsView() {
         addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
