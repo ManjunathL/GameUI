@@ -81,34 +81,72 @@ public class ModuleDetailsWindow extends Window {
         setClosable(false);
         setCaption("Edit Module Configuration");
 
-        VerticalLayout vLayout = new VerticalLayout();
-        vLayout.setMargin(new MarginInfo(true, true, true, true));
-        setContent(vLayout);
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        VerticalLayout verticalLayoutLeft = new VerticalLayout();
+        verticalLayoutLeft.setWidth("70%");
+        horizontalLayout.addComponent(verticalLayoutLeft);
+        verticalLayoutLeft.setMargin(new MarginInfo(true, true, true, true));
+        //setContent(vLayout);
         Responsive.makeResponsive(this);
 
         HorizontalLayout horizontalLayout0 = new HorizontalLayout();
         horizontalLayout0.setSizeFull();
         horizontalLayout0.addComponent(buildImportedModuleForm());
-        vLayout.addComponent(horizontalLayout0);
+        verticalLayoutLeft.addComponent(horizontalLayout0);
         horizontalLayout0.setHeightUndefined();
 
         HorizontalLayout horizontalLayout1 = new HorizontalLayout();
         horizontalLayout1.setSizeFull();
         horizontalLayout1.addComponent(buildMGModuleComponent());
-        vLayout.addComponent(horizontalLayout1);
+        verticalLayoutLeft.addComponent(horizontalLayout1);
         horizontalLayout1.setHeightUndefined();
 
         HorizontalLayout horizontalLayout2 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
         horizontalLayout2.setSizeFull();
         horizontalLayout2.addComponent(buildModuleSelectionsComponent());
-        vLayout.addComponent(horizontalLayout2);
+        verticalLayoutLeft.addComponent(horizontalLayout2);
         horizontalLayout2.setHeightUndefined();
 
         Component footerLayOut = buildFooter();
-        vLayout.addComponent(footerLayOut);
+        verticalLayoutLeft.addComponent(footerLayOut);
+
+        VerticalLayout verticalLayoutRight = buildImagesComponent();
+        verticalLayoutRight.setWidth("30%");
+        horizontalLayout.addComponent(verticalLayoutRight);
+
+        setContent(horizontalLayout);
 
         updateValues();
+    }
+
+    private VerticalLayout buildImagesComponent() {
+
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+
+/*
+        Label accessoriesLabel = new Label("Accessories");
+        accessoriesLabel.setStyleName(ValoTheme.LABEL_SMALL);
+        accessoriesLabel.setHeight("22px");
+        verticalLayout.addComponent(accessoriesLabel);
+*/
+
+        createAccessoryImageStrip();
+        verticalLayout.addComponent(accessoryImageStrip);
+
+        return verticalLayout;
+    }
+
+    private void createAccessoryImageStrip() {
+        accessoryImageStrip = new ImageStrip(ImageStrip.Alignment.VERTICAL);
+        accessoryImageStrip.setAnimated(true);
+        accessoryImageStrip.setImageBoxWidth(120);
+        accessoryImageStrip.setImageBoxHeight(120);
+        accessoryImageStrip.setImageMaxWidth(105);
+        accessoryImageStrip.setImageMaxHeight(105);
+        accessoryImageStrip.setMaxAllowed(3);
+        accessoryImageStrip.setHeight("520px");
     }
 
     private void updateValues() {
@@ -176,37 +214,12 @@ public class ModuleDetailsWindow extends Window {
 
         emptyModuleImage = new ThemeResource("img/empty-poster.png");
         moduleImage = new Image("", emptyModuleImage);
+        moduleImage.setCaption(null);
         moduleImage.setHeight("180px");
         moduleImage.setWidth("180px");
-
         horizontalLayout.addComponent(moduleImage);
 
-        HorizontalLayout horizontalLayout1 = new HorizontalLayout();
-        horizontalLayout1.setMargin(new MarginInfo(false, true, false, true));
-        Label accessories = new Label("Accessories");
-        accessories.setStyleName(ValoTheme.LABEL_SMALL);
-        horizontalLayout1.setSizeFull();
-        horizontalLayout1.addComponent(accessories);
-        verticalLayout.addComponent(horizontalLayout1);
-
-        createAccessoryImageStrip();
-        HorizontalLayout horizontalLayout2 = new HorizontalLayout();
-        horizontalLayout2.setSizeFull();
-        horizontalLayout2.addComponent(accessoryImageStrip);
-        verticalLayout.addComponent(horizontalLayout2);
-
         return verticalLayout;
-    }
-
-    private void createAccessoryImageStrip() {
-        accessoryImageStrip = new ImageStrip();
-        accessoryImageStrip.setAnimated(true);
-        accessoryImageStrip.setImageBoxWidth(140);
-        accessoryImageStrip.setImageBoxHeight(140);
-        accessoryImageStrip.setImageMaxWidth(125);
-        accessoryImageStrip.setImageMaxHeight(125);
-        accessoryImageStrip.setMaxAllowed(6);
-        accessoryImageStrip.setWidth("936px");
     }
 
     private void mgModuleChanged(Property.ValueChangeEvent valueChangeEvent) {
@@ -234,7 +247,7 @@ public class ModuleDetailsWindow extends Window {
             this.moduleImage.setSource(new FileResource(new File(basePath + mgModule.getImagePath())));
             mgModuleCombo.setNullSelectionAllowed(false);
 
-            HorizontalLayout parent = (HorizontalLayout) this.accessoryImageStrip.getParent();
+            VerticalLayout parent = (VerticalLayout) this.accessoryImageStrip.getParent();
             AbstractSingleComponentContainer.removeFromParent(this.accessoryImageStrip);
             createAccessoryImageStrip();
             parent.addComponent(accessoryImageStrip);
