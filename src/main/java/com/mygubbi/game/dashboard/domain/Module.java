@@ -35,11 +35,6 @@ public class Module {
     public static final String IMPORTED_MODULE_DEFAULT_CODE = "extDefCode";
     public static final String IMPORTED_MODULE_TEXT = "extText";
     public static final String MG_MODULE_CODE = "mgCode";
-    public static final String MG_TYPE = "mgType";
-    public static final String MG_IMAGE = "mgImage";
-    public static final String MG_DIMENSION = "mgDimension";
-    public static final String MG_DESCRIPTION = "mgDescription";
-    public static final String MG_ACCESSORIES = "mgAccessories";
     public static final String MAKE_TYPE = "makeType";
     public static final String MAKE_TYPE_CODE = "makeTypeCode";
     public static final String MAKE_TYPE_TEXT = "makeTypeText";
@@ -67,11 +62,6 @@ public class Module {
     private String extDefCode;
     private String extText;
     private String mgCode;
-    private String mgType;
-    private String mgImage;
-    private String mgDimension;
-    private String mgDescription;
-    private List<ModuleAccessory> mgAccessories; //todo: make transient
 
     private String carcass;
     private String carcassCode;
@@ -304,52 +294,12 @@ public class Module {
         this.unitType = unitType;
     }
 
-    public String getMgType() {
-        return mgType;
-    }
-
-    public void setMgType(String mgType) {
-        this.mgType = mgType;
-    }
-
-    public String getMgImage() {
-        return mgImage;
-    }
-
-    public void setMgImage(String mgImage) {
-        this.mgImage = mgImage;
-    }
-
-    public String getMgDimension() {
-        return mgDimension;
-    }
-
-    public void setMgDimension(String mgDimension) {
-        this.mgDimension = mgDimension;
-    }
-
-    public List<ModuleAccessory> getMgAccessories() {
-        return mgAccessories;
-    }
-
-    public void setMgAccessories(List<ModuleAccessory> mgAccessories) {
-        this.mgAccessories = mgAccessories;
-    }
-
     public String getRemarks() {
         return remarks;
     }
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
-    }
-
-    public String getMgDescription() {
-        return mgDescription;
-    }
-
-    public void setMgDescription(String mgDescription) {
-        this.mgDescription = mgDescription;
     }
 
     @Override

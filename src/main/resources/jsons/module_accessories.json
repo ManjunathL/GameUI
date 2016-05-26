@@ -1,37 +1,37 @@
 [
   {
-    "name": "A1",
-    "brand": "H1",
+    "title": "A1",
+    "make": "H1",
     "imagePath": "accessories/acsimages.jpg"
   },
   {
-    "name": "A2",
-    "brand": "H1",
+    "title": "A2",
+    "make": "H1",
     "imagePath": "accessories/cultery-tray-hauss.jpg"
   },
   {
-    "name": "A3",
-    "brand": "H1",
+    "title": "A3",
+    "make": "H1",
     "imagePath": "accessories/deutschland.jpg"
   },
   {
-    "name": "A4",
-    "brand": "H1",
+    "title": "A4",
+    "make": "H1",
     "imagePath": "accessories/drawer-dustbin-mobel.jpg"
   },
   {
-    "name": "A1",
-    "brand": "H1",
+    "title": "A1",
+    "make": "H1",
     "imagePath": "accessories/glider.jpg"
   },
   {
-    "name": "A1",
-    "brand": "H1",
+    "title": "A1",
+    "make": "H1",
     "imagePath": "accessories/kitchen-moving-corner-250x250.jpg"
   },
   {
-    "name": "A1",
-    "brand": "H1",
+    "title": "A1",
+    "make": "H1",
     "imagePath": "accessories/pull-out-basket-hauss.jpg"
   }
 ]

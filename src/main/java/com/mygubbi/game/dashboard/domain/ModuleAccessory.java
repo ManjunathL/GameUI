@@ -4,24 +4,24 @@ package com.mygubbi.game.dashboard.domain;
  * Created by nitinpuri on 17-05-2016.
  */
 public class ModuleAccessory {
-    private String name;
-    private String brand;
+    private String title;
+    private String make;
     private String imagePath;
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getBrand() {
-        return brand;
+    public String getMake() {
+        return make;
     }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
+    public void setMake(String make) {
+        this.make = make;
     }
 
     public String getImagePath() {

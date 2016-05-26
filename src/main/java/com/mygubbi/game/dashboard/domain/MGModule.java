@@ -7,11 +7,12 @@ import java.util.List;
  * Created by nitinpuri on 19-05-2016.
  */
 public class MGModule {
+    public static final String CODE = "code";
     private String code;
     private String description;
-    private double w;
-    private double d;
-    private double h;
+    private double width;
+    private double depth;
+    private double height;
     private String imagePath;
     private List<ModuleAccessory> accessories = new ArrayList<>();
 
@@ -31,32 +32,32 @@ public class MGModule {
         this.description = description;
     }
 
-    public double getW() {
-        return w;
+    public double getWidth() {
+        return width;
     }
 
     public String getDimensions() {
-        return getW() + " x " + getD() + " x " + getH();
+        return getWidth() + " x " + getDepth() + " x " + getHeight();
     }
 
-    public void setW(double w) {
-        this.w = w;
+    public void setWidth(double width) {
+        this.width = width;
     }
 
-    public double getD() {
-        return d;
+    public double getDepth() {
+        return depth;
     }
 
-    public void setD(double d) {
-        this.d = d;
+    public void setDepth(double depth) {
+        this.depth = depth;
     }
 
-    public double getH() {
-        return h;
+    public double getHeight() {
+        return height;
     }
 
-    public void setH(double h) {
-        this.h = h;
+    public void setHeight(double height) {
+        this.height = height;
     }
 
     public String getImagePath() {
@@ -74,4 +75,5 @@ public class MGModule {
     public void setAccessories(List<ModuleAccessory> accessories) {
         this.accessories = accessories;
     }
+
 }

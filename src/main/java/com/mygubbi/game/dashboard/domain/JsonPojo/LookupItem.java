@@ -1,17 +1,17 @@
 package com.mygubbi.game.dashboard.domain.JsonPojo;
 
-public class SimpleComboItem {
+public class LookupItem {
 	
 	public String code;
 	public String title;
-	public String type;
+	public String additionalType;
 
 	
-	public SimpleComboItem() {
+	public LookupItem() {
 	}
 
 	
-	public SimpleComboItem(String code, String title) {
+	public LookupItem(String code, String title) {
 		this.code = code;
 		this.title = title;
 	}
@@ -22,7 +22,7 @@ public class SimpleComboItem {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		SimpleComboItem that = (SimpleComboItem) o;
+		LookupItem that = (LookupItem) o;
 
 		return code.equals(that.code);
 
@@ -49,11 +49,11 @@ public class SimpleComboItem {
 		this.title = title;
 	}
 
-	public String getType() {
-		return type;
+	public String getAdditionalType() {
+		return additionalType;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setAdditionalType(String additionalType) {
+		this.additionalType = additionalType;
 	}
 }

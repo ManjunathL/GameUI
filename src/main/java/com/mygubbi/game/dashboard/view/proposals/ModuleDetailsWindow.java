@@ -5,7 +5,7 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
-import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
+import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
@@ -37,7 +37,7 @@ import java.util.List;
 public class ModuleDetailsWindow extends Window {
 
     private static final Logger LOG = LogManager.getLogger(ModuleDetailsWindow.class);
-    private final List<Module> mgModules;
+    private final List<MGModule> mgModules;
     private final Product product;
 
     private TextField importedModule;
@@ -59,7 +59,7 @@ public class ModuleDetailsWindow extends Window {
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final BeanFieldGroup<Module> binder = new BeanFieldGroup<>(Module.class);
 
-    private List<SimpleComboItem> shutterFinishMasterList;
+    private List<LookupItem> shutterFinishMasterList;
     private Image moduleImage;
     private ThemeResource emptyModuleImage;
     private ImageStrip accessoryImageStrip;
@@ -210,7 +210,7 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void mgModuleChanged(Property.ValueChangeEvent valueChangeEvent) {
-        Module mgModule = ((BeanItem<Module>)this.mgModuleCombo.getItem(this.mgModuleCombo.getValue())).getBean();
+        MGModule mgModule = ((BeanItem<MGModule>)this.mgModuleCombo.getItem(this.mgModuleCombo.getValue())).getBean();
         if (mgModule == null) {
             this.description.setReadOnly(false);
             this.description.setValue("");
@@ -226,12 +226,12 @@ public class ModuleDetailsWindow extends Window {
             disableApply();
         } else {
             this.description.setReadOnly(false);
-            this.description.setValue(mgModule.getMgDescription());
+            this.description.setValue(mgModule.getDescription());
             this.description.setReadOnly(true);
             this.dimensions.setReadOnly(false);
-            this.dimensions.setValue(mgModule.getMgDimension());
+            this.dimensions.setValue(mgModule.getDimensions());
             this.dimensions.setReadOnly(true);
-            this.moduleImage.setSource(new FileResource(new File(basePath + mgModule.getMgImage())));
+            this.moduleImage.setSource(new FileResource(new File(basePath + mgModule.getImagePath())));
             mgModuleCombo.setNullSelectionAllowed(false);
 
             HorizontalLayout parent = (HorizontalLayout) this.accessoryImageStrip.getParent();
@@ -239,9 +239,9 @@ public class ModuleDetailsWindow extends Window {
             createAccessoryImageStrip();
             parent.addComponent(accessoryImageStrip);
 
-            mgModule.setMgAccessories(proposalDataProvider.getModuleAccessories(mgModule.getMgCode()));
+            mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), module.getMakeTypeCode()));
 
-            for (ModuleAccessory moduleAccessory : mgModule.getMgAccessories()) {
+            for (ModuleAccessory moduleAccessory : mgModule.getAccessories()) {
                 accessoryImageStrip.addImage(new FileResource(new File(basePath + moduleAccessory.getImagePath())));
             }
 
@@ -251,7 +251,15 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void refreshPrice() {
-        ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
+
+        Module moduleForPrice = new Module();
+        moduleForPrice.setMgCode((String) mgModuleCombo.getValue());
+        moduleForPrice.setCarcassCode((String) carcassMaterialSelection.getValue());
+        moduleForPrice.setFinishCode((String) shutterFinishSelection.getValue());
+        moduleForPrice.setMakeTypeCode((String) makeType.getValue());
+
+
+        ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
         totalAmount.setReadOnly(false);
         totalAmount.setValue(modulePrice.getTotalCost() + "");
         totalAmount.setReadOnly(true);
@@ -271,12 +279,12 @@ public class ModuleDetailsWindow extends Window {
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         horizontalLayout.addComponent(formLayoutLeft);
 
-        this.makeType = getSimpleItemFilledCombo("Make Type", "make_type_data", null, product.getMakeTypeCode());
+        this.makeType = getSimpleItemFilledCombo("Make Type", ProposalDataProvider.MAKE_LOOKUP, null, product.getMakeTypeCode());
         binder.bind(makeType, Module.MAKE_TYPE_CODE);
         makeType.addValueChangeListener(this::refreshPrice);
         formLayoutLeft.addComponent(this.makeType);
 
-        this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", "carcass_material_data", null, getCarcassCodeBasedOnType());
+        this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", ProposalDataProvider.CARCASS_LOOKUP, null, getCarcassCodeBasedOnType());
         binder.bind(carcassMaterialSelection, Module.CARCASS_MATERIAL_CODE);
         carcassMaterialSelection.addValueChangeListener(this::refreshPrice);
         formLayoutLeft.addComponent(this.carcassMaterialSelection);
@@ -286,14 +294,14 @@ public class ModuleDetailsWindow extends Window {
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         horizontalLayout.addComponent(formLayoutRight);
 
-        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", "finish_type_data", null, product.getFinishTypeCode());
+        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", ProposalDataProvider.FINISH_TYPE_LOOKUP, null, product.getFinishTypeCode());
         binder.bind(finishTypeSelection, Module.FINISH_TYPE_CODE);
         formLayoutRight.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
-        shutterFinishMasterList = proposalDataProvider.getComboItems("shutter_material_data");
-        List<SimpleComboItem> filteredShutterFinish = filterShutterFinishByType();
-        SimpleComboItem defaultItem = filteredShutterFinish.stream().filter(simpleComboItem -> simpleComboItem.getCode().equals(product.getFinishCode())).findFirst().get();
+        shutterFinishMasterList = proposalDataProvider.getLookupItems(ProposalDataProvider.FINISH_LOOKUP);
+        List<LookupItem> filteredShutterFinish = filterShutterFinishByType();
+        LookupItem defaultItem = filteredShutterFinish.stream().filter(simpleComboItem -> simpleComboItem.getCode().equals(product.getFinishCode())).findFirst().get();
         defaultItem.setTitle(defaultItem.getTitle() + " (default)");
         this.shutterFinishSelection = getSimpleItemFilledCombo("Finish", filteredShutterFinish, null);
         binder.bind(shutterFinishSelection, Module.SHUTTER_FINISH_CODE);
@@ -320,13 +328,13 @@ public class ModuleDetailsWindow extends Window {
         refreshPrice();
     }
 
-    private List<SimpleComboItem> filterShutterFinishByType() {
-        List<SimpleComboItem> filteredShutterFinish = new ArrayList<>();
+    private List<LookupItem> filterShutterFinishByType() {
+        List<LookupItem> filteredShutterFinish = new ArrayList<>();
 
         String finishTypeCode = (String) finishTypeSelection.getValue();
 
-        for (SimpleComboItem shutterFinishComboItem : shutterFinishMasterList) {
-            if (finishTypeCode.equals(shutterFinishComboItem.getType())) {
+        for (LookupItem shutterFinishComboItem : shutterFinishMasterList) {
+            if (finishTypeCode.equals(shutterFinishComboItem.getAdditionalType())) {
                 filteredShutterFinish.add(shutterFinishComboItem);
             }
         }
@@ -339,9 +347,9 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
-        List<SimpleComboItem> filteredShutterFinish = filterShutterFinishByType();
+        List<LookupItem> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, SimpleComboItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
+        ((BeanContainer<String, LookupItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
         if (filteredShutterFinish.size() > 0) shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
 
         List<Color> filteredColors = filterColorsByType();
@@ -465,10 +473,10 @@ public class ModuleDetailsWindow extends Window {
         w.focus();
     }
 
-    private ComboBox getSimpleItemFilledCombo(String caption, List<SimpleComboItem> list, Property.ValueChangeListener listener) {
+    private ComboBox getSimpleItemFilledCombo(String caption, List<LookupItem> list, Property.ValueChangeListener listener) {
 
-        final BeanContainer<String, SimpleComboItem> container =
-                new BeanContainer<>(SimpleComboItem.class);
+        final BeanContainer<String, LookupItem> container =
+                new BeanContainer<>(LookupItem.class);
         container.setBeanIdProperty("code");
         container.addAll(list);
 
@@ -501,10 +509,10 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private ComboBox getSimpleItemFilledCombo(String caption, String dataType, Property.ValueChangeListener listener, String defaultCode) {
-        List<SimpleComboItem> list = proposalDataProvider.getComboItems(dataType);
+        List<LookupItem> list = proposalDataProvider.getLookupItems(dataType);
 
         if (StringUtils.isNotEmpty(defaultCode)) {
-            for (SimpleComboItem item : list) {
+            for (LookupItem item : list) {
                 if (item.getCode().equals(defaultCode)) {
                     item.setTitle(item.getTitle() + " (default)");
                 }
@@ -514,15 +522,15 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private ComboBox getMGModuleCombo(String caption) {
-        final BeanContainer<String, Module> container =
-                new BeanContainer<>(Module.class);
-        container.setBeanIdProperty(Module.MG_MODULE_CODE);
+        final BeanContainer<String, MGModule> container =
+                new BeanContainer<>(MGModule.class);
+        container.setBeanIdProperty(MGModule.CODE);
         container.addAll(mgModules);
         ComboBox select = new ComboBox(caption);
         select.setNullSelectionAllowed(true);
         select.setWidth("250px");
         select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId(Module.MG_MODULE_CODE);
+        select.setItemCaptionPropertyId(MGModule.CODE);
         return select;
     }
 }

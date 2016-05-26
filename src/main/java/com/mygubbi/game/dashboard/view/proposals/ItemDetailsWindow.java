@@ -195,16 +195,16 @@ public class ItemDetailsWindow extends Window {
         HorizontalLayout hLayout = new HorizontalLayout();
         hLayout.setSizeFull();
 
-        List<SimpleComboItem> carcassMaterials = proposalDataProvider.getComboItems("color_data");
+        List<LookupItem> carcassMaterials = proposalDataProvider.getLookupItems("color_data");
         carcassMaterials.forEach(item -> carcassMaterialL.add(item.title));
         
-        List<SimpleComboItem> shutterMaterials = proposalDataProvider.getComboItems("shutter_material_data");
+        List<LookupItem> shutterMaterials = proposalDataProvider.getLookupItems("shutter_material_data");
         shutterMaterials.forEach(item -> shutterMaterialL.add(item.title));
         
-        List<SimpleComboItem> finishes = proposalDataProvider.getComboItems("finish_data");
+        List<LookupItem> finishes = proposalDataProvider.getLookupItems("finish_data");
         finishes.forEach(item -> finishL.add(item.title));
         
-        List<SimpleComboItem> colors = proposalDataProvider.getComboItems("color_data");
+        List<LookupItem> colors = proposalDataProvider.getLookupItems("color_data");
         colors.forEach(item -> colorL.add(item.title));
         
         ComponentGrid<Module> componentGrid = new ComponentGrid<>(Module.class);
@@ -371,9 +371,9 @@ public class ItemDetailsWindow extends Window {
     	module.setExtCode("ADD1_536");
         module.setMgCode("K2DU4572");
         module.setDescription("Kitche 2 drawer unit");
-        module.setW(440.100);
-        module.setD(100.00);
-        module.setH(200.00);
+        module.setWidth(440.100);
+        module.setDepth(100.00);
+        module.setHeight(200.00);
         module.setImagePath(mgModuleMap.get("K2DU4572"));
         module.setBaseCarcass("PLY");
         module.setCarcassMaterialId(1);
@@ -392,9 +392,9 @@ public class ItemDetailsWindow extends Window {
         module2.setExtCode("FUL1_536");
         module2.setMgCode("K2DU4571");
         module2.setDescription("Kitche 2 drawer unit");
-        module2.setW(440.100);
-        module2.setD(100.00);
-        module2.setH(200.00);
+        module2.setWidth(440.100);
+        module2.setDepth(100.00);
+        module2.setHeight(200.00);
         module2.setImagePath(mgModuleMap.get("K2DU4571"));
         module2.setBaseCarcass("PLY");
         module2.setCarcassMaterialId(2);
@@ -413,9 +413,9 @@ public class ItemDetailsWindow extends Window {
         module3.setExtCode("FUL1_537");
         module3.setMgCode("");
         module3.setDescription("Kitche 2 drawer unit");
-        module3.setW(440.100);
-        module3.setD(100.00);
-        module3.setH(200.00);
+        module3.setWidth(440.100);
+        module3.setDepth(100.00);
+        module3.setHeight(200.00);
         module3.setImagePath("");
         module3.setBaseCarcass("PLY");
         module3.setCarcassMaterialId(2);
@@ -719,9 +719,9 @@ public class ItemDetailsWindow extends Window {
     
     private ComboBox getSimpleItemFilledCombo(String caption, String dataType)
     {
-        List<SimpleComboItem> list = proposalDataProvider.getComboItems(dataType);
-        final BeanItemContainer<SimpleComboItem> container =
-                new BeanItemContainer<SimpleComboItem>(SimpleComboItem.class);
+        List<LookupItem> list = proposalDataProvider.getLookupItems(dataType);
+        final BeanItemContainer<LookupItem> container =
+                new BeanItemContainer<LookupItem>(LookupItem.class);
         container.addAll(list);
 
         ComboBox select = new ComboBox(caption);
@@ -729,7 +729,7 @@ public class ItemDetailsWindow extends Window {
         select.setWidth("250px");
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId("title");
-    	SimpleComboItem selectedProductType = (container.size() > 0) ? container.getItemIds().get(0) : null;
+    	LookupItem selectedProductType = (container.size() > 0) ? container.getItemIds().get(0) : null;
     	select.setValue(selectedProductType);
     	return select; 
     }*/

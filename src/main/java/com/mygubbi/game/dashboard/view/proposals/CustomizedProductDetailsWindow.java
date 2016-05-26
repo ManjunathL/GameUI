@@ -6,7 +6,7 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
-import com.mygubbi.game.dashboard.domain.JsonPojo.SimpleComboItem;
+import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -66,7 +66,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
-    private List<SimpleComboItem> shutterFinishMasterList;
+    private List<LookupItem> shutterFinishMasterList;
     private BeanItemContainer<Module> moduleContainer;
     private Grid modulesGrid;
     private TextField totalAmount;
@@ -75,8 +75,10 @@ public class CustomizedProductDetailsWindow extends Window {
 
         DashboardEventBus.register(this);
 
-        this.proposal = proposal;
-        this.product.setProposalId(proposal.getProposalHeader().getId());
+        proposal = proposal;
+        product.setProposalId(proposal.getProposalHeader().getId());
+        product.setSeq(proposal.getProducts().size() + 1);
+
         this.binder.setItemDataSource(this.product);
 
         setModal(true);
@@ -132,7 +134,7 @@ public class CustomizedProductDetailsWindow extends Window {
         itemTitleField.setImmediate(true);
         formLayoutLeft.addComponent(itemTitleField);
 
-        this.productSelection = getSimpleItemFilledCombo("Product Category", "product_data", null);
+        this.productSelection = getSimpleItemFilledCombo("Product Category", ProposalDataProvider.CATEGORY_LOOKUP, null);
         productSelection.setRequired(true);
         binder.bind(productSelection, PRODUCT_CATEGORY_CODE);
         productSelection.addValueChangeListener(valueChangeEvent -> {
@@ -143,7 +145,7 @@ public class CustomizedProductDetailsWindow extends Window {
         if (productSelection.size() > 0) productSelection.setValue(productSelection.getItemIds().iterator().next());
         formLayoutLeft.addComponent(this.productSelection);
 
-        this.roomSelection = getSimpleItemFilledCombo("Room", "room_data", null);
+        this.roomSelection = getSimpleItemFilledCombo("Room", ProposalDataProvider.ROOM_LOOKUP, null);
         roomSelection.setRequired(true);
         binder.bind(roomSelection, ROOM_CODE);
         roomSelection.addValueChangeListener(valueChangeEvent -> {
@@ -154,7 +156,7 @@ public class CustomizedProductDetailsWindow extends Window {
         if (roomSelection.size() > 0) roomSelection.setValue(roomSelection.getItemIds().iterator().next());
         formLayoutLeft.addComponent(this.roomSelection);
 
-        this.makeType = getSimpleItemFilledCombo("Make Type", "make_type_data", null);
+        this.makeType = getSimpleItemFilledCombo("Make Type", ProposalDataProvider.MAKE_LOOKUP, null);
         makeType.setRequired(true);
         binder.bind(makeType, MAKE_TYPE_CODE);
         if (makeType.size() > 0) makeType.setValue(makeType.getItemIds().iterator().next());
@@ -193,7 +195,7 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.baseCarcassSelection = getSimpleItemFilledCombo("Base Carcass", "carcass_material_data", null);
+        this.baseCarcassSelection = getSimpleItemFilledCombo("Base Carcass", ProposalDataProvider.CARCASS_LOOKUP, null);
         baseCarcassSelection.setRequired(true);
         binder.bind(baseCarcassSelection, BASE_CARCASS_CODE);
         baseCarcassSelection.addValueChangeListener(this::refreshPrice);
@@ -201,7 +203,7 @@ public class CustomizedProductDetailsWindow extends Window {
             baseCarcassSelection.setValue(baseCarcassSelection.getItemIds().iterator().next());
         formLayoutRight.addComponent(this.baseCarcassSelection);
 
-        this.wallCarcassSelection = getSimpleItemFilledCombo("Wall Carcass", "carcass_material_data", null);
+        this.wallCarcassSelection = getSimpleItemFilledCombo("Wall Carcass", ProposalDataProvider.CARCASS_LOOKUP, null);
         wallCarcassSelection.setRequired(true);
         binder.bind(wallCarcassSelection, WALL_CARCASS_CODE);
         wallCarcassSelection.addValueChangeListener(this::refreshPrice);
@@ -209,7 +211,7 @@ public class CustomizedProductDetailsWindow extends Window {
             wallCarcassSelection.setValue(wallCarcassSelection.getItemIds().iterator().next());
         formLayoutRight.addComponent(this.wallCarcassSelection);
 
-        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", "finish_type_data", null);
+        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", ProposalDataProvider.FINISH_TYPE_LOOKUP, null);
         finishTypeSelection.setRequired(true);
         binder.bind(finishTypeSelection, FINISH_TYPE_CODE);
         if (finishTypeSelection.size() > 0)
@@ -217,14 +219,14 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutRight.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
-        shutterFinishMasterList = proposalDataProvider.getComboItems("shutter_material_data");
-        List<SimpleComboItem> filteredShutterFinish = filterShutterFinishByType();
+        shutterFinishMasterList = proposalDataProvider.getLookupItems(ProposalDataProvider.FINISH_LOOKUP);
+        List<LookupItem> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection = getSimpleItemFilledCombo("Finish", filteredShutterFinish, null);
         shutterFinishSelection.setRequired(true);
         binder.bind(shutterFinishSelection, SHUTTER_FINISH_CODE);
         shutterFinishSelection.addValueChangeListener(this::refreshPrice);
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, SimpleComboItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
+        ((BeanContainer<String, LookupItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
         if (shutterFinishSelection.size() > 0)
             shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
         formLayoutRight.addComponent(this.shutterFinishSelection);
@@ -234,13 +236,13 @@ public class CustomizedProductDetailsWindow extends Window {
         return formLayoutRight;
     }
 
-    private List<SimpleComboItem> filterShutterFinishByType() {
-        List<SimpleComboItem> filteredShutterFinish = new ArrayList<>();
+    private List<LookupItem> filterShutterFinishByType() {
+        List<LookupItem> filteredShutterFinish = new ArrayList<>();
 
         String selectedFinishTypeCode = (String) finishTypeSelection.getValue();
 
-        for (SimpleComboItem shutterFinishComboItem : shutterFinishMasterList) {
-            if (selectedFinishTypeCode.equals(shutterFinishComboItem.getType())) {
+        for (LookupItem shutterFinishComboItem : shutterFinishMasterList) {
+            if (selectedFinishTypeCode.equals(shutterFinishComboItem.getAdditionalType())) {
                 filteredShutterFinish.add(shutterFinishComboItem);
             }
         }
@@ -248,9 +250,9 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
-        List<SimpleComboItem> filteredShutterFinish = filterShutterFinishByType();
+        List<LookupItem> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, SimpleComboItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
+        ((BeanContainer<String, LookupItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
         if (filteredShutterFinish.size() > 0)
             shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
 
@@ -303,6 +305,8 @@ public class CustomizedProductDetailsWindow extends Window {
             Product productResult = proposalDataProvider.mapAndUpdateProduct(product);
             binder.getItemDataSource().getItemProperty(Product.ID).setValue(productResult.getId());
             binder.getItemDataSource().getItemProperty(Product.MODULES).setValue(productResult.getModules());
+            binder.getItemDataSource().getItemProperty(Product.TYPE).setValue(TYPES.CUSTOMIZED.name());
+            binder.getItemDataSource().getItemProperty(Product.QUOTE_FILE_PATH).setValue(quoteFilePath);
             product.setType(TYPES.CUSTOMIZED.name());
             proposal.getProducts().add(product);
             initModules(product);
@@ -345,8 +349,8 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private String getUploadPath() {
-        return proposal.getProposalHeader().getFolderPath() + "/product_imports";
-    } // todo: check this
+        return proposal.getProposalHeader().getFolderPath();
+    }
 
     private Component buildModulesForm() {
         HorizontalLayout hLayout = new HorizontalLayout();
@@ -391,7 +395,11 @@ public class CustomizedProductDetailsWindow extends Window {
                 return;
             }
             Module module = (Module) rendererClickEvent.getItemId();
-            ModuleDetailsWindow.open(module, product);
+            if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
+                ModuleDetailsWindow.open(module, product);
+            } else {
+                NotificationUtil.showNotification("Cannot edit unmapped module.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }
         }));
 
         hLayout.addComponent(modulesGrid);
@@ -422,7 +430,7 @@ public class CustomizedProductDetailsWindow extends Window {
             public String getValue(Item item, Object o, Object o1) {
                 String colorCode = (String) item.getItemProperty(Module.COLOR_CODE).getValue();
                 Color color = ConfigHolder.getInstance().getColors().get(colorCode);
-                return color.getName();
+                return color != null ? color.getName() : "UNKNOWN";
             }
 
             @Override
@@ -766,10 +774,10 @@ public class CustomizedProductDetailsWindow extends Window {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
     }
 
-    private ComboBox getSimpleItemFilledCombo(String caption, List<SimpleComboItem> list, Property.ValueChangeListener listener) {
+    private ComboBox getSimpleItemFilledCombo(String caption, List<LookupItem> list, Property.ValueChangeListener listener) {
 
-        final BeanContainer<String, SimpleComboItem> container =
-                new BeanContainer<>(SimpleComboItem.class);
+        final BeanContainer<String, LookupItem> container =
+                new BeanContainer<>(LookupItem.class);
         container.setBeanIdProperty("code");
         container.addAll(list);
 
@@ -784,7 +792,7 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private ComboBox getSimpleItemFilledCombo(String caption, String dataType, Property.ValueChangeListener listener) {
-        List<SimpleComboItem> list = proposalDataProvider.getComboItems(dataType);
+        List<LookupItem> list = proposalDataProvider.getLookupItems(dataType);
         return getSimpleItemFilledCombo(caption, list, listener);
     }
 

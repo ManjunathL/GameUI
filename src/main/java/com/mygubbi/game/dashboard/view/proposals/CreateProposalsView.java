@@ -548,9 +548,6 @@ public class CreateProposalsView extends Panel implements View {
     public void productCreated(final ProposalEvent.ProductCreatedEvent event) {
         List<Product> products = proposal.getProducts();
         boolean removed = products.remove(event.getProduct());
-        if (!removed) {
-            event.getProduct().setSeq(products.size() + 1);
-        }
         products.add(event.getProduct());
         productContainer.removeAllItems();
         productContainer.addAll(products);
