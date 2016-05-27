@@ -31,6 +31,7 @@ public class ProposalDataProvider {
     public static final String CATEGORY_LOOKUP = "category";
     public static final String ROOM_LOOKUP = "room";
     public static final String MAKE_LOOKUP = "maketype";
+    public static final String SHUTTER_DESIGN_LOOKUP = "shutterdesign";
     public static final String CARCASS_LOOKUP = "carcassmaterial";
     public static final String FINISH_TYPE_LOOKUP = "finishtype";
     public static final String FINISH_LOOKUP = "finish";

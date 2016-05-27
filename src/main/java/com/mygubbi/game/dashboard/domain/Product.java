@@ -35,6 +35,8 @@ public class Product {
     public static final String PRODUCT_CATEGORY_CODE = "productCategoryCode";
     public static final String ROOM = "room";
     public static final String ROOM_CODE = "roomCode";
+    public static final String SHUTTER_DESIGN = "shutterDesign";
+    public static final String SHUTTER_DESIGN_CODE = "shutterDesignCode";
     public static final String MAKE_TYPE = "makeType";
     public static final String MAKE_TYPE_CODE = "makeTypeCode";
     public static final String BASE_CARCASS = "baseCarcass";
@@ -61,6 +63,8 @@ public class Product {
     private String productCategoryCode;
     private String room;
     private String roomCode;
+    private String shutterDesign;
+    private String shutterDesignCode;
     private String catalogueName;
     private String catalogueId;
     private String makeType;
@@ -325,5 +329,21 @@ public class Product {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public String getShutterDesign() {
+        return shutterDesign;
+    }
+
+    public void setShutterDesign(String shutterDesign) {
+        this.shutterDesign = shutterDesign;
+    }
+
+    public String getShutterDesignCode() {
+        return shutterDesignCode;
+    }
+
+    public void setShutterDesignCode(String shutterDesignCode) {
+        this.shutterDesignCode = shutterDesignCode;
     }
 }

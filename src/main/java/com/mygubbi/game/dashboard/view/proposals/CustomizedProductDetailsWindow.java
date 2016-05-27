@@ -53,17 +53,18 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox baseCarcassSelection;
     private ComboBox wallCarcassSelection;
     private ComboBox shutterFinishSelection;
+    private ComboBox shutterDesign;
     private ComboBox finishTypeSelection;
-    private Upload uploadCtrl;
 
+    private Upload uploadCtrl;
     private File uploadFile;
     private TabSheet tabSheet;
-    private Button closeBtn;
 
+    private Button closeBtn;
     private Button saveBtn;
     private Proposal proposal;
-    private Product product = new Product();
 
+    private Product product = new Product();
     private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private List<LookupItem> shutterFinishMasterList;
@@ -162,15 +163,20 @@ public class CustomizedProductDetailsWindow extends Window {
         if (makeType.size() > 0) makeType.setValue(makeType.getItemIds().iterator().next());
         formLayoutLeft.addComponent(this.makeType);
 
+        this.shutterDesign = getSimpleItemFilledCombo("Shutter Design", ProposalDataProvider.SHUTTER_DESIGN_LOOKUP, null);
+        shutterDesign.setRequired(true);
+        binder.bind(shutterDesign, SHUTTER_DESIGN_CODE);
+        if (shutterDesign.size() > 0) shutterDesign.setValue(shutterDesign.getItemIds().iterator().next());
+        formLayoutLeft.addComponent(this.shutterDesign);
+
         totalAmount = new TextField("<h2>Total Amount</h2>");
         totalAmount.setValue("0");
         totalAmount.setImmediate(true);
         binder.bind(totalAmount, AMOUNT);
         totalAmount.setReadOnly(true);
         totalAmount.setCaptionAsHtml(true);
-        formLayoutLeft.addComponent(totalAmount);
-        makeType.addValueChangeListener(this::refreshPrice);
 
+        makeType.addValueChangeListener(this::refreshPrice);
         return formLayoutLeft;
     }
 
@@ -232,6 +238,9 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
         formLayoutRight.addComponent(getUploadControl());
+
+        formLayoutRight.addComponent(totalAmount);
+
 
         return formLayoutRight;
     }
