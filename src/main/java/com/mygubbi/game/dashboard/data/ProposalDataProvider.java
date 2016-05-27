@@ -351,4 +351,17 @@ public class ProposalDataProvider {
         }
 
     }
+
+    public boolean deleteProduct(Product product) {
+        try {
+            product.setUpdatedBy(getUserId());
+            String productJson = this.mapper.writeValueAsString(product);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/delete", productJson);
+            return !jsonObject.has("error");
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't delete product", e);
+        }
+
+    }
 }

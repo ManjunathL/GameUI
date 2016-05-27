@@ -11,6 +11,7 @@ import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
+import com.mygubbi.game.dashboard.view.DashboardViewType;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -32,6 +33,7 @@ import de.datenhahn.vaadin.componentrenderer.grid.ComponentGridDecorator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 
 import java.io.File;
@@ -64,7 +66,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private Button saveBtn;
     private Proposal proposal;
 
-    private Product product = new Product();
+    private Product product;
     private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private List<LookupItem> shutterFinishMasterList;
@@ -72,16 +74,16 @@ public class CustomizedProductDetailsWindow extends Window {
     private Grid modulesGrid;
     private TextField totalAmount;
 
-    private CustomizedProductDetailsWindow(Proposal proposal) {
+    public CustomizedProductDetailsWindow(Proposal proposal) {
+        this(proposal, new Product(proposal.getProposalHeader().getId(), proposal.getProducts().size() + 1));
+    }
+
+    public CustomizedProductDetailsWindow(Proposal proposal, Product product) {
+        this.proposal = proposal;
+        this.product = product;
 
         DashboardEventBus.register(this);
-
-        this.proposal = proposal;
-        product.setProposalId(proposal.getProposalHeader().getId());
-        product.setSeq(proposal.getProducts().size() + 1);
-
         this.binder.setItemDataSource(this.product);
-
         setModal(true);
         setSizeFull();
         setResizable(false);
@@ -119,6 +121,7 @@ public class CustomizedProductDetailsWindow extends Window {
         Component footerLayOut = buildFooter();
         vLayout.addComponent(footerLayOut);
         vLayout.setExpandRatio(footerLayOut, 0.1f);
+
     }
 
     /*
@@ -132,7 +135,6 @@ public class CustomizedProductDetailsWindow extends Window {
         itemTitleField = (TextField) binder.buildAndBind("Product Title", TITLE);
         itemTitleField.setRequired(true);
         itemTitleField.setNullRepresentation("");
-        itemTitleField.setImmediate(true);
         formLayoutLeft.addComponent(itemTitleField);
 
         this.productSelection = getSimpleItemFilledCombo("Product Category", ProposalDataProvider.CATEGORY_LOOKUP, null);
@@ -143,7 +145,10 @@ public class CustomizedProductDetailsWindow extends Window {
             String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
             product.setProductCategory(title);
         });
-        if (productSelection.size() > 0) productSelection.setValue(productSelection.getItemIds().iterator().next());
+        if (productSelection.size() > 0) {
+            String code = StringUtils.isNotEmpty(product.getProductCategoryCode()) ? product.getProductCategoryCode() : (String) productSelection.getItemIds().iterator().next();
+            productSelection.setValue(code);
+        }
         formLayoutLeft.addComponent(this.productSelection);
 
         this.roomSelection = getSimpleItemFilledCombo("Room", ProposalDataProvider.ROOM_LOOKUP, null);
@@ -154,19 +159,28 @@ public class CustomizedProductDetailsWindow extends Window {
             String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
             product.setRoom(title);
         });
-        if (roomSelection.size() > 0) roomSelection.setValue(roomSelection.getItemIds().iterator().next());
+        if (roomSelection.size() > 0) {
+            String code = StringUtils.isNotEmpty(product.getRoomCode()) ? product.getRoomCode() : (String) roomSelection.getItemIds().iterator().next();
+            roomSelection.setValue(code);
+        }
         formLayoutLeft.addComponent(this.roomSelection);
 
         this.makeType = getSimpleItemFilledCombo("Make Type", ProposalDataProvider.MAKE_LOOKUP, null);
         makeType.setRequired(true);
         binder.bind(makeType, MAKE_TYPE_CODE);
-        if (makeType.size() > 0) makeType.setValue(makeType.getItemIds().iterator().next());
+        if (makeType.size() > 0) {
+            String code = StringUtils.isNotEmpty(product.getMakeTypeCode()) ? product.getMakeTypeCode() : (String) makeType.getItemIds().iterator().next();
+            makeType.setValue(code);
+        }
         formLayoutLeft.addComponent(this.makeType);
 
         this.shutterDesign = getSimpleItemFilledCombo("Shutter Design", ProposalDataProvider.SHUTTER_DESIGN_LOOKUP, null);
         shutterDesign.setRequired(true);
         binder.bind(shutterDesign, SHUTTER_DESIGN_CODE);
-        if (shutterDesign.size() > 0) shutterDesign.setValue(shutterDesign.getItemIds().iterator().next());
+        if (shutterDesign.size() > 0) {
+            String code = StringUtils.isNotEmpty(product.getShutterDesignCode()) ? product.getShutterDesignCode() : (String) shutterDesign.getItemIds().iterator().next();
+            shutterDesign.setValue(code);
+        }
         formLayoutLeft.addComponent(this.shutterDesign);
 
         totalAmount = new TextField("<h2>Total Amount</h2>");
@@ -205,23 +219,29 @@ public class CustomizedProductDetailsWindow extends Window {
         baseCarcassSelection.setRequired(true);
         binder.bind(baseCarcassSelection, BASE_CARCASS_CODE);
         baseCarcassSelection.addValueChangeListener(this::refreshPrice);
-        if (baseCarcassSelection.size() > 0)
-            baseCarcassSelection.setValue(baseCarcassSelection.getItemIds().iterator().next());
+        if (baseCarcassSelection.size() > 0){
+            String code = StringUtils.isNotEmpty(product.getBaseCarcassCode()) ? product.getBaseCarcassCode() : (String) baseCarcassSelection.getItemIds().iterator().next();
+            baseCarcassSelection.setValue(code);
+        }
         formLayoutRight.addComponent(this.baseCarcassSelection);
 
         this.wallCarcassSelection = getSimpleItemFilledCombo("Wall Carcass", ProposalDataProvider.CARCASS_LOOKUP, null);
         wallCarcassSelection.setRequired(true);
         binder.bind(wallCarcassSelection, WALL_CARCASS_CODE);
         wallCarcassSelection.addValueChangeListener(this::refreshPrice);
-        if (wallCarcassSelection.size() > 0)
-            wallCarcassSelection.setValue(wallCarcassSelection.getItemIds().iterator().next());
+        if (wallCarcassSelection.size() > 0) {
+            String code = StringUtils.isNotEmpty(product.getWallCarcassCode()) ? product.getWallCarcassCode() : (String) wallCarcassSelection.getItemIds().iterator().next();
+            wallCarcassSelection.setValue(code);
+        }
         formLayoutRight.addComponent(this.wallCarcassSelection);
 
         this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", ProposalDataProvider.FINISH_TYPE_LOOKUP, null);
         finishTypeSelection.setRequired(true);
         binder.bind(finishTypeSelection, FINISH_TYPE_CODE);
-        if (finishTypeSelection.size() > 0)
-            finishTypeSelection.setValue(finishTypeSelection.getItemIds().iterator().next());
+        if (finishTypeSelection.size() > 0) {
+            String code = StringUtils.isNotEmpty(product.getFinishTypeCode()) ? product.getFinishTypeCode() : (String) finishTypeSelection.getItemIds().iterator().next();
+            finishTypeSelection.setValue(code);
+        }
         formLayoutRight.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
@@ -233,8 +253,10 @@ public class CustomizedProductDetailsWindow extends Window {
         shutterFinishSelection.addValueChangeListener(this::refreshPrice);
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, LookupItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
-        if (shutterFinishSelection.size() > 0)
-            shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
+        if (shutterFinishSelection.size() > 0) {
+            String code = StringUtils.isNotEmpty(product.getFinishCode()) ? product.getFinishCode() : (String) shutterFinishSelection.getItemIds().iterator().next();
+            shutterFinishSelection.setValue(code);
+        }
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
         formLayoutRight.addComponent(getUploadControl());
@@ -387,7 +409,7 @@ public class CustomizedProductDetailsWindow extends Window {
         columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Unit Type");
         columns.get(idx++).setHeaderCaption("Imported Module");
-        columns.get(idx++).setHeaderCaption("MG Module");
+        columns.get(idx++).setHeaderCaption("MG Module *");
         columns.get(idx++).setHeaderCaption("Make Type");
         columns.get(idx++).setHeaderCaption("Carcass Material");
         columns.get(idx++).setHeaderCaption("Finish Type");
@@ -413,6 +435,11 @@ public class CustomizedProductDetailsWindow extends Window {
 
         hLayout.addComponent(modulesGrid);
         hLayout.setExpandRatio(modulesGrid, 1);
+
+        if (!product.getModules().isEmpty()) {
+            moduleContainer.addAll(product.getModules());
+            modulesGrid.sort(SEQ, SortDirection.ASCENDING);
+        }
 
         return modulesGrid;
     }
@@ -730,7 +757,16 @@ public class CustomizedProductDetailsWindow extends Window {
         closeBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                closeWindow();
+
+                ConfirmDialog.show(UI.getCurrent(), "", "Are you sure? Unsaved data will be lost.",
+                        "Close", "Cancel", dialog -> {
+                            if (!dialog.isCanceled()) {
+                                closeWindow();
+                            } else {
+                                //close();
+                            }
+                        });
+
             }
         });
         closeBtn.focus();
@@ -742,6 +778,12 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.addClickListener(event -> {
             try {
 
+                try {
+                    binder.commit();
+                } catch (FieldGroup.CommitException e) {
+                    NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
                 boolean success = proposalDataProvider.updateProduct(product);
 
                 if (success) {
@@ -770,10 +812,8 @@ public class CustomizedProductDetailsWindow extends Window {
         return footer;
     }
 
-    public static void open(ProposalHeader proposalHeader) {
+    public static void open(Proposal proposal) {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        Proposal proposal = new Proposal();
-        proposal.setProposalHeader(proposalHeader);
         Window w = new CustomizedProductDetailsWindow(proposal);
         UI.getCurrent().addWindow(w);
         w.focus();
@@ -836,4 +876,11 @@ public class CustomizedProductDetailsWindow extends Window {
         }
     }
 
+    public static void open(Proposal proposal, Product product) {
+        DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
+        Window w = new CustomizedProductDetailsWindow(proposal, product);
+        UI.getCurrent().addWindow(w);
+        w.focus();
+
+    }
 }

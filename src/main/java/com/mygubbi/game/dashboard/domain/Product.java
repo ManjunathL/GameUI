@@ -11,6 +11,14 @@ import java.util.List;
  */
 public class Product {
 
+    public Product(int proposalId, int seq) {
+        this.proposalId = proposalId;
+        this.seq = seq;
+    }
+
+    public Product() {
+    }
+
     public void setGenerated() {
         for (Module module : modules) {
             module.setGenerated();

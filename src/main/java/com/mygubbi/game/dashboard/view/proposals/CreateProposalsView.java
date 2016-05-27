@@ -4,10 +4,7 @@ package com.mygubbi.game.dashboard.view.proposals;
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.domain.Product;
-import com.mygubbi.game.dashboard.domain.Proposal;
-import com.mygubbi.game.dashboard.domain.ProposalHeader;
-import com.mygubbi.game.dashboard.domain.User;
+import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.DashboardViewType;
@@ -515,7 +512,7 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.addComponent(horizontalLayout);
 
         button.addClickListener(clickEvent ->
-                CustomizedProductDetailsWindow.open(CreateProposalsView.this.proposalHeader)
+                CustomizedProductDetailsWindow.open(CreateProposalsView.this.proposal)
         );
 
         standardItemBtn.addClickListener(clickEvent ->
@@ -534,7 +531,7 @@ public class CreateProposalsView extends Panel implements View {
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
 
-        columns.get(idx++).setHeaderCaption("Seq");
+        columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Room");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Category");
@@ -542,6 +539,8 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Type");
         columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditButtonValueRenderer(rendererClickEvent -> {
+            Product product = (Product) rendererClickEvent.getItemId();
+            CustomizedProductDetailsWindow.open(proposal, product);
         }));
 
         verticalLayout.addComponent(productsGrid);
