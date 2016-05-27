@@ -180,7 +180,8 @@ public class ProposalDataProvider {
     }
 
     public List<LookupItem> getLookupItems(String type) {
-        JSONArray array = dataProviderMode.getResourceArray("codelookup", new HashMap<String, String>() {
+        DataProviderMode overridenMode = type.equals(SHUTTER_DESIGN_LOOKUP) ? new FileDataProviderMode() : dataProviderMode;
+        JSONArray array = overridenMode.getResourceArray("codelookup", new HashMap<String, String>() {
             {
                 put("lookupType", type);
             }
