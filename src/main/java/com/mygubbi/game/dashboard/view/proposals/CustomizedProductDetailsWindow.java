@@ -199,10 +199,24 @@ public class CustomizedProductDetailsWindow extends Window {
         List<Module> modules = product.getModules();
         double total = 0;
 
+        List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+
         for (Module module : modules) {
             if (StringUtils.isNotEmpty(module.getMgCode())) {
-                ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
-                total += modulePrice.getTotalCost();
+                Component component = ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
+                String unitType = module.getUnitType();
+
+                if ((unitType.equals(Module.UnitTypes.Base.name()) && component != wallCarcassSelection)
+                        || (unitType.equals(Module.UnitTypes.Wall.name()) && component != baseCarcassSelection)) {
+
+                    ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
+                    double amount = modulePrice.getTotalCost() * Math.random();
+                    total += amount;
+                    boundModules.get(boundModules.indexOf(module)).setAmount(amount);
+                    moduleContainer.getItem(module).getItemProperty("amount").setValue(amount);
+                } else {
+                    total += module.getAmount();
+                }
             }
         }
         totalAmount.setReadOnly(false);
@@ -219,7 +233,7 @@ public class CustomizedProductDetailsWindow extends Window {
         baseCarcassSelection.setRequired(true);
         binder.bind(baseCarcassSelection, BASE_CARCASS_CODE);
         baseCarcassSelection.addValueChangeListener(this::refreshPrice);
-        if (baseCarcassSelection.size() > 0){
+        if (baseCarcassSelection.size() > 0) {
             String code = StringUtils.isNotEmpty(product.getBaseCarcassCode()) ? product.getBaseCarcassCode() : (String) baseCarcassSelection.getItemIds().iterator().next();
             baseCarcassSelection.setValue(code);
         }

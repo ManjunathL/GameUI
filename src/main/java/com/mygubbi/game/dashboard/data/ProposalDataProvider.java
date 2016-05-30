@@ -71,12 +71,17 @@ public class ProposalDataProvider {
         return getProposalHeaders(proposalHeaders);
     }
 
-    public JSONObject getProposalHeader(String proposalId) {
-        return dataProviderMode.getResource("proposal_header", new HashMap<String, String>() {
+    public ProposalHeader getProposalHeader(String proposalId) {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/header", new HashMap<String, String>() {
             {
-                put("proposalId", proposalId);
+                put("id", proposalId);
             }
         });
+        try {
+            return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't create proposal", e);
+        }
     }
 
     public JSONArray getProposalProducts(String proposalId) {
