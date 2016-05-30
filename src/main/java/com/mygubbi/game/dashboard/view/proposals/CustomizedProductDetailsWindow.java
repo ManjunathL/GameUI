@@ -183,9 +183,10 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutLeft.addComponent(this.shutterDesign);
 
-        totalAmount = new TextField("<h2>Total Amount</h2>");
+        totalAmount = new TextField("<h2>Total Amount:</h2>");
         totalAmount.setValue("0");
         totalAmount.setImmediate(true);
+        totalAmount.setStyleName("amount-text");
         binder.bind(totalAmount, AMOUNT);
         totalAmount.setReadOnly(true);
         totalAmount.setCaptionAsHtml(true);
