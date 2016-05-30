@@ -1,5 +1,7 @@
 package com.mygubbi.game.dashboard.domain;
 
+import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,7 +9,7 @@ import java.util.List;
 /**
  * Created by test on 30-03-2016.
  */
-public final class Proposal {
+public final class Proposal implements FileAttachmentsHolder{
 
     private ProposalHeader proposalHeader = new ProposalHeader();
     private List<Product> products = new ArrayList<>();
@@ -29,7 +31,8 @@ public final class Proposal {
         this.products = products;
     }
 
-    public List<FileAttachment> getFileAttachments() {
+    @Override
+    public List<FileAttachment> getFileAttachmentList() {
         return fileAttachments;
     }
 

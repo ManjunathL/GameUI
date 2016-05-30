@@ -11,15 +11,14 @@ import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.server.Page;
+import com.vaadin.server.*;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
 import com.vaadin.server.Page.BrowserWindowResizeListener;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
@@ -38,6 +37,7 @@ public final class DashboardUI extends UI {
      */
     private final UserDataProvider dataProvider = ServerManager.getInstance().getUserDataProvider();
     private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
+    private static final Logger LOG = LogManager.getLogger(DashboardUI.class);
 
     @Override
     protected void init(final VaadinRequest request) {
@@ -47,6 +47,12 @@ public final class DashboardUI extends UI {
 
         DashboardEventBus.register(this);
         Responsive.makeResponsive(this);
+
+        setErrorHandler((ErrorHandler) event -> {
+            LOG.error(event.getThrowable().getMessage());
+            //NotificationUtil.showNotification("Internal Error");
+        });
+
         addStyleName(ValoTheme.UI_WITH_MENU);
 
         updateContent();

@@ -1,5 +1,6 @@
 package com.mygubbi.game.dashboard.domain;
 
+import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -9,31 +10,9 @@ import java.util.List;
 /**
  * Created by nitinpuri on 01-05-2016.
  */
-public class Product {
+public class Product implements FileAttachmentsHolder {
 
-    public Product(int proposalId, int seq) {
-        this.proposalId = proposalId;
-        this.seq = seq;
-    }
-
-    public Product() {
-    }
-
-    public void setGenerated() {
-        for (Module module : modules) {
-            module.setGenerated();
-        }
-    }
-
-    public boolean hasImportErrorStatus() {
-        return this.getModules().stream().anyMatch(module -> module.getImportStatus().equals(Module.ImportStatusType.n.name()));
-    }
-
-    public boolean allModulesMapped() {
-        return this.getModules().stream().allMatch(module -> StringUtils.isNotEmpty(module.getMgCode()));
-    }
-
-    public enum TYPES {CUSTOMIZED, CATALOGUE};
+    public enum TYPES {CUSTOMIZED, CATALOGUE;};
 
     public static final String PROPOSAL_ID = "proposalId";
     public static final String ID = "id";
@@ -94,10 +73,32 @@ public class Product {
     private String createdBy;
     private Date updatedOn;
     private String updatedBy;
-
     private List<Module> modules = new ArrayList<>();
+
     private List<Addon> addons = new ArrayList<>();
     private List<FileAttachment> fileAttachmentList = new ArrayList<>();
+
+    public Product() {
+    }
+
+    public Product(int proposalId, int seq) {
+        this.proposalId = proposalId;
+        this.seq = seq;
+    }
+
+    public void setGenerated() {
+        for (Module module : modules) {
+            module.setGenerated();
+        }
+    }
+
+    public boolean hasImportErrorStatus() {
+        return this.getModules().stream().anyMatch(module -> module.getImportStatus().equals(Module.ImportStatusType.n.name()));
+    }
+
+    public boolean allModulesMapped() {
+        return this.getModules().stream().allMatch(module -> StringUtils.isNotEmpty(module.getMgCode()));
+    }
 
     public int getId() {
         return id;
@@ -259,6 +260,7 @@ public class Product {
         this.addons = addons;
     }
 
+    @Override
     public List<FileAttachment> getFileAttachmentList() {
         return fileAttachmentList;
     }

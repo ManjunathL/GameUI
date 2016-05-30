@@ -11,7 +11,7 @@ import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
-import com.mygubbi.game.dashboard.view.DashboardViewType;
+import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -58,8 +58,8 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox shutterDesign;
     private ComboBox finishTypeSelection;
 
-    private Upload uploadCtrl;
-    private File uploadFile;
+    private Upload quoteUploadCtrl;
+    private File uploadedQuoteFile;
     private TabSheet tabSheet;
 
     private Button closeBtn;
@@ -71,6 +71,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private List<LookupItem> shutterFinishMasterList;
     private BeanItemContainer<Module> moduleContainer;
+    private BeanItemContainer<FileAttachment> attachmentContainer;
     private Grid modulesGrid;
     private TextField totalAmount;
 
@@ -111,7 +112,7 @@ public class CustomizedProductDetailsWindow extends Window {
         tabSheet.setSizeFull();
         tabSheet.addTab(buildModulesForm(), "Modules");
         tabSheet.addTab(buildAddonsForm(), "Addons");
-        tabSheet.addTab(buildAttachmentsForm(), "Attachments");
+        tabSheet.addTab(new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(), null, null), "Attachments");
         tabSheet.setEnabled(true);
         horizontalLayout1.addComponent(tabSheet);
         horizontalLayout1.setHeightUndefined();
@@ -211,7 +212,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         || (unitType.equals(Module.UnitTypes.Wall.name()) && component != baseCarcassSelection)) {
 
                     ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
-                    double amount = modulePrice.getTotalCost() * Math.random();
+                    double amount = modulePrice.getTotalCost();
                     total += amount;
                     boundModules.get(boundModules.indexOf(module)).setAmount(amount);
                     moduleContainer.getItem(module).getItemProperty("amount").setValue(amount);
@@ -274,7 +275,7 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
-        formLayoutRight.addComponent(getUploadControl());
+        formLayoutRight.addComponent(getQuoteUploadControl());
 
         formLayoutRight.addComponent(totalAmount);
 
@@ -304,8 +305,8 @@ public class CustomizedProductDetailsWindow extends Window {
 
     }
 
-    private Component getUploadControl() {
-        this.uploadCtrl = new Upload("Import Quotation Sheet", (filename, mimeType) -> {
+    private Component getQuoteUploadControl() {
+        this.quoteUploadCtrl = new Upload("Import Quotation Sheet", (filename, mimeType) -> {
             LOG.debug("Received upload - " + filename);
 
             try {
@@ -321,32 +322,24 @@ public class CustomizedProductDetailsWindow extends Window {
             }
 
             FileOutputStream fos = null;
-            uploadFile = new File(getUploadPath() + "/" + filename);
-            uploadFile.getParentFile().mkdirs();
+            uploadedQuoteFile = new File(getUploadBasePath() + "/" + filename);
+            uploadedQuoteFile.getParentFile().mkdirs();
             try {
-                fos = new FileOutputStream(uploadFile);
+                fos = new FileOutputStream(uploadedQuoteFile);
             } catch (final FileNotFoundException e) {
                 NotificationUtil.showNotification("Please specify the file path correctly.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
             return fos;
         });
 
-/*
-        uploadCtrl.setButtonCaption(null);
+        this.quoteUploadCtrl.setStyleName("upload-btn");
 
-        uploadCtrl.addChangeListener(changeEvent -> {
-            if (changeEvent.getFilename() != null) uploadCtrl.setButtonCaption("Upload");
-        });
-*/
+        this.quoteUploadCtrl.addProgressListener((Upload.ProgressListener) (readBytes, contentLength) -> LOG.debug("Progress " + (readBytes * 100 / contentLength)));
 
-        this.uploadCtrl.setStyleName("upload-btn");
-
-        this.uploadCtrl.addProgressListener((Upload.ProgressListener) (readBytes, contentLength) -> LOG.debug("Progress " + (readBytes * 100 / contentLength)));
-
-        this.uploadCtrl.addSucceededListener((Upload.SucceededListener) event -> {
+        this.quoteUploadCtrl.addSucceededListener((Upload.SucceededListener) event -> {
 
             String filename = event.getFilename();
-            String quoteFilePath = getUploadPath() + "/" + filename;
+            String quoteFilePath = getUploadBasePath() + "/" + filename;
             product.setQuoteFilePath(quoteFilePath);
             Product productResult = proposalDataProvider.mapAndUpdateProduct(product);
             binder.getItemDataSource().getItemProperty(Product.ID).setValue(productResult.getId());
@@ -368,7 +361,7 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             LOG.debug("Successfully uploaded - " + filename);
         });
-        return uploadCtrl;
+        return quoteUploadCtrl;
     }
 
     private void initModules(Product product) {
@@ -394,7 +387,7 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.setEnabled(false);
     }
 
-    private String getUploadPath() {
+    private String getUploadBasePath() {
         return proposal.getProposalHeader().getFolderPath();
     }
 
@@ -405,7 +398,7 @@ public class CustomizedProductDetailsWindow extends Window {
         moduleContainer = new BeanItemContainer<>(Module.class);
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(moduleContainer);
 
-        genContainer.addGeneratedProperty("action", getActionTextGenerator());
+        genContainer.addGeneratedProperty("action", getFileActionTextGenerator());
         genContainer.addGeneratedProperty("colorName", getColorNameGenerator());
 
         modulesGrid = new Grid(genContainer);
@@ -432,7 +425,7 @@ public class CustomizedProductDetailsWindow extends Window {
         columns.get(idx++).setHeaderCaption("Color");
         columns.get(idx++).setHeaderCaption("Amount");
         Grid.Column actionColumn = columns.get(idx++);
-        actionColumn.setHeaderCaption("Action");
+        actionColumn.setHeaderCaption("Actions");
         actionColumn.setRenderer(new EditButtonValueRenderer(rendererClickEvent -> {
             try {
                 binder.commit();
@@ -459,12 +452,12 @@ public class CustomizedProductDetailsWindow extends Window {
         return modulesGrid;
     }
 
-    private PropertyValueGenerator<String> getActionTextGenerator() {
+    private PropertyValueGenerator<String> getFileActionTextGenerator() {
         return new PropertyValueGenerator<String>() {
 
             @Override
             public String getValue(Item item, Object o, Object o1) {
-                return "Edit";
+                return "";
             }
 
             @Override
@@ -747,20 +740,6 @@ public class CustomizedProductDetailsWindow extends Window {
 
         return verticalLayout;
     }
-
-    /*
-     * Attachment section
-     */
-    private Component buildAttachmentsForm() {
-        VerticalLayout verticalLayout = new VerticalLayout();
-
-        HorizontalLayout horizontalLayout0 = new HorizontalLayout();
-        horizontalLayout0.setSizeFull();
-        verticalLayout.addComponent(horizontalLayout0);
-
-        return verticalLayout;
-    }
-
 
     private Component buildFooter() {
         HorizontalLayout footer = new HorizontalLayout();

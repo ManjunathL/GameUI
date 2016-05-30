@@ -8,6 +8,7 @@ import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.DashboardViewType;
+import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -106,7 +107,7 @@ public class CreateProposalsView extends Panel implements View {
         TabSheet tabs = new TabSheet();
         tabs.addTab(buildForm(), "Header");
         tabs.addTab(buildProductDetails(), "Products");
-        tabs.addTab(buildAttachmentsTab(), "Attachments");
+        tabs.addTab(new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(), null, null), "Attachments");
 
 /*
         tabs.addSelectedTabChangeListener(selectedTabChangeEvent -> {
@@ -125,12 +126,6 @@ public class CreateProposalsView extends Panel implements View {
         setContent(vLayout);
         Responsive.makeResponsive(tabs);
 
-    }
-
-    private Component buildAttachmentsTab() {
-        VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setSizeFull();
-        return verticalLayout;
     }
 
     private BeanItem<ProposalHeader> getProposalHeaderBeanItem(ProposalHeader proposalHeader) {
@@ -558,7 +553,7 @@ public class CreateProposalsView extends Panel implements View {
 
             @Override
             public String getValue(Item item, Object o, Object o1) {
-                return "Edit";
+                return "";
             }
 
             @Override
