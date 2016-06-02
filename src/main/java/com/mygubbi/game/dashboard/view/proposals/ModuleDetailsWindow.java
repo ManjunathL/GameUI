@@ -161,12 +161,16 @@ public class ModuleDetailsWindow extends Window {
             makeType.setValue(module.getMakeTypeCode());
         }
 
-        if (module.getCarcass().equals(Module.DEFAULT)) {
-            carcassMaterialSelection.setValue(DEF_CODE_PREFIX + module.getCarcassCode());
+        if (StringUtils.isNotEmpty(module.getFixedCarcassCode())) {
+            carcassMaterialSelection.setValue(module.getFixedCarcassCode());
+            carcassMaterialSelection.setReadOnly(true);
         } else {
-            carcassMaterialSelection.setValue(module.getCarcassCode());
+            if (module.getCarcass().equals(Module.DEFAULT)) {
+                carcassMaterialSelection.setValue(DEF_CODE_PREFIX + module.getCarcassCode());
+            } else {
+                carcassMaterialSelection.setValue(module.getCarcassCode());
+            }
         }
-
         if (module.getFinishType().equals(Module.DEFAULT)) {
             finishTypeSelection.setValue(DEF_CODE_PREFIX + module.getFinishTypeCode());
         } else {
@@ -265,6 +269,12 @@ public class ModuleDetailsWindow extends Window {
             this.dimensions.setReadOnly(true);
             this.moduleImage.setSource(new FileResource(new File(basePath + mgModule.getImagePath())));
             mgModuleCombo.setNullSelectionAllowed(false);
+            if (StringUtils.isNotEmpty(mgModule.getCarcassCode())) {
+                carcassMaterialSelection.setValue(mgModule.getCarcassCode());
+                carcassMaterialSelection.setReadOnly(true);
+            } else {
+                carcassMaterialSelection.setReadOnly(false);
+            }
 
             VerticalLayout parent = (VerticalLayout) this.accessoryImageStrip.getParent();
             AbstractSingleComponentContainer.removeFromParent(this.accessoryImageStrip);
@@ -461,6 +471,10 @@ public class ModuleDetailsWindow extends Window {
             module.setCarcassCode(removeDefaultPrefix(module.getCarcassCode()));
             module.setFinishTypeCode(removeDefaultPrefix(module.getFinishTypeCode()));
             module.setFinishCode(removeDefaultPrefix(module.getFinishCode()));
+            if (carcassMaterialSelection.isReadOnly())
+            {
+                module.setFixedCarcassCode((String) carcassMaterialSelection.getValue());
+            }
 
             if (!product.getMakeTypeCode().equals(module.getMakeTypeCode()) || !((String) makeType.getValue()).contains(DEF_CODE_PREFIX)) {
                 String title = (String) makeType.getItem(module.getMakeTypeCode()).getItemProperty("title").getValue();

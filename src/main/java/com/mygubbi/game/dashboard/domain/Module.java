@@ -49,6 +49,7 @@ public class Module implements Cloneable {
     private String mgCode;
     private String carcass;
     private String carcassCode;
+    private String fixedCarcassCode;
     private String finishType;
     private String finishTypeCode;
     private String finish;
@@ -261,5 +262,13 @@ public class Module implements Cloneable {
     @Override
     public int hashCode() {
         return seq;
+    }
+
+    public String getFixedCarcassCode() {
+        return fixedCarcassCode;
+    }
+
+    public void setFixedCarcassCode(String fixedCarcassCode) {
+        this.fixedCarcassCode = fixedCarcassCode;
     }
 }

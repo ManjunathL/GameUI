@@ -9,6 +9,7 @@
       "mgCode": "KDMG1234",
       "carcass": "default",
       "carcassCode": "MDF",
+      "fixedCarcassCode": "PLPB",
       "finishType": "default",
       "finishTypeCode": "LAMINATE",
       "finish": "PLY/LAM",
