@@ -126,7 +126,6 @@ public final class ProposalsView extends TabSheet implements View {
         this.grid.setContainerDataSource(buildDataContainer(proposalHeaders));
     }
 
-
     private Component buildHeader(List<ProposalHeader> proposalHeaders) {
         HorizontalLayout header = new HorizontalLayout();
         header.setSpacing(true);

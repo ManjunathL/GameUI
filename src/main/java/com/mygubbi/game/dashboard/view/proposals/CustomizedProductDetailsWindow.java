@@ -285,7 +285,7 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutRight.addComponent(this.wallCarcassSelection);
 
-        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", ProposalDataProvider.FINISH_TYPE_LOOKUP, null);
+        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Material", ProposalDataProvider.FINISH_TYPE_LOOKUP, null);
         finishTypeSelection.setRequired(true);
         binder.bind(finishTypeSelection, FINISH_TYPE_CODE);
         if (finishTypeSelection.size() > 0) {
@@ -455,7 +455,7 @@ public class CustomizedProductDetailsWindow extends Window {
         columns.get(idx++).setHeaderCaption("MG Module *");
         columns.get(idx++).setHeaderCaption("Make Type");
         columns.get(idx++).setHeaderCaption("Carcass Material");
-        columns.get(idx++).setHeaderCaption("Finish Type");
+        columns.get(idx++).setHeaderCaption("Finish Material");
         columns.get(idx++).setHeaderCaption("Shutter Finish");
         columns.get(idx++).setHeaderCaption("Color");
         columns.get(idx++).setHeaderCaption("Amount");

@@ -330,7 +330,7 @@ public class ModuleDetailsWindow extends Window {
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         horizontalLayout.addComponent(formLayoutRight);
 
-        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Type", ProposalDataProvider.FINISH_TYPE_LOOKUP, null, product.getFinishTypeCode());
+        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Material", ProposalDataProvider.FINISH_TYPE_LOOKUP, null, product.getFinishTypeCode());
         binder.bind(finishTypeSelection, Module.FINISH_TYPE_CODE);
         formLayoutRight.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);

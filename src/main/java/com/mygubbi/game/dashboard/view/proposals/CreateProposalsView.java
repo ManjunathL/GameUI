@@ -90,6 +90,7 @@ public class CreateProposalsView extends Panel implements View {
     private Proposal proposal;
     private Button saveButton;
     private BeanItemContainer productContainer;
+    private Button deleteButton;
 
     public CreateProposalsView() {
     }
@@ -117,7 +118,6 @@ public class CreateProposalsView extends Panel implements View {
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(proposalHeader);
 
-        DashboardEventBus.post(new ProposalEvent.ProposalUpdated());
         setSizeFull();
 
         VerticalLayout vLayout = new VerticalLayout();
@@ -178,7 +178,7 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.setExpandRatio(spacingLabel, 1.0f);
 
 
-        Button downloadButton = new Button("Download");
+        Button downloadButton = new Button("Download Quote");
         downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
 
@@ -188,9 +188,14 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.addComponent(downloadButton);
         horizontalLayout1.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
 
+        deleteButton = new Button("Delete");
+        deleteButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        deleteButton.addClickListener(this::deleteProposal);
+        horizontalLayout1.addComponent(deleteButton);
+        horizontalLayout1.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
+
         submitButton = new Button("Submit");
         submitButton.setVisible(!"active".equals(proposalHeader.getStatus()));
-        submitButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
         submitButton.addClickListener(this::submit);
         horizontalLayout1.addComponent(submitButton);
@@ -209,6 +214,20 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
 
         return horizontalLayout;
+    }
+
+    private void deleteProposal(Button.ClickEvent clickEvent) {
+
+        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to delete this Proposal?",
+                "Yes", "No", dialog -> {
+                    if (!dialog.isCanceled()) {
+                        proposalDataProvider.deleteProposal(proposalHeader.getId());
+                        DashboardEventBus.post(new ProposalEvent.ProposalUpdated());
+                    }
+                    UI.getCurrent().getNavigator()
+                            .navigateTo(DashboardViewType.PROPOSALS.name());
+                });
+
     }
 
     private String getFormattedTitle(String title) {
@@ -236,17 +255,9 @@ public class CreateProposalsView extends Panel implements View {
 
     private void close(Button.ClickEvent clickEvent) {
 
-        ConfirmDialog.show(UI.getCurrent(), "", "Please Confirm:\n\n - On 'Save & Close' data will be saved before closing\n - On 'Close' unsaved data will be lost",
-                "Save & Close", "Cancel", "Close", dialog -> {
+        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this Proposal? Unsaved data will be lost.",
+                "Yes", "No", dialog -> {
                     if (!dialog.isCanceled()) {
-                        if (dialog.isConfirmed()) {
-                            boolean success = proposalDataProvider.saveProposal(proposalHeader);
-                            if (success) {
-                                NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                            } else {
-                                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                            }
-                        }
                         UI.getCurrent().getNavigator()
                                 .navigateTo(DashboardViewType.PROPOSALS.name());
                     }
@@ -534,7 +545,7 @@ public class CreateProposalsView extends Panel implements View {
         productsGrid = new Grid(genContainer);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
-        productsGrid.setColumns(Product.SEQ, "roomText", Product.TITLE, "productCategoryText", Product.QTY, Product.AMOUNT, TYPE, "actions");
+        productsGrid.setColumns(Product.SEQ, "roomText", Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
 
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
@@ -543,7 +554,6 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Room");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Category");
-        columns.get(idx++).setHeaderCaption("Qty");
         columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Type");
         columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
