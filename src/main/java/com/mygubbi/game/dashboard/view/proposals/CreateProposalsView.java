@@ -96,6 +96,9 @@ public class CreateProposalsView extends Panel implements View {
     private TextField grandTotal;
 
     private ProductSelections productSelections;
+    private Button reviseButton;
+    private Button publishButton;
+    private Button cancelButton;
 
     public CreateProposalsView() {
     }
@@ -185,7 +188,6 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.addComponent(spacingLabel);
         horizontalLayout1.setExpandRatio(spacingLabel, 1.0f);
 
-
         Button downloadButton = new Button("Download Quote");
         downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -196,18 +198,38 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.addComponent(downloadButton);
         horizontalLayout1.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
 
+        submitButton = new Button("Submit");
+        submitButton.setVisible("draft".equals(proposalHeader.getStatus()));
+        submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        submitButton.addClickListener(this::submit);
+        horizontalLayout1.addComponent(submitButton);
+        horizontalLayout1.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
+
+        publishButton = new Button("Publish");
+        publishButton.setVisible("active".equals(proposalHeader.getStatus()));
+        publishButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        publishButton.addClickListener(this::publish);
+        horizontalLayout1.addComponent(publishButton);
+        horizontalLayout1.setComponentAlignment(publishButton, Alignment.MIDDLE_RIGHT);
+
+        reviseButton = new Button("Revise");
+        reviseButton.setVisible("active".equals(proposalHeader.getStatus()));
+        reviseButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        reviseButton.addClickListener(this::revise);
+        horizontalLayout1.addComponent(reviseButton);
+        horizontalLayout1.setComponentAlignment(reviseButton, Alignment.MIDDLE_RIGHT);
+
+        cancelButton = new Button("Cancel");
+        cancelButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        cancelButton.addClickListener(this::cancel);
+        horizontalLayout1.addComponent(cancelButton);
+        horizontalLayout1.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
+
         deleteButton = new Button("Delete");
         deleteButton.addStyleName(ValoTheme.BUTTON_SMALL);
         deleteButton.addClickListener(this::deleteProposal);
         horizontalLayout1.addComponent(deleteButton);
         horizontalLayout1.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
-
-        submitButton = new Button("Submit");
-        submitButton.setVisible(!"active".equals(proposalHeader.getStatus()));
-        submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        submitButton.addClickListener(this::submit);
-        horizontalLayout1.addComponent(submitButton);
-        horizontalLayout1.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
 
         saveButton = new Button("Save");
         saveButton.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -222,6 +244,91 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
 
         return horizontalLayout;
+    }
+
+    private void cancel(Button.ClickEvent clickEvent) {
+        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to cancel this Proposal?",
+                "Yes", "No", dialog -> {
+                    if (!dialog.isCanceled()) {
+                        try {
+                            binder.commit();
+                            proposalHeader.setStatus("cancelled");
+                            boolean success = proposalDataProvider.saveProposal(proposalHeader);
+                            if (success) {
+                                success = proposalDataProvider.cancelProposal(proposalHeader.getId());
+                                if (success) {
+                                    reviseButton.setVisible(false);
+                                    submitButton.setVisible(false);
+                                    publishButton.setVisible(false);
+                                    deleteButton.setVisible(false);
+                                    saveButton.setVisible(false);
+                                    cancelButton.setVisible(false);
+                                    draftLabel.setValue("[ cancelled ]");
+                                } else {
+                                    NotificationUtil.showNotification("Couldn't cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                }
+                            } else {
+                                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            }
+                        } catch (FieldGroup.CommitException e) {
+                            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        }
+                    }
+                });
+    }
+
+    private void publish(Button.ClickEvent clickEvent) {
+        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to publish this Proposal?",
+                "Yes", "No", dialog -> {
+                    if (!dialog.isCanceled()) {
+                        try {
+                            binder.commit();
+                            proposalHeader.setStatus("published");
+                            boolean success = proposalDataProvider.saveProposal(proposalHeader);
+                            if (success) {
+                                success = proposalDataProvider.publishProposal(proposalHeader.getId());
+                                if (success) {
+                                    reviseButton.setVisible(false);
+                                    submitButton.setVisible(false);
+                                    publishButton.setVisible(false);
+                                    deleteButton.setVisible(false);
+                                    saveButton.setVisible(false);
+                                    draftLabel.setValue("[ published ]");
+                                } else {
+                                    NotificationUtil.showNotification("Couldn't publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                }
+                            } else {
+                                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            }
+                        } catch (FieldGroup.CommitException e) {
+                            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        }
+                    }
+                });
+    }
+
+    private void revise(Button.ClickEvent clickEvent) {
+        try {
+            binder.commit();
+            proposalHeader.setStatus("draft");
+            boolean success = proposalDataProvider.saveProposal(proposalHeader);
+            if (success) {
+                success = proposalDataProvider.reviseProposal(proposalHeader.getId());
+                if (success) {
+                    reviseButton.setVisible(false);
+                    publishButton.setVisible(false);
+                    submitButton.setVisible(true);
+                    draftLabel.setValue("[ draft ]");
+                } else {
+                    NotificationUtil.showNotification("Couldn't revise Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                }
+            } else {
+                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }
+        } catch (FieldGroup.CommitException e) {
+            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        }
+
     }
 
     private void deleteProposal(Button.ClickEvent clickEvent) {
@@ -301,9 +408,12 @@ public class CreateProposalsView extends Panel implements View {
             if (success) {
                 success = proposalDataProvider.submitProposal(proposalHeader.getId());
                 if (success) {
+                    reviseButton.setVisible(true);
+                    publishButton.setVisible(true);
                     submitButton.setVisible(false);
                     draftLabel.setValue("[ active ]");
                     NotificationUtil.showNotification("Submitted successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    this.getContent().setReadOnly(true);
                 } else {
                     NotificationUtil.showNotification("Couldn't Activate Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
