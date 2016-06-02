@@ -42,5 +42,43 @@
       "amount": 27000,
       "importStatus": "m"
     }
+  ],
+  "addons": [
+    {
+      "seq": 1,
+      "id": 1,
+      "code": "CLEO PB SS LTW 60",
+      "catalogueCode": "CLEO PB SS LTW 60",
+      "title": "CLEO PB SS LTW 60",
+      "addonCategoryCode": "Appliances",
+      "addonCategory": "Appliances",
+      "productTypeCode": "Chimney",
+      "productType": "Chimney",
+      "brandCode": "Faber",
+      "brand": "Faber",
+      "uom": "pieces",
+      "amount": 18000,
+      "imagePath": "addon2.jpg",
+      "quantity": 2,
+      "rate": 9000
+    },
+    {
+      "seq": 2,
+      "id": 2,
+      "code": "RAY60LTW, Silver",
+      "catalogueCode": "RAY60LTW, Silver",
+      "title": "RAY60LTW, Silver",
+      "addonCategoryCode": "Appliances",
+      "addonCategory": "Appliances",
+      "productTypeCode": "Chimney",
+      "productType": "Chimney",
+      "brandCode": "Faber",
+      "brand": "Faber",
+      "uom": "pieces",
+      "amount": 2000,
+      "imagePath": "addon1.jpg",
+      "quantity": 1,
+      "rate": 2000
+    }
   ]
 }

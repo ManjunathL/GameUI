@@ -70,9 +70,8 @@ public class FileAttachmentComponent extends VerticalLayout {
         fileGridHLayout.setSizeFull();
 
         attachmentContainer = new BeanItemContainer<>(FileAttachment.class);
-        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(attachmentContainer);
 
-        genContainer.addGeneratedProperty("action", getFileActionTextGenerator());
+        GeneratedPropertyContainer genContainer = createGeneratedFAPropertyContainer();
 
         attachmentGrid = new Grid(genContainer);
         attachmentGrid.setSizeFull();
@@ -113,7 +112,7 @@ public class FileAttachmentComponent extends VerticalLayout {
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                ConfirmDialog.show(UI.getCurrent(), "", "Do you want to delete the attachment?",
+                ConfirmDialog.show(UI.getCurrent(), "", "Do you want to delete the attachment PERMANENTLY?",
                         "Yes", "No", dialog -> {
                             if (!dialog.isCanceled()) {
                                 Object itemId = rendererClickEvent.getItemId();
@@ -131,7 +130,7 @@ public class FileAttachmentComponent extends VerticalLayout {
                                 }
 
                                 attachmentContainer.addAll(attachmentsHolder.getFileAttachmentList());
-
+                                attachmentGrid.setContainerDataSource(createGeneratedFAPropertyContainer());
                                 if (deleteListener != null) fireDeleteEvent((FileAttachment) itemId);
 
                             }
@@ -150,6 +149,12 @@ public class FileAttachmentComponent extends VerticalLayout {
         verticalLayout.setExpandRatio(fileGridHLayout, 1.0f);
 
         return verticalLayout;
+    }
+
+    private GeneratedPropertyContainer createGeneratedFAPropertyContainer() {
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(attachmentContainer);
+        genContainer.addGeneratedProperty("action", getFileActionTextGenerator());
+        return genContainer;
     }
 
     private void fireDeleteEvent(FileAttachment itemId) {

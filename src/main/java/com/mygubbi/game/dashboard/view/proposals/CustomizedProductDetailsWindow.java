@@ -12,35 +12,38 @@ import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
-import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.*;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.GeneratedPropertyContainer;
+import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.event.MouseEvents;
-import com.vaadin.server.*;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import de.datenhahn.vaadin.componentrenderer.grid.ComponentGrid;
-import de.datenhahn.vaadin.componentrenderer.grid.ComponentGridDecorator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
+import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import static com.mygubbi.game.dashboard.domain.Product.*;
 
@@ -75,14 +78,17 @@ public class CustomizedProductDetailsWindow extends Window {
     private Grid modulesGrid;
     private TextField totalAmount;
     private FileAttachmentComponent fileAttachmentComponent;
-
-    public CustomizedProductDetailsWindow(Proposal proposal) {
-        this(proposal, new Product(proposal.getProposalHeader().getId(), proposal.getProducts().size() + 1));
-    }
+    private BeanItemContainer<AddonProduct> addonsContainer;
+    private Grid addonsGrid;
+    private ArrayList<Module> modulesCopy;
+    private ArrayList<AddonProduct> addonsCopy;
 
     public CustomizedProductDetailsWindow(Proposal proposal, Product product) {
         this.proposal = proposal;
         this.product = product;
+
+        this.cloneModules();
+        this.cloneAddons();
 
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(this.product);
@@ -118,7 +124,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 attachmentData -> proposalDataProvider.addProductDoc(product.getId(), product.getProposalId(), attachmentData.getFileAttachment()),
                 attachmentData -> proposalDataProvider.removeProductDoc(attachmentData.getFileAttachment().getId()));
 
-        if (!product.allModulesMapped() || product.getModules().isEmpty()) {
+        if (product.getModules().isEmpty()) {
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
         }
 
@@ -133,6 +139,20 @@ public class CustomizedProductDetailsWindow extends Window {
         vLayout.addComponent(footerLayOut);
         vLayout.setExpandRatio(footerLayOut, 0.1f);
 
+    }
+
+    private void cloneModules() {
+        this.modulesCopy = new ArrayList<>();
+        for (Module module : product.getModules()) {
+            this.modulesCopy.add((Module) module.clone());
+        }
+    }
+
+    private void cloneAddons() {
+        this.addonsCopy = new ArrayList<>();
+        for (AddonProduct addon : product.getAddons()) {
+            this.addonsCopy.add((AddonProduct) addon.clone());
+        }
     }
 
     /*
@@ -209,7 +229,7 @@ public class CustomizedProductDetailsWindow extends Window {
     //todo: include addons price
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
         List<Module> modules = product.getModules();
-        double total = 0;
+        //double total = 0;
 
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
@@ -223,17 +243,21 @@ public class CustomizedProductDetailsWindow extends Window {
 
                     ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
                     double amount = modulePrice.getTotalCost();
-                    total += amount;
+                    //total += amount;
                     boundModules.get(boundModules.indexOf(module)).setAmount(amount);
                     moduleContainer.getItem(module).getItemProperty("amount").setValue(amount);
                 } else {
-                    total += module.getAmount();
+                    //total += module.getAmount();
                 }
             }
         }
+
+        updateTotalAmount();
+/*
         totalAmount.setReadOnly(false);
         totalAmount.setValue(total + "");
         totalAmount.setReadOnly(true);
+*/
     }
 
     private FormLayout buildAddItemBasicFormRight() {
@@ -319,9 +343,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.quoteUploadCtrl = new Upload("Import Quotation Sheet", (filename, mimeType) -> {
             LOG.debug("Received upload - " + filename);
 
-            try {
-                binder.commit();
-            } catch (FieldGroup.CommitException e) {
+            if (!binder.isValid()) {
                 NotificationUtil.showNotification("Please fill all mandatory fields before upload!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return null;
             }
@@ -352,23 +374,28 @@ public class CustomizedProductDetailsWindow extends Window {
             String quoteFilePath = getUploadBasePath() + "/" + filename;
             product.setQuoteFilePath(quoteFilePath);
             Product productResult = proposalDataProvider.mapAndUpdateProduct(product);
-            binder.getItemDataSource().getItemProperty(Product.ID).setValue(productResult.getId());
-            binder.getItemDataSource().getItemProperty(Product.MODULES).setValue(productResult.getModules());
-            binder.getItemDataSource().getItemProperty(Product.TYPE).setValue(TYPES.CUSTOMIZED.name());
-            binder.getItemDataSource().getItemProperty(Product.QUOTE_FILE_PATH).setValue(quoteFilePath);
+            product.setId(productResult.getId());
+            product.setModules(productResult.getModules());
             product.setType(TYPES.CUSTOMIZED.name());
+            product.setQuoteFilePath(quoteFilePath);
             proposal.getProducts().add(product);
             initModules(product);
             moduleContainer.removeAllItems();
             moduleContainer.addAll(product.getModules());
+            modulesGrid.clearSortOrder();
             modulesGrid.sort(SEQ, SortDirection.ASCENDING);
+            modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
+            fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
+            updateTotalAmount();
 
             if (product.hasImportErrorStatus()) {
                 NotificationUtil.showNotification("Error in mapping module(s), please upload new sheet!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                disableSave();
             } else if (product.allModulesMapped()) {
-                fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
                 enableSave();
                 NotificationUtil.showNotification("File uploaded successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+            } else {
+                disableSave();
             }
             LOG.debug("Successfully uploaded - " + filename);
         });
@@ -407,10 +434,7 @@ public class CustomizedProductDetailsWindow extends Window {
         hLayout.setSizeFull();
 
         moduleContainer = new BeanItemContainer<>(Module.class);
-        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(moduleContainer);
-
-        genContainer.addGeneratedProperty("action", getFileActionTextGenerator());
-        genContainer.addGeneratedProperty("colorName", getColorNameGenerator());
+        GeneratedPropertyContainer genContainer = createGeneratedModulePropertyContainer();
 
         modulesGrid = new Grid(genContainer);
         modulesGrid.setStyleName("modules-grid");
@@ -438,15 +462,13 @@ public class CustomizedProductDetailsWindow extends Window {
         Grid.Column actionColumn = columns.get(idx++);
         actionColumn.setHeaderCaption("Actions");
         actionColumn.setRenderer(new EditButtonValueRenderer(rendererClickEvent -> {
-            try {
-                binder.commit();
-            } catch (FieldGroup.CommitException e) {
+            if (!binder.isValid()) {
                 NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
             Module module = (Module) rendererClickEvent.getItemId();
             if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
-                ModuleDetailsWindow.open(module, product);
+                ModuleDetailsWindow.open(module, createProductFromUI());
             } else {
                 NotificationUtil.showNotification("Cannot edit unmapped module.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
@@ -463,7 +485,24 @@ public class CustomizedProductDetailsWindow extends Window {
         return modulesGrid;
     }
 
-    private PropertyValueGenerator<String> getFileActionTextGenerator() {
+    private GeneratedPropertyContainer createGeneratedModulePropertyContainer() {
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(moduleContainer);
+        genContainer.addGeneratedProperty("action", getEmptyActionTextGenerator());
+        genContainer.addGeneratedProperty("colorName", getColorNameGenerator());
+        return genContainer;
+    }
+
+    private Product createProductFromUI() {
+        Product product = new Product();
+        product.setFinishTypeCode((String) this.finishTypeSelection.getValue());
+        product.setFinishCode((String) this.shutterFinishSelection.getValue());
+        product.setMakeTypeCode((String) this.makeType.getValue());
+        product.setWallCarcassCode((String) this.wallCarcassSelection.getValue());
+        product.setBaseCarcassCode((String) this.baseCarcassSelection.getValue());
+        return product;
+    }
+
+    private PropertyValueGenerator<String> getEmptyActionTextGenerator() {
         return new PropertyValueGenerator<String>() {
 
             @Override
@@ -531,225 +570,96 @@ public class CustomizedProductDetailsWindow extends Window {
         return null;
     }
 
-    /*
-     * Addons section
-     */
-
     private Component buildAddonsForm() {
-        HorizontalLayout horizontalLayout0 = new HorizontalLayout();
-        horizontalLayout0.setSizeFull();
 
-        List<AddonCategory> addonTypes = proposalDataProvider.getAddonCategories(product.getRoomCode());
-        List<String> addonNameL = new ArrayList<>();
-
-        Map<String, String> addonTypeAndNameMap = new HashMap<>();
-
-        addonNameL.add("4T HANDLES");
-        addonNameL.add("GRANITE 4MX");
-        addonNameL.add("DADO");
-
-        ComponentGrid<Addon> componentGrid = new ComponentGrid<>(Addon.class);
-        componentGrid.setSizeFull();
-
-        componentGrid.setRows(getAddon(""));
-        componentGrid.setDetailsGenerator(new AddonsDetailGenerator());
-
-        //componentGrid.addComponentColumn("type", addon ->
-        //        createAddonTypeSelector(componentGrid.getComponentGridDecorator(), addon, addonTypes));
-
-        componentGrid.addComponentColumn("name", addon -> createAddonNameSelector(componentGrid.getComponentGridDecorator(), addon, addonNameL));
-        componentGrid.addComponentColumn("imagePath", addon -> createAddonImage(componentGrid.getComponentGridDecorator(), addon));
-        componentGrid.addComponentColumn("qtyArea", addon -> createAddonQty(componentGrid.getComponentGridDecorator(), addon));
-        componentGrid.addComponentColumn("rate", addon -> createAddonRate(componentGrid.getComponentGridDecorator(), addon));
-        componentGrid.addComponentColumn("delete", addon -> createAddonDelete(componentGrid.getComponentGridDecorator(), addon));
-        componentGrid.setColumnOrder("seqNo", "type", "name", "imagePath", "qtyArea", "rate", "amount", "delete");
-        componentGrid.setColumns("seqNo", "type", "name", "imagePath", "qtyArea", "rate", "amount", "delete");
-
-        HeaderRow mainHeader = componentGrid.getDefaultHeaderRow();
-        mainHeader.getCell("seqNo").setText("#");
-        mainHeader.getCell("type").setText("Type");
-        mainHeader.getCell("name").setText("Name(Select)");
-        mainHeader.getCell("imagePath").setText("Image");
-        mainHeader.getCell("qtyArea").setText("Qty / Area");
-        mainHeader.getCell("rate").setText("Rate");
-        mainHeader.getCell("amount").setText("Amount");
-
-        Image image = new Image();
-        image.setSource(new ThemeResource("img/add_black.png"));
-        image.setHeight("25px");
-        image.setWidth("25px");
-        mainHeader.getCell("delete").setComponent(image);
-
-        image.addClickListener(new MouseEvents.ClickListener() {
-            @Override
-            public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
-                int newId = componentGrid.getContainerDataSource().size() + 1;
-                Addon addon = new Addon();
-                addon.setId(newId);
-                addon.setImagePath("");
-                addon.setAmount(0.00);
-                addon.setRate(0.00);
-                addon.setQtyArea(0);
-                componentGrid.getContainerDataSource().addItem(addon);
-                componentGrid.refresh();
-            }
-        });
-
-        horizontalLayout0.addComponent(componentGrid);
-
-        return horizontalLayout0;
-    }
-
-    public Component createAddonTypeSelector(ComponentGridDecorator<Addon> componentGridDecorator, Addon
-            addon, List<String> types) {
-        ComboBox select = new ComboBox();
-        select.setWidth("150px");
-        select.setHeight("30px");
-
-        select.addItems(types);
-        select.setPropertyDataSource(new BeanItem<>(addon).getItemProperty("type"));
-        select.addValueChangeListener(e -> {
-            componentGridDecorator.refresh();
-            //System.out.println("" + e.getProperty().getValue().toString());
-        });
-        return select;
-    }
-
-
-    public Component createAddonNameSelector(ComponentGridDecorator<Addon> componentGridDecorator, Addon
-            addon, List<String> names) {
-        ComboBox select = new ComboBox();
-        select.setWidth("150px");
-        select.setHeight("30px");
-
-        select.addItems(names);
-        select.setPropertyDataSource(new BeanItem<>(addon).getItemProperty("name"));
-        select.addValueChangeListener(e -> {
-            componentGridDecorator.refresh();
-            //System.out.println("" + e.getProperty().getValue().toString());
-        });
-        return select;
-    }
-
-    public Component createAddonImage(ComponentGridDecorator<Addon> componentGridDecorator, Addon
-            addon) {
-        ExternalResource resource =
-                new ExternalResource(addon.getImagePath());
-        Embedded image = new Embedded("", resource);
-        image.setHeight(32, Sizeable.Unit.PIXELS);
-        image.setWidth(32, Sizeable.Unit.PIXELS);
-        return image;
-    }
-
-    public Component createAddonQty(ComponentGridDecorator<Addon> componentGridDecorator, Addon
-            addon) {
-        TextField qtyTxtField = new TextField("", addon.getQtyArea() + "");
-        qtyTxtField.setWidth("40px");
-        qtyTxtField.setHeight("30px");
-        return qtyTxtField;
-    }
-
-    public Component createAddonRate(ComponentGridDecorator<Addon> componentGridDecorator, Addon
-            addon) {
-        TextField qtyTxtField = new TextField("", addon.getRate() + "");
-        qtyTxtField.setWidth("60px");
-        qtyTxtField.setHeight("30px");
-        return qtyTxtField;
-    }
-
-    public Component createAddonDelete(ComponentGridDecorator<Addon> componentGridDecorator, Addon
-            addon) {
-        HorizontalLayout actionLayout = new HorizontalLayout();
-        actionLayout.setSizeFull();
-        actionLayout.setSpacing(true);
-
-        Image editImage = new Image();
-        editImage.setSource(new ThemeResource("img/edit.png"));
-        editImage.setWidth("25px");
-        editImage.setHeight("25px");
-
-        editImage.addClickListener(new MouseEvents.ClickListener() {
-            @Override
-            public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
-                componentGridDecorator.refresh();
-            }
-        });
-
-        Image deleteImage = new Image();
-        deleteImage.setSource(new ThemeResource("img/delete.png"));
-        deleteImage.setWidth("25px");
-        deleteImage.setHeight("25px");
-
-        deleteImage.addClickListener(new MouseEvents.ClickListener() {
-            @Override
-            public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
-                componentGridDecorator.getGrid().getContainerDataSource().removeItem(addon);
-                componentGridDecorator.refresh();
-            }
-        });
-
-        actionLayout.addComponent(editImage);
-        actionLayout.addComponent(deleteImage);
-        return actionLayout;
-    }
-
-    private List<Addon> getAddon(String string) {
-        List<Addon> addons = new ArrayList<>();
-
-        Addon addon = new Addon();
-        addon.setSeqNo(1);
-        addon.setId(1);
-        addon.setType("ACCESSORY");
-        addon.setName("GRANITE 4MX");
-        addon.setDescription("");
-        addon.setImagePath("https://www.funkit.net/2/2014/07/kitchen-granite-countertops-granite-at-beatiful-kitchen-island-minimalist-decor-ideas-brilliant-countertops-kitchen-options-eco-friendly-prefabricated-fake-zodiac-outlet-venetian-countertops-counter-tops-wils-options-for-1110x833.jpg");
-        addon.setQtyArea(20);
-        addon.setUom("");
-        addon.setRate(1000.00);
-        addon.setAmount(20000.00);
-        addons.add(addon);
-
-        Addon addon2 = new Addon();
-        addon2.setSeqNo(2);
-        addon2.setId(2);
-        addon2.setType("COUNTER TOP");
-        addon2.setName("4T HANDLES");
-        addon2.setDescription("");
-        addon2.setImagePath("http://www.crystalhandle.com/images/cabinet_handles/cabinet_handle_od.jpg");
-        addon2.setQtyArea(8);
-        addon2.setUom("");
-        addon2.setRate(100.00);
-        addon2.setAmount(800.00);
-        addons.add(addon2);
-
-        Addon addon3 = new Addon();
-        addon3.setSeqNo(3);
-        addon3.setId(3);
-        addon3.setType("SERVICES");
-        addon3.setName("DADO");
-        addon3.setDescription("");
-        addon3.setImagePath("");
-        addon3.setQtyArea(4);
-        addon3.setUom("");
-        addon3.setRate(1500.00);
-        addon3.setAmount(6000.00);
-        addons.add(addon3);
-
-        return addons;
-    }
-
-	/*
-     * Summary Section
-	 */
-
-    private Component buildSummaryForm() {
         VerticalLayout verticalLayout = new VerticalLayout();
+        Button button = new Button("Add");
+        button.setStyleName("add-addon-btn");
+        button.addClickListener(clickEvent -> {
+            List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
+            AddonProduct addonProduct = new AddonProduct();
+            addonProduct.setSeq(addons.size() + 1);
+            addonProduct.setAdd(true);
+            AddonDetailsWindow.open(addonProduct, product);
+        });
 
-        HorizontalLayout horizontalLayout0 = new HorizontalLayout();
-        horizontalLayout0.setSizeFull();
-        verticalLayout.addComponent(horizontalLayout0);
+        verticalLayout.addComponent(button);
+        verticalLayout.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
+
+        addonsContainer = new BeanItemContainer<>(AddonProduct.class);
+
+        GeneratedPropertyContainer genContainer = createGeneratedAddonsPropertyContainer();
+
+        addonsGrid = new Grid(genContainer);
+        addonsGrid.setSizeFull();
+        addonsGrid.setHeight("325px");
+        addonsGrid.setColumnReorderingAllowed(true);
+        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY, AddonProduct.PRODUCT_TYPE, AddonProduct.BRAND,
+                AddonProduct.CATALOGUE_CODE, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
+
+        List<Grid.Column> columns = addonsGrid.getColumns();
+        int idx = 0;
+        columns.get(idx++).setHeaderCaption("#");
+        columns.get(idx++).setHeaderCaption("Category");
+        columns.get(idx++).setHeaderCaption("Product Type");
+        columns.get(idx++).setHeaderCaption("Brand");
+        columns.get(idx++).setHeaderCaption("Code");
+        columns.get(idx++).setHeaderCaption("UOM");
+        columns.get(idx++).setHeaderCaption("Rate");
+        columns.get(idx++).setHeaderCaption("Qty");
+        columns.get(idx++).setHeaderCaption("Amount");
+        Grid.Column actionColumn = columns.get(idx++);
+        actionColumn.setHeaderCaption("Actions");
+        actionColumn.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+            @Override
+            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
+                addon.setAdd(false);
+                AddonDetailsWindow.open(addon, product);
+            }
+
+            @Override
+            public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
+                        "Yes", "No", dialog -> {
+                            if (dialog.isConfirmed()) {
+                                AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
+
+                                List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
+                                addons.remove(addon);
+
+                                int seq = addon.getSeq();
+                                addonsContainer.removeAllItems();
+
+                                for (AddonProduct addonProduct : addons) {
+                                    if (addonProduct.getSeq() > seq) {
+                                        addonProduct.setSeq(addonProduct.getSeq() - 1);
+                                    }
+                                }
+                                addonsContainer.addAll(addons);
+                                addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
+                                updateTotalAmount();
+                            }
+                        });
+            }
+        }));
+
+        verticalLayout.addComponent(addonsGrid);
+        verticalLayout.setExpandRatio(addonsGrid, 1);
+
+        if (!product.getAddons().isEmpty()) {
+            addonsContainer.addAll(product.getAddons());
+            addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
+        }
 
         return verticalLayout;
+
+    }
+
+    private GeneratedPropertyContainer createGeneratedAddonsPropertyContainer() {
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(addonsContainer);
+        genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
+        return genContainer;
     }
 
     private Component buildFooter() {
@@ -759,21 +669,21 @@ public class CustomizedProductDetailsWindow extends Window {
         footer.setWidth(100.0f, Unit.PERCENTAGE);
 
         closeBtn = new Button("Close");
-        closeBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-
-                ConfirmDialog.show(UI.getCurrent(), "", "Are you sure? Unsaved data will be lost.",
-                        "Close", "Cancel", dialog -> {
-                            if (!dialog.isCanceled()) {
-                                closeWindow();
-                            } else {
-                                //close();
-                            }
-                        });
-
-            }
-        });
+        closeBtn.addClickListener((Button.ClickListener) clickEvent -> ConfirmDialog.show(UI.getCurrent(), "", "Are you sure? Unsaved data will be lost.",
+                "Close", "Cancel", dialog -> {
+                    if (!dialog.isCanceled()) {
+                        if (((!product.allModulesMapped() && !product.getModules().isEmpty())
+                                || (product.getModules().isEmpty() && product.getId() != 0))
+                                && this.modulesCopy.isEmpty()) {
+                            proposalDataProvider.deleteProduct(product.getId());
+                            DashboardEventBus.post(new ProposalEvent.ProductDeletedEvent(product));
+                        } else if (product.getId() != 0) {
+                            this.product.setModules(this.modulesCopy);
+                            this.product.setAddons(this.addonsCopy);
+                        }
+                        closeWindow();
+                    }
+                }));
         closeBtn.focus();
         footer.addComponent(closeBtn);
         footer.setSpacing(true);
@@ -793,7 +703,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
                 if (success) {
                     NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                    DashboardEventBus.post(new ProposalEvent.ProductCreatedEvent(product));
+                    DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
                     close();
                 } else {
                     NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -815,13 +725,6 @@ public class CustomizedProductDetailsWindow extends Window {
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 
         return footer;
-    }
-
-    public static void open(Proposal proposal) {
-        DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        Window w = new CustomizedProductDetailsWindow(proposal);
-        UI.getCurrent().addWindow(w);
-        w.focus();
     }
 
     public static void closeWindow() {
@@ -851,18 +754,21 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private void updateTotalAmount() {
-        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
-
         double amount = 0;
+
+        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
         for (Module module : modules) {
             amount += module.getAmount();
+        }
+
+        List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
+        for (AddonProduct addon : addons) {
+            amount += addon.getAmount();
         }
 
         totalAmount.setReadOnly(false);
         totalAmount.setValue(amount + "");
         totalAmount.setReadOnly(true);
-
-        product.setAmount(amount);
 
     }
 
@@ -873,12 +779,25 @@ public class CustomizedProductDetailsWindow extends Window {
         modules.add(event.getModule());
         moduleContainer.removeAllItems();
         moduleContainer.addAll(modules);
+        modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
         modulesGrid.sort(Module.SEQ, SortDirection.ASCENDING);
         updateTotalAmount();
 
         if (product.allModulesMapped()) {
             enableSave();
         }
+    }
+
+    @Subscribe
+    public void addonUpdated(final ProposalEvent.AddonUpdated event) {
+        List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
+        addons.remove(event.getAddonProduct());
+        addons.add(event.getAddonProduct());
+        addonsContainer.removeAllItems();
+        addonsContainer.addAll(addons);
+        addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
+        addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
+        updateTotalAmount();
     }
 
     public static void open(Proposal proposal, Product product) {

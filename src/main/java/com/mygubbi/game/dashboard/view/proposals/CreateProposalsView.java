@@ -32,7 +32,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 
 import java.io.ByteArrayInputStream;
@@ -516,8 +515,13 @@ public class CreateProposalsView extends Panel implements View {
 
         verticalLayout.addComponent(horizontalLayout);
 
-        button.addClickListener(clickEvent ->
-                CustomizedProductDetailsWindow.open(CreateProposalsView.this.proposal)
+        button.addClickListener(
+                clickEvent -> {
+                    Product newProduct = new Product();
+                    newProduct.setSeq(this.proposal.getProducts().size() + 1);
+                    newProduct.setProposalId(this.proposalHeader.getId());
+                    CustomizedProductDetailsWindow.open(CreateProposalsView.this.proposal, newProduct);
+                }
         );
 
         standardItemBtn.addClickListener(clickEvent ->
@@ -525,10 +529,7 @@ public class CreateProposalsView extends Panel implements View {
         );
 
         productContainer = new BeanItemContainer<>(Product.class);
-        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productContainer);
-        genContainer.addGeneratedProperty("actions", getActionTextGenerator());
-        genContainer.addGeneratedProperty("roomText", getRoomTextGenerator());
-        genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
+        GeneratedPropertyContainer genContainer = createGeneratedProductPropertyContainer();
 
         productsGrid = new Grid(genContainer);
         productsGrid.setSizeFull();
@@ -581,9 +582,11 @@ public class CreateProposalsView extends Panel implements View {
                                 for (Product product1 : proposal.getProducts()) {
                                     if (product1.getSeq() > seq) {
                                         product1.setSeq(product1.getSeq() - 1);
+                                        proposalDataProvider.updateProduct(product1);
                                     }
                                 }
                                 productContainer.addAll(proposal.getProducts());
+                                productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
 
                                 proposalDataProvider.deleteProduct(product.getId());
                                 NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
@@ -602,6 +605,14 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.addComponent(productsGrid);
 
         return verticalLayout;
+    }
+
+    private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productContainer);
+        genContainer.addGeneratedProperty("actions", getActionTextGenerator());
+        genContainer.addGeneratedProperty("roomText", getRoomTextGenerator());
+        genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
+        return genContainer;
     }
 
     private PropertyValueGenerator<String> getActionTextGenerator() {
@@ -663,13 +674,27 @@ public class CreateProposalsView extends Panel implements View {
 
 
     @Subscribe
-    public void productCreated(final ProposalEvent.ProductCreatedEvent event) {
+    public void productCreatedOrUpdated(final ProposalEvent.ProductCreatedOrUpdatedEvent event) {
         List<Product> products = proposal.getProducts();
         boolean removed = products.remove(event.getProduct());
         products.add(event.getProduct());
         productContainer.removeAllItems();
         productContainer.addAll(products);
+        productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
         productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
+        //updateTotalAmount();
+    }
+
+    @Subscribe
+    public void productDelete(final ProposalEvent.ProductDeletedEvent event) {
+        List<Product> products = proposal.getProducts();
+        boolean removed = products.remove(event.getProduct());
+        if (removed) {
+            productContainer.removeAllItems();
+            productContainer.addAll(products);
+            productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+            productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
+        }
         //updateTotalAmount();
     }
 }

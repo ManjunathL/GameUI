@@ -7,11 +7,17 @@ import java.util.Map;
 /**
  * Created by nitinpuri on 01-05-2016.
  */
-public class Module {
+public class Module implements Cloneable {
+
+    /**
+     * NOTE THAT THIS CLASS IMPLEMENTS CLONEABLE AND GIVES A CLONE METHOD.
+     * DO NOT INTRODUCE NEW FIELDS, SPECIALLY FIELDS OF TYPE OBJECT OR COLLECTIONS WITHOUT KNOWING HOW TO CLONE THEM
+     */
 
     public static final String DEFAULT = "default";
 
     public enum ImportStatusType {m, d, n}
+
     public enum UnitTypes {Base, Wall}
 
     public static final String SEQ = "seq";
@@ -33,8 +39,6 @@ public class Module {
     public static final String COLOR_IMAGE_PATH = "colorImagePath";
     public static final String AMOUNT = "amount";
     public static final String IMPORT_STATUS = "importStatus";
-    public static final String MG_MODULES = "mgModules";
-    public static final String MODULE_PRICE = "modulePrice";
     public static final String REMARKS = "remarks";
 
     private int seq;
@@ -57,10 +61,16 @@ public class Module {
     private double amount;
     private String remarks;
     private String importStatus;
-    private List<MGModule> mgModules = new ArrayList<>();  //todo: make transient
 
-    private Map<String, String> mgModuleImageMap;  //todo: make transient
-    private ModulePrice modulePrice;  //todo: make transient
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+            //Will never happen since we are implementing Cloneable
+        }
+    }
 
     public void setGenerated() {
         if (importStatus.equals(ImportStatusType.d.name())) {
@@ -131,14 +141,6 @@ public class Module {
 
     public void setImportStatus(String importStatus) {
         this.importStatus = importStatus;
-    }
-
-    public Map<String, String> getMgModuleImageMap() {
-        return mgModuleImageMap;
-    }
-
-    public void setMgModuleImageMap(Map<String, String> mgModuleImageMap) {
-        this.mgModuleImageMap = mgModuleImageMap;
     }
 
     public String getExtDefCode() {
@@ -213,14 +215,6 @@ public class Module {
         this.extText = extText;
     }
 
-    public List<MGModule> getMgModules() {
-        return mgModules;
-    }
-
-    public void setMgModules(List<MGModule> mgModules) {
-        this.mgModules = mgModules;
-    }
-
     public String getColorName() {
         return colorName;
     }
@@ -235,14 +229,6 @@ public class Module {
 
     public void setColorImagePath(String colorImagePath) {
         this.colorImagePath = colorImagePath;
-    }
-
-    public ModulePrice getModulePrice() {
-        return modulePrice;
-    }
-
-    public void setModulePrice(ModulePrice modulePrice) {
-        this.modulePrice = modulePrice;
     }
 
     public String getUnitType() {

@@ -3,7 +3,7 @@ package com.mygubbi.game.dashboard.domain;
 /**
  * Created by nitinpuri on 02-06-2016.
  */
-public class AddonProductItem {
+public class    AddonProductItem {
     private String catalogueCode;
     private String title;
     private String code;
