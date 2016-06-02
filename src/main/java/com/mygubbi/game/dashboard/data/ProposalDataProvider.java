@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
@@ -58,7 +59,11 @@ public class ProposalDataProvider {
     }
 
     public List<ProposalHeader> getProposalHeaders() {
-        JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/list", new HashMap<>());
+        JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/list", new HashMap<String, String>() {
+            {
+                put("userid", getUserId());
+            }
+        });
         return getProposalHeaders(proposalHeaders);
     }
 
@@ -71,10 +76,10 @@ public class ProposalDataProvider {
         return getProposalHeaders(proposalHeaders);
     }
 
-    public ProposalHeader getProposalHeader(String proposalId) {
+    public ProposalHeader getProposalHeader(int proposalId) {
         JSONObject jsonObject = dataProviderMode.getResource("proposal/header", new HashMap<String, String>() {
             {
-                put("id", proposalId);
+                put("proposalId", proposalId + "");
             }
         });
         try {
@@ -84,38 +89,66 @@ public class ProposalDataProvider {
         }
     }
 
-    public JSONArray getProposalProducts(String proposalId) {
-        return dataProviderMode.getResourceArray("proposal_products", new HashMap<String, String>() {
+    public List<Product> getProposalProducts(int proposalId) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/product/list", new HashMap<String, String>() {
             {
-                put("proposalId", proposalId);
+                put("proposalId", proposalId + "");
             }
         });
+        try {
+            Product[] items = this.mapper.readValue(jsonArray.toString(), Product[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
-    public JSONArray getProposalProductDetails(String proposalId, String productId) {
-        return dataProviderMode.getResourceArray("proposal_product_details", new HashMap<String, String>() {
+    //give modules and addons
+    public Product getProposalProductDetails(int productId) {
+
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/product/detail", new HashMap<String, String>() {
             {
-                put("proposalId", proposalId);
-                put("productId", proposalId);
+                put("id", productId + "");
             }
         });
+        try {
+            Product item = this.mapper.readValue(jsonObject.toString(), Product.class);
+            return item;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Not able to fetch Product Details.", e);
+        }
     }
 
-    public JSONArray getProposalProductDocuments(String proposalId, String productId) {
-        return dataProviderMode.getResourceArray("proposal_product_documents", new HashMap<String, String>() {
+    public List<FileAttachment> getProposalProductDocuments(int productId) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/product/documents", new HashMap<String, String>() {
             {
-                put("proposalId", proposalId);
-                put("productId", proposalId);
+                put("id", productId + "");
             }
         });
+        try {
+            FileAttachment[] items = this.mapper.readValue(jsonArray.toString(), FileAttachment[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
-    public JSONArray getProposalDocuments(String proposalId) {
-        return dataProviderMode.getResourceArray("proposal_documents", new HashMap<String, String>() {
+    public List<FileAttachment> getProposalDocuments(int proposalId) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/documents", new HashMap<String, String>() {
             {
-                put("proposalId", proposalId);
+                put("proposalId", proposalId + "");
             }
         });
+        try {
+            FileAttachment[] items = this.mapper.readValue(jsonArray.toString(), FileAttachment[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     public ProposalHeader createProposal() {
@@ -131,7 +164,6 @@ public class ProposalDataProvider {
     private String getUserId() {
         return ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
     }
-//todo: add calls for adding documents, one each - proposal/add.file
 
     public boolean saveProposal(ProposalHeader proposalHeader) {
 
@@ -147,14 +179,25 @@ public class ProposalDataProvider {
     }
 
     public boolean submitProposal(int proposalId) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/submit", "{\"id\": " + proposalId + "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/submit", "{\"proposalId\": " + proposalId + "}");
+        return !jsonObject.has("error");
+    }
+
+    //submit to draft
+    public boolean reviseProposal(int proposalId) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/revise", "{\"proposalId\": " + proposalId + "}");
+        return !jsonObject.has("error");
+    }
+
+    public boolean publishProposal(int proposalId) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/publish", "{\"proposalId\": " + proposalId + "}");
         return !jsonObject.has("error");
     }
 
     public boolean deleteProposal(int proposalId) {
 
         try {
-            JSONObject jsonObject = dataProviderMode.postResource("delete_proposal", "\"proposalId\": " + proposalId);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/delete", "\"proposalId\": " + proposalId);
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -163,9 +206,8 @@ public class ProposalDataProvider {
     }
 
     public boolean cancelProposal(int proposalId) {
-
         try {
-            JSONObject jsonObject = dataProviderMode.postResource("cancel_proposal", "\"proposalId\": " + proposalId);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/cancel", "\"proposalId\": " + proposalId);
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -174,17 +216,71 @@ public class ProposalDataProvider {
     }
 
     public List<FinishTypeColor> getFinishTypeColors() {
-        JSONArray array = dataProviderMode.getResourceArray("colorlookup", new HashMap<String, String>());
+        JSONArray array = dataProviderMode.getResourceArray("colorlookup", new HashMap<>());
         try {
             FinishTypeColor[] items = this.mapper.readValue(array.toString(), FinishTypeColor[].class);
-            return Arrays.asList(items);
+            return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
+    //proposal/product/add.doc - id, proposalId, FileAttachment
+    public boolean addProductDoc(int productId, int proposalId, FileAttachment fileAttachment) {
+        try {
+            fileAttachment.setUploadedBy(getUserId());
+            fileAttachment.setProductId(productId);
+            fileAttachment.setProposalId(proposalId);
+            String faJson = this.mapper.writeValueAsString(fileAttachment);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "proposal/product/add.doc", faJson);
+            return !jsonObject.has("error");
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't add product doc", e);
+        }
+    }
+
+    //proposal/product/remove.doc - id (file attachment id)
+    public boolean removeProductDoc(int fileAttachmentId) {
+        String faJson = "{\"id\": " + fileAttachmentId + "}";
+        JSONObject jsonObject = dataProviderMode.postResource(
+                "proposal/product/remove.doc", faJson);
+        return !jsonObject.has("error");
+    }
+
+    //proposal/remove.doc - id (file attachment id)
+    public boolean removeProposalDoc(int fileAttachmentId) {
+        String faJson = "{\"id\": " + fileAttachmentId + "}";
+        JSONObject jsonObject = dataProviderMode.postResource(
+                "proposal/remove.doc", faJson);
+        return !jsonObject.has("error");
+    }
+
+    //proposal/add.doc - proposalId, , FileAttachment
+    public boolean addProposalDoc(int proposalId, FileAttachment fileAttachment) {
+        try {
+            fileAttachment.setUploadedBy(getUserId());
+            fileAttachment.setProposalId(proposalId);
+            String faJson = this.mapper.writeValueAsString(fileAttachment);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "proposal/add.doc", faJson);
+            return !jsonObject.has("error");
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't add proposal doc", e);
+        }
+    }
+
+    //user/listbyrole - role [DESIGNER, SALESPERSON]
+
     public List<LookupItem> getLookupItems(String type) {
+
+        List<LookupItem> cachedItems = ServerManager.getInstance().getLookupItems(type);
+
+        if (cachedItems != null) {
+            return cachedItems;
+        }
+
         DataProviderMode overridenMode = type.equals(SHUTTER_DESIGN_LOOKUP) ? new FileDataProviderMode() : dataProviderMode;
         JSONArray array = overridenMode.getResourceArray("codelookup", new HashMap<String, String>() {
             {
@@ -193,7 +289,11 @@ public class ProposalDataProvider {
         });
         try {
             LookupItem[] items = this.mapper.readValue(array.toString(), LookupItem[].class);
-            return Arrays.asList(items);
+            List<LookupItem> lookupItems = new ArrayList<>(Arrays.asList(items));
+
+            ServerManager.getInstance().addLookupItems(type, lookupItems);
+
+            return lookupItems;
         } catch (Exception e) {
             e.printStackTrace();
             NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -218,6 +318,13 @@ public class ProposalDataProvider {
 
     }
 
+    /*  todo
+        {
+            "proposalId": 123,
+            "productIds": [12,12,12]
+        }
+    */
+    //post call
     public String getProposalQuoteFile(int proposalId) {
 
         try {
@@ -269,7 +376,7 @@ public class ProposalDataProvider {
         JSONArray array = dataProviderMode.getResourceArray("product_auto_complete", new HashMap<String, String>());
         try {
             ProductSuggest[] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
-            return Arrays.asList(items);
+            return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<ProductSuggest>();
@@ -280,7 +387,7 @@ public class ProposalDataProvider {
         JSONArray array = dataProviderMode.getResourceArray("product_search_data", new HashMap<String, String>());
         try {
             ProductSuggest[] items = this.mapper.readValue(array.toString(), ProductSuggest[].class);
-            return Arrays.asList(items);
+            return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<ProductSuggest>();
@@ -296,18 +403,6 @@ public class ProposalDataProvider {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    public List<String> getAddonTypes() {
-        JSONObject obj = new FileDataProviderMode().getResource("addon_type", new HashMap<String, String>());
-        try {
-            String typeStr = obj.getJSONArray("addon_type").toString();
-            String[] typeL = this.mapper.readValue(typeStr, String[].class);
-            return Arrays.asList(typeL);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<String>();
         }
     }
 
@@ -358,16 +453,92 @@ public class ProposalDataProvider {
 
     }
 
-    public boolean deleteProduct(Product product) {
-        try {
-            product.setUpdatedBy(getUserId());
-            String productJson = this.mapper.writeValueAsString(product);
-            JSONObject jsonObject = dataProviderMode.postResource(
-                    "product/delete", productJson);
-            return !jsonObject.has("error");
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't delete product", e);
-        }
+    public boolean deleteProduct(int productId) {
 
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/product/delete", "{\"id\": "
+                + productId + "}");
+        boolean isError = jsonObject.has("error");
+
+        if (isError) {
+            String error = null;
+            try {
+                error = jsonObject.getString("error");
+            } catch (JSONException e) {
+                //
+            }
+            NotificationUtil.showNotification("Error in deleting product - " + error, NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        }
+        return !isError;
     }
+
+    //addon/categories
+    public List<AddonCategory> getAddonCategories(String roomCode) {
+        JSONArray array = dataProviderMode.getResourceArray("addon/categories", new HashMap<String, String>() {
+            {
+                put("roomCode", roomCode);
+            }
+        });
+        try {
+            AddonCategory[] items = this.mapper.readValue(array.toString(), AddonCategory[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
+    //addon/productTypes
+    public List<AddonProductType> getAddonProductTypes(String roomCode, String addonCategoryCode) {
+        JSONArray array = dataProviderMode.getResourceArray("addon/productTypes", new HashMap<String, String>() {
+            {
+                put("roomCode", roomCode);
+                put("addonCategoryCode", addonCategoryCode);
+            }
+        });
+        try {
+            AddonProductType[] items = this.mapper.readValue(array.toString(), AddonProductType[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
+    //addon/brands
+    public List<AddonBrand> getAddonBrands(String addonProductTypeCode) {
+        JSONArray array = dataProviderMode.getResourceArray("addon/brands", new HashMap<String, String>() {
+            {
+                put("addonProductTypeCode", addonProductTypeCode);
+            }
+        });
+        try {
+            AddonBrand[] items = this.mapper.readValue(array.toString(), AddonBrand[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
+    //addon/products
+    public List<AddonProductItem> getAddonProductItems(String addonProductTypeCode, String brandCode) {
+        JSONArray array = dataProviderMode.getResourceArray("addon/products", new HashMap<String, String>() {
+            {
+                put("addonProductTypeCode", addonProductTypeCode);
+                put("brandCode", brandCode);
+            }
+        });
+        try {
+            AddonProductItem[] items = this.mapper.readValue(array.toString(), AddonProductItem[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
 }

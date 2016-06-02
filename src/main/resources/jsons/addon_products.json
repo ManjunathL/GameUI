@@ -1,0 +1,18 @@
+[
+  {
+    "code": "RAY60LTW, Silver",
+    "title": "RAY60LTW, Silver",
+    "catalogueCode": "RAY60LTW, Silver",
+    "rate": 2000,
+    "imagePath": "addon1.jpg",
+    "uom": "pieces"
+  },
+  {
+    "code": "CLEO PB SS LTW 60",
+    "title": "CLEO PB SS LTW 60",
+    "catalogueCode": "CLEO PB SS LTW 60",
+    "rate": 9000,
+    "imagePath": "addon2.jpg",
+    "uom": "pieces"
+  }
+]

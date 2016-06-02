@@ -11,21 +11,6 @@ public class Module {
 
     public static final String DEFAULT = "default";
 
-    public void setGenerated() {
-        if (importStatus.equals(ImportStatusType.d.name())) {
-            extText = extCode + " / " + extDefCode;
-        } else {
-            extText = extCode;
-        }
-    }
-
-    public void setCarcassCodeBasedOnUnitType(Product product) {
-        this.setCarcassCode(
-                this.getUnitType().equals(Module.UnitTypes.Wall.name())
-                        ? product.getWallCarcassCode()
-                        : product.getBaseCarcassCode());
-    }
-
     public enum ImportStatusType {m, d, n}
     public enum UnitTypes {Base, Wall}
 
@@ -37,16 +22,12 @@ public class Module {
     public static final String MG_MODULE_CODE = "mgCode";
     public static final String MAKE_TYPE = "makeType";
     public static final String MAKE_TYPE_CODE = "makeTypeCode";
-    public static final String MAKE_TYPE_TEXT = "makeTypeText";
     public static final String CARCASS_MATERIAL = "carcass";
     public static final String CARCASS_MATERIAL_CODE = "carcassCode";
-    public static final String CARCASS_MATERIAL_TEXT = "carcassText";
     public static final String FINISH_TYPE = "finishType";
     public static final String FINISH_TYPE_CODE = "finishTypeCode";
-    public static final String FINISH_TYPE_TEXT = "finishTypeText";
     public static final String SHUTTER_FINISH = "finish";
     public static final String SHUTTER_FINISH_CODE = "finishCode";
-    public static final String SHUTTER_FINISH_TEXT = "finishText";
     public static final String COLOR_CODE = "colorCode";
     public static final String COLOR_NAME = "colorName";
     public static final String COLOR_IMAGE_PATH = "colorImagePath";
@@ -62,29 +43,39 @@ public class Module {
     private String extDefCode;
     private String extText;
     private String mgCode;
-
     private String carcass;
     private String carcassCode;
-    private String carcassText;
     private String finishType;
     private String finishTypeCode;
-    private String finishTypeText;
     private String finish;
     private String finishCode;
-    private String finishText;
     private String colorCode;
     private String colorName;
     private String colorImagePath;
     private String makeType;
     private String makeTypeCode;
-    private String makeTypeText;
     private double amount;
     private String remarks;
     private String importStatus;
-
     private List<MGModule> mgModules = new ArrayList<>();  //todo: make transient
+
     private Map<String, String> mgModuleImageMap;  //todo: make transient
     private ModulePrice modulePrice;  //todo: make transient
+
+    public void setGenerated() {
+        if (importStatus.equals(ImportStatusType.d.name())) {
+            extText = extCode + " / " + extDefCode;
+        } else {
+            extText = extCode;
+        }
+    }
+
+    public void setCarcassCodeBasedOnUnitType(Product product) {
+        this.setCarcassCode(
+                this.getUnitType().equals(Module.UnitTypes.Wall.name())
+                        ? product.getWallCarcassCode()
+                        : product.getBaseCarcassCode());
+    }
 
     public int getSeq() {
         return seq;
@@ -220,38 +211,6 @@ public class Module {
 
     public void setExtText(String extText) {
         this.extText = extText;
-    }
-
-    public String getMakeTypeText() {
-        return makeTypeText;
-    }
-
-    public void setMakeTypeText(String makeTypeText) {
-        this.makeTypeText = makeTypeText;
-    }
-
-    public String getCarcassText() {
-        return carcassText;
-    }
-
-    public void setCarcassText(String carcassText) {
-        this.carcassText = carcassText;
-    }
-
-    public String getFinishTypeText() {
-        return finishTypeText;
-    }
-
-    public void setFinishTypeText(String finishTypeText) {
-        this.finishTypeText = finishTypeText;
-    }
-
-    public String getFinishText() {
-        return finishText;
-    }
-
-    public void setFinishText(String finishText) {
-        this.finishText = finishText;
     }
 
     public List<MGModule> getMgModules() {

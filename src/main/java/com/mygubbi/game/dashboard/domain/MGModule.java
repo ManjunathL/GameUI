@@ -9,6 +9,7 @@ import java.util.List;
 public class MGModule {
     public static final String CODE = "code";
     private String code;
+    private String carcassCode;
     private String description;
     private double width;
     private double depth;
@@ -76,4 +77,11 @@ public class MGModule {
         this.accessories = accessories;
     }
 
+    public String getCarcassCode() {
+        return carcassCode;
+    }
+
+    public void setCarcassCode(String carcassCode) {
+        this.carcassCode = carcassCode;
+    }
 }

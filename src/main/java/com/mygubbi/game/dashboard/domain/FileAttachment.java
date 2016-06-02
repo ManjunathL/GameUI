@@ -21,6 +21,9 @@ public class FileAttachment {
     private String uploadedBy;
     private Date uploadedOn;
 
+    private int proposalId;
+    private int productId;
+
     public String getFileName() {
         return fileName;
     }
@@ -92,5 +95,21 @@ public class FileAttachment {
         result = 31 * result + uploadedBy.hashCode();
         result = 31 * result + uploadedOn.hashCode();
         return result;
+    }
+
+    public int getProposalId() {
+        return proposalId;
+    }
+
+    public void setProposalId(int proposalId) {
+        this.proposalId = proposalId;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 }

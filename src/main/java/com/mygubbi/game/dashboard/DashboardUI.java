@@ -49,7 +49,7 @@ public final class DashboardUI extends UI {
         Responsive.makeResponsive(this);
 
         setErrorHandler((ErrorHandler) event -> {
-            LOG.error(event.getThrowable().getMessage());
+            LOG.error("Error", event.getThrowable());
             //NotificationUtil.showNotification("Internal Error");
         });
 

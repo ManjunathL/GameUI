@@ -12,6 +12,7 @@ import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
+import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -71,9 +72,9 @@ public class CustomizedProductDetailsWindow extends Window {
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private List<LookupItem> shutterFinishMasterList;
     private BeanItemContainer<Module> moduleContainer;
-    private BeanItemContainer<FileAttachment> attachmentContainer;
     private Grid modulesGrid;
     private TextField totalAmount;
+    private FileAttachmentComponent fileAttachmentComponent;
 
     public CustomizedProductDetailsWindow(Proposal proposal) {
         this(proposal, new Product(proposal.getProposalHeader().getId(), proposal.getProducts().size() + 1));
@@ -112,7 +113,16 @@ public class CustomizedProductDetailsWindow extends Window {
         tabSheet.setSizeFull();
         tabSheet.addTab(buildModulesForm(), "Modules");
         tabSheet.addTab(buildAddonsForm(), "Addons");
-        tabSheet.addTab(new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(), null, null), "Attachments");
+
+        fileAttachmentComponent = new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(),
+                attachmentData -> proposalDataProvider.addProductDoc(product.getId(), product.getProposalId(), attachmentData.getFileAttachment()),
+                attachmentData -> proposalDataProvider.removeProductDoc(attachmentData.getFileAttachment().getId()));
+
+        if (!product.allModulesMapped() || product.getModules().isEmpty()) {
+            fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
+        }
+
+        tabSheet.addTab(fileAttachmentComponent, "Attachments");
         tabSheet.setEnabled(true);
         horizontalLayout1.addComponent(tabSheet);
         horizontalLayout1.setHeightUndefined();
@@ -356,6 +366,7 @@ public class CustomizedProductDetailsWindow extends Window {
             if (product.hasImportErrorStatus()) {
                 NotificationUtil.showNotification("Error in mapping module(s), please upload new sheet!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             } else if (product.allModulesMapped()) {
+                fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
                 enableSave();
                 NotificationUtil.showNotification("File uploaded successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             }
@@ -367,10 +378,10 @@ public class CustomizedProductDetailsWindow extends Window {
     private void initModules(Product product) {
         for (Module module : product.getModules()) {
 
-            module.setMakeTypeText(Module.DEFAULT);
-            module.setCarcassText(Module.DEFAULT);
-            module.setFinishTypeText(Module.DEFAULT);
-            module.setFinishText(Module.DEFAULT);
+            module.setMakeType(Module.DEFAULT);
+            module.setCarcass(Module.DEFAULT);
+            module.setFinishType(Module.DEFAULT);
+            module.setFinish(Module.DEFAULT);
 
             module.setMakeTypeCode(product.getMakeTypeCode());
             module.setCarcassCodeBasedOnUnitType(product);
@@ -406,7 +417,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setSizeFull();
         modulesGrid.setColumnReorderingAllowed(true);
         modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE,
-                Module.MAKE_TYPE_TEXT, Module.CARCASS_MATERIAL_TEXT, Module.FINISH_TYPE_TEXT, Module.SHUTTER_FINISH_TEXT, "colorName", Module.AMOUNT, "action");
+                Module.MAKE_TYPE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, "colorName", Module.AMOUNT, "action");
 
         List<Grid.Column> columns = modulesGrid.getColumns();
         int idx = 0;
@@ -528,7 +539,7 @@ public class CustomizedProductDetailsWindow extends Window {
         HorizontalLayout horizontalLayout0 = new HorizontalLayout();
         horizontalLayout0.setSizeFull();
 
-        List<String> addonTypes = proposalDataProvider.getAddonTypes();
+        List<AddonCategory> addonTypes = proposalDataProvider.getAddonCategories(product.getRoomCode());
         List<String> addonNameL = new ArrayList<>();
 
         Map<String, String> addonTypeAndNameMap = new HashMap<>();
@@ -543,8 +554,8 @@ public class CustomizedProductDetailsWindow extends Window {
         componentGrid.setRows(getAddon(""));
         componentGrid.setDetailsGenerator(new AddonsDetailGenerator());
 
-        componentGrid.addComponentColumn("type", addon ->
-                createAddonTypeSelector(componentGrid.getComponentGridDecorator(), addon, addonTypes));
+        //componentGrid.addComponentColumn("type", addon ->
+        //        createAddonTypeSelector(componentGrid.getComponentGridDecorator(), addon, addonTypes));
 
         componentGrid.addComponentColumn("name", addon -> createAddonNameSelector(componentGrid.getComponentGridDecorator(), addon, addonNameL));
         componentGrid.addComponentColumn("imagePath", addon -> createAddonImage(componentGrid.getComponentGridDecorator(), addon));
@@ -796,7 +807,7 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.focus();
         saveBtn.setVisible(true);
 
-        if (StringUtils.isEmpty(product.getQuoteFilePath())) {
+        if (!product.allModulesMapped() || product.getModules().isEmpty()) {
             disableSave();
         }
 

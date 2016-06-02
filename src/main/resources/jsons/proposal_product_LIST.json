@@ -1,0 +1,25 @@
+[
+  {
+    "id": 1,
+    "proposalId": 100,
+    "title": "my Kitchen",
+    "seq": 1,
+    "productCategoryCode": "KITCHEN",
+    "roomCode": "KITCHEN",
+    "shutterDesignCode": "SD3",
+    "catalogueName": "Albatross L Shaped Kitchen",
+    "catalogueId": 1234,
+    "makeTypeCode": "STANDARD",
+    "baseCarcassCode": "MDF",
+    "wallCarcassCode": "PLPB",
+    "finishTypeCode": "LAMINATE",
+    "finishCode": "PLY/LAM",
+    "amount": "266000",
+    "type": "CUSTOMIZED",
+    "quoteFilePath": "Quotation.xslx",
+    "createdOn": "2016-02-28T00:00:00Z",
+    "createdBy": "Gaurav Sharma",
+    "updatedOn": "2016-02-28T00:00:00Z",
+    "updatedBy": "Gaurav Sharma"
+  }
+]

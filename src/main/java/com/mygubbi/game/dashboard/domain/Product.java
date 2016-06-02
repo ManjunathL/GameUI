@@ -75,7 +75,7 @@ public class Product implements FileAttachmentsHolder {
     private String updatedBy;
     private List<Module> modules = new ArrayList<>();
 
-    private List<Addon> addons = new ArrayList<>();
+    private List<AddonProduct> addons = new ArrayList<>();
     private List<FileAttachment> fileAttachmentList = new ArrayList<>();
 
     public Product() {
@@ -252,11 +252,11 @@ public class Product implements FileAttachmentsHolder {
         this.modules = modules;
     }
 
-    public List<Addon> getAddons() {
+    public List<AddonProduct> getAddons() {
         return addons;
     }
 
-    public void setAddons(List<Addon> addons) {
+    public void setAddons(List<AddonProduct> addons) {
         this.addons = addons;
     }
 
@@ -355,5 +355,26 @@ public class Product implements FileAttachmentsHolder {
 
     public void setShutterDesignCode(String shutterDesignCode) {
         this.shutterDesignCode = shutterDesignCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Product product = (Product) o;
+
+        if (id != product.id) return false;
+        if (proposalId != product.proposalId) return false;
+        return title != null ? title.equals(product.title) : product.title == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + proposalId;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        return result;
     }
 }

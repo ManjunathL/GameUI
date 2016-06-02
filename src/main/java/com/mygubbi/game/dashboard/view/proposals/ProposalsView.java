@@ -7,6 +7,7 @@ import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
+import com.mygubbi.game.dashboard.view.DashboardViewType;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -93,10 +94,19 @@ public final class ProposalsView extends TabSheet implements View {
                         Object selected = ((Grid.SingleSelectionModel) grid.getSelectionModel()).getSelectedRow();
                         String title = grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.TITLE).getValue().toString();
                         int proposalId = (Integer) grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.ID).getValue();
+
+                        UI.getCurrent().getNavigator()
+                                .navigateTo("New Proposal/" + proposalId);
+                                        //DashboardViewType.PROPOSALS.getViewType().getSubViewTypes().stream().filter(viewType -> viewType.getViewClass().equals(CreateProposalsView.class)).findFirst().get().getViewName());
+
+
+
+/*
                         final ProposalDetailsView proposalDetailsView = new ProposalDetailsView(proposalId, title);
                         addTab(proposalDetailsView).setClosable(true);
                         setSelectedTab(getComponentCount() - 1);
                         getTab(proposalDetailsView).setCaption(title);
+*/
                     }
                 }
         );

@@ -1,0 +1,46 @@
+{
+  "modules": [
+    {
+      "seq": 1,
+      "unitType": "Base",
+      "extCode": "ADD1_536",
+      "extDefCode": "ADD1_536",
+      "extText": "ADD1_536 / ADD1_536",
+      "mgCode": "KDMG1234",
+      "carcass": "default",
+      "carcassCode": "MDF",
+      "finishType": "default",
+      "finishTypeCode": "LAMINATE",
+      "finish": "PLY/LAM",
+      "finishCode": "PLY/LAM",
+      "colorCode": "CC123",
+      "colorName": "Frosty White",
+      "colorImagePath": "colors/cc123.jpg",
+      "makeType": "Economy",
+      "makeTypeCode": "ECONOMY",
+      "amount": 19000,
+      "importStatus": "d"
+    },
+    {
+      "seq": 2,
+      "unitType": "Wall",
+      "extCode": "ADD1_536",
+      "extDefCode": "",
+      "extText": "ADD1_536",
+      "mgCode": "KDMG1234",
+      "carcass": "PLY",
+      "carcassCode": "PLY",
+      "finishType": "default",
+      "finishTypeCode": "LAMINATE",
+      "finish": "PVC Foil",
+      "finishCode": "PVC Foil",
+      "colorCode": "RoastedOil",
+      "colorName": "Roasted Oil",
+      "colorImagePath": "colors/cc234.png",
+      "makeType": "default",
+      "makeTypeCode": "STANDARD",
+      "amount": 27000,
+      "importStatus": "m"
+    }
+  ]
+}

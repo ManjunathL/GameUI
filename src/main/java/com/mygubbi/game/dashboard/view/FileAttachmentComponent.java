@@ -40,6 +40,7 @@ public class FileAttachmentComponent extends VerticalLayout {
     private Button prevDownloadButton;
     private FileAttachmentsHolder attachmentsHolder;
     private final String uploadBasePath;
+    private Upload fileUploadCtrl;
 
     public FileAttachmentComponent(FileAttachmentsHolder attachmentsHolder, String uploadBasePath,
                                    SaveAttachmentsListener saveListener, DeleteAttachmentsListener deleteListener) {
@@ -65,8 +66,8 @@ public class FileAttachmentComponent extends VerticalLayout {
         fileUploadHLayout.addComponent(right);
         verticalLayout.addComponent(fileUploadHLayout);
 
-        HorizontalLayout hLayout = new HorizontalLayout();
-        hLayout.setSizeFull();
+        HorizontalLayout fileGridHLayout = new HorizontalLayout();
+        fileGridHLayout.setSizeFull();
 
         attachmentContainer = new BeanItemContainer<>(FileAttachment.class);
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(attachmentContainer);
@@ -75,6 +76,7 @@ public class FileAttachmentComponent extends VerticalLayout {
 
         attachmentGrid = new Grid(genContainer);
         attachmentGrid.setSizeFull();
+        attachmentGrid.setHeight("280px");
         attachmentGrid.setColumnReorderingAllowed(true);
         attachmentGrid.setColumns(FileAttachment.SEQ, FileAttachment.TITLE, FileAttachment.FILENAME, FileAttachment.UPLOADED_BY, FileAttachment.UPLOADED_ON, "action");
 
@@ -137,14 +139,16 @@ public class FileAttachmentComponent extends VerticalLayout {
             }
         }));
 
-        hLayout.addComponent(attachmentGrid);
-        hLayout.setExpandRatio(attachmentGrid, 1);
+        fileGridHLayout.addComponent(attachmentGrid);
+        fileGridHLayout.setExpandRatio(attachmentGrid, 1);
 
         if (!attachmentsHolder.getFileAttachmentList().isEmpty()) {
             attachmentContainer.addAll(attachmentsHolder.getFileAttachmentList());
             attachmentGrid.sort(FileAttachment.SEQ, SortDirection.ASCENDING);
         }
-        verticalLayout.addComponent(hLayout);
+        verticalLayout.addComponent(fileGridHLayout);
+        verticalLayout.setExpandRatio(fileGridHLayout, 1.0f);
+
         return verticalLayout;
     }
 
@@ -184,7 +188,7 @@ public class FileAttachmentComponent extends VerticalLayout {
     }
 
     private Component getFileUploadControl() {
-        Upload fileUploadCtrl = new Upload("Upload File", (filename, mimeType) -> {
+        this.fileUploadCtrl = new Upload("Upload File", (filename, mimeType) -> {
 
             if (StringUtils.isEmpty(filename)) {
                 NotificationUtil.showNotification("Please specify the file.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -267,5 +271,9 @@ public class FileAttachmentComponent extends VerticalLayout {
         public void setFileAttachment(FileAttachment fileAttachment) {
             this.fileAttachment = fileAttachment;
         }
+    }
+
+    public Upload getFileUploadCtrl() {
+        return fileUploadCtrl;
     }
 }

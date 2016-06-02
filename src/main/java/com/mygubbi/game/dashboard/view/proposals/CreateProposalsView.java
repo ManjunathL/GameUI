@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.DashboardViewType;
@@ -22,17 +23,17 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
+import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -50,6 +51,8 @@ import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
 public class CreateProposalsView extends Panel implements View {
 
 
+    private final String NEW_TITLE = "New Proposal";
+    private final String NEW_VERSION = "1.0";
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
     private Field<?> proposalTitleField;
@@ -84,18 +87,35 @@ public class CreateProposalsView extends Panel implements View {
     private final BeanFieldGroup<ProposalHeader> binder = new BeanFieldGroup<>(ProposalHeader.class);
     private Button submitButton;
     private Label draftLabel;
-    private final ProposalHeader proposalHeader;
-    private final Proposal proposal;
+    private ProposalHeader proposalHeader;
+    private Proposal proposal;
     private Button saveButton;
     private BeanItemContainer productContainer;
 
     public CreateProposalsView() {
+    }
+
+    @Override
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        String parameters = event.getParameters();
+        if (StringUtils.isNotEmpty(parameters)) {
+            int proposalId = Integer.parseInt(parameters);
+            this.proposalHeader = proposalDataProvider.getProposalHeader(proposalId);
+            this.proposal = new Proposal();
+            this.proposal.setProposalHeader(this.proposalHeader);
+            this.proposal.setProducts(proposalDataProvider.getProposalProducts(proposalId));
+            this.proposal.setFileAttachments(proposalDataProvider.getProposalDocuments(proposalId));
+            proposalHeader.setVersion(NEW_VERSION);
+        } else {
+            proposalHeader = proposalDataProvider.createProposal();
+            proposalHeader.setTitle(NEW_TITLE);
+            proposalHeader.setVersion(NEW_VERSION);
+            proposalHeader.setStatus("draft");
+            this.proposal = new Proposal();
+            this.proposal.setProposalHeader(proposalHeader);
+        }
 
         DashboardEventBus.register(this);
-        proposalHeader = proposalDataProvider.createProposal();
-        proposal = new Proposal();
-        proposal.setProposalHeader(proposalHeader);
-        initHeader(proposalHeader);
         this.binder.setItemDataSource(proposalHeader);
 
         DashboardEventBus.post(new ProposalEvent.ProposalUpdated());
@@ -107,20 +127,10 @@ public class CreateProposalsView extends Panel implements View {
         TabSheet tabs = new TabSheet();
         tabs.addTab(buildForm(), "Header");
         tabs.addTab(buildProductDetails(), "Products");
-        tabs.addTab(new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(), null, null), "Attachments");
-
-/*
-        tabs.addSelectedTabChangeListener(selectedTabChangeEvent -> {
-            TabSheet tabsheet = selectedTabChangeEvent.getTabSheet();
-            Layout tab = (Layout) tabsheet.getSelectedTab();
-            String caption = tabsheet.getTab(tab).getCaption();
-            if (caption.equals("Header")) {
-                saveButton.setVisible(true);
-            } else {
-                saveButton.setVisible(false);
-            }
-        });
-*/
+        tabs.addTab(new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
+                attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
+                attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId())
+        ), "Attachments");
 
         vLayout.addComponent(tabs);
         setContent(vLayout);
@@ -133,11 +143,6 @@ public class CreateProposalsView extends Panel implements View {
         return proposalHeaderBeanItem;
     }
 
-    private void initHeader(ProposalHeader proposalHeader) {
-        proposalHeader.setTitle("New Proposal");
-        proposalHeader.setVersion("1.0");
-    }
-
     private Component buildHeader() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
@@ -146,15 +151,17 @@ public class CreateProposalsView extends Panel implements View {
         HorizontalLayout horizontalLayout2 = new HorizontalLayout();
         horizontalLayout.addComponent(horizontalLayout2);
 
-        proposalTitleLabel = new Label("New Proposal&nbsp;", ContentMode.HTML);
-        proposalTitleLabel.addStyleName(ValoTheme.LABEL_H1);
+        String title = proposalHeader.getTitle();
+        proposalTitleLabel = new Label(getFormattedTitle(title) + "&nbsp;", ContentMode.HTML);
+        proposalTitleLabel.addStyleName(ValoTheme.LABEL_H2);
         proposalTitleLabel.setWidth("1%");
+        proposalTitleLabel.setDescription(title);
         horizontalLayout2.addComponent(proposalTitleLabel);
         horizontalLayout2.setComponentAlignment(proposalTitleLabel, Alignment.MIDDLE_LEFT);
 
-        draftLabel = new Label("[ Draft ]");
+        draftLabel = new Label("[ " + proposalHeader.getStatus() + " ]");
         draftLabel.addStyleName(ValoTheme.LABEL_COLORED);
-        draftLabel.addStyleName(ValoTheme.LABEL_H1);
+        draftLabel.addStyleName(ValoTheme.LABEL_H2);
         horizontalLayout2.addComponent(draftLabel);
         horizontalLayout2.setComponentAlignment(draftLabel, Alignment.MIDDLE_LEFT);
 
@@ -203,6 +210,15 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
 
         return horizontalLayout;
+    }
+
+    private String getFormattedTitle(String title) {
+        if (title.length() <= 40) {
+            return title;
+        } else {
+            return title.substring(0, 40) + "...";
+        }
+
     }
 
     private StreamResource createResource() {
@@ -268,7 +284,7 @@ public class CreateProposalsView extends Panel implements View {
                 success = proposalDataProvider.submitProposal(proposalHeader.getId());
                 if (success) {
                     submitButton.setVisible(false);
-                    draftLabel.setValue("[ Active ]");
+                    draftLabel.setValue("[ active ]");
                     NotificationUtil.showNotification("Submitted successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                 } else {
                     NotificationUtil.showNotification("Couldn't Activate Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -462,7 +478,7 @@ public class CreateProposalsView extends Panel implements View {
 
         ((TextField) proposalTitleField).addTextChangeListener(textChangeEvent -> {
             String changedText = textChangeEvent.getText();
-            proposalTitleLabel.setValue(changedText + "&nbsp;");
+            proposalTitleLabel.setValue(getFormattedTitle(changedText) + "&nbsp;");
         });
 
         formLayoutLeft.addComponent(proposalTitleField);
@@ -472,12 +488,6 @@ public class CreateProposalsView extends Panel implements View {
 
         return formLayoutLeft;
     }
-
-    private User getCurrentUser() {
-        return (User) VaadinSession.getCurrent().getAttribute(
-                User.class.getName());
-    }
-
 
     private Component buildProductDetails() {
 
@@ -517,11 +527,13 @@ public class CreateProposalsView extends Panel implements View {
         productContainer = new BeanItemContainer<>(Product.class);
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productContainer);
         genContainer.addGeneratedProperty("actions", getActionTextGenerator());
+        genContainer.addGeneratedProperty("roomText", getRoomTextGenerator());
+        genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
 
         productsGrid = new Grid(genContainer);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
-        productsGrid.setColumns(Product.SEQ, Product.ROOM, Product.TITLE, Product.PRODUCT_CATEGORY, Product.QTY, Product.AMOUNT, TYPE, "actions");
+        productsGrid.setColumns(Product.SEQ, "roomText", Product.TITLE, "productCategoryText", Product.QTY, Product.AMOUNT, TYPE, "actions");
 
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
@@ -533,19 +545,63 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Qty");
         columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Type");
-        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditButtonValueRenderer(rendererClickEvent -> {
-            Product product = (Product) rendererClickEvent.getItemId();
-            CustomizedProductDetailsWindow.open(proposal, product);
+        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+            @Override
+            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+
+                Product product = (Product) rendererClickEvent.getItemId();
+
+                if (product.getModules().isEmpty()) {
+                    Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId());
+                    product.setModules(productDetails.getModules());
+                    product.setAddons(productDetails.getAddons());
+                }
+
+                if (product.getFileAttachmentList().isEmpty()) {
+                    List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
+                    product.setFileAttachmentList(productAttachments);
+                }
+
+                CustomizedProductDetailsWindow.open(proposal, product);
+
+            }
+
+            @Override
+            public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Product?",
+                        "Yes", "No", dialog -> {
+                            if (dialog.isConfirmed()) {
+                                Product product = (Product) rendererClickEvent.getItemId();
+
+                                proposal.getProducts().remove(product);
+
+                                int seq = product.getSeq();
+                                productContainer.removeAllItems();
+
+                                for (Product product1 : proposal.getProducts()) {
+                                    if (product1.getSeq() > seq) {
+                                        product1.setSeq(product1.getSeq() - 1);
+                                    }
+                                }
+                                productContainer.addAll(proposal.getProducts());
+
+                                proposalDataProvider.deleteProduct(product.getId());
+                                NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                            }
+                        });
+
+            }
         }));
+
+        if (!proposal.getProducts().isEmpty()) {
+            productContainer.addAll(proposal.getProducts());
+            productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
+
+        }
 
         verticalLayout.addComponent(productsGrid);
 
         return verticalLayout;
-    }
-
-    @Override
-    public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-
     }
 
     private PropertyValueGenerator<String> getActionTextGenerator() {
@@ -554,6 +610,48 @@ public class CreateProposalsView extends Panel implements View {
             @Override
             public String getValue(Item item, Object o, Object o1) {
                 return "";
+            }
+
+            @Override
+            public Class<String> getType() {
+                return String.class;
+            }
+        };
+    }
+
+    private PropertyValueGenerator<String> getRoomTextGenerator() {
+        return new PropertyValueGenerator<String>() {
+
+            @Override
+            public String getValue(Item item, Object o, Object o1) {
+                Product product = (Product) ((BeanItem) item).getBean();
+                if (StringUtils.isNotEmpty(product.getRoom())) {
+                    return product.getRoom();
+                } else {
+                    List<LookupItem> rooms = proposalDataProvider.getLookupItems(ProposalDataProvider.ROOM_LOOKUP);
+                    return rooms.stream().filter(lookupItem -> lookupItem.getCode().equals(product.getRoomCode())).findFirst().get().getTitle();
+                }
+            }
+
+            @Override
+            public Class<String> getType() {
+                return String.class;
+            }
+        };
+    }
+
+    private PropertyValueGenerator<String> getProductCategoryTextGenerator() {
+        return new PropertyValueGenerator<String>() {
+
+            @Override
+            public String getValue(Item item, Object o, Object o1) {
+                Product product = (Product) ((BeanItem) item).getBean();
+                if (StringUtils.isNotEmpty(product.getProductCategory())) {
+                    return product.getProductCategory();
+                } else {
+                    List<LookupItem> lookupItems = proposalDataProvider.getLookupItems(ProposalDataProvider.CATEGORY_LOOKUP);
+                    return lookupItems.stream().filter(lookupItem -> lookupItem.getCode().equals(product.getProductCategoryCode())).findFirst().get().getTitle();
+                }
             }
 
             @Override
