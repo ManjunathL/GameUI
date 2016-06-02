@@ -318,25 +318,12 @@ public class ProposalDataProvider {
 
     }
 
-    /*  todo
-        {
-            "proposalId": 123,
-            "productIds": [12,12,12]
-        }
-    */
-    //post call
-    public String getProposalQuoteFile(int proposalId) {
-
+    public String getProposalQuoteFile(ProductSelections productSelections) {
         try {
-            JSONObject obj = dataProviderMode.getResource("proposal/downloadquote", new HashMap<String, String>() {
-                {
-                    put("proposalId", proposalId + "");
-                }
-            });
+            String productSelectionsJson = this.mapper.writeValueAsString(productSelections);
+            JSONObject obj = dataProviderMode.postResource("proposal/downloadquote", productSelectionsJson);
             return obj.getString("quoteFile");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (JSONException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 

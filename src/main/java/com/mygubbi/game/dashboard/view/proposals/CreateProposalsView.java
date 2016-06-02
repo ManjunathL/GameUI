@@ -18,6 +18,7 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.event.SelectionEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
@@ -38,6 +39,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
@@ -91,6 +93,9 @@ public class CreateProposalsView extends Panel implements View {
     private Button saveButton;
     private BeanItemContainer productContainer;
     private Button deleteButton;
+    private TextField grandTotal;
+
+    private ProductSelections productSelections;
 
     public CreateProposalsView() {
     }
@@ -114,6 +119,9 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(proposalHeader);
         }
+
+        this.productSelections = new ProductSelections();
+        this.productSelections.setProposalId(this.proposalHeader.getId());
 
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(proposalHeader);
@@ -241,7 +249,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private StreamResource createResource() {
         StreamResource.StreamSource source = () -> {
-            String quoteFile = proposalDataProvider.getProposalQuoteFile(proposalHeader.getId());
+            String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productSelections);
             InputStream input = null;
             try {
                 input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
@@ -543,6 +551,8 @@ public class CreateProposalsView extends Panel implements View {
         GeneratedPropertyContainer genContainer = createGeneratedProductPropertyContainer();
 
         productsGrid = new Grid(genContainer);
+        productsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        productsGrid.addSelectionListener(this::productSelectionListener);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
         productsGrid.setColumns(Product.SEQ, "roomText", Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
@@ -597,7 +607,8 @@ public class CreateProposalsView extends Panel implements View {
                                 }
                                 productContainer.addAll(proposal.getProducts());
                                 productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
-
+                                productsGrid.getSelectionModel().reset();
+                                productSelectionListener(null);
                                 proposalDataProvider.deleteProduct(product.getId());
                                 NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                             }
@@ -609,12 +620,54 @@ public class CreateProposalsView extends Panel implements View {
         if (!proposal.getProducts().isEmpty()) {
             productContainer.addAll(proposal.getProducts());
             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
-
         }
 
         verticalLayout.addComponent(productsGrid);
 
+        Label label = new Label("Select Products and click Download Quote button to generate Quote for only the selected Products.");
+        label.setStyleName("font-italics");
+        verticalLayout.addComponent(label);
+
+        FormLayout formLayout = new FormLayout();
+        formLayout.setStyleName("grand-total-flayout");
+        this.grandTotal = new TextField("<h2>Grand Total:</h2>");
+        this.grandTotal.setStyleName("amount-text");
+        this.grandTotal.addStyleName("margin-top-18");
+        this.grandTotal.setCaptionAsHtml(true);
+        this.grandTotal.setReadOnly(true);
+        formLayout.addComponent(this.grandTotal);
+        formLayout.setSizeUndefined();
+
+        verticalLayout.addComponent(formLayout);
+
         return verticalLayout;
+    }
+
+    private void productSelectionListener(SelectionEvent selectionEvent) {
+        Collection<?> objects = productsGrid.getSelectedRows();
+        boolean anythingSelected = true;
+        this.productSelections.getProductIds().clear();
+
+        if (objects.size() == 0) {
+            anythingSelected = false;
+            objects = this.productsGrid.getContainerDataSource().getItemIds();
+        }
+
+        double grandTotal = 0;
+
+        for (Object object : objects) {
+            Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
+            grandTotal += amount;
+            Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
+
+            if (anythingSelected) {
+                this.productSelections.getProductIds().add(id);
+            }
+        }
+
+        this.grandTotal.setReadOnly(false);
+        this.grandTotal.setValue(grandTotal + "");
+        this.grandTotal.setReadOnly(true);
     }
 
     private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
@@ -691,6 +744,8 @@ public class CreateProposalsView extends Panel implements View {
         productContainer.removeAllItems();
         productContainer.addAll(products);
         productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+        productsGrid.getSelectionModel().reset();
+        productSelectionListener(null);
         productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         //updateTotalAmount();
     }
@@ -703,6 +758,8 @@ public class CreateProposalsView extends Panel implements View {
             productContainer.removeAllItems();
             productContainer.addAll(products);
             productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+            productsGrid.getSelectionModel().reset();
+            productSelectionListener(null);
             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
         //updateTotalAmount();
