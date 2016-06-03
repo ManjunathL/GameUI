@@ -483,7 +483,8 @@ public class ProposalDataProvider {
 
     //addon/categories
     public List<AddonCategory> getAddonCategories(String roomCode) {
-        JSONArray array = dataProviderMode.getResourceArray("addon/categories", new HashMap<String, String>() {
+        //todo: change mode
+        JSONArray array = new FileDataProviderMode().getResourceArray("addon/categories", new HashMap<String, String>() {
             {
                 put("roomCode", roomCode);
             }
@@ -500,7 +501,8 @@ public class ProposalDataProvider {
 
     //addon/productTypes
     public List<AddonProductType> getAddonProductTypes(String roomCode, String addonCategoryCode) {
-        JSONArray array = dataProviderMode.getResourceArray("addon/productTypes", new HashMap<String, String>() {
+        //todo: change mode
+        JSONArray array = new FileDataProviderMode().getResourceArray("addon/productTypes", new HashMap<String, String>() {
             {
                 put("roomCode", roomCode);
                 put("addonCategoryCode", addonCategoryCode);
@@ -518,7 +520,8 @@ public class ProposalDataProvider {
 
     //addon/brands
     public List<AddonBrand> getAddonBrands(String addonProductTypeCode) {
-        JSONArray array = dataProviderMode.getResourceArray("addon/brands", new HashMap<String, String>() {
+        //todo: change mode
+        JSONArray array = new FileDataProviderMode().getResourceArray("addon/brands", new HashMap<String, String>() {
             {
                 put("addonProductTypeCode", addonProductTypeCode);
             }
@@ -535,7 +538,8 @@ public class ProposalDataProvider {
 
     //addon/products
     public List<AddonProductItem> getAddonProductItems(String addonProductTypeCode, String brandCode) {
-        JSONArray array = dataProviderMode.getResourceArray("addon/products", new HashMap<String, String>() {
+        //todo: change mode
+        JSONArray array = new FileDataProviderMode().getResourceArray("addon/products", new HashMap<String, String>() {
             {
                 put("addonProductTypeCode", addonProductTypeCode);
                 put("brandCode", brandCode);
