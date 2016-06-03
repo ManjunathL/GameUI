@@ -79,7 +79,7 @@ public class ProposalDataProvider {
     public ProposalHeader getProposalHeader(int proposalId) {
         JSONObject jsonObject = dataProviderMode.getResource("proposal/header", new HashMap<String, String>() {
             {
-                put("proposalId", proposalId + "");
+                put("id", proposalId + "");
             }
         });
         try {
@@ -90,7 +90,7 @@ public class ProposalDataProvider {
     }
 
     public List<Product> getProposalProducts(int proposalId) {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/product/list", new HashMap<String, String>() {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("product/list", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId + "");
             }
@@ -107,7 +107,7 @@ public class ProposalDataProvider {
     //give modules and addons
     public Product getProposalProductDetails(int productId) {
 
-        JSONObject jsonObject = dataProviderMode.getResource("proposal/product/detail", new HashMap<String, String>() {
+        JSONObject jsonObject = dataProviderMode.getResource("product/detail", new HashMap<String, String>() {
             {
                 put("id", productId + "");
             }
@@ -122,9 +122,9 @@ public class ProposalDataProvider {
     }
 
     public List<FileAttachment> getProposalProductDocuments(int productId) {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/product/documents", new HashMap<String, String>() {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("product/documents", new HashMap<String, String>() {
             {
-                put("id", productId + "");
+                put("productId", productId + "");
             }
         });
         try {
@@ -179,25 +179,25 @@ public class ProposalDataProvider {
     }
 
     public boolean submitProposal(int proposalId) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/submit", "{\"proposalId\": " + proposalId + "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/submit", "{\"id\": " + proposalId + "}");
         return !jsonObject.has("error");
     }
 
     //submit to draft
     public boolean reviseProposal(int proposalId) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/revise", "{\"proposalId\": " + proposalId + "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/revise", "{\"id\": " + proposalId + "}");
         return !jsonObject.has("error");
     }
 
     public boolean publishProposal(int proposalId) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/publish", "{\"proposalId\": " + proposalId + "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/publish", "{\"id\": " + proposalId + "}");
         return !jsonObject.has("error");
     }
 
     public boolean deleteProposal(int proposalId) {
 
         try {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/delete", "\"proposalId\": " + proposalId);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/delete", "\"id\": " + proposalId);
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -207,7 +207,7 @@ public class ProposalDataProvider {
 
     public boolean cancelProposal(int proposalId) {
         try {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/cancel", "\"proposalId\": " + proposalId);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/cancel", "\"id\": " + proposalId);
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -226,7 +226,6 @@ public class ProposalDataProvider {
         }
     }
 
-    //proposal/product/add.doc - id, proposalId, FileAttachment
     public boolean addProductDoc(int productId, int proposalId, FileAttachment fileAttachment) {
         try {
             fileAttachment.setUploadedBy(getUserId());
@@ -234,18 +233,17 @@ public class ProposalDataProvider {
             fileAttachment.setProposalId(proposalId);
             String faJson = this.mapper.writeValueAsString(fileAttachment);
             JSONObject jsonObject = dataProviderMode.postResource(
-                    "proposal/product/add.doc", faJson);
+                    "product/add.doc", faJson);
             return !jsonObject.has("error");
         } catch (IOException e) {
             throw new RuntimeException("Couldn't add product doc", e);
         }
     }
 
-    //proposal/product/remove.doc - id (file attachment id)
     public boolean removeProductDoc(int fileAttachmentId) {
         String faJson = "{\"id\": " + fileAttachmentId + "}";
         JSONObject jsonObject = dataProviderMode.postResource(
-                "proposal/product/remove.doc", faJson);
+                "product/remove.doc", faJson);
         return !jsonObject.has("error");
     }
 
@@ -275,6 +273,10 @@ public class ProposalDataProvider {
 
     public List<LookupItem> getLookupItems(String type) {
 
+        if (type.equals(FINISH_LOOKUP)) {
+            return getFinishes();
+        }
+
         List<LookupItem> cachedItems = ServerManager.getInstance().getLookupItems(type);
 
         if (cachedItems != null) {
@@ -292,6 +294,27 @@ public class ProposalDataProvider {
             List<LookupItem> lookupItems = new ArrayList<>(Arrays.asList(items));
 
             ServerManager.getInstance().addLookupItems(type, lookupItems);
+
+            return lookupItems;
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<LookupItem> getFinishes() {
+
+        List<LookupItem> cachedItems = ServerManager.getInstance().getLookupItems(FINISH_LOOKUP);
+        if (cachedItems != null) {
+            return cachedItems;
+        }
+        JSONArray array = dataProviderMode.getResourceArray("finishlookup", new HashMap<>());
+        try {
+            LookupItem[] items = this.mapper.readValue(array.toString(), LookupItem[].class);
+            List<LookupItem> lookupItems = new ArrayList<>(Arrays.asList(items));
+
+            ServerManager.getInstance().addLookupItems(FINISH_LOOKUP, lookupItems);
 
             return lookupItems;
         } catch (Exception e) {
@@ -442,7 +465,7 @@ public class ProposalDataProvider {
 
     public boolean deleteProduct(int productId) {
 
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/product/delete", "{\"id\": "
+        JSONObject jsonObject = dataProviderMode.postResource("product/delete", "{\"id\": "
                 + productId + "}");
         boolean isError = jsonObject.has("error");
 
