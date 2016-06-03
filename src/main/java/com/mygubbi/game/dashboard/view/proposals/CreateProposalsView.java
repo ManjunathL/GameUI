@@ -647,6 +647,7 @@ public class CreateProposalsView extends Panel implements View {
         button.addClickListener(
                 clickEvent -> {
                     Product newProduct = new Product();
+                    newProduct.setType(Product.TYPES.CUSTOMIZED.name());
                     newProduct.setSeq(this.proposal.getProducts().size() + 1);
                     newProduct.setProposalId(this.proposalHeader.getId());
                     CustomizedProductDetailsWindow.open(CreateProposalsView.this.proposal, newProduct);
