@@ -233,9 +233,38 @@ public class CustomizedProductDetailsWindow extends Window {
 
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
+        Component component = ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
+
         for (Module module : modules) {
+
+            if (component == makeType) {
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.MAKE_TYPE).getValue();
+                if (text.equals(Module.DEFAULT)) {
+                    moduleContainer.getItem(module).getItemProperty(Module.MAKE_TYPE_CODE).setValue(makeType.getValue());
+                }
+            } else if (component == baseCarcassSelection && module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name())) {
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).getValue();
+                if (text.equals(Module.DEFAULT)) {
+                    moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL_CODE).setValue(baseCarcassSelection.getValue());
+                }
+            } else if (component == wallCarcassSelection && module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())) {
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).getValue();
+                if (text.equals(Module.DEFAULT)) {
+                    moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL_CODE).setValue(wallCarcassSelection.getValue());
+                }
+            } else if (component == finishTypeSelection) {
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).getValue();
+                if (text.equals(Module.DEFAULT)) {
+                    moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE_CODE).setValue(finishTypeSelection.getValue());
+                }
+            } else if (component == shutterFinishSelection) {
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH).getValue();
+                if (text.equals(Module.DEFAULT)) {
+                    moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH_CODE).setValue(shutterFinishSelection.getValue());
+                }
+            }
+
             if (StringUtils.isNotEmpty(module.getMgCode())) {
-                Component component = ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
                 String unitType = module.getUnitType();
 
                 if ((unitType.toLowerCase().contains(Module.UnitTypes.base.name()) && component != wallCarcassSelection)
@@ -248,7 +277,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     LOG.info("got new amount - " + amount);
                     //total += amount;
                     boundModules.get(boundModules.indexOf(module)).setAmount(amount);
-                    moduleContainer.getItem(module).getItemProperty("amount").setValue(amount);
+                    moduleContainer.getItem(module).getItemProperty(Module.AMOUNT).setValue(amount);
                 } else {
                     //total += module.getAmount();
                 }
