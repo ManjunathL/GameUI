@@ -207,7 +207,7 @@ public class ProposalDataProvider {
 
     public boolean cancelProposal(int proposalId) {
         try {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/cancel", "\"id\": " + proposalId);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/cancel", "{\"id\": " + proposalId + "}");
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException e) {
             e.printStackTrace();
