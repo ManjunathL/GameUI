@@ -678,8 +678,10 @@ public class CustomizedProductDetailsWindow extends Window {
                             proposalDataProvider.deleteProduct(product.getId());
                             DashboardEventBus.post(new ProposalEvent.ProductDeletedEvent(product));
                         } else if (product.getId() != 0) {
+                            binder.discard();
                             this.product.setModules(this.modulesCopy);
                             this.product.setAddons(this.addonsCopy);
+                            this.proposalDataProvider.updateProduct(this.product);
                         }
                         closeWindow();
                     }
