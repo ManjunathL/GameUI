@@ -241,8 +241,11 @@ public class CustomizedProductDetailsWindow extends Window {
                 if ((unitType.toLowerCase().contains(Module.UnitTypes.base.name()) && component != wallCarcassSelection)
                         || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)) {
 
+                    LOG.info("asking price for module - " + module.toString());
+                    LOG.info("existing amount - " + module.getAmount());
                     ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
                     double amount = modulePrice.getTotalCost();
+                    LOG.info("got new amount - " + amount);
                     //total += amount;
                     boundModules.get(boundModules.indexOf(module)).setAmount(amount);
                     moduleContainer.getItem(module).getItemProperty("amount").setValue(amount);
