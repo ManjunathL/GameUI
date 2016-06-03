@@ -238,8 +238,8 @@ public class CustomizedProductDetailsWindow extends Window {
                 Component component = ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
                 String unitType = module.getUnitType();
 
-                if ((unitType.equals(Module.UnitTypes.Base.name()) && component != wallCarcassSelection)
-                        || (unitType.equals(Module.UnitTypes.Wall.name()) && component != baseCarcassSelection)) {
+                if ((unitType.toLowerCase().contains(Module.UnitTypes.base.name()) && component != wallCarcassSelection)
+                        || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)) {
 
                     ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
                     double amount = modulePrice.getTotalCost();

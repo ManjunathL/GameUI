@@ -304,8 +304,10 @@ public class ModuleDetailsWindow extends Window {
         moduleForPrice.setFinishCode(removeDefaultPrefix((String) shutterFinishSelection.getValue()));
         moduleForPrice.setMakeTypeCode(removeDefaultPrefix((String) makeType.getValue()));
 
-
+        LOG.info("Asking for module price - " + moduleForPrice.toString());
         ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
+        LOG.info("Got price - " + modulePrice.getTotalCost());
+
         totalAmount.setReadOnly(false);
         totalAmount.setValue(modulePrice.getTotalCost() + "");
         totalAmount.setReadOnly(true);
@@ -532,7 +534,7 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private String getCarcassCodeBasedOnType() {
-        return module.getUnitType().equals(Module.UnitTypes.Wall.name()) ? product.getWallCarcassCode() : product.getBaseCarcassCode();
+        return module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name()) ? product.getWallCarcassCode() : product.getBaseCarcassCode();
     }
 
     private String removeDefault(String title) {

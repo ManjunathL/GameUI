@@ -1,9 +1,5 @@
 package com.mygubbi.game.dashboard.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by nitinpuri on 01-05-2016.
  */
@@ -18,7 +14,7 @@ public class Module implements Cloneable {
 
     public enum ImportStatusType {m, d, n}
 
-    public enum UnitTypes {Base, Wall}
+    public enum UnitTypes {base, wall}
 
     public static final String SEQ = "seq";
     public static final String UNIT_TYPE = "unitType";
@@ -83,7 +79,7 @@ public class Module implements Cloneable {
 
     public void setCarcassCodeBasedOnUnitType(Product product) {
         this.setCarcassCode(
-                this.getUnitType().equals(Module.UnitTypes.Wall.name())
+                this.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
                         ? product.getWallCarcassCode()
                         : product.getBaseCarcassCode());
     }
@@ -270,5 +266,10 @@ public class Module implements Cloneable {
 
     public void setFixedCarcassCode(String fixedCarcassCode) {
         this.fixedCarcassCode = fixedCarcassCode;
+    }
+
+    @Override
+    public String toString() {
+        return "mgCode - " + this.getMgCode() + ", carcassCode - " + this.getCarcassCode() + ", finishCode - " + this.getFinishCode() + ", makeTypeCode - " + this.getMakeTypeCode();
     }
 }

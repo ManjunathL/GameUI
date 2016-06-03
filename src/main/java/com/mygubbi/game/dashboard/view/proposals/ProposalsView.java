@@ -62,7 +62,7 @@ public final class ProposalsView extends TabSheet implements View {
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
         grid.setColumns(ProposalHeader.CRM_ID, ProposalHeader.QUOTE_NO, ProposalHeader.TITLE, ProposalHeader.STATUS,
-                ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.AMOUNT, ProposalHeader.CREATED_ON,
+                ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.CREATED_ON,
                 ProposalHeader.CREATED_BY);
 
         List<Grid.Column> columns = grid.getColumns();
@@ -73,13 +73,11 @@ public final class ProposalsView extends TabSheet implements View {
         columns.get(idx++).setHeaderCaption("Status");
         columns.get(idx++).setHeaderCaption("Sales");
         columns.get(idx++).setHeaderCaption("Designer");
-        columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Create Date");
         columns.get(idx++).setHeaderCaption("Created By");
 
         GridCellFilter filter = new GridCellFilter(grid);
 
-        filter.setNumberFilter(ProposalHeader.AMOUNT);
         filter.setTextFilter(ProposalHeader.TITLE, true, false);
         filter.setTextFilter(ProposalHeader.CRM_ID, true, true);
         filter.setTextFilter(ProposalHeader.QUOTE_NO, true, true);
