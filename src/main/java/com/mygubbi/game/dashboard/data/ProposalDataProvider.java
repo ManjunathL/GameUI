@@ -197,7 +197,7 @@ public class ProposalDataProvider {
     public boolean deleteProposal(int proposalId) {
 
         try {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/delete", "\"id\": " + proposalId);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/delete", "{\"id\": " + proposalId + "}");
             return jsonObject.has("status") && jsonObject.getString("status").equals("success");
         } catch (JSONException e) {
             e.printStackTrace();
