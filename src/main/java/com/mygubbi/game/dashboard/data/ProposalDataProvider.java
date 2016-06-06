@@ -36,6 +36,8 @@ public class ProposalDataProvider {
     public static final String CARCASS_LOOKUP = "carcassmaterial";
     public static final String FINISH_TYPE_LOOKUP = "finishtype";
     public static final String FINISH_LOOKUP = "finish";
+    private static final String ROLE_DESIGNER = "designer";
+    private static final String ROLE_SALES = "sales";
 
     public ProposalDataProvider(DataProviderMode dataProviderMode) {
         this.dataProviderMode = dataProviderMode;
@@ -269,7 +271,29 @@ public class ProposalDataProvider {
         }
     }
 
-    //user/listbyrole - role [DESIGNER, SALESPERSON]
+    private List<User> getUsersByRole(String role) {
+        JSONArray array = dataProviderMode.getResourceArray("user/listbyrole", new HashMap<String, String>() {
+            {
+                put("role", role);
+            }
+        });
+        try {
+            User[] items = this.mapper.readValue(array.toString(), User[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+
+    }
+    
+    public List<User> geSalesUsers() {
+        return getUsersByRole(ROLE_SALES);
+    }
+
+    public List<User> geDesignerUsers() {
+        return getUsersByRole(ROLE_DESIGNER);
+    }
 
     public List<LookupItem> getLookupItems(String type) {
 
