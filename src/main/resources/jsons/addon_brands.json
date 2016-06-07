@@ -1,14 +1,11 @@
 [
   {
-    "code": "Faber",
-    "title": "Faber"
+    "brandCode": "Faber"
   },
   {
-    "code": "Franke",
-    "title": "Franke"
+    "brandCode": "Franke"
   },
   {
-    "code": "Nirali",
-    "title": "Nirali"
+    "brandCode": "Nirali"
   }
 ]

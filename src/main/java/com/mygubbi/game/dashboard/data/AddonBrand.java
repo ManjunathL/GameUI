@@ -5,22 +5,15 @@ package com.mygubbi.game.dashboard.data;
  */
 public class AddonBrand {
 
-    private String code;
-    private String title;
+    public static final String BRAND_CODE = "brandCode";
+    private String brandCode;
 
-    public String getCode() {
-        return code;
+    public String getBrandCode() {
+        return brandCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setBrandCode(String brandCode) {
+        this.brandCode = brandCode;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 }

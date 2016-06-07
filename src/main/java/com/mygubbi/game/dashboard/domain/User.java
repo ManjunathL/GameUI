@@ -1,10 +1,19 @@
 package com.mygubbi.game.dashboard.domain;
 
 public final class User {
+
+    public static final String NAME = "name";
+    public static final String ROLE = "role";
+    public static final String EMAIL = "email";
+    public static final String PHONE = "phone";
+
     private String name;
     private String role;
     private String email;
     private String phone;
+
+    public User() {
+    }
 
     public User(String email, String role, String phone, String name) {
         this.email = email;

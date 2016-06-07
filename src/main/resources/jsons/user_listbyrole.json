@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Harry S",
+    "email": "harry@mygubbi.com",
+    "role": "Designer",
+    "phone": "9999988888"
+  },
+  {
+    "name": "Steve G",
+    "email": "steve@mygubbi.com",
+    "role": "Sales",
+    "phone": "9999977777"
+  }
+]

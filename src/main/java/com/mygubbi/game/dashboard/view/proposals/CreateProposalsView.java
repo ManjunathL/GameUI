@@ -12,16 +12,15 @@ import com.mygubbi.game.dashboard.view.DashboardViewType;
 import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.data.util.*;
 import com.vaadin.event.SelectionEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -76,10 +75,10 @@ public class CreateProposalsView extends Panel implements View {
     private Field<?> projectAddressLine2;
     private Field<?> projectCityField;
 
-    private Field<?> salesPerson;
+    private ComboBox salesPerson;
     private Field<?> salesEmail;
     private Field<?> salesContact;
-    private Field<?> designPerson;
+    private ComboBox designPerson;
     private Field<?> designEmail;
     private Field<?> designContact;
 
@@ -145,6 +144,7 @@ public class CreateProposalsView extends Panel implements View {
         vLayout.addComponent(tabs);
         setContent(vLayout);
         Responsive.makeResponsive(tabs);
+        updateTotal(null);
 
     }
 
@@ -188,15 +188,31 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.addComponent(spacingLabel);
         horizontalLayout1.setExpandRatio(spacingLabel, 1.0f);
 
-        Button downloadButton = new Button("Download Quote");
+        Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        downloadButton.setCaptionAsHtml(true);
+        downloadButton.setIcon(FontAwesome.DOWNLOAD);
+        downloadButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
         downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
 
-        StreamResource myResource = createResource();
+        StreamResource myResource = createQuoteResource();
         FileDownloader fileDownloader = new FileDownloader(myResource);
         fileDownloader.extend(downloadButton);
         horizontalLayout1.addComponent(downloadButton);
         horizontalLayout1.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
+
+        Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        jobcardButton.setCaptionAsHtml(true);
+        jobcardButton.setIcon(FontAwesome.DOWNLOAD);
+        jobcardButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        jobcardButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
+
+        StreamResource jobcardResource = createJobcardResource();
+        FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
+        jobcardDownloader.extend(jobcardButton);
+        horizontalLayout1.addComponent(jobcardButton);
+        horizontalLayout1.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);
 
         submitButton = new Button("Submit");
         submitButton.setVisible("draft".equals(proposalHeader.getStatus()));
@@ -354,7 +370,7 @@ public class CreateProposalsView extends Panel implements View {
 
     }
 
-    private StreamResource createResource() {
+    private StreamResource createQuoteResource() {
         StreamResource.StreamSource source = () -> {
             String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productSelections);
             InputStream input = null;
@@ -366,6 +382,20 @@ public class CreateProposalsView extends Panel implements View {
             return input;
         };
         return new StreamResource(source, "Quotation.xlsx");
+    }
+
+    private StreamResource createJobcardResource() {
+        StreamResource.StreamSource source = () -> {
+            String jobcardFile = proposalDataProvider.getJobCardFile(this.productSelections);
+            InputStream input = null;
+            try {
+                input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return input;
+        };
+        return new StreamResource(source, "JobCard.xlsx");
     }
 
     private void close(Button.ClickEvent clickEvent) {
@@ -538,15 +568,18 @@ public class CreateProposalsView extends Panel implements View {
         mygubbiDetails.addStyleName(ValoTheme.LABEL_COLORED);
         formLayoutRight.addComponent(mygubbiDetails);
 
-        designPerson = binder.buildAndBind("Design Person", DESIGNER_NAME);
+        designPerson = getDesignPersonCombo();
+        binder.bind(designPerson, DESIGNER_NAME);
         designPerson.setRequired(true);
-        ((TextField) designPerson).setNullRepresentation("");
         formLayoutRight.addComponent(designPerson);
         designEmail = binder.buildAndBind("Email", DESIGNER_EMAIL);
         ((TextField) designEmail).setNullRepresentation("");
+        designEmail.setReadOnly(true);
         formLayoutRight.addComponent(designEmail);
         designContact = binder.buildAndBind("Phone", DESIGNER_PHONE);
         ((TextField) designContact).setNullRepresentation("");
+        designContact.setReadOnly(true);
+        designPerson.addValueChangeListener(this::designerChanged);
         formLayoutRight.addComponent(designContact);
         return formLayoutRight;
     }
@@ -561,17 +594,90 @@ public class CreateProposalsView extends Panel implements View {
         mygubbiDetails.addStyleName(ValoTheme.LABEL_COLORED);
         formLayoutLeft.addComponent(mygubbiDetails);
 
-        salesPerson = binder.buildAndBind("Sales Person", SALES_NAME);
-        ((TextField) salesPerson).setNullRepresentation("");
+        salesPerson = getSalesPersonCombo();
+        binder.bind(salesPerson, SALES_NAME);
         salesPerson.setRequired(true);
         formLayoutLeft.addComponent(salesPerson);
         salesEmail = binder.buildAndBind("Email", SALES_EMAIL);
         ((TextField) salesEmail).setNullRepresentation("");
+        salesEmail.setReadOnly(true);
         formLayoutLeft.addComponent(salesEmail);
         salesContact = binder.buildAndBind("Phone", SALES_PHONE);
         ((TextField) salesContact).setNullRepresentation("");
+        salesContact.setReadOnly(true);
         formLayoutLeft.addComponent(salesContact);
+        salesPerson.addValueChangeListener(this::salesPersonChanged);
         return formLayoutLeft;
+    }
+
+    private void designerChanged(Property.ValueChangeEvent valueChangeEvent) {
+        String phone = (String) designPerson.getItem(designPerson.getValue()).getItemProperty(User.PHONE).getValue();
+        designContact.setReadOnly(false);
+        ((TextField) designContact).setValue(phone);
+        designContact.setReadOnly(true);
+        String email = (String) designPerson.getItem(designPerson.getValue()).getItemProperty(User.EMAIL).getValue();
+        designEmail.setReadOnly(false);
+        ((TextField) designEmail).setValue(email);
+        designEmail.setReadOnly(true);
+    }
+
+    private void salesPersonChanged(Property.ValueChangeEvent valueChangeEvent) {
+        String phone = (String) salesPerson.getItem(salesPerson.getValue()).getItemProperty(User.PHONE).getValue();
+        salesContact.setReadOnly(false);
+        ((TextField) salesContact).setValue(phone);
+        salesContact.setReadOnly(true);
+        String email = (String) salesPerson.getItem(salesPerson.getValue()).getItemProperty(User.EMAIL).getValue();
+        salesEmail.setReadOnly(false);
+        ((TextField) salesEmail).setValue(email);
+        salesEmail.setReadOnly(true);
+    }
+
+    private ComboBox getSalesPersonCombo() {
+        List<User> list = proposalDataProvider.getSalesUsers();
+        final BeanContainer<String, User> container =
+                new BeanContainer<>(User.class);
+        container.setBeanIdProperty(User.NAME);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox("Sales");
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(User.NAME);
+
+        if (StringUtils.isNotEmpty(proposalHeader.getSalesName())) {
+            select.setValue(proposalHeader.getSalesName());
+        } else if (container.size() > 0) {
+            select.setValue(select.getItemIds().iterator().next());
+            proposalHeader.setSalesName((String) select.getValue());
+            proposalHeader.setSalesPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
+            proposalHeader.setSalesEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
+        }
+
+        return select;
+    }
+
+    private ComboBox getDesignPersonCombo() {
+        List<User> list = proposalDataProvider.getDesignerUsers();
+        final BeanContainer<String, User> container =
+                new BeanContainer<>(User.class);
+        container.setBeanIdProperty(User.NAME);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox("Designer");
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(User.NAME);
+
+        if (StringUtils.isNotEmpty(proposalHeader.getDesignerName())) {
+            select.setValue(proposalHeader.getDesignerName());
+        } else if (container.size() > 0) {
+            select.setValue(select.getItemIds().iterator().next());
+            proposalHeader.setDesignerName((String) select.getValue());
+            proposalHeader.setDesignerPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
+            proposalHeader.setDesignerEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
+        }
+
+        return select;
     }
 
     private FormLayout buildMainFormLayoutRight() {
@@ -663,7 +769,7 @@ public class CreateProposalsView extends Panel implements View {
 
         productsGrid = new Grid(genContainer);
         productsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-        productsGrid.addSelectionListener(this::productSelectionListener);
+        productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
         productsGrid.setColumns(Product.SEQ, "roomText", Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
@@ -719,7 +825,7 @@ public class CreateProposalsView extends Panel implements View {
                                 productContainer.addAll(proposal.getProducts());
                                 productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
                                 productsGrid.getSelectionModel().reset();
-                                productSelectionListener(null);
+                                updateTotal(null);
                                 proposalDataProvider.deleteProduct(product.getId());
                                 NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                             }
@@ -735,7 +841,7 @@ public class CreateProposalsView extends Panel implements View {
 
         verticalLayout.addComponent(productsGrid);
 
-        Label label = new Label("Select Products and click Download Quote button to generate Quote for only the selected Products.");
+        Label label = new Label("Select Products and click Download Quote/Job Card button to generate output for only the selected Products.");
         label.setStyleName("font-italics");
         verticalLayout.addComponent(label);
 
@@ -754,7 +860,7 @@ public class CreateProposalsView extends Panel implements View {
         return verticalLayout;
     }
 
-    private void productSelectionListener(SelectionEvent selectionEvent) {
+    private void updateTotal(SelectionEvent selectionEvent) {
         Collection<?> objects = productsGrid.getSelectedRows();
         boolean anythingSelected = true;
         this.productSelections.getProductIds().clear();
@@ -856,7 +962,7 @@ public class CreateProposalsView extends Panel implements View {
         productContainer.addAll(products);
         productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
         productsGrid.getSelectionModel().reset();
-        productSelectionListener(null);
+        updateTotal(null);
         productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         //updateTotalAmount();
     }
@@ -870,7 +976,7 @@ public class CreateProposalsView extends Panel implements View {
             productContainer.addAll(products);
             productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
             productsGrid.getSelectionModel().reset();
-            productSelectionListener(null);
+            updateTotal(null);
             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
         //updateTotalAmount();

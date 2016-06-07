@@ -5,22 +5,14 @@ package com.mygubbi.game.dashboard.domain;
  */
 public class AddonProductType {
 
-    private String code;
-    private String title;
+    private String productTypeCode;
 
-    public String getCode() {
-        return code;
+    public String getProductTypeCode() {
+        return productTypeCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setProductTypeCode(String productTypeCode) {
+        this.productTypeCode = productTypeCode;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 }

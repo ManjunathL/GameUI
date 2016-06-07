@@ -632,7 +632,7 @@ public class CustomizedProductDetailsWindow extends Window {
         addonsGrid.setHeight("325px");
         addonsGrid.setColumnReorderingAllowed(true);
         addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY, AddonProduct.PRODUCT_TYPE, AddonProduct.BRAND,
-                AddonProduct.CATALOGUE_CODE, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
+                AddonProduct.TITLE, AddonProduct.CATALOGUE_CODE, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
@@ -640,7 +640,8 @@ public class CustomizedProductDetailsWindow extends Window {
         columns.get(idx++).setHeaderCaption("Category");
         columns.get(idx++).setHeaderCaption("Product Type");
         columns.get(idx++).setHeaderCaption("Brand");
-        columns.get(idx++).setHeaderCaption("Code");
+        columns.get(idx++).setHeaderCaption("Product Name");
+        columns.get(idx++).setHeaderCaption("Product Code");
         columns.get(idx++).setHeaderCaption("UOM");
         columns.get(idx++).setHeaderCaption("Rate");
         columns.get(idx++).setHeaderCaption("Qty");

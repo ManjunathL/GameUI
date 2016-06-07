@@ -1,26 +1,20 @@
 [
   {
-    "code": "Chimney",
-    "title": "Chimney"
+    "productTypeCode": "Chimney"
   },
   {
-    "code": "Hob",
-    "title": "Hob"
+    "productTypeCode": "Hob"
   },
   {
-    "code": "Sink",
-    "title": "Sink"
+    "productTypeCode": "Sink"
   },
   {
-    "code": "Tap",
-    "title": "Tap"
+    "productTypeCode": "Tap"
   },
   {
-    "code": "Microwave",
-    "title": "Microwave"
+    "productTypeCode": "Microwave"
   },
   {
-    "code": "Dishwasher",
-    "title": "Dishwasher"
+    "productTypeCode": "Dishwasher"
   }
 ]

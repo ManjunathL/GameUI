@@ -3,7 +3,9 @@ package com.mygubbi.game.dashboard.domain;
 /**
  * Created by nitinpuri on 02-06-2016.
  */
-public class    AddonProductItem {
+public class  AddonProductItem {
+    public static final String CATALOGUE_CODE = "catalogueCode";
+    public static final String TITLE = "title";
     private String catalogueCode;
     private String title;
     private String code;

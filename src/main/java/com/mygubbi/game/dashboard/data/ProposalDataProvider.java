@@ -287,11 +287,11 @@ public class ProposalDataProvider {
 
     }
 
-    public List<User> geSalesUsers() {
+    public List<User> getSalesUsers() {
         return getUsersByRole(ROLE_SALES);
     }
 
-    public List<User> geDesignerUsers() {
+    public List<User> getDesignerUsers() {
         return getUsersByRole(ROLE_DESIGNER);
     }
 
@@ -370,6 +370,17 @@ public class ProposalDataProvider {
             String productSelectionsJson = this.mapper.writeValueAsString(productSelections);
             JSONObject obj = dataProviderMode.postResource("proposal/downloadquote", productSelectionsJson);
             return obj.getString("quoteFile");
+        } catch (JSONException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public String getJobCardFile(ProductSelections productSelections) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productSelections);
+            JSONObject obj = dataProviderMode.postResource("proposal/downloadjobcard", productSelectionsJson);
+            return obj.getString("jobcardFile");
         } catch (JSONException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }

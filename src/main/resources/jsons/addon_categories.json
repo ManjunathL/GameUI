@@ -1,22 +1,17 @@
 [
   {
-    "code": "Appliances",
-    "title": "Appliances"
+    "categoryCode": "Appliances"
   },
   {
-    "code": "Accessories",
-    "title": "Accessories"
+    "categoryCode": "Accessories"
   },
   {
-    "code": "Countertop",
-    "title": "Countertop"
+    "categoryCode": "Countertop"
   },
   {
-    "code": "Services",
-    "title": "Services"
+    "categoryCode": "Services"
   },
   {
-    "code": "Loose Furniture",
-    "title": "Loose Furniture"
+    "categoryCode": "Loose Furniture"
   }
 ]

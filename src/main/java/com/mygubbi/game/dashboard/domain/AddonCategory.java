@@ -5,22 +5,14 @@ package com.mygubbi.game.dashboard.domain;
  */
 public class AddonCategory {
 
-    private String code;
-    private String title;
+    public static final String CATGEORY_CODE = "categoryCode";
+    private String categoryCode;
 
-    public String getCode() {
-        return code;
+    public String getCategoryCode() {
+        return categoryCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
     }
 }
