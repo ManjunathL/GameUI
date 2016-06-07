@@ -1,6 +1,7 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
 import com.mygubbi.game.dashboard.ServerManager;
+import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.AddonBrand;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
@@ -13,12 +14,15 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -39,6 +43,10 @@ public class AddonDetailsWindow extends Window {
     private TextField quantity;
     private TextField amount;
     private Button applyButton;
+    private Image addonImage;
+    private String imageBasePath = ConfigHolder.getInstance().getStringValue("imageBasePath", "");
+    private String originalImagePath;
+
     private BeanContainer<String, AddonProductType> productTypeBeanContainer;
     private BeanContainer<String, AddonProductItem> catalogueCodeBeanContainer;
     private BeanContainer<String, AddonBrand> brandBeanContainer;
@@ -47,6 +55,7 @@ public class AddonDetailsWindow extends Window {
     public AddonDetailsWindow(AddonProduct addonProduct, Product product) {
         this.addonProduct = addonProduct;
         this.product = product;
+        this.originalImagePath = this.addonProduct.getImagePath();
         this.binder.setItemDataSource(this.addonProduct);
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
@@ -139,6 +148,18 @@ public class AddonDetailsWindow extends Window {
         binder.bind(this.amount, AddonProduct.AMOUNT);
         this.amount.setReadOnly(true);
         formLayoutRight.addComponent(this.amount);
+
+        if (StringUtils.isEmpty(addonProduct.getImagePath())) {
+            addonImage = new Image("", new ThemeResource("img/empty-poster.png"));
+        } else {
+            addonImage = new Image("", new FileResource(new File(imageBasePath + addonProduct.getImagePath())));
+        }
+        addonImage.setCaption(null);
+        addonImage.setHeight("180px");
+        addonImage.setWidth("180px");
+        horizontalLayout.addComponent(addonImage);
+        horizontalLayout.setComponentAlignment(addonImage, Alignment.MIDDLE_CENTER);
+
         return verticalLayout;
     }
 
@@ -189,11 +210,13 @@ public class AddonDetailsWindow extends Window {
         this.uom.setValue(addonProductItem.getUom());
         this.uom.setReadOnly(true);
 
+        this.addonProduct.setImagePath(addonProductItem.getImagePath());
+        this.addonImage.setSource(new FileResource(new File(imageBasePath + addonProductItem.getImagePath())));
+
         this.rate.setValue(addonProductItem.getRate() + "");
         if (StringUtils.isEmpty(this.quantity.getValue()) || Double.parseDouble(this.quantity.getValue().replaceAll(",", "")) <= 0) {
             this.quantity.setValue("1");
         }
-        //todo: image
         checkApply();
     }
 
@@ -236,7 +259,6 @@ public class AddonDetailsWindow extends Window {
 
         ComboBox select = new ComboBox("Product Type");
         select.setNullSelectionAllowed(false);
-        select.setWidth("250px");
         select.setContainerDataSource(productTypeBeanContainer);
         select.setItemCaptionPropertyId("title");
         if (StringUtils.isNotEmpty(addonProduct.getProductTypeCode())) {
@@ -256,7 +278,6 @@ public class AddonDetailsWindow extends Window {
 
         ComboBox select = new ComboBox("Catalogue Code");
         select.setNullSelectionAllowed(false);
-        select.setWidth("250px");
         select.setContainerDataSource(catalogueCodeBeanContainer);
         select.setItemCaptionPropertyId("title");
         if (StringUtils.isNotEmpty(addonProduct.getCatalogueCode())) {
@@ -276,7 +297,6 @@ public class AddonDetailsWindow extends Window {
 
         ComboBox select = new ComboBox("Brand");
         select.setNullSelectionAllowed(false);
-        select.setWidth("250px");
         select.setContainerDataSource(brandBeanContainer);
         select.setItemCaptionPropertyId("title");
         if (StringUtils.isNotEmpty(addonProduct.getBrandCode())) {
@@ -296,7 +316,6 @@ public class AddonDetailsWindow extends Window {
 
         ComboBox select = new ComboBox("Category");
         select.setNullSelectionAllowed(false);
-        select.setWidth("250px");
         select.setContainerDataSource(categoryBeanContainer);
         select.setItemCaptionPropertyId("title");
         if (StringUtils.isNotEmpty(addonProduct.getAddonCategoryCode())) {
@@ -316,6 +335,7 @@ public class AddonDetailsWindow extends Window {
         Button cancelBtn = new Button("Cancel");
         cancelBtn.addClickListener((Button.ClickListener) clickEvent -> {
             binder.discard();
+            this.addonProduct.setImagePath(this.originalImagePath);
             close();
         });
         cancelBtn.focus();
