@@ -5,6 +5,7 @@ package com.mygubbi.game.dashboard.domain;
  */
 public class AddonProductType {
 
+    public static final String PRODUCT_TYPE_CODE = "productTypeCode";
     private String productTypeCode;
 
     public String getProductTypeCode() {

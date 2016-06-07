@@ -38,6 +38,7 @@ public class AddonDetailsWindow extends Window {
     private ComboBox productType;
     private ComboBox brand;
     private ComboBox catalogueCode;
+    private TextField title;
     private TextField uom;
     private TextField rate;
     private TextField quantity;
@@ -45,8 +46,8 @@ public class AddonDetailsWindow extends Window {
     private Button applyButton;
     private Image addonImage;
     private String imageBasePath = ConfigHolder.getInstance().getStringValue("imageBasePath", "");
-    private String originalImagePath;
 
+    private String originalImagePath;
     private BeanContainer<String, AddonProductType> productTypeBeanContainer;
     private BeanContainer<String, AddonProductItem> catalogueCodeBeanContainer;
     private BeanContainer<String, AddonBrand> brandBeanContainer;
@@ -118,6 +119,12 @@ public class AddonDetailsWindow extends Window {
         this.catalogueCode.addValueChangeListener(this::catalogueCodeChanged);
         formLayoutLeft.addComponent(this.catalogueCode);
 
+        this.title = new TextField("Title");
+        this.title.setRequired(true);
+        this.title.setNullRepresentation("");
+        binder.bind(this.title, AddonProductItem.TITLE);
+        formLayoutLeft.addComponent(this.title);
+
         FormLayout formLayoutRight = new FormLayout();
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
@@ -132,6 +139,9 @@ public class AddonDetailsWindow extends Window {
         this.rate = new TextField("Rate");
         this.rate.setRequired(true);
         binder.bind(this.rate, AddonProduct.RATE);
+        if (category.getValue() == null || (Boolean) category.getItem(category.getValue()).getItemProperty(AddonCategory.RATE_READ_ONLY).getValue()) {
+            this.rate.setReadOnly(true);
+        }
         this.rate.addValueChangeListener(this::rateChanged);
         formLayoutRight.addComponent(this.rate);
 
@@ -199,6 +209,19 @@ public class AddonDetailsWindow extends Window {
         } else {
             this.productType.setValue(this.productType.getItemIds().iterator().next());
         }
+
+        if ((Boolean) category.getItem(category.getValue()).getItemProperty(AddonCategory.RATE_READ_ONLY).getValue()) {
+
+            if (catalogueCode.getValue() != null) {
+                Double rate = (Double) catalogueCode.getItem(catalogueCode.getValue()).getItemProperty(AddonProductItem.RATE).getValue();
+                this.rate.setReadOnly(false);
+                this.rate.setValue(rate + "");
+                this.rate.setReadOnly(true);
+            }
+        } else {
+            this.rate.setReadOnly(false);
+        }
+
         checkApply();
     }
 
@@ -210,10 +233,16 @@ public class AddonDetailsWindow extends Window {
         this.uom.setValue(addonProductItem.getUom());
         this.uom.setReadOnly(true);
 
+        this.title.setValue(addonProductItem.getTitle());
+
         this.addonProduct.setImagePath(addonProductItem.getImagePath());
         this.addonImage.setSource(new FileResource(new File(imageBasePath + addonProductItem.getImagePath())));
 
+        boolean wasReadOnly = this.rate.isReadOnly();
+        this.rate.setReadOnly(false);
         this.rate.setValue(addonProductItem.getRate() + "");
+        this.rate.setReadOnly(wasReadOnly);
+
         if (StringUtils.isEmpty(this.quantity.getValue()) || Double.parseDouble(this.quantity.getValue().replaceAll(",", "")) <= 0) {
             this.quantity.setValue("1");
         }
@@ -254,13 +283,13 @@ public class AddonDetailsWindow extends Window {
         List<AddonProductType> list = proposalDataProvider.getAddonProductTypes(this.product.getRoomCode(), (String) this.category.getValue());
 
         productTypeBeanContainer = new BeanContainer<>(AddonProductType.class);
-        productTypeBeanContainer.setBeanIdProperty("code");
+        productTypeBeanContainer.setBeanIdProperty(AddonProductType.PRODUCT_TYPE_CODE);
         productTypeBeanContainer.addAll(list);
 
         ComboBox select = new ComboBox("Product Type");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(productTypeBeanContainer);
-        select.setItemCaptionPropertyId("title");
+        select.setItemCaptionPropertyId(AddonProductType.PRODUCT_TYPE_CODE);
         if (StringUtils.isNotEmpty(addonProduct.getProductTypeCode())) {
             select.setValue(addonProduct.getProductTypeCode());
         } else {
@@ -346,23 +375,25 @@ public class AddonDetailsWindow extends Window {
         applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         applyButton.addClickListener(event -> {
 
-            try {
+            if (!binder.isValid()) {
+                NotificationUtil.showNotification("Please ensure all mandatory fields are filled.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            } else {
 
-                binder.commit();
+                try {
+                    binder.commit();
 
-                addonProduct.setAddonCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
-                addonProduct.setProductType(this.productTypeBeanContainer.getItem(this.productType.getValue()).getBean().getProductTypeCode());
-                addonProduct.setBrand(this.brandBeanContainer.getItem(this.brand.getValue()).getBean().getBrandCode());
-                addonProduct.setCode(this.catalogueCodeBeanContainer.getItem(this.catalogueCode.getValue()).getBean().getCode());
-                addonProduct.setTitle(this.catalogueCodeBeanContainer.getItem(this.catalogueCode.getValue()).getBean().getTitle());
+                    addonProduct.setAddonCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
+                    addonProduct.setProductType(this.productTypeBeanContainer.getItem(this.productType.getValue()).getBean().getProductTypeCode());
+                    addonProduct.setBrand(this.brandBeanContainer.getItem(this.brand.getValue()).getBean().getBrandCode());
+                    addonProduct.setCode(this.catalogueCodeBeanContainer.getItem(this.catalogueCode.getValue()).getBean().getCode());
 
-                DashboardEventBus.post(new ProposalEvent.AddonUpdated(addonProduct));
-
-            } catch (FieldGroup.CommitException e) {
-                e.printStackTrace();
-                NotificationUtil.showNotification("Problem while applying changes. Please contact GAME Admin", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    DashboardEventBus.post(new ProposalEvent.AddonUpdated(addonProduct));
+                    close();
+                } catch (FieldGroup.CommitException e) {
+                    e.printStackTrace();
+                }
             }
-            close();
+
         });
         applyButton.focus();
         applyButton.setVisible(true);

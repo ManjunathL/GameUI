@@ -6,6 +6,7 @@ package com.mygubbi.game.dashboard.domain;
 public class  AddonProductItem {
     public static final String CATALOGUE_CODE = "catalogueCode";
     public static final String TITLE = "title";
+    public static final String RATE = "rate";
     private String catalogueCode;
     private String title;
     private String code;

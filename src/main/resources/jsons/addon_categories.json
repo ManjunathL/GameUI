@@ -1,17 +1,22 @@
 [
   {
-    "categoryCode": "Appliances"
+    "categoryCode": "Appliances",
+    "rateReadonly": true
   },
   {
-    "categoryCode": "Accessories"
+    "categoryCode": "Accessories",
+    "rateReadonly": true
   },
   {
-    "categoryCode": "Countertop"
+    "categoryCode": "Countertop",
+    "rateReadonly": false
   },
   {
-    "categoryCode": "Services"
+    "categoryCode": "Services",
+    "rateReadonly": false
   },
   {
-    "categoryCode": "Loose Furniture"
+    "categoryCode": "Loose Furniture",
+    "rateReadonly": false
   }
 ]
