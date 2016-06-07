@@ -286,7 +286,7 @@ public class ProposalDataProvider {
         }
 
     }
-    
+
     public List<User> geSalesUsers() {
         return getUsersByRole(ROLE_SALES);
     }

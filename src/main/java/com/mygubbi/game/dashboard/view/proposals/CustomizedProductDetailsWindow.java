@@ -51,6 +51,8 @@ import static com.mygubbi.game.dashboard.domain.Product.*;
 public class CustomizedProductDetailsWindow extends Window {
 
     private static final Logger LOG = LogManager.getLogger(CustomizedProductDetailsWindow.class);
+    private static final String CLOSE = "Close";
+    private static final String DELETE = "Delete";
 
     private TextField itemTitleField;
     private ComboBox roomSelection;
@@ -82,6 +84,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private Grid addonsGrid;
     private ArrayList<Module> modulesCopy;
     private ArrayList<AddonProduct> addonsCopy;
+    private boolean deleteNotRequired;
 
     public CustomizedProductDetailsWindow(Proposal proposal, Product product) {
         this.proposal = proposal;
@@ -402,6 +405,9 @@ public class CustomizedProductDetailsWindow extends Window {
 
         this.quoteUploadCtrl.addSucceededListener((Upload.SucceededListener) event -> {
 
+            this.closeBtn.setCaption("Delete");
+            this.deleteNotRequired = false;
+
             String filename = event.getFilename();
             String quoteFilePath = getUploadBasePath() + "/" + filename;
             product.setQuoteFilePath(quoteFilePath);
@@ -410,7 +416,6 @@ public class CustomizedProductDetailsWindow extends Window {
             product.setModules(productResult.getModules());
             product.setType(TYPES.CUSTOMIZED.name());
             product.setQuoteFilePath(quoteFilePath);
-            proposal.getProducts().add(product);
             initModules(product);
             moduleContainer.removeAllItems();
             moduleContainer.addAll(product.getModules());
@@ -700,24 +705,40 @@ public class CustomizedProductDetailsWindow extends Window {
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
         footer.setWidth(100.0f, Unit.PERCENTAGE);
 
-        closeBtn = new Button("Close");
-        closeBtn.addClickListener((Button.ClickListener) clickEvent -> ConfirmDialog.show(UI.getCurrent(), "", "Are you sure? Unsaved data will be lost.",
-                "Close", "Cancel", dialog -> {
-                    if (!dialog.isCanceled()) {
-                        if (((!product.allModulesMapped() && !product.getModules().isEmpty())
-                                || (product.getModules().isEmpty() && product.getId() != 0))
-                                && this.modulesCopy.isEmpty()) {
-                            proposalDataProvider.deleteProduct(product.getId());
-                            DashboardEventBus.post(new ProposalEvent.ProductDeletedEvent(product));
-                        } else if (product.getId() != 0) {
-                            binder.discard();
-                            this.product.setModules(this.modulesCopy);
-                            this.product.setAddons(this.addonsCopy);
-                            this.proposalDataProvider.updateProduct(this.product);
+        String caption = null;
+        boolean modulesInitiallyMapped = this.modulesCopy.stream().allMatch(module -> StringUtils.isNotEmpty(module.getMgCode()));
+
+        deleteNotRequired = modulesInitiallyMapped && !this.modulesCopy.isEmpty();
+
+        if (deleteNotRequired) {
+            caption = CLOSE;
+        } else {
+            caption = DELETE;
+        }
+
+        closeBtn = new Button(caption);
+        closeBtn.addClickListener((Button.ClickListener) clickEvent -> {
+
+
+            ConfirmDialog.show(UI.getCurrent(), "",
+                    deleteNotRequired ?
+                            "Are you sure? Unsaved data will be lost."
+                            : "The product will be Deleted as the   modules mapping is not yet saved. Are sure you want to proceed?",
+                    "Close", "Cancel", dialog -> {
+
+                        if (!dialog.isCanceled()) {
+                            if (!deleteNotRequired) {
+                                proposalDataProvider.deleteProduct(product.getId());
+                                DashboardEventBus.post(new ProposalEvent.ProductDeletedEvent(product));
+                            } else {
+                                binder.discard();
+                                this.product.setModules(this.modulesCopy);
+                                this.product.setAddons(this.addonsCopy);
+                            }
+                            closeWindow();
                         }
-                        closeWindow();
-                    }
-                }));
+                    });
+        });
         closeBtn.focus();
         footer.addComponent(closeBtn);
         footer.setSpacing(true);
