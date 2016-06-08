@@ -1,0 +1,7 @@
+Auto complete addon :
+
+Latest version is missing in global maven repository, so the latest jar is added to lib folder.
+
+Please add this jar to local maven respository using the following command (change file path accordingly):
+
+mvn install:install-file -Dfile=C:\worspace\gamedev\lib\vaadin-autocomplete-1.1.1a.jar -DgroupId=com.zybnet -DartifactId=vaadin-autocomplete-new -Dversion=1.1.1a -Dpackaging=jar
