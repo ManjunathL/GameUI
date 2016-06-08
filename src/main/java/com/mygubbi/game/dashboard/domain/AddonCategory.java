@@ -6,9 +6,9 @@ package com.mygubbi.game.dashboard.domain;
 public class AddonCategory {
 
     public static final String CATGEORY_CODE = "categoryCode";
-    public static final String RATE_READ_ONLY = "rateReadonly";
+    public static final String RATE_READ_ONLY = "rateReadOnly";
     private String categoryCode;
-    private boolean rateReadonly;
+    private boolean rateReadOnly;
 
     public String getCategoryCode() {
         return categoryCode;
@@ -18,11 +18,11 @@ public class AddonCategory {
         this.categoryCode = categoryCode;
     }
 
-    public boolean isRateReadonly() {
-        return rateReadonly;
+    public boolean isRateReadOnly() {
+        return rateReadOnly;
     }
 
-    public void setRateReadonly(boolean rateReadonly) {
-        this.rateReadonly = rateReadonly;
+    public void setRateReadOnly(boolean rateReadOnly) {
+        this.rateReadOnly = rateReadOnly;
     }
 }

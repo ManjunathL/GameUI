@@ -1,6 +1,9 @@
 package com.mygubbi.game.dashboard.data;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -236,7 +239,12 @@ public class ProposalDataProvider {
             String faJson = this.mapper.writeValueAsString(fileAttachment);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/add.doc", faJson);
-            return !jsonObject.has("error");
+            if (!jsonObject.has("error")) {
+                fileAttachment.setId(this.mapper.readValue(jsonObject.toString(), FileAttachment.class).getId());
+                return true;
+            } else {
+                return false;
+            }
         } catch (IOException e) {
             throw new RuntimeException("Couldn't add product doc", e);
         }
@@ -265,7 +273,12 @@ public class ProposalDataProvider {
             String faJson = this.mapper.writeValueAsString(fileAttachment);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "proposal/add.doc", faJson);
-            return !jsonObject.has("error");
+            if (!jsonObject.has("error")) {
+                fileAttachment.setId(this.mapper.readValue(jsonObject.toString(), FileAttachment.class).getId());
+                return true;
+            } else {
+                return false;
+            }
         } catch (IOException e) {
             throw new RuntimeException("Couldn't add proposal doc", e);
         }
@@ -518,8 +531,7 @@ public class ProposalDataProvider {
 
     //addon/categories
     public List<AddonCategory> getAddonCategories(String roomCode) {
-        //todo: change mode
-        JSONArray array = new FileDataProviderMode().getResourceArray("addon/categories", new HashMap<String, String>() {
+        JSONArray array = dataProviderMode.getResourceArray("addon/categories", new HashMap<String, String>() {
             {
                 put("roomCode", roomCode);
             }
@@ -536,11 +548,10 @@ public class ProposalDataProvider {
 
     //addon/productTypes
     public List<AddonProductType> getAddonProductTypes(String roomCode, String addonCategoryCode) {
-        //todo: change mode
-        JSONArray array = new FileDataProviderMode().getResourceArray("addon/productTypes", new HashMap<String, String>() {
+        JSONArray array = dataProviderMode.getResourceArray("addon/productTypes", new HashMap<String, String>() {
             {
                 put("roomCode", roomCode);
-                put("addonCategoryCode", addonCategoryCode);
+                put("categoryCode", addonCategoryCode);
             }
         });
         try {
@@ -555,10 +566,9 @@ public class ProposalDataProvider {
 
     //addon/brands
     public List<AddonBrand> getAddonBrands(String addonProductTypeCode) {
-        //todo: change mode
-        JSONArray array = new FileDataProviderMode().getResourceArray("addon/brands", new HashMap<String, String>() {
+        JSONArray array = dataProviderMode.getResourceArray("addon/brands", new HashMap<String, String>() {
             {
-                put("addonProductTypeCode", addonProductTypeCode);
+                put("productTypeCode", urlEncode(addonProductTypeCode));
             }
         });
         try {
@@ -571,13 +581,24 @@ public class ProposalDataProvider {
         }
     }
 
+    private String urlEncode(String addonProductTypeCode)
+    {
+        try
+        {
+            return URLEncoder.encode(addonProductTypeCode, Charset.defaultCharset().name());
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            return addonProductTypeCode;
+        }
+    }
+
     //addon/products
     public List<AddonProductItem> getAddonProductItems(String addonProductTypeCode, String brandCode) {
-        //todo: change mode
-        JSONArray array = new FileDataProviderMode().getResourceArray("addon/products", new HashMap<String, String>() {
+        JSONArray array = dataProviderMode.getResourceArray("addon/products", new HashMap<String, String>() {
             {
-                put("addonProductTypeCode", addonProductTypeCode);
-                put("brandCode", brandCode);
+                put("productTypeCode", urlEncode(addonProductTypeCode));
+                put("brandCode", urlEncode(brandCode));
             }
         });
         try {

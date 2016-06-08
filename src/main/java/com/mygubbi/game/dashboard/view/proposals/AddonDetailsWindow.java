@@ -81,6 +81,7 @@ public class AddonDetailsWindow extends Window {
         verticalLayout.addComponent(footerLayOut);
 
         setContent(verticalLayout);
+        this.catalogueCodeChanged(null);
 
         handleState();
     }
@@ -244,7 +245,7 @@ public class AddonDetailsWindow extends Window {
 
     private void catalogueCodeChanged(Property.ValueChangeEvent valueChangeEvent) {
 
-        AddonProductItem addonProductItem = ((BeanItem<AddonProductItem>) this.catalogueCode.getItem(valueChangeEvent.getProperty().getValue())).getBean();
+        AddonProductItem addonProductItem = ((BeanItem<AddonProductItem>) this.catalogueCode.getItem(catalogueCode.getValue())).getBean();
 
         this.uom.setReadOnly(false);
         this.uom.setValue(addonProductItem.getUom());
@@ -311,6 +312,7 @@ public class AddonDetailsWindow extends Window {
             select.setValue(addonProduct.getProductTypeCode());
         } else {
             select.setValue(select.getItemIds().iterator().next());
+            addonProduct.setProductTypeCode(select.getValue().toString());
         }
         return select;
     }
@@ -330,6 +332,7 @@ public class AddonDetailsWindow extends Window {
             select.setValue(addonProduct.getCatalogueCode());
         } else {
             select.setValue(select.getItemIds().iterator().next());
+            addonProduct.setCatalogueCode(select.getValue().toString());
         }
         return select;
     }
@@ -349,6 +352,7 @@ public class AddonDetailsWindow extends Window {
             select.setValue(addonProduct.getBrandCode());
         } else {
             select.setValue(select.getItemIds().iterator().next());
+            addonProduct.setBrandCode(select.getValue().toString());
         }
         return select;
     }
@@ -367,7 +371,9 @@ public class AddonDetailsWindow extends Window {
         if (StringUtils.isNotEmpty(addonProduct.getAddonCategoryCode())) {
             select.setValue(addonProduct.getAddonCategoryCode());
         } else {
-            select.setValue(select.getItemIds().iterator().next());
+            Object next = select.getItemIds().iterator().next();
+            select.setValue(next);
+            addonProduct.setAddonCategoryCode(next.toString());
         }
         return select;
     }
