@@ -1,7 +1,0 @@
-{
-  "restUrl_IGNORED" : "http://192.168.1.4:1443/gapi",
-  "restUrl" : "http://localhost:1443/gapi",
-  "imageBasePath" : "C:\\tmp\\images\\",
-  "dataProviderMode" : "com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode",
-  "dataProviderMode_IGNORED" : "com.mygubbi.game.dashboard.data.RestDataProviderMode"
-}

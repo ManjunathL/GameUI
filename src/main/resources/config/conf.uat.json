@@ -1,0 +1,5 @@
+{
+  "restUrl" : "http://localhost:1443/gapi",
+  "imageBasePath" : "/mnt/game/images",
+  "dataProviderMode" : "com.mygubbi.game.dashboard.data.RestDataProviderMode"
+}
