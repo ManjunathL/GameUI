@@ -149,6 +149,10 @@ public class FileAttachmentComponent extends VerticalLayout {
         fileGridHLayout.setExpandRatio(attachmentGrid, 1);
 
         if (!attachmentsHolder.getFileAttachmentList().isEmpty()) {
+            int i = 1;
+            for (FileAttachment attachment : attachmentsHolder.getFileAttachmentList()) {
+                attachment.setSeq(i++);
+            }
             attachmentContainer.addAll(attachmentsHolder.getFileAttachmentList());
             attachmentGrid.sort(FileAttachment.SEQ, SortDirection.ASCENDING);
         }
