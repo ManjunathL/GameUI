@@ -35,7 +35,7 @@ public class ConfigHolder {
 
     private ConfigHolder() {
 
-        String configFiles = System.getProperty("configFiles", "config/dev/conf.json");
+        String configFiles = System.getProperty("configFiles", "config/conf.dev.json");
         List<String> configFileList = StringUtils.fastSplit(configFiles, ',');
         loadConfig(configFileList);
 
