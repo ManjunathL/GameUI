@@ -85,6 +85,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ArrayList<Module> modulesCopy;
     private ArrayList<AddonProduct> addonsCopy;
     private boolean deleteNotRequired;
+    private Button addonAddButton;
 
     public CustomizedProductDetailsWindow(Proposal proposal, Product product) {
         this.proposal = proposal;
@@ -125,7 +126,8 @@ public class CustomizedProductDetailsWindow extends Window {
 
         fileAttachmentComponent = new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(),
                 attachmentData -> proposalDataProvider.addProductDoc(product.getId(), product.getProposalId(), attachmentData.getFileAttachment()),
-                attachmentData -> proposalDataProvider.removeProductDoc(attachmentData.getFileAttachment().getId()));
+                attachmentData -> proposalDataProvider.removeProductDoc(attachmentData.getFileAttachment().getId()),
+                !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name()));
 
         if (product.getModules().isEmpty()) {
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
@@ -141,6 +143,8 @@ public class CustomizedProductDetailsWindow extends Window {
         Component footerLayOut = buildFooter();
         vLayout.addComponent(footerLayOut);
         vLayout.setExpandRatio(footerLayOut, 0.1f);
+
+        handleState();
 
     }
 
@@ -505,7 +509,8 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             Module module = (Module) rendererClickEvent.getItemId();
             if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
-                ModuleDetailsWindow.open(module, createProductFromUI());
+                boolean readOnly = !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name());
+                ModuleDetailsWindow.open(module, createProductFromUI(), readOnly);
             } else {
                 NotificationUtil.showNotification("Cannot edit unmapped module.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
@@ -610,18 +615,18 @@ public class CustomizedProductDetailsWindow extends Window {
     private Component buildAddonsForm() {
 
         VerticalLayout verticalLayout = new VerticalLayout();
-        Button button = new Button("Add");
-        button.setStyleName("add-addon-btn");
-        button.addClickListener(clickEvent -> {
+        addonAddButton = new Button("Add");
+        addonAddButton.setStyleName("add-addon-btn");
+        addonAddButton.addClickListener(clickEvent -> {
             List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setSeq(addons.size() + 1);
             addonProduct.setAdd(true);
-            AddonDetailsWindow.open(addonProduct, product);
+            AddonDetailsWindow.open(addonProduct, product, false);
         });
 
-        verticalLayout.addComponent(button);
-        verticalLayout.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
+        verticalLayout.addComponent(addonAddButton);
+        verticalLayout.setComponentAlignment(addonAddButton, Alignment.MIDDLE_RIGHT);
 
         addonsContainer = new BeanItemContainer<>(AddonProduct.class);
 
@@ -653,32 +658,37 @@ public class CustomizedProductDetailsWindow extends Window {
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                 addon.setAdd(false);
-                AddonDetailsWindow.open(addon, product);
+                boolean readOnly = !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name());
+                AddonDetailsWindow.open(addon, product, readOnly);
             }
 
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
-                ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
-                        "Yes", "No", dialog -> {
-                            if (dialog.isConfirmed()) {
-                                AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
+                if (!proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name())) {
+                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                } else {
+                    ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
+                            "Yes", "No", dialog -> {
+                                if (dialog.isConfirmed()) {
+                                    AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
 
-                                List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
-                                addons.remove(addon);
+                                    List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
+                                    addons.remove(addon);
 
-                                int seq = addon.getSeq();
-                                addonsContainer.removeAllItems();
+                                    int seq = addon.getSeq();
+                                    addonsContainer.removeAllItems();
 
-                                for (AddonProduct addonProduct : addons) {
-                                    if (addonProduct.getSeq() > seq) {
-                                        addonProduct.setSeq(addonProduct.getSeq() - 1);
+                                    for (AddonProduct addonProduct : addons) {
+                                        if (addonProduct.getSeq() > seq) {
+                                            addonProduct.setSeq(addonProduct.getSeq() - 1);
+                                        }
                                     }
+                                    addonsContainer.addAll(addons);
+                                    addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
+                                    updateTotalAmount();
                                 }
-                                addonsContainer.addAll(addons);
-                                addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
-                                updateTotalAmount();
-                            }
-                        });
+                            });
+                }
             }
         }));
 
@@ -720,25 +730,28 @@ public class CustomizedProductDetailsWindow extends Window {
         closeBtn = new Button(caption);
         closeBtn.addClickListener((Button.ClickListener) clickEvent -> {
 
+            if (!proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name())) {
+                closeWindow();
+            } else {
+                ConfirmDialog.show(UI.getCurrent(), "",
+                        deleteNotRequired ?
+                                "Are you sure? Unsaved data will be lost."
+                                : "The product will be Deleted as the   modules mapping is not yet saved. Are sure you want to proceed?",
+                        "Close", "Cancel", dialog -> {
 
-            ConfirmDialog.show(UI.getCurrent(), "",
-                    deleteNotRequired ?
-                            "Are you sure? Unsaved data will be lost."
-                            : "The product will be Deleted as the   modules mapping is not yet saved. Are sure you want to proceed?",
-                    "Close", "Cancel", dialog -> {
-
-                        if (!dialog.isCanceled()) {
-                            if (!deleteNotRequired) {
-                                proposalDataProvider.deleteProduct(product.getId());
-                                DashboardEventBus.post(new ProposalEvent.ProductDeletedEvent(product));
-                            } else {
-                                binder.discard();
-                                this.product.setModules(this.modulesCopy);
-                                this.product.setAddons(this.addonsCopy);
+                            if (!dialog.isCanceled()) {
+                                if (!deleteNotRequired) {
+                                    proposalDataProvider.deleteProduct(product.getId());
+                                    DashboardEventBus.post(new ProposalEvent.ProductDeletedEvent(product));
+                                } else {
+                                    binder.discard();
+                                    this.product.setModules(this.modulesCopy);
+                                    this.product.setAddons(this.addonsCopy);
+                                }
+                                closeWindow();
                             }
-                            closeWindow();
-                        }
-                    });
+                        });
+            }
         });
         closeBtn.focus();
         footer.addComponent(closeBtn);
@@ -768,7 +781,6 @@ public class CustomizedProductDetailsWindow extends Window {
                 Notification.show("Error while saving Item details",
                         Type.ERROR_MESSAGE);
             }
-
         });
         saveBtn.focus();
         saveBtn.setVisible(true);
@@ -863,4 +875,35 @@ public class CustomizedProductDetailsWindow extends Window {
         w.focus();
 
     }
+
+    private void handleState() {
+
+        ProposalHeader.ProposalState proposalState = ProposalHeader.ProposalState.valueOf(proposal.getProposalHeader().getStatus());
+        switch (proposalState) {
+            case draft:
+                break;
+            case active:
+            case cancelled:
+            case published:
+                itemTitleField.setReadOnly(true);
+                productSelection.setReadOnly(true);
+                roomSelection.setReadOnly(true);
+                makeType.setReadOnly(true);
+                shutterDesign.setReadOnly(true);
+                baseCarcassSelection.setReadOnly(true);
+                wallCarcassSelection.setReadOnly(true);
+                finishTypeSelection.setReadOnly(true);
+                shutterFinishSelection.setReadOnly(true);
+                quoteUploadCtrl.setEnabled(false);
+                addonAddButton.setEnabled(false);
+                closeBtn.setCaption(CLOSE);
+                fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
+                saveBtn.setEnabled(false);
+                fileAttachmentComponent.setReadOnly(true);
+                break;
+            default:
+                throw new RuntimeException("Unknown State");
+        }
+    }
+
 }

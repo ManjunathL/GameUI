@@ -98,6 +98,9 @@ public class CreateProposalsView extends Panel implements View {
     private Button reviseButton;
     private Button publishButton;
     private Button cancelButton;
+    private Button addCustomizedButton;
+    private Button addFromCatalogueButton;
+    private FileAttachmentComponent fileAttachmentComponent;
 
     public CreateProposalsView() {
     }
@@ -117,7 +120,7 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setTitle(NEW_TITLE);
             proposalHeader.setVersion(NEW_VERSION);
-            proposalHeader.setStatus("draft");
+            proposalHeader.setStatus(ProposalState.draft.name());
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(proposalHeader);
         }
@@ -136,21 +139,64 @@ public class CreateProposalsView extends Panel implements View {
         TabSheet tabs = new TabSheet();
         tabs.addTab(buildForm(), "Header");
         tabs.addTab(buildProductDetails(), "Products");
-        tabs.addTab(new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
+        fileAttachmentComponent = new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
                 attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
-                attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId())
-        ), "Attachments");
+                attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId()),
+                !proposalHeader.getStatus().equals(ProposalState.draft.name())
+        );
+        tabs.addTab(fileAttachmentComponent, "Attachments");
 
         vLayout.addComponent(tabs);
         setContent(vLayout);
         Responsive.makeResponsive(tabs);
         updateTotal(null);
-
+        handleState();
     }
 
-    private BeanItem<ProposalHeader> getProposalHeaderBeanItem(ProposalHeader proposalHeader) {
-        BeanItem<ProposalHeader> proposalHeaderBeanItem = new BeanItem<>(proposalHeader);
-        return proposalHeaderBeanItem;
+    private void handleState() {
+
+        ProposalState proposalState = ProposalState.valueOf(proposalHeader.getStatus());
+        switch (proposalState) {
+            case draft:
+                addCustomizedButton.setEnabled(true);
+                addFromCatalogueButton.setEnabled(true);
+                fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
+                setHeaderFieldsReadOnly(false);
+                fileAttachmentComponent.setReadOnly(false);
+                break;
+            case active:
+            case cancelled:
+            case published:
+                addCustomizedButton.setEnabled(false);
+                addFromCatalogueButton.setEnabled(false);
+                fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
+                setHeaderFieldsReadOnly(true);
+                fileAttachmentComponent.setReadOnly(true);
+                break;
+            default:
+                throw new RuntimeException("Unknown State");
+        }
+    }
+
+    private void setHeaderFieldsReadOnly(boolean readOnly) {
+        proposalTitleField.setReadOnly(readOnly);
+        crmId.setReadOnly(readOnly);
+        quotationField.setReadOnly(readOnly);
+        customerIdField.setReadOnly(readOnly);
+        customerNameField.setReadOnly(readOnly);
+        customerAddressLine1.setReadOnly(readOnly);
+        customerAddressLine2.setReadOnly(readOnly);
+        customerAddressLine3.setReadOnly(readOnly);
+        customerCityField.setReadOnly(readOnly);
+        customerEmailField.setReadOnly(readOnly);
+        customerNumberField1.setReadOnly(readOnly);
+        customerNumberField2.setReadOnly(readOnly);
+        projectName.setReadOnly(readOnly);
+        projectAddressLine1.setReadOnly(readOnly);
+        projectAddressLine2.setReadOnly(readOnly);
+        projectCityField.setReadOnly(readOnly);
+        salesPerson.setReadOnly(readOnly);
+        designPerson.setReadOnly(readOnly);
     }
 
     private Component buildHeader() {
@@ -215,21 +261,21 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout1.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);
 
         submitButton = new Button("Submit");
-        submitButton.setVisible("draft".equals(proposalHeader.getStatus()));
+        submitButton.setVisible(ProposalState.draft.name().equals(proposalHeader.getStatus()));
         submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
         submitButton.addClickListener(this::submit);
         horizontalLayout1.addComponent(submitButton);
         horizontalLayout1.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
 
         publishButton = new Button("Publish");
-        publishButton.setVisible("active".equals(proposalHeader.getStatus()));
+        publishButton.setVisible(ProposalState.active.name().equals(proposalHeader.getStatus()));
         publishButton.addStyleName(ValoTheme.BUTTON_SMALL);
         publishButton.addClickListener(this::publish);
         horizontalLayout1.addComponent(publishButton);
         horizontalLayout1.setComponentAlignment(publishButton, Alignment.MIDDLE_RIGHT);
 
         reviseButton = new Button("Revise");
-        reviseButton.setVisible("active".equals(proposalHeader.getStatus()));
+        reviseButton.setVisible(ProposalState.active.name().equals(proposalHeader.getStatus()));
         reviseButton.addStyleName(ValoTheme.BUTTON_SMALL);
         reviseButton.addClickListener(this::revise);
         horizontalLayout1.addComponent(reviseButton);
@@ -268,7 +314,7 @@ public class CreateProposalsView extends Panel implements View {
                     if (!dialog.isCanceled()) {
                         try {
                             binder.commit();
-                            proposalHeader.setStatus("cancelled");
+                            proposalHeader.setStatus(ProposalState.cancelled.name());
                             boolean success = proposalDataProvider.saveProposal(proposalHeader);
                             if (success) {
                                 success = proposalDataProvider.cancelProposal(proposalHeader.getId());
@@ -279,7 +325,8 @@ public class CreateProposalsView extends Panel implements View {
                                     deleteButton.setVisible(false);
                                     saveButton.setVisible(false);
                                     cancelButton.setVisible(false);
-                                    draftLabel.setValue("[ cancelled ]");
+                                    draftLabel.setValue("[ " + ProposalState.cancelled.name() + " ]");
+                                    handleState();
                                 } else {
                                     NotificationUtil.showNotification("Couldn't cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                                 }
@@ -299,7 +346,7 @@ public class CreateProposalsView extends Panel implements View {
                     if (!dialog.isCanceled()) {
                         try {
                             binder.commit();
-                            proposalHeader.setStatus("published");
+                            proposalHeader.setStatus(ProposalState.published.name());
                             boolean success = proposalDataProvider.saveProposal(proposalHeader);
                             if (success) {
                                 success = proposalDataProvider.publishProposal(proposalHeader.getId());
@@ -309,7 +356,8 @@ public class CreateProposalsView extends Panel implements View {
                                     publishButton.setVisible(false);
                                     deleteButton.setVisible(false);
                                     saveButton.setVisible(false);
-                                    draftLabel.setValue("[ published ]");
+                                    draftLabel.setValue("[ " + ProposalState.published.name() + " ]");
+                                    handleState();
                                 } else {
                                     NotificationUtil.showNotification("Couldn't publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                                 }
@@ -326,7 +374,7 @@ public class CreateProposalsView extends Panel implements View {
     private void revise(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
-            proposalHeader.setStatus("draft");
+            proposalHeader.setStatus(ProposalState.draft.name());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 success = proposalDataProvider.reviseProposal(proposalHeader.getId());
@@ -334,7 +382,10 @@ public class CreateProposalsView extends Panel implements View {
                     reviseButton.setVisible(false);
                     publishButton.setVisible(false);
                     submitButton.setVisible(true);
-                    draftLabel.setValue("[ draft ]");
+                    saveButton.setVisible(true);
+                    deleteButton.setVisible(true);
+                    draftLabel.setValue("[ " + ProposalState.draft.name() + " ]");
+                    handleState();
                 } else {
                     NotificationUtil.showNotification("Couldn't revise Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
@@ -433,19 +484,33 @@ public class CreateProposalsView extends Panel implements View {
     private void submit(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
-            proposalHeader.setStatus("active");
+            proposalHeader.setStatus(ProposalState.active.name());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
-                success = proposalDataProvider.submitProposal(proposalHeader.getId());
-                if (success) {
-                    reviseButton.setVisible(true);
-                    publishButton.setVisible(true);
-                    submitButton.setVisible(false);
-                    draftLabel.setValue("[ active ]");
-                    NotificationUtil.showNotification("Submitted successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                    this.getContent().setReadOnly(true);
+                boolean mapped = true;
+                for (Product product : proposal.getProducts()) {
+                    Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId());
+                    mapped = populatedProduct.allModulesMapped() && !populatedProduct.getModules().isEmpty();
+                    if (!mapped) break;
+                }
+
+                if (!mapped) {
+                    NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 } else {
-                    NotificationUtil.showNotification("Couldn't Activate Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+
+                    success = proposalDataProvider.submitProposal(proposalHeader.getId());
+                    if (success) {
+                        reviseButton.setVisible(true);
+                        publishButton.setVisible(true);
+                        submitButton.setVisible(false);
+                        deleteButton.setVisible(false);
+                        saveButton.setVisible(false);
+                        draftLabel.setValue("[ " + ProposalState.active.name() + " ]");
+                        NotificationUtil.showNotification("Submitted successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                        handleState();
+                    } else {
+                        NotificationUtil.showNotification("Couldn't Activate Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    }
                 }
             } else {
                 NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -740,17 +805,17 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.addComponent(spacingLabel);
         horizontalLayout.setExpandRatio(spacingLabel, 1.0f);
 
-        Button button = new Button("Add Customized");
-        button.addStyleName(ValoTheme.BUTTON_SMALL);
-        horizontalLayout.addComponent(button);
+        addCustomizedButton = new Button("Add Customized");
+        addCustomizedButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        horizontalLayout.addComponent(addCustomizedButton);
 
-        Button standardItemBtn = new Button("Add from Catalogue");
-        standardItemBtn.addStyleName(ValoTheme.BUTTON_SMALL);
-        horizontalLayout.addComponent(standardItemBtn);
+        addFromCatalogueButton = new Button("Add from Catalogue");
+        addFromCatalogueButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        horizontalLayout.addComponent(addFromCatalogueButton);
 
         verticalLayout.addComponent(horizontalLayout);
 
-        button.addClickListener(
+        addCustomizedButton.addClickListener(
                 clickEvent -> {
                     Product newProduct = new Product();
                     newProduct.setType(Product.TYPES.CUSTOMIZED.name());
@@ -760,7 +825,7 @@ public class CreateProposalsView extends Panel implements View {
                 }
         );
 
-        standardItemBtn.addClickListener(clickEvent ->
+        addFromCatalogueButton.addClickListener(clickEvent ->
                 CatalogItemDetailsWindow.open(CreateProposalsView.this.proposalHeader)
         );
 
@@ -806,30 +871,37 @@ public class CreateProposalsView extends Panel implements View {
 
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
-                ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Product?",
-                        "Yes", "No", dialog -> {
-                            if (dialog.isConfirmed()) {
-                                Product product = (Product) rendererClickEvent.getItemId();
 
-                                proposal.getProducts().remove(product);
 
-                                int seq = product.getSeq();
-                                productContainer.removeAllItems();
+                if (!proposalHeader.getStatus().equals(ProposalState.draft.name())) {
+                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                } else {
 
-                                for (Product product1 : proposal.getProducts()) {
-                                    if (product1.getSeq() > seq) {
-                                        product1.setSeq(product1.getSeq() - 1);
-                                        proposalDataProvider.updateProduct(product1);
+                    ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Product?",
+                            "Yes", "No", dialog -> {
+                                if (dialog.isConfirmed()) {
+                                    Product product = (Product) rendererClickEvent.getItemId();
+
+                                    proposal.getProducts().remove(product);
+
+                                    int seq = product.getSeq();
+                                    productContainer.removeAllItems();
+
+                                    for (Product product1 : proposal.getProducts()) {
+                                        if (product1.getSeq() > seq) {
+                                            product1.setSeq(product1.getSeq() - 1);
+                                            proposalDataProvider.updateProduct(product1);
+                                        }
                                     }
+                                    productContainer.addAll(proposal.getProducts());
+                                    productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+                                    productsGrid.getSelectionModel().reset();
+                                    updateTotal(null);
+                                    proposalDataProvider.deleteProduct(product.getId());
+                                    NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                                 }
-                                productContainer.addAll(proposal.getProducts());
-                                productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
-                                productsGrid.getSelectionModel().reset();
-                                updateTotal(null);
-                                proposalDataProvider.deleteProduct(product.getId());
-                                NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                            }
-                        });
+                            });
+                }
 
             }
         }));

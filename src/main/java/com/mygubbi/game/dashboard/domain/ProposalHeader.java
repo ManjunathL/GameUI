@@ -7,6 +7,8 @@ import java.util.Date;
  */
 public class ProposalHeader {
 
+    public enum ProposalState {draft, active, published, cancelled}
+
     public static final String ID = "id";
     public static final String STATUS = "status";
     public static final String TITLE = "title";

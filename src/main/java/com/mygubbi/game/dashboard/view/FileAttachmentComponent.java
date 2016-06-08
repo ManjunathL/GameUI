@@ -41,13 +41,16 @@ public class FileAttachmentComponent extends VerticalLayout {
     private FileAttachmentsHolder attachmentsHolder;
     private final String uploadBasePath;
     private Upload fileUploadCtrl;
+    private boolean readOnly;
 
     public FileAttachmentComponent(FileAttachmentsHolder attachmentsHolder, String uploadBasePath,
-                                   SaveAttachmentsListener saveListener, DeleteAttachmentsListener deleteListener) {
+                                   SaveAttachmentsListener saveListener, DeleteAttachmentsListener deleteListener,
+                                   boolean readOnly) {
         this.attachmentsHolder = attachmentsHolder;
         this.uploadBasePath = uploadBasePath;
         this.saveListener = saveListener;
         this.deleteListener = deleteListener;
+        this.readOnly = readOnly;
         buildAttachmentsForm();
     }
 
@@ -112,29 +115,33 @@ public class FileAttachmentComponent extends VerticalLayout {
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                ConfirmDialog.show(UI.getCurrent(), "", "Do you want to delete the attachment PERMANENTLY?",
-                        "Yes", "No", dialog -> {
-                            if (!dialog.isCanceled()) {
-                                Object itemId = rendererClickEvent.getItemId();
+                if (readOnly) {
+                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                } else {
+                    ConfirmDialog.show(UI.getCurrent(), "", "Do you want to delete the attachment PERMANENTLY?",
+                            "Yes", "No", dialog -> {
+                                if (!dialog.isCanceled()) {
+                                    Object itemId = rendererClickEvent.getItemId();
 
-                                attachmentsHolder.getFileAttachmentList().remove(itemId);
+                                    attachmentsHolder.getFileAttachmentList().remove(itemId);
 
-                                int seq = ((FileAttachment) itemId).getSeq();
+                                    int seq = ((FileAttachment) itemId).getSeq();
 
-                                attachmentContainer.removeAllItems();
+                                    attachmentContainer.removeAllItems();
 
-                                for (FileAttachment attachment : attachmentsHolder.getFileAttachmentList()) {
-                                    if (attachment.getSeq() > seq) {
-                                        attachment.setSeq(attachment.getSeq() - 1);
+                                    for (FileAttachment attachment : attachmentsHolder.getFileAttachmentList()) {
+                                        if (attachment.getSeq() > seq) {
+                                            attachment.setSeq(attachment.getSeq() - 1);
+                                        }
                                     }
+
+                                    attachmentContainer.addAll(attachmentsHolder.getFileAttachmentList());
+                                    attachmentGrid.setContainerDataSource(createGeneratedFAPropertyContainer());
+                                    if (deleteListener != null) fireDeleteEvent((FileAttachment) itemId);
+
                                 }
-
-                                attachmentContainer.addAll(attachmentsHolder.getFileAttachmentList());
-                                attachmentGrid.setContainerDataSource(createGeneratedFAPropertyContainer());
-                                if (deleteListener != null) fireDeleteEvent((FileAttachment) itemId);
-
-                            }
-                        });
+                            });
+                }
             }
         }));
 
@@ -157,11 +164,11 @@ public class FileAttachmentComponent extends VerticalLayout {
         return genContainer;
     }
 
-    private void fireDeleteEvent(FileAttachment itemId) {
+    private boolean fireDeleteEvent(FileAttachment itemId) {
         AttachmentData attachmentData = new AttachmentData();
         attachmentData.setAttachmentsHolder(attachmentsHolder);
         attachmentData.setFileAttachment(itemId);
-        deleteListener.onDelete(attachmentData);
+        return deleteListener.onDelete(attachmentData);
     }
 
     private StreamResource createResource(String currentAttachmentFile) {
@@ -276,6 +283,11 @@ public class FileAttachmentComponent extends VerticalLayout {
         public void setFileAttachment(FileAttachment fileAttachment) {
             this.fileAttachment = fileAttachment;
         }
+    }
+
+    @Override
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     public Upload getFileUploadCtrl() {

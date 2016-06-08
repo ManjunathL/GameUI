@@ -66,12 +66,13 @@ public class ModuleDetailsWindow extends Window {
     private ImageStrip accessoryImageStrip;
     private String basePath = ConfigHolder.getInstance().getStringValue("imageBasePath", "");
     private TextField totalAmount;
+    private boolean readOnly;
 
-
-    private ModuleDetailsWindow(Module module, Product product) {
+    private ModuleDetailsWindow(Module module, Product product, boolean readOnly) {
 
         this.product = product;
         this.module = module;
+        this.readOnly = readOnly;
         initModule();
         this.mgModules = proposalDataProvider.getMGModules(module.getExtCode(), module.getExtDefCode());
         this.binder.setItemDataSource(this.module);
@@ -118,6 +119,19 @@ public class ModuleDetailsWindow extends Window {
         setContent(horizontalLayout);
 
         updateValues();
+        handleState();
+    }
+
+    private void handleState() {
+        if (readOnly) {
+            mgModuleCombo.setReadOnly(true);
+            makeType.setReadOnly(true);
+            carcassMaterialSelection.setReadOnly(true);
+            colorCombo.setReadOnly(true);
+            finishTypeSelection.setReadOnly(true);
+            shutterFinishSelection.setReadOnly(true);
+            applyButton.setEnabled(false);
+        }
     }
 
     private VerticalLayout buildImagesComponent() {
@@ -542,8 +556,8 @@ public class ModuleDetailsWindow extends Window {
         return defaultIndex == -1 ? title : title.substring(0, defaultIndex);
     }
 
-    public static void open(Module module, Product product) {
-        Window w = new ModuleDetailsWindow(module, product);
+    public static void open(Module module, Product product, boolean readOnly) {
+        Window w = new ModuleDetailsWindow(module, product, readOnly);
         UI.getCurrent().addWindow(w);
         w.focus();
     }

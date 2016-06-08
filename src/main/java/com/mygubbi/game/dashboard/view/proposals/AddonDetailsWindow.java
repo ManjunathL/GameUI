@@ -52,10 +52,12 @@ public class AddonDetailsWindow extends Window {
     private BeanContainer<String, AddonProductItem> catalogueCodeBeanContainer;
     private BeanContainer<String, AddonBrand> brandBeanContainer;
     private BeanContainer<String, AddonCategory> categoryBeanContainer;
+    private boolean readOnly;
 
-    public AddonDetailsWindow(AddonProduct addonProduct, Product product) {
+    public AddonDetailsWindow(AddonProduct addonProduct, Product product, boolean readOnly) {
         this.addonProduct = addonProduct;
         this.product = product;
+        this.readOnly = readOnly;
         this.originalImagePath = this.addonProduct.getImagePath();
         this.binder.setItemDataSource(this.addonProduct);
         setModal(true);
@@ -79,6 +81,21 @@ public class AddonDetailsWindow extends Window {
         verticalLayout.addComponent(footerLayOut);
 
         setContent(verticalLayout);
+
+        handleState();
+    }
+
+    private void handleState() {
+        if (readOnly) {
+            category.setReadOnly(true);
+            productType.setReadOnly(true);
+            brand.setReadOnly(true);
+            catalogueCode.setReadOnly(true);
+            title.setReadOnly(true);
+            rate.setReadOnly(true);
+            quantity.setReadOnly(true);
+            applyButton.setEnabled(false);
+        }
     }
 
     private Component buildAddonSelectionsComponent() {
@@ -411,8 +428,8 @@ public class AddonDetailsWindow extends Window {
         }
     }
 
-    public static void open(AddonProduct addon, Product product) {
-        Window w = new AddonDetailsWindow(addon, product);
+    public static void open(AddonProduct addon, Product product, boolean readOnly) {
+        Window w = new AddonDetailsWindow(addon, product, readOnly);
         UI.getCurrent().addWindow(w);
         w.focus();
 
