@@ -45,7 +45,7 @@ public class AddonDetailsWindow extends Window {
     private TextField amount;
     private Button applyButton;
     private Image addonImage;
-    private String imageBasePath = ConfigHolder.getInstance().getStringValue("imageBasePath", "");
+    private String imageBasePath = ConfigHolder.getInstance().getImageBasePath();
 
     private String originalImagePath;
     private BeanContainer<String, AddonProductType> productTypeBeanContainer;

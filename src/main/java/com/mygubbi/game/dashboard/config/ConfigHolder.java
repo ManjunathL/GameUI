@@ -6,6 +6,7 @@ package com.mygubbi.game.dashboard.config;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.Color;
@@ -31,7 +32,7 @@ public class ConfigHolder {
     private JsonObject serverConfig = new JsonObject();
     private Map<String, FinishTypeColor> finishTypeColors;
     private Map<String, Color> colors;
-    private final String imageBasePath;
+    private String imageBasePath;
 
     private ConfigHolder() {
 
@@ -40,8 +41,15 @@ public class ConfigHolder {
         loadConfig(configFileList);
 
         imageBasePath = getStringValue("imageBasePath", "");
+        System.out.println("imageBasePath:" + imageBasePath);
+        if (!imageBasePath.endsWith("/"))
+        {
+            imageBasePath = imageBasePath + "/";
+            System.out.println("imageBasePath after adding /:" + imageBasePath);
+        }
 
-        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
+        //ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
+        ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
         finishTypeColors = proposalDataProvider.getFinishTypeColors().stream().collect(
                 Collectors.toMap(FinishTypeColor::getFinishTypeCode, Function.identity()));

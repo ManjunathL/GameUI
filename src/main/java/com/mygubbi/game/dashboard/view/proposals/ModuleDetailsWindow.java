@@ -64,7 +64,7 @@ public class ModuleDetailsWindow extends Window {
     private Image moduleImage;
     private ThemeResource emptyModuleImage;
     private ImageStrip accessoryImageStrip;
-    private String basePath = ConfigHolder.getInstance().getStringValue("imageBasePath", "");
+    private String basePath = ConfigHolder.getInstance().getImageBasePath();
     private TextField totalAmount;
     private boolean readOnly;
 

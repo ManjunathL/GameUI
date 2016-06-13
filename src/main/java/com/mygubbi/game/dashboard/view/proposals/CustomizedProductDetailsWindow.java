@@ -424,7 +424,7 @@ public class CustomizedProductDetailsWindow extends Window {
             moduleContainer.removeAllItems();
             moduleContainer.addAll(product.getModules());
             modulesGrid.clearSortOrder();
-            modulesGrid.sort(SEQ, SortDirection.ASCENDING);
+            //todo: Sunil modulesGrid.sort(SEQ, SortDirection.ASCENDING);
             modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
             updateTotalAmount();
@@ -521,7 +521,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (!product.getModules().isEmpty()) {
             moduleContainer.addAll(product.getModules());
-            modulesGrid.sort(SEQ, SortDirection.ASCENDING);
+            //todo: Sunil modulesGrid.sort(SEQ, SortDirection.ASCENDING);
         }
 
         return modulesGrid;
@@ -848,7 +848,7 @@ public class CustomizedProductDetailsWindow extends Window {
         moduleContainer.removeAllItems();
         moduleContainer.addAll(modules);
         modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
-        modulesGrid.sort(Module.SEQ, SortDirection.ASCENDING);
+        //todo: Sunil modulesGrid.sort(Module.SEQ, SortDirection.ASCENDING);
         updateTotalAmount();
 
         if (product.allModulesMapped()) {

@@ -245,19 +245,33 @@ public class Module implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
 
         Module module = (Module) o;
 
-        return seq == module.seq;
+        if (getSeq() != module.getSeq())
+        {
+            return false;
+        }
+        return !(getUnitType() != null ? !getUnitType().equals(module.getUnitType()) : module.getUnitType() != null);
 
     }
 
     @Override
-    public int hashCode() {
-        return seq;
+    public int hashCode()
+    {
+        int result = getSeq();
+        result = 31 * result + (getUnitType() != null ? getUnitType().hashCode() : 0);
+        return result;
     }
 
     public String getFixedCarcassCode() {
