@@ -1,121 +1,3581 @@
 [
   {
     "finishTypeCode": "LAMINATE",
-    "colors": [
+    "colors":
+    [
       {
-        "code": "CC123",
-        "name": "Frosty White",
-        "imagePath": "colors/cc123.jpg"
+        "code": "Beige 21037 SF",
+        "name": "Beige 21037 SF",
+        "imagePath": "color/MTS/10. Beige 21037 SF.jpg"
       },
       {
-        "code": "RoastedOil",
-        "name": "Roasted Oil",
-        "imagePath": "colors/cc234.png"
+        "code": "Berry Bunch 22105 SF",
+        "name": "Berry Bunch 22105 SF",
+        "imagePath": "color/MTS/18. Berry Bunch 22105 SF.jpg"
       },
       {
-        "code": "CC876",
-        "name": "Sunset Orange",
-        "imagePath": "colors/cc234.png"
+        "code": "Black 21066 SF",
+        "name": "Black 21066 SF",
+        "imagePath": "color/MTS/14. Black 21066 SF.jpg"
+      },
+      {
+        "code": "Candy White 21941 SF",
+        "name": "Candy White 21941 SF",
+        "imagePath": "color/MTS/9. Candy White 21941 SF.jpg"
+      },
+      {
+        "code": "Carnival 21075 SF",
+        "name": "Carnival 21075 SF",
+        "imagePath": "color/MTS/17. Carnival 21075 SF.jpg"
+      },
+      {
+        "code": "Champagne 21187 SF",
+        "name": "Champagne 21187 SF",
+        "imagePath": "color/MTS/1. Champagne 21187 SF.jpg"
+      },
+      {
+        "code": "Dove Grey 22079 SF",
+        "name": "Dove Grey 22079 SF",
+        "imagePath": "color/MTS/6. Dove Grey 22079 SF.jpg"
+      },
+      {
+        "code": "Gladiola 22157 SF",
+        "name": "Gladiola 22157 SF",
+        "imagePath": "color/MTS/16. Gladiola 22157 SF.jpg"
+      },
+      {
+        "code": "Ink 21032 SF",
+        "name": "Ink 21032 SF",
+        "imagePath": "color/MTS/7. Ink 21032 SF.jpg"
+      },
+      {
+        "code": "Kingfisher Blue 21122 SF",
+        "name": "Kingfisher Blue 21122 SF",
+        "imagePath": "color/MTS/15. Kingfisher Blue 21122 SF.jpg"
+      },
+      {
+        "code": "Lime 21163 SF",
+        "name": "Lime 21163 SF",
+        "imagePath": "color/MTS/4. Lime 21163 SF.jpg"
+      },
+      {
+        "code": "Marigold 21057 SF",
+        "name": "Marigold 21057 SF",
+        "imagePath": "color/MTS/3. Marigold 21057 SF.jpg"
+      },
+      {
+        "code": "Mocha 21038 SF",
+        "name": "Mocha 21038 SF",
+        "imagePath": "color/MTS/12. Mocha 21038 SF.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 SF",
+        "name": "Pearl Black 22109 SF",
+        "imagePath": "color/MTS/13. Pearl Black 22109 SF.jpg"
+      },
+      {
+        "code": "Poppy 21004 SF",
+        "name": "Poppy 21004 SF",
+        "imagePath": "color/MTS/8. Poppy 21004 SF.jpg"
+      },
+      {
+        "code": "Sandal 21077 SF",
+        "name": "Sandal 21077 SF",
+        "imagePath": "color/MTS/5. Sandal 21077 SF.jpg"
+      },
+      {
+        "code": "Slate 22099 SF",
+        "name": "Slate 22099 SF",
+        "imagePath": "color/MTS/19. Slate 22099 SF.jpg"
+      },
+      {
+        "code": "Tan 21127 SF",
+        "name": "Tan 21127 SF",
+        "imagePath": "color/MTS/2. Tan 21127 SF.jpg"
+      },
+      {
+        "code": "Warm Grey 21029 SF",
+        "name": "Warm Grey 21029 SF",
+        "imagePath": "color/MTS/11. Warm Grey 21029 SF.jpg"
+      },
+      {
+        "code": "American Walnut 14538 VNR RH",
+        "name": "American Walnut 14538 VNR RH",
+        "imagePath": "color/MWG/6. American Walnut 14538 VNR RH.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SF",
+        "name": "Auburn Oak 14142 SF",
+        "imagePath": "color/MWG/5. Auburn Oak 14142 SF.jpg"
+      },
+      {
+        "code": "Balinese Pine 10866 SF",
+        "name": "Balinese Pine 10866 SF",
+        "imagePath": "color/MWG/1. Balinese Pine 10866 SF.jpg"
+      },
+      {
+        "code": "Brazilian Walnut 14539 VNR RH",
+        "name": "Brazilian Walnut 14539 VNR RH",
+        "imagePath": "color/MWG/3. Brazilian Walnut 14539 VNR RH.jpg"
+      },
+      {
+        "code": "Dark Kraftwood 10843 SF",
+        "name": "Dark Kraftwood 10843 SF",
+        "imagePath": "color/MWG/17. Dark Kraftwood 10843 SF.jpg"
+      },
+      {
+        "code": "Earth Cherry 10880 SF",
+        "name": "Earth Cherry 10880 SF",
+        "imagePath": "color/MWG/14. Earth Cherry 10880 SF.jpg"
+      },
+      {
+        "code": "Hardrock Maple 10888 SF",
+        "name": "Hardrock Maple 10888 SF",
+        "imagePath": "color/MWG/12. Hardrock Maple 10888 SF.jpg"
+      },
+      {
+        "code": "Mahagony 10699 SF",
+        "name": "Mahagony 10699 SF",
+        "imagePath": "color/MWG/13. Mahagony 10699 SF.jpg"
+      },
+      {
+        "code": "Mansal Horizontal Walnut 14619 SF",
+        "name": "Mansal Horizontal Walnut 14619 SF",
+        "imagePath": "color/MWG/18. Mansal Horizontal Walnut 14619 SF.jpg"
+      },
+      {
+        "code": "Muddled Straw 10085 SF",
+        "name": "Muddled Straw 10085 SF",
+        "imagePath": "color/MWG/16. Muddled Straw 10085 SF.jpg"
+      },
+      {
+        "code": "Mystique Walnut 10511 SF",
+        "name": "Mystique Walnut 10511 SF",
+        "imagePath": "color/MWG/10. Mystique Walnut 10511 SF.jpg"
+      },
+      {
+        "code": "Neo Highland Pine 11005 SF",
+        "name": "Neo Highland Pine 11005 SF",
+        "imagePath": "color/MWG/11. Neo Highland Pine 11005 SF.jpg"
+      },
+      {
+        "code": "Nice Wood 10197 SF",
+        "name": "Nice Wood 10197 SF",
+        "imagePath": "color/MWG/8. Nice Wood 10197 SF.jpg"
+      },
+      {
+        "code": "Orchard Delight 10592 SF",
+        "name": "Orchard Delight 10592 SF",
+        "imagePath": "color/MWG/4. Orchard Delight 10592 SF.jpg"
+      },
+      {
+        "code": "Persian Walnut 14540 VNR RH",
+        "name": "Persian Walnut 14540 VNR RH",
+        "imagePath": "color/MWG/2. Persian Walnut 14540 VNR RH.jpg"
+      },
+      {
+        "code": "Sapelle 10019 SF",
+        "name": "Sapelle 10019 SF",
+        "imagePath": "color/MWG/15. Sapelle 10019 SF.jpg"
+      },
+      {
+        "code": "Savannah Cherry 10853 SF",
+        "name": "Savannah Cherry 10853 SF",
+        "imagePath": "color/MWG/9. Savannah Cherry 10853 SF.jpg"
+      },
+      {
+        "code": "Wenge 10858 SF",
+        "name": "Wenge 10858 SF",
+        "imagePath": "color/MWG/7. Wenge 10858 SF.jpg"
+      },
+      {
+        "code": "Winter Maple 14689 SF",
+        "name": "Winter Maple 14689 SF",
+        "imagePath": "color/MWG/19. Winter Maple 14689 SF.jpg"
+      },
+      {
+        "code": "Berry Bunch 22105 HGL",
+        "name": "Berry Bunch 22105 HGL",
+        "imagePath": "color/HGS/11. Berry Bunch 22105 HGL.jpg"
+      },
+      {
+        "code": "Black 21066 MR+",
+        "name": "Black 21066 MR+",
+        "imagePath": "color/HGS/5. Black 21066 MR+.jpg"
+      },
+      {
+        "code": "Carnival 21075 HGL",
+        "name": "Carnival 21075 HGL",
+        "imagePath": "color/HGS/12. Carnival 21075 HGL.jpg"
+      },
+      {
+        "code": "Champagne 21187 MR+",
+        "name": "Champagne 21187 MR+",
+        "imagePath": "color/HGS/2. Champagne 21187 MR+.jpg"
+      },
+      {
+        "code": "Frosty White 21091 MR+",
+        "name": "Frosty White 21091 MR+",
+        "imagePath": "color/HGS/1. Frosty White 21091 MR+.jpg"
+      },
+      {
+        "code": "Ivory Frost 49916 HGL",
+        "name": "Ivory Frost 49916 HGL",
+        "imagePath": "color/HGS/14. Ivory Frost 49916 HGL.jpg"
+      },
+      {
+        "code": "Lime 21163 MR+",
+        "name": "Lime 21163 MR+",
+        "imagePath": "color/HGS/7. Lime 21163 MR+.jpg"
+      },
+      {
+        "code": "Marigold 21057 MR+",
+        "name": "Marigold 21057 MR+",
+        "imagePath": "color/HGS/6. Marigold 21057 MR+.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 MR+",
+        "name": "Pearl Black 22109 MR+",
+        "imagePath": "color/HGS/4. Pearl Black 22109 MR+.jpg"
+      },
+      {
+        "code": "Poppy 21004 HGL",
+        "name": "Poppy 21004 HGL",
+        "imagePath": "color/HGS/10. Poppy 21004 HGL.jpg"
+      },
+      {
+        "code": "Prairie Green 21003 HGL",
+        "name": "Prairie Green 21003 HGL",
+        "imagePath": "color/HGS/16. Prairie Green 21003 HGL.jpg"
+      },
+      {
+        "code": "Saffron 21024 HGL",
+        "name": "Saffron 21024 HGL",
+        "imagePath": "color/HGS/9. Saffron 21024 HGL.jpg"
+      },
+      {
+        "code": "Shangrila 21055 MR+",
+        "name": "Shangrila 21055 MR+",
+        "imagePath": "color/HGS/8. Shangrila 21055 MR+.jpg"
+      },
+      {
+        "code": "Shore 22122 HGL",
+        "name": "Shore 22122 HGL",
+        "imagePath": "color/HGS/13. Shore 22122 HGL.jpg"
+      },
+      {
+        "code": "Steel Frost 49946 HGL",
+        "name": "Steel Frost 49946 HGL",
+        "imagePath": "color/HGS/15. Steel Frost 49946 HGL.jpg"
+      },
+      {
+        "code": "Tan 21127 MR+",
+        "name": "Tan 21127 MR+",
+        "imagePath": "color/HGS/3. Tan 21127 MR+.jpg"
+      },
+      {
+        "code": "Cherry Horizontal Walnut 14478 MR+",
+        "name": "Cherry Horizontal Walnut 14478 MR+",
+        "imagePath": "color/HGW/6. Cherry Horizontal Walnut 14478 MR+.jpg"
+      },
+      {
+        "code": "Cherry Walnut 14178 MR+",
+        "name": "Cherry Walnut 14178 MR+",
+        "imagePath": "color/HGW/4. Cherry Walnut 14178 MR+.jpg"
+      },
+      {
+        "code": "Columbian Walnut 14177 MR+",
+        "name": "Columbian Walnut 14177 MR+",
+        "imagePath": "color/HGW/3. Columbian Walnut 14177 MR+.jpg"
+      },
+      {
+        "code": "Ebony Sepia 14675 MR+",
+        "name": "Ebony Sepia 14675 MR+",
+        "imagePath": "color/HGW/2. Ebony Sepia 14675 MR+.jpg"
+      },
+      {
+        "code": "Elevated Wood 10502 MR+",
+        "name": "Elevated Wood 10502 MR+",
+        "imagePath": "color/HGW/5. Elevated Wood 10502 MR+.jpg"
+      },
+      {
+        "code": "Horizontal Wallis Plum 14406 MR+",
+        "name": "Horizontal Wallis Plum 14406 MR+",
+        "imagePath": "color/HGW/9. Horizontal Wallis Plum 14406 MR+.jpg"
+      },
+      {
+        "code": "Rustic Dreams 44773 MR+",
+        "name": "Rustic Dreams 44773 MR+",
+        "imagePath": "color/HGW/7. Rustic Dreams 44773 MR+.jpg"
+      },
+      {
+        "code": "Sapelle 10019 MR+",
+        "name": "Sapelle 10019 MR+",
+        "imagePath": "color/HGW/1. Sapelle 10019 MR+.jpg"
+      },
+      {
+        "code": "Soft Travertine 40232 MR+",
+        "name": "Soft Travertine 40232 MR+",
+        "imagePath": "color/HGW/8. Soft Travertine 40232 MR+.jpg"
+      },
+      {
+        "code": "Ashen Krakato 44279 CMT",
+        "name": "Ashen Krakato 44279 CMT",
+        "imagePath": "color/TXR/24. Ashen Krakato 44279 CMT.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SCT",
+        "name": "Auburn Oak 14142 SCT",
+        "imagePath": "color/TXR/10. Auburn Oak 14142 SCT.jpg"
+      },
+      {
+        "code": "Bran Krakato 44282 CMT",
+        "name": "Bran Krakato 44282 CMT",
+        "imagePath": "color/TXR/25. Bran Krakato 44282 CMT.jpg"
+      },
+      {
+        "code": "Canadian Balsam 14132 GNR",
+        "name": "Canadian Balsam 14132 GNR",
+        "imagePath": "color/TXR/13. Canadian Balsam 14132 GNR.jpg"
+      },
+      {
+        "code": "Canadian Walnut 10544 WV",
+        "name": "Canadian Walnut 10544 WV",
+        "imagePath": "color/TXR/5. Canadian Walnut 10544 WV.jpg"
+      },
+      {
+        "code": "Canterbury Oak 14140 SCT",
+        "name": "Canterbury Oak 14140 SCT",
+        "imagePath": "color/TXR/11. Canterbury Oak 14140 SCT.jpg"
+      },
+      {
+        "code": "Chamois Tropical 14810 WV",
+        "name": "Chamois Tropical 14810 WV",
+        "imagePath": "color/TXR/1. Chamois Tropical 14810 WV.jpg"
+      },
+      {
+        "code": "Cloudy Cambric 44754 LNN",
+        "name": "Cloudy Cambric 44754 LNN",
+        "imagePath": "color/TXR/22. Cloudy Cambric 44754 LNN.jpg"
+      },
+      {
+        "code": "Desert Recon 10081 ML",
+        "name": "Desert Recon 10081 ML",
+        "imagePath": "color/TXR/18. Desert Recon 10081 ML.jpg"
+      },
+      {
+        "code": "Doredos Pine 14613 STK",
+        "name": "Doredos Pine 14613 STK",
+        "imagePath": "color/TXR/12. Doredos Pine 14613 STK.jpg"
+      },
+      {
+        "code": "Ebony Aspen 14673 WV",
+        "name": "Ebony Aspen 14673 WV",
+        "imagePath": "color/TXR/6. Ebony Aspen 14673 WV.jpg"
+      },
+      {
+        "code": "Ebony Peat 14674 WV",
+        "name": "Ebony Peat 14674 WV",
+        "imagePath": "color/TXR/7. Ebony Peat 14674 WV.jpg"
+      },
+      {
+        "code": "Golden Oak 10851 VNZ",
+        "name": "Golden Oak 10851 VNZ",
+        "imagePath": "color/TXR/8. Golden Oak 10851 VNZ.jpg"
+      },
+      {
+        "code": "Hazel Cambric 44753 LNN",
+        "name": "Hazel Cambric 44753 LNN",
+        "imagePath": "color/TXR/19. Hazel Cambric 44753 LNN.jpg"
+      },
+      {
+        "code": "Japanese Bamboo 10657 VL",
+        "name": "Japanese Bamboo 10657 VL",
+        "imagePath": "color/TXR/4. Japanese Bamboo 10657 VL.jpg"
+      },
+      {
+        "code": "Livid Krakato 44281 CMT",
+        "name": "Livid Krakato 44281 CMT",
+        "imagePath": "color/TXR/23. Livid Krakato 44281 CMT.jpg"
+      },
+      {
+        "code": "Peconic Chestnut 14620 VLY",
+        "name": "Peconic Chestnut 14620 VLY",
+        "imagePath": "color/TXR/9. Peconic Chestnut 14620 VLY.jpg"
+      },
+      {
+        "code": "Pure Oak 10514 VNZ",
+        "name": "Pure Oak 10514 VNZ",
+        "imagePath": "color/TXR/3. Pure Oak 10514 VNZ.jpg"
+      },
+      {
+        "code": "Russet Tropical 14809 WV",
+        "name": "Russet Tropical 14809 WV",
+        "imagePath": "color/TXR/16. Russet Tropical 14809 WV.jpg"
+      },
+      {
+        "code": "Sandy Recon 10078 ML",
+        "name": "Sandy Recon 10078 ML",
+        "imagePath": "color/TXR/17. Sandy Recon 10078 ML.jpg"
+      },
+      {
+        "code": "Scandinavian Oak 10596 VNZ",
+        "name": "Scandinavian Oak 10596 VNZ",
+        "imagePath": "color/TXR/2. Scandinavian Oak 10596 VNZ.jpg"
+      },
+      {
+        "code": "Silver Oak 10879 VNZ",
+        "name": "Silver Oak 10879 VNZ",
+        "imagePath": "color/TXR/26. Silver Oak 10879 VNZ.jpg"
+      },
+      {
+        "code": "Straw Balsam 14161 GNR",
+        "name": "Straw Balsam 14161 GNR",
+        "imagePath": "color/TXR/15. Straw Balsam 14161 GNR.jpg"
+      },
+      {
+        "code": "Tan Cambric 44755 LNN",
+        "name": "Tan Cambric 44755 LNN",
+        "imagePath": "color/TXR/20. Tan Cambric 44755 LNN.jpg"
+      },
+      {
+        "code": "Tawny Balsam 14133 GNR",
+        "name": "Tawny Balsam 14133 GNR",
+        "imagePath": "color/TXR/14. Tawny Balsam 14133 GNR.jpg"
+      },
+      {
+        "code": "White (purl) Cambric 44752 LNN",
+        "name": "White (purl) Cambric 44752 LNN",
+        "imagePath": "color/TXR/21. White (purl) Cambric 44752 LNN.jpg"
       }
     ]
   },
-  {
-    "finishTypeCode": "FOIL",
-    "colors": [
-      {
-        "code": "CC123",
-        "name": "Frosty White",
-        "imagePath": "colors/cc123.jpg"
-      },
-      {
-        "code": "RoastedOil",
-        "name": "Roasted Oil",
-        "imagePath": "colors/cc234.png"
-      },
-      {
-        "code": "CC254",
-        "name": "Sunset Orange",
-        "imagePath": "colors/cc234.png"
-      }
-    ]
-  },
+
+
   {
     "finishTypeCode": "PAINT",
-    "colors": [
+    "colors":
+    [
       {
-        "code": "CC123",
-        "name": "Frosty White",
-        "imagePath": "colors/cc123.jpg"
+        "code": "RAL 1003 Signalgelb",
+        "name": "RAL 1003 Signalgelb",
+        "imagePath": "color/PUP/RAL 1003 Signalgelb.jpg"
       },
       {
-        "code": "RoastedOil",
-        "name": "Roasted Oil",
-        "imagePath": "colors/cc234.png"
+        "code": "RAL 1006 Mailsgelb",
+        "name": "RAL 1006 Mailsgelb",
+        "imagePath": "color/PUP/RAL 1006 Mailsgelb.jpg"
       },
       {
-        "code": "CC254",
-        "name": "Sunset Orange",
-        "imagePath": "colors/cc234.png"
+        "code": "RAL 1011 Braunbeige",
+        "name": "RAL 1011 Braunbeige",
+        "imagePath": "color/PUP/RAL 1011 Braunbeige.jpg"
+      },
+      {
+        "code": "RAL 1013 Perlweib",
+        "name": "RAL 1013 Perlweib",
+        "imagePath": "color/PUP/RAL 1013 Perlweib.jpg"
+      },
+      {
+        "code": "RAL 1028 Melonengelb",
+        "name": "RAL 1028 Melonengelb",
+        "imagePath": "color/PUP/RAL 1028 Melonengelb.jpg"
+      },
+      {
+        "code": "RAL 3002 Karminrot",
+        "name": "RAL 3002 Karminrot",
+        "imagePath": "color/PUP/RAL 3002 Karminrot.jpg"
+      },
+      {
+        "code": "RAL 3017 Rose",
+        "name": "RAL 3017 Rose",
+        "imagePath": "color/PUP/RAL 3017 Rose.jpg"
+      },
+      {
+        "code": "RAL 5005 Signalblau",
+        "name": "RAL 5005 Signalblau",
+        "imagePath": "color/PUP/RAL 5005 Signalblau.jpg"
+      },
+      {
+        "code": "RAL 5015 Himmelblau",
+        "name": "RAL 5015 Himmelblau",
+        "imagePath": "color/PUP/RAL 5015 Himmelblau.jpg"
+      },
+      {
+        "code": "RAL 6027 Lichtgrun",
+        "name": "RAL 6027 Lichtgrun",
+        "imagePath": "color/PUP/RAL 6027 Lichtgrun.jpg"
+      },
+      {
+        "code": "RAL 6037 Reingrun",
+        "name": "RAL 6037 Reingrun",
+        "imagePath": "color/PUP/RAL 6037 Reingrun.jpg"
+      },
+      {
+        "code": "RAL 7005 Mausgrau",
+        "name": "RAL 7005 Mausgrau",
+        "imagePath": "color/PUP/RAL 7005 Mausgrau.jpg"
+      },
+      {
+        "code": "RAL 7034 Gelgrau",
+        "name": "RAL 7034 Gelgrau",
+        "imagePath": "color/PUP/RAL 7034 Gelgrau.jpg"
+      },
+      {
+        "code": "RAL 7044 Seidengrau",
+        "name": "RAL 7044 Seidengrau",
+        "imagePath": "color/PUP/RAL 7044 Seidengrau.jpg"
+      },
+      {
+        "code": "RAL 8003 Lehmbraun",
+        "name": "RAL 8003 Lehmbraun",
+        "imagePath": "color/PUP/RAL 8003 Lehmbraun.jpg"
+      },
+      {
+        "code": "RAL 8012 Rotbraun",
+        "name": "RAL 8012 Rotbraun",
+        "imagePath": "color/PUP/RAL 8012 Rotbraun.jpg"
+      },
+      {
+        "code": "RAL 9016 Verkhrsweib",
+        "name": "RAL 9016 Verkhrsweib",
+        "imagePath": "color/PUP/RAL 9016 Verkhrsweib.jpg"
+      },
+      {
+        "code": "RAL 9017 Verkrhrsschwarz",
+        "name": "RAL 9017 Verkrhrsschwarz",
+        "imagePath": "color/PUP/RAL 9017 Verkrhrsschwarz.jpg"
+      }
+    ]  },
+
+  {
+    "finishTypeCode": "FOIL",
+    "colors":
+    [
+      {
+        "code": "P_192",
+        "name": "P_192",
+        "imagePath": "color/PFL/P_192.jpg"
+      },
+      {
+        "code": "P_2214",
+        "name": "P_2214",
+        "imagePath": "color/PFL/P_2214.jpg"
+      },
+      {
+        "code": "P_2218",
+        "name": "P_2218",
+        "imagePath": "color/PFL/P_2218.jpg"
+      },
+      {
+        "code": "P_2220",
+        "name": "P_2220",
+        "imagePath": "color/PFL/P_2220.jpg"
+      },
+      {
+        "code": "P_225",
+        "name": "P_225",
+        "imagePath": "color/PFL/P_225.jpg"
+      },
+      {
+        "code": "P_241",
+        "name": "P_241",
+        "imagePath": "color/PFL/P_241.jpg"
+      },
+      {
+        "code": "P_261",
+        "name": "P_261",
+        "imagePath": "color/PFL/P_261.jpg"
+      },
+      {
+        "code": "P_284",
+        "name": "P_284",
+        "imagePath": "color/PFL/P_284.jpg"
+      },
+      {
+        "code": "P_286",
+        "name": "P_286",
+        "imagePath": "color/PFL/P_286.jpg"
+      },
+      {
+        "code": "P_324",
+        "name": "P_324",
+        "imagePath": "color/PFL/P_324.jpg"
+      },
+      {
+        "code": "P_326",
+        "name": "P_326",
+        "imagePath": "color/PFL/P_326.jpg"
+      },
+      {
+        "code": "P_329",
+        "name": "P_329",
+        "imagePath": "color/PFL/P_329.jpg"
+      },
+      {
+        "code": "P_331",
+        "name": "P_331",
+        "imagePath": "color/PFL/P_331.jpg"
+      },
+      {
+        "code": "P_336",
+        "name": "P_336",
+        "imagePath": "color/PFL/P_336.jpg"
+      },
+      {
+        "code": "P_338",
+        "name": "P_338",
+        "imagePath": "color/PFL/P_338.jpg"
+      },
+      {
+        "code": "P_403",
+        "name": "P_403",
+        "imagePath": "color/PFL/P_403.jpg"
+      },
+      {
+        "code": "P_407",
+        "name": "P_407",
+        "imagePath": "color/PFL/P_407.jpg"
+      },
+      {
+        "code": "P_408",
+        "name": "P_408",
+        "imagePath": "color/PFL/P_408.jpg"
+      },
+      {
+        "code": "P_412",
+        "name": "P_412",
+        "imagePath": "color/PFL/P_412.jpg"
+      },
+      {
+        "code": "P_89",
+        "name": "P_89",
+        "imagePath": "color/PFL/P_89.jpg"
       }
     ]
   },
+
+
   {
     "finishTypeCode": "ACRYLIC",
     "colors": [
       {
-        "code": "CC123",
-        "name": "Frosty White",
-        "imagePath": "colors/cc123.jpg"
+        "code": "Glass_AlmondGreen",
+        "name": "Glass_AlmondGreen",
+        "imagePath": "color/GLS/Glass_AlmondGreen.jpg"
       },
       {
-        "code": "CC234",
-        "name": "Sunset Orange",
-        "imagePath": "colors/cc234.png"
+        "code": "Glass_AtollBlue",
+        "name": "Glass_AtollBlue",
+        "imagePath": "color/GLS/Glass_AtollBlue.jpg"
       },
       {
-        "code": "CC254",
-        "name": "Sunset Orange",
-        "imagePath": "colors/cc234.png"
+        "code": "Glass_Black",
+        "name": "Glass_Black",
+        "imagePath": "color/GLS/Glass_Black.jpg"
+      },
+      {
+        "code": "Glass_CasisPurple",
+        "name": "Glass_CasisPurple",
+        "imagePath": "color/GLS/Glass_CasisPurple.jpg"
+      },
+      {
+        "code": "Glass_ChocoBrown",
+        "name": "Glass_ChocoBrown",
+        "imagePath": "color/GLS/Glass_ChocoBrown.jpg"
+      },
+      {
+        "code": "Glass_ExtraWhite",
+        "name": "Glass_ExtraWhite",
+        "imagePath": "color/GLS/Glass_ExtraWhite.jpg"
+      },
+      {
+        "code": "Glass_FlameRed",
+        "name": "Glass_FlameRed",
+        "imagePath": "color/GLS/Glass_FlameRed.jpg"
+      },
+      {
+        "code": "Glass_FusionOrange",
+        "name": "Glass_FusionOrange",
+        "imagePath": "color/GLS/Glass_FusionOrange.jpg"
+      },
+      {
+        "code": "Glass_Ivory",
+        "name": "Glass_Ivory",
+        "imagePath": "color/GLS/Glass_Ivory.jpg"
+      },
+      {
+        "code": "Glass_OliveGreen",
+        "name": "Glass_OliveGreen",
+        "imagePath": "color/GLS/Glass_OliveGreen.jpg"
+      },
+      {
+        "code": "Glass_OperaRed",
+        "name": "Glass_OperaRed",
+        "imagePath": "color/GLS/Glass_OperaRed.jpg"
+      },
+      {
+        "code": "Glass_PistaGreen",
+        "name": "Glass_PistaGreen",
+        "imagePath": "color/GLS/Glass_PistaGreen.jpg"
+      },
+      {
+        "code": "Glass_SolarYellow",
+        "name": "Glass_SolarYellow",
+        "imagePath": "color/GLS/Glass_SolarYellow.jpg"
+      },
+      {
+        "code": "Glass_TitaniumGrey",
+        "name": "Glass_TitaniumGrey",
+        "imagePath": "color/GLS/Glass_TitaniumGrey.jpg"
+      },
+      {
+        "code": "Glass_UltraWhite",
+        "name": "Glass_UltraWhite",
+        "imagePath": "color/GLS/Glass_UltraWhite.jpg"
+      },
+      {
+        "code": "Berry Bunch 22105 HGL",
+        "name": "Berry Bunch 22105 HGL",
+        "imagePath": "color/HGS/11. Berry Bunch 22105 HGL.jpg"
+      },
+      {
+        "code": "Black 21066 MR+",
+        "name": "Black 21066 MR+",
+        "imagePath": "color/HGS/5. Black 21066 MR+.jpg"
+      },
+      {
+        "code": "Carnival 21075 HGL",
+        "name": "Carnival 21075 HGL",
+        "imagePath": "color/HGS/12. Carnival 21075 HGL.jpg"
+      },
+      {
+        "code": "Champagne 21187 MR+",
+        "name": "Champagne 21187 MR+",
+        "imagePath": "color/HGS/2. Champagne 21187 MR+.jpg"
+      },
+      {
+        "code": "Frosty White 21091 MR+",
+        "name": "Frosty White 21091 MR+",
+        "imagePath": "color/HGS/1. Frosty White 21091 MR+.jpg"
+      },
+      {
+        "code": "Ivory Frost 49916 HGL",
+        "name": "Ivory Frost 49916 HGL",
+        "imagePath": "color/HGS/14. Ivory Frost 49916 HGL.jpg"
+      },
+      {
+        "code": "Lime 21163 MR+",
+        "name": "Lime 21163 MR+",
+        "imagePath": "color/HGS/7. Lime 21163 MR+.jpg"
+      },
+      {
+        "code": "Marigold 21057 MR+",
+        "name": "Marigold 21057 MR+",
+        "imagePath": "color/HGS/6. Marigold 21057 MR+.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 MR+",
+        "name": "Pearl Black 22109 MR+",
+        "imagePath": "color/HGS/4. Pearl Black 22109 MR+.jpg"
+      },
+      {
+        "code": "Poppy 21004 HGL",
+        "name": "Poppy 21004 HGL",
+        "imagePath": "color/HGS/10. Poppy 21004 HGL.jpg"
+      },
+      {
+        "code": "Prairie Green 21003 HGL",
+        "name": "Prairie Green 21003 HGL",
+        "imagePath": "color/HGS/16. Prairie Green 21003 HGL.jpg"
+      },
+      {
+        "code": "Saffron 21024 HGL",
+        "name": "Saffron 21024 HGL",
+        "imagePath": "color/HGS/9. Saffron 21024 HGL.jpg"
+      },
+      {
+        "code": "Shangrila 21055 MR+",
+        "name": "Shangrila 21055 MR+",
+        "imagePath": "color/HGS/8. Shangrila 21055 MR+.jpg"
+      },
+      {
+        "code": "Shore 22122 HGL",
+        "name": "Shore 22122 HGL",
+        "imagePath": "color/HGS/13. Shore 22122 HGL.jpg"
+      },
+      {
+        "code": "Steel Frost 49946 HGL",
+        "name": "Steel Frost 49946 HGL",
+        "imagePath": "color/HGS/15. Steel Frost 49946 HGL.jpg"
+      },
+      {
+        "code": "Tan 21127 MR+",
+        "name": "Tan 21127 MR+",
+        "imagePath": "color/HGS/3. Tan 21127 MR+.jpg"
+      },
+      {
+        "code": "Cherry Horizontal Walnut 14478 MR+",
+        "name": "Cherry Horizontal Walnut 14478 MR+",
+        "imagePath": "color/HGW/6. Cherry Horizontal Walnut 14478 MR+.jpg"
+      },
+      {
+        "code": "Cherry Walnut 14178 MR+",
+        "name": "Cherry Walnut 14178 MR+",
+        "imagePath": "color/HGW/4. Cherry Walnut 14178 MR+.jpg"
+      },
+      {
+        "code": "Columbian Walnut 14177 MR+",
+        "name": "Columbian Walnut 14177 MR+",
+        "imagePath": "color/HGW/3. Columbian Walnut 14177 MR+.jpg"
+      },
+      {
+        "code": "Ebony Sepia 14675 MR+",
+        "name": "Ebony Sepia 14675 MR+",
+        "imagePath": "color/HGW/2. Ebony Sepia 14675 MR+.jpg"
+      },
+      {
+        "code": "Elevated Wood 10502 MR+",
+        "name": "Elevated Wood 10502 MR+",
+        "imagePath": "color/HGW/5. Elevated Wood 10502 MR+.jpg"
+      },
+      {
+        "code": "Horizontal Wallis Plum 14406 MR+",
+        "name": "Horizontal Wallis Plum 14406 MR+",
+        "imagePath": "color/HGW/9. Horizontal Wallis Plum 14406 MR+.jpg"
+      },
+      {
+        "code": "Rustic Dreams 44773 MR+",
+        "name": "Rustic Dreams 44773 MR+",
+        "imagePath": "color/HGW/7. Rustic Dreams 44773 MR+.jpg"
+      },
+      {
+        "code": "Sapelle 10019 MR+",
+        "name": "Sapelle 10019 MR+",
+        "imagePath": "color/HGW/1. Sapelle 10019 MR+.jpg"
+      },
+      {
+        "code": "Soft Travertine 40232 MR+",
+        "name": "Soft Travertine 40232 MR+",
+        "imagePath": "color/HGW/8. Soft Travertine 40232 MR+.jpg"
+      },
+      {
+        "code": "Bronze 99988 MT",
+        "name": "Bronze 99988 MT",
+        "imagePath": "color/MTL/3. Bronze 99988 MT.jpg"
+      },
+      {
+        "code": "Silver 99999 MT",
+        "name": "Silver 99999 MT",
+        "imagePath": "color/MTL/1. Silver 99999 MT.jpg"
+      },
+      {
+        "code": "Steel 99989 MT",
+        "name": "Steel 99989 MT",
+        "imagePath": "color/MTL/2. Steel 99989 MT.jpg"
+      },
+      {
+        "code": "Beige 21037 SF",
+        "name": "Beige 21037 SF",
+        "imagePath": "color/MTS/10. Beige 21037 SF.jpg"
+      },
+      {
+        "code": "Berry Bunch 22105 SF",
+        "name": "Berry Bunch 22105 SF",
+        "imagePath": "color/MTS/18. Berry Bunch 22105 SF.jpg"
+      },
+      {
+        "code": "Black 21066 SF",
+        "name": "Black 21066 SF",
+        "imagePath": "color/MTS/14. Black 21066 SF.jpg"
+      },
+      {
+        "code": "Candy White 21941 SF",
+        "name": "Candy White 21941 SF",
+        "imagePath": "color/MTS/9. Candy White 21941 SF.jpg"
+      },
+      {
+        "code": "Carnival 21075 SF",
+        "name": "Carnival 21075 SF",
+        "imagePath": "color/MTS/17. Carnival 21075 SF.jpg"
+      },
+      {
+        "code": "Champagne 21187 SF",
+        "name": "Champagne 21187 SF",
+        "imagePath": "color/MTS/1. Champagne 21187 SF.jpg"
+      },
+      {
+        "code": "Dove Grey 22079 SF",
+        "name": "Dove Grey 22079 SF",
+        "imagePath": "color/MTS/6. Dove Grey 22079 SF.jpg"
+      },
+      {
+        "code": "Gladiola 22157 SF",
+        "name": "Gladiola 22157 SF",
+        "imagePath": "color/MTS/16. Gladiola 22157 SF.jpg"
+      },
+      {
+        "code": "Ink 21032 SF",
+        "name": "Ink 21032 SF",
+        "imagePath": "color/MTS/7. Ink 21032 SF.jpg"
+      },
+      {
+        "code": "Kingfisher Blue 21122 SF",
+        "name": "Kingfisher Blue 21122 SF",
+        "imagePath": "color/MTS/15. Kingfisher Blue 21122 SF.jpg"
+      },
+      {
+        "code": "Lime 21163 SF",
+        "name": "Lime 21163 SF",
+        "imagePath": "color/MTS/4. Lime 21163 SF.jpg"
+      },
+      {
+        "code": "Marigold 21057 SF",
+        "name": "Marigold 21057 SF",
+        "imagePath": "color/MTS/3. Marigold 21057 SF.jpg"
+      },
+      {
+        "code": "Mocha 21038 SF",
+        "name": "Mocha 21038 SF",
+        "imagePath": "color/MTS/12. Mocha 21038 SF.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 SF",
+        "name": "Pearl Black 22109 SF",
+        "imagePath": "color/MTS/13. Pearl Black 22109 SF.jpg"
+      },
+      {
+        "code": "Poppy 21004 SF",
+        "name": "Poppy 21004 SF",
+        "imagePath": "color/MTS/8. Poppy 21004 SF.jpg"
+      },
+      {
+        "code": "Sandal 21077 SF",
+        "name": "Sandal 21077 SF",
+        "imagePath": "color/MTS/5. Sandal 21077 SF.jpg"
+      },
+      {
+        "code": "Slate 22099 SF",
+        "name": "Slate 22099 SF",
+        "imagePath": "color/MTS/19. Slate 22099 SF.jpg"
+      },
+      {
+        "code": "Tan 21127 SF",
+        "name": "Tan 21127 SF",
+        "imagePath": "color/MTS/2. Tan 21127 SF.jpg"
+      },
+      {
+        "code": "Warm Grey 21029 SF",
+        "name": "Warm Grey 21029 SF",
+        "imagePath": "color/MTS/11. Warm Grey 21029 SF.jpg"
+      },
+      {
+        "code": "American Walnut 14538 VNR RH",
+        "name": "American Walnut 14538 VNR RH",
+        "imagePath": "color/MWG/6. American Walnut 14538 VNR RH.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SF",
+        "name": "Auburn Oak 14142 SF",
+        "imagePath": "color/MWG/5. Auburn Oak 14142 SF.jpg"
+      },
+      {
+        "code": "Balinese Pine 10866 SF",
+        "name": "Balinese Pine 10866 SF",
+        "imagePath": "color/MWG/1. Balinese Pine 10866 SF.jpg"
+      },
+      {
+        "code": "Brazilian Walnut 14539 VNR RH",
+        "name": "Brazilian Walnut 14539 VNR RH",
+        "imagePath": "color/MWG/3. Brazilian Walnut 14539 VNR RH.jpg"
+      },
+      {
+        "code": "Dark Kraftwood 10843 SF",
+        "name": "Dark Kraftwood 10843 SF",
+        "imagePath": "color/MWG/17. Dark Kraftwood 10843 SF.jpg"
+      },
+      {
+        "code": "Earth Cherry 10880 SF",
+        "name": "Earth Cherry 10880 SF",
+        "imagePath": "color/MWG/14. Earth Cherry 10880 SF.jpg"
+      },
+      {
+        "code": "Hardrock Maple 10888 SF",
+        "name": "Hardrock Maple 10888 SF",
+        "imagePath": "color/MWG/12. Hardrock Maple 10888 SF.jpg"
+      },
+      {
+        "code": "Mahagony 10699 SF",
+        "name": "Mahagony 10699 SF",
+        "imagePath": "color/MWG/13. Mahagony 10699 SF.jpg"
+      },
+      {
+        "code": "Mansal Horizontal Walnut 14619 SF",
+        "name": "Mansal Horizontal Walnut 14619 SF",
+        "imagePath": "color/MWG/18. Mansal Horizontal Walnut 14619 SF.jpg"
+      },
+      {
+        "code": "Muddled Straw 10085 SF",
+        "name": "Muddled Straw 10085 SF",
+        "imagePath": "color/MWG/16. Muddled Straw 10085 SF.jpg"
+      },
+      {
+        "code": "Mystique Walnut 10511 SF",
+        "name": "Mystique Walnut 10511 SF",
+        "imagePath": "color/MWG/10. Mystique Walnut 10511 SF.jpg"
+      },
+      {
+        "code": "Neo Highland Pine 11005 SF",
+        "name": "Neo Highland Pine 11005 SF",
+        "imagePath": "color/MWG/11. Neo Highland Pine 11005 SF.jpg"
+      },
+      {
+        "code": "Nice Wood 10197 SF",
+        "name": "Nice Wood 10197 SF",
+        "imagePath": "color/MWG/8. Nice Wood 10197 SF.jpg"
+      },
+      {
+        "code": "Orchard Delight 10592 SF",
+        "name": "Orchard Delight 10592 SF",
+        "imagePath": "color/MWG/4. Orchard Delight 10592 SF.jpg"
+      },
+      {
+        "code": "Persian Walnut 14540 VNR RH",
+        "name": "Persian Walnut 14540 VNR RH",
+        "imagePath": "color/MWG/2. Persian Walnut 14540 VNR RH.jpg"
+      },
+      {
+        "code": "Sapelle 10019 SF",
+        "name": "Sapelle 10019 SF",
+        "imagePath": "color/MWG/15. Sapelle 10019 SF.jpg"
+      },
+      {
+        "code": "Savannah Cherry 10853 SF",
+        "name": "Savannah Cherry 10853 SF",
+        "imagePath": "color/MWG/9. Savannah Cherry 10853 SF.jpg"
+      },
+      {
+        "code": "Wenge 10858 SF",
+        "name": "Wenge 10858 SF",
+        "imagePath": "color/MWG/7. Wenge 10858 SF.jpg"
+      },
+      {
+        "code": "Winter Maple 14689 SF",
+        "name": "Winter Maple 14689 SF",
+        "imagePath": "color/MWG/19. Winter Maple 14689 SF.jpg"
+      },
+      {
+        "code": "P_192",
+        "name": "P_192",
+        "imagePath": "color/PFL/P_192.jpg"
+      },
+      {
+        "code": "P_2214",
+        "name": "P_2214",
+        "imagePath": "color/PFL/P_2214.jpg"
+      },
+      {
+        "code": "P_2218",
+        "name": "P_2218",
+        "imagePath": "color/PFL/P_2218.jpg"
+      },
+      {
+        "code": "P_2220",
+        "name": "P_2220",
+        "imagePath": "color/PFL/P_2220.jpg"
+      },
+      {
+        "code": "P_225",
+        "name": "P_225",
+        "imagePath": "color/PFL/P_225.jpg"
+      },
+      {
+        "code": "P_241",
+        "name": "P_241",
+        "imagePath": "color/PFL/P_241.jpg"
+      },
+      {
+        "code": "P_261",
+        "name": "P_261",
+        "imagePath": "color/PFL/P_261.jpg"
+      },
+      {
+        "code": "P_284",
+        "name": "P_284",
+        "imagePath": "color/PFL/P_284.jpg"
+      },
+      {
+        "code": "P_286",
+        "name": "P_286",
+        "imagePath": "color/PFL/P_286.jpg"
+      },
+      {
+        "code": "P_324",
+        "name": "P_324",
+        "imagePath": "color/PFL/P_324.jpg"
+      },
+      {
+        "code": "P_326",
+        "name": "P_326",
+        "imagePath": "color/PFL/P_326.jpg"
+      },
+      {
+        "code": "P_329",
+        "name": "P_329",
+        "imagePath": "color/PFL/P_329.jpg"
+      },
+      {
+        "code": "P_331",
+        "name": "P_331",
+        "imagePath": "color/PFL/P_331.jpg"
+      },
+      {
+        "code": "P_336",
+        "name": "P_336",
+        "imagePath": "color/PFL/P_336.jpg"
+      },
+      {
+        "code": "P_338",
+        "name": "P_338",
+        "imagePath": "color/PFL/P_338.jpg"
+      },
+      {
+        "code": "P_403",
+        "name": "P_403",
+        "imagePath": "color/PFL/P_403.jpg"
+      },
+      {
+        "code": "P_407",
+        "name": "P_407",
+        "imagePath": "color/PFL/P_407.jpg"
+      },
+      {
+        "code": "P_408",
+        "name": "P_408",
+        "imagePath": "color/PFL/P_408.jpg"
+      },
+      {
+        "code": "P_412",
+        "name": "P_412",
+        "imagePath": "color/PFL/P_412.jpg"
+      },
+      {
+        "code": "P_89",
+        "name": "P_89",
+        "imagePath": "color/PFL/P_89.jpg"
+      },
+      {
+        "code": "RAL 1003 Signalgelb",
+        "name": "RAL 1003 Signalgelb",
+        "imagePath": "color/PUP/RAL 1003 Signalgelb.jpg"
+      },
+      {
+        "code": "RAL 1006 Mailsgelb",
+        "name": "RAL 1006 Mailsgelb",
+        "imagePath": "color/PUP/RAL 1006 Mailsgelb.jpg"
+      },
+      {
+        "code": "RAL 1011 Braunbeige",
+        "name": "RAL 1011 Braunbeige",
+        "imagePath": "color/PUP/RAL 1011 Braunbeige.jpg"
+      },
+      {
+        "code": "RAL 1013 Perlweib",
+        "name": "RAL 1013 Perlweib",
+        "imagePath": "color/PUP/RAL 1013 Perlweib.jpg"
+      },
+      {
+        "code": "RAL 1028 Melonengelb",
+        "name": "RAL 1028 Melonengelb",
+        "imagePath": "color/PUP/RAL 1028 Melonengelb.jpg"
+      },
+      {
+        "code": "RAL 3002 Karminrot",
+        "name": "RAL 3002 Karminrot",
+        "imagePath": "color/PUP/RAL 3002 Karminrot.jpg"
+      },
+      {
+        "code": "RAL 3017 Rose",
+        "name": "RAL 3017 Rose",
+        "imagePath": "color/PUP/RAL 3017 Rose.jpg"
+      },
+      {
+        "code": "RAL 5005 Signalblau",
+        "name": "RAL 5005 Signalblau",
+        "imagePath": "color/PUP/RAL 5005 Signalblau.jpg"
+      },
+      {
+        "code": "RAL 5015 Himmelblau",
+        "name": "RAL 5015 Himmelblau",
+        "imagePath": "color/PUP/RAL 5015 Himmelblau.jpg"
+      },
+      {
+        "code": "RAL 6027 Lichtgrun",
+        "name": "RAL 6027 Lichtgrun",
+        "imagePath": "color/PUP/RAL 6027 Lichtgrun.jpg"
+      },
+      {
+        "code": "RAL 6037 Reingrun",
+        "name": "RAL 6037 Reingrun",
+        "imagePath": "color/PUP/RAL 6037 Reingrun.jpg"
+      },
+      {
+        "code": "RAL 7005 Mausgrau",
+        "name": "RAL 7005 Mausgrau",
+        "imagePath": "color/PUP/RAL 7005 Mausgrau.jpg"
+      },
+      {
+        "code": "RAL 7034 Gelgrau",
+        "name": "RAL 7034 Gelgrau",
+        "imagePath": "color/PUP/RAL 7034 Gelgrau.jpg"
+      },
+      {
+        "code": "RAL 7044 Seidengrau",
+        "name": "RAL 7044 Seidengrau",
+        "imagePath": "color/PUP/RAL 7044 Seidengrau.jpg"
+      },
+      {
+        "code": "RAL 8003 Lehmbraun",
+        "name": "RAL 8003 Lehmbraun",
+        "imagePath": "color/PUP/RAL 8003 Lehmbraun.jpg"
+      },
+      {
+        "code": "RAL 8012 Rotbraun",
+        "name": "RAL 8012 Rotbraun",
+        "imagePath": "color/PUP/RAL 8012 Rotbraun.jpg"
+      },
+      {
+        "code": "RAL 9016 Verkhrsweib",
+        "name": "RAL 9016 Verkhrsweib",
+        "imagePath": "color/PUP/RAL 9016 Verkhrsweib.jpg"
+      },
+      {
+        "code": "RAL 9017 Verkrhrsschwarz",
+        "name": "RAL 9017 Verkrhrsschwarz",
+        "imagePath": "color/PUP/RAL 9017 Verkrhrsschwarz.jpg"
+      },
+      {
+        "code": "Ashen Krakato 44279 CMT",
+        "name": "Ashen Krakato 44279 CMT",
+        "imagePath": "color/TXR/24. Ashen Krakato 44279 CMT.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SCT",
+        "name": "Auburn Oak 14142 SCT",
+        "imagePath": "color/TXR/10. Auburn Oak 14142 SCT.jpg"
+      },
+      {
+        "code": "Bran Krakato 44282 CMT",
+        "name": "Bran Krakato 44282 CMT",
+        "imagePath": "color/TXR/25. Bran Krakato 44282 CMT.jpg"
+      },
+      {
+        "code": "Canadian Balsam 14132 GNR",
+        "name": "Canadian Balsam 14132 GNR",
+        "imagePath": "color/TXR/13. Canadian Balsam 14132 GNR.jpg"
+      },
+      {
+        "code": "Canadian Walnut 10544 WV",
+        "name": "Canadian Walnut 10544 WV",
+        "imagePath": "color/TXR/5. Canadian Walnut 10544 WV.jpg"
+      },
+      {
+        "code": "Canterbury Oak 14140 SCT",
+        "name": "Canterbury Oak 14140 SCT",
+        "imagePath": "color/TXR/11. Canterbury Oak 14140 SCT.jpg"
+      },
+      {
+        "code": "Chamois Tropical 14810 WV",
+        "name": "Chamois Tropical 14810 WV",
+        "imagePath": "color/TXR/1. Chamois Tropical 14810 WV.jpg"
+      },
+      {
+        "code": "Cloudy Cambric 44754 LNN",
+        "name": "Cloudy Cambric 44754 LNN",
+        "imagePath": "color/TXR/22. Cloudy Cambric 44754 LNN.jpg"
+      },
+      {
+        "code": "Desert Recon 10081 ML",
+        "name": "Desert Recon 10081 ML",
+        "imagePath": "color/TXR/18. Desert Recon 10081 ML.jpg"
+      },
+      {
+        "code": "Doredos Pine 14613 STK",
+        "name": "Doredos Pine 14613 STK",
+        "imagePath": "color/TXR/12. Doredos Pine 14613 STK.jpg"
+      },
+      {
+        "code": "Ebony Aspen 14673 WV",
+        "name": "Ebony Aspen 14673 WV",
+        "imagePath": "color/TXR/6. Ebony Aspen 14673 WV.jpg"
+      },
+      {
+        "code": "Ebony Peat 14674 WV",
+        "name": "Ebony Peat 14674 WV",
+        "imagePath": "color/TXR/7. Ebony Peat 14674 WV.jpg"
+      },
+      {
+        "code": "Golden Oak 10851 VNZ",
+        "name": "Golden Oak 10851 VNZ",
+        "imagePath": "color/TXR/8. Golden Oak 10851 VNZ.jpg"
+      },
+      {
+        "code": "Hazel Cambric 44753 LNN",
+        "name": "Hazel Cambric 44753 LNN",
+        "imagePath": "color/TXR/19. Hazel Cambric 44753 LNN.jpg"
+      },
+      {
+        "code": "Japanese Bamboo 10657 VL",
+        "name": "Japanese Bamboo 10657 VL",
+        "imagePath": "color/TXR/4. Japanese Bamboo 10657 VL.jpg"
+      },
+      {
+        "code": "Livid Krakato 44281 CMT",
+        "name": "Livid Krakato 44281 CMT",
+        "imagePath": "color/TXR/23. Livid Krakato 44281 CMT.jpg"
+      },
+      {
+        "code": "Peconic Chestnut 14620 VLY",
+        "name": "Peconic Chestnut 14620 VLY",
+        "imagePath": "color/TXR/9. Peconic Chestnut 14620 VLY.jpg"
+      },
+      {
+        "code": "Pure Oak 10514 VNZ",
+        "name": "Pure Oak 10514 VNZ",
+        "imagePath": "color/TXR/3. Pure Oak 10514 VNZ.jpg"
+      },
+      {
+        "code": "Russet Tropical 14809 WV",
+        "name": "Russet Tropical 14809 WV",
+        "imagePath": "color/TXR/16. Russet Tropical 14809 WV.jpg"
+      },
+      {
+        "code": "Sandy Recon 10078 ML",
+        "name": "Sandy Recon 10078 ML",
+        "imagePath": "color/TXR/17. Sandy Recon 10078 ML.jpg"
+      },
+      {
+        "code": "Scandinavian Oak 10596 VNZ",
+        "name": "Scandinavian Oak 10596 VNZ",
+        "imagePath": "color/TXR/2. Scandinavian Oak 10596 VNZ.jpg"
+      },
+      {
+        "code": "Silver Oak 10879 VNZ",
+        "name": "Silver Oak 10879 VNZ",
+        "imagePath": "color/TXR/26. Silver Oak 10879 VNZ.jpg"
+      },
+      {
+        "code": "Straw Balsam 14161 GNR",
+        "name": "Straw Balsam 14161 GNR",
+        "imagePath": "color/TXR/15. Straw Balsam 14161 GNR.jpg"
+      },
+      {
+        "code": "Tan Cambric 44755 LNN",
+        "name": "Tan Cambric 44755 LNN",
+        "imagePath": "color/TXR/20. Tan Cambric 44755 LNN.jpg"
+      },
+      {
+        "code": "Tawny Balsam 14133 GNR",
+        "name": "Tawny Balsam 14133 GNR",
+        "imagePath": "color/TXR/14. Tawny Balsam 14133 GNR.jpg"
+      },
+      {
+        "code": "White (purl) Cambric 44752 LNN",
+        "name": "White (purl) Cambric 44752 LNN",
+        "imagePath": "color/TXR/21. White (purl) Cambric 44752 LNN.jpg"
       }
     ]
   },
+
   {
     "finishTypeCode": "VENEER",
     "colors": [
       {
-        "code": "CC123",
-        "name": "Frosty White",
-        "imagePath": "colors/cc123.jpg"
+        "code": "Glass_AlmondGreen",
+        "name": "Glass_AlmondGreen",
+        "imagePath": "color/GLS/Glass_AlmondGreen.jpg"
       },
       {
-        "code": "CC234",
-        "name": "Sunset Orange",
-        "imagePath": "colors/cc234.png"
+        "code": "Glass_AtollBlue",
+        "name": "Glass_AtollBlue",
+        "imagePath": "color/GLS/Glass_AtollBlue.jpg"
       },
       {
-        "code": "CC254",
-        "name": "Sunset Orange",
-        "imagePath": "colors/cc234.png"
+        "code": "Glass_Black",
+        "name": "Glass_Black",
+        "imagePath": "color/GLS/Glass_Black.jpg"
+      },
+      {
+        "code": "Glass_CasisPurple",
+        "name": "Glass_CasisPurple",
+        "imagePath": "color/GLS/Glass_CasisPurple.jpg"
+      },
+      {
+        "code": "Glass_ChocoBrown",
+        "name": "Glass_ChocoBrown",
+        "imagePath": "color/GLS/Glass_ChocoBrown.jpg"
+      },
+      {
+        "code": "Glass_ExtraWhite",
+        "name": "Glass_ExtraWhite",
+        "imagePath": "color/GLS/Glass_ExtraWhite.jpg"
+      },
+      {
+        "code": "Glass_FlameRed",
+        "name": "Glass_FlameRed",
+        "imagePath": "color/GLS/Glass_FlameRed.jpg"
+      },
+      {
+        "code": "Glass_FusionOrange",
+        "name": "Glass_FusionOrange",
+        "imagePath": "color/GLS/Glass_FusionOrange.jpg"
+      },
+      {
+        "code": "Glass_Ivory",
+        "name": "Glass_Ivory",
+        "imagePath": "color/GLS/Glass_Ivory.jpg"
+      },
+      {
+        "code": "Glass_OliveGreen",
+        "name": "Glass_OliveGreen",
+        "imagePath": "color/GLS/Glass_OliveGreen.jpg"
+      },
+      {
+        "code": "Glass_OperaRed",
+        "name": "Glass_OperaRed",
+        "imagePath": "color/GLS/Glass_OperaRed.jpg"
+      },
+      {
+        "code": "Glass_PistaGreen",
+        "name": "Glass_PistaGreen",
+        "imagePath": "color/GLS/Glass_PistaGreen.jpg"
+      },
+      {
+        "code": "Glass_SolarYellow",
+        "name": "Glass_SolarYellow",
+        "imagePath": "color/GLS/Glass_SolarYellow.jpg"
+      },
+      {
+        "code": "Glass_TitaniumGrey",
+        "name": "Glass_TitaniumGrey",
+        "imagePath": "color/GLS/Glass_TitaniumGrey.jpg"
+      },
+      {
+        "code": "Glass_UltraWhite",
+        "name": "Glass_UltraWhite",
+        "imagePath": "color/GLS/Glass_UltraWhite.jpg"
+      },
+      {
+        "code": "Berry Bunch 22105 HGL",
+        "name": "Berry Bunch 22105 HGL",
+        "imagePath": "color/HGS/11. Berry Bunch 22105 HGL.jpg"
+      },
+      {
+        "code": "Black 21066 MR+",
+        "name": "Black 21066 MR+",
+        "imagePath": "color/HGS/5. Black 21066 MR+.jpg"
+      },
+      {
+        "code": "Carnival 21075 HGL",
+        "name": "Carnival 21075 HGL",
+        "imagePath": "color/HGS/12. Carnival 21075 HGL.jpg"
+      },
+      {
+        "code": "Champagne 21187 MR+",
+        "name": "Champagne 21187 MR+",
+        "imagePath": "color/HGS/2. Champagne 21187 MR+.jpg"
+      },
+      {
+        "code": "Frosty White 21091 MR+",
+        "name": "Frosty White 21091 MR+",
+        "imagePath": "color/HGS/1. Frosty White 21091 MR+.jpg"
+      },
+      {
+        "code": "Ivory Frost 49916 HGL",
+        "name": "Ivory Frost 49916 HGL",
+        "imagePath": "color/HGS/14. Ivory Frost 49916 HGL.jpg"
+      },
+      {
+        "code": "Lime 21163 MR+",
+        "name": "Lime 21163 MR+",
+        "imagePath": "color/HGS/7. Lime 21163 MR+.jpg"
+      },
+      {
+        "code": "Marigold 21057 MR+",
+        "name": "Marigold 21057 MR+",
+        "imagePath": "color/HGS/6. Marigold 21057 MR+.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 MR+",
+        "name": "Pearl Black 22109 MR+",
+        "imagePath": "color/HGS/4. Pearl Black 22109 MR+.jpg"
+      },
+      {
+        "code": "Poppy 21004 HGL",
+        "name": "Poppy 21004 HGL",
+        "imagePath": "color/HGS/10. Poppy 21004 HGL.jpg"
+      },
+      {
+        "code": "Prairie Green 21003 HGL",
+        "name": "Prairie Green 21003 HGL",
+        "imagePath": "color/HGS/16. Prairie Green 21003 HGL.jpg"
+      },
+      {
+        "code": "Saffron 21024 HGL",
+        "name": "Saffron 21024 HGL",
+        "imagePath": "color/HGS/9. Saffron 21024 HGL.jpg"
+      },
+      {
+        "code": "Shangrila 21055 MR+",
+        "name": "Shangrila 21055 MR+",
+        "imagePath": "color/HGS/8. Shangrila 21055 MR+.jpg"
+      },
+      {
+        "code": "Shore 22122 HGL",
+        "name": "Shore 22122 HGL",
+        "imagePath": "color/HGS/13. Shore 22122 HGL.jpg"
+      },
+      {
+        "code": "Steel Frost 49946 HGL",
+        "name": "Steel Frost 49946 HGL",
+        "imagePath": "color/HGS/15. Steel Frost 49946 HGL.jpg"
+      },
+      {
+        "code": "Tan 21127 MR+",
+        "name": "Tan 21127 MR+",
+        "imagePath": "color/HGS/3. Tan 21127 MR+.jpg"
+      },
+      {
+        "code": "Cherry Horizontal Walnut 14478 MR+",
+        "name": "Cherry Horizontal Walnut 14478 MR+",
+        "imagePath": "color/HGW/6. Cherry Horizontal Walnut 14478 MR+.jpg"
+      },
+      {
+        "code": "Cherry Walnut 14178 MR+",
+        "name": "Cherry Walnut 14178 MR+",
+        "imagePath": "color/HGW/4. Cherry Walnut 14178 MR+.jpg"
+      },
+      {
+        "code": "Columbian Walnut 14177 MR+",
+        "name": "Columbian Walnut 14177 MR+",
+        "imagePath": "color/HGW/3. Columbian Walnut 14177 MR+.jpg"
+      },
+      {
+        "code": "Ebony Sepia 14675 MR+",
+        "name": "Ebony Sepia 14675 MR+",
+        "imagePath": "color/HGW/2. Ebony Sepia 14675 MR+.jpg"
+      },
+      {
+        "code": "Elevated Wood 10502 MR+",
+        "name": "Elevated Wood 10502 MR+",
+        "imagePath": "color/HGW/5. Elevated Wood 10502 MR+.jpg"
+      },
+      {
+        "code": "Horizontal Wallis Plum 14406 MR+",
+        "name": "Horizontal Wallis Plum 14406 MR+",
+        "imagePath": "color/HGW/9. Horizontal Wallis Plum 14406 MR+.jpg"
+      },
+      {
+        "code": "Rustic Dreams 44773 MR+",
+        "name": "Rustic Dreams 44773 MR+",
+        "imagePath": "color/HGW/7. Rustic Dreams 44773 MR+.jpg"
+      },
+      {
+        "code": "Sapelle 10019 MR+",
+        "name": "Sapelle 10019 MR+",
+        "imagePath": "color/HGW/1. Sapelle 10019 MR+.jpg"
+      },
+      {
+        "code": "Soft Travertine 40232 MR+",
+        "name": "Soft Travertine 40232 MR+",
+        "imagePath": "color/HGW/8. Soft Travertine 40232 MR+.jpg"
+      },
+      {
+        "code": "Bronze 99988 MT",
+        "name": "Bronze 99988 MT",
+        "imagePath": "color/MTL/3. Bronze 99988 MT.jpg"
+      },
+      {
+        "code": "Silver 99999 MT",
+        "name": "Silver 99999 MT",
+        "imagePath": "color/MTL/1. Silver 99999 MT.jpg"
+      },
+      {
+        "code": "Steel 99989 MT",
+        "name": "Steel 99989 MT",
+        "imagePath": "color/MTL/2. Steel 99989 MT.jpg"
+      },
+      {
+        "code": "Beige 21037 SF",
+        "name": "Beige 21037 SF",
+        "imagePath": "color/MTS/10. Beige 21037 SF.jpg"
+      },
+      {
+        "code": "Berry Bunch 22105 SF",
+        "name": "Berry Bunch 22105 SF",
+        "imagePath": "color/MTS/18. Berry Bunch 22105 SF.jpg"
+      },
+      {
+        "code": "Black 21066 SF",
+        "name": "Black 21066 SF",
+        "imagePath": "color/MTS/14. Black 21066 SF.jpg"
+      },
+      {
+        "code": "Candy White 21941 SF",
+        "name": "Candy White 21941 SF",
+        "imagePath": "color/MTS/9. Candy White 21941 SF.jpg"
+      },
+      {
+        "code": "Carnival 21075 SF",
+        "name": "Carnival 21075 SF",
+        "imagePath": "color/MTS/17. Carnival 21075 SF.jpg"
+      },
+      {
+        "code": "Champagne 21187 SF",
+        "name": "Champagne 21187 SF",
+        "imagePath": "color/MTS/1. Champagne 21187 SF.jpg"
+      },
+      {
+        "code": "Dove Grey 22079 SF",
+        "name": "Dove Grey 22079 SF",
+        "imagePath": "color/MTS/6. Dove Grey 22079 SF.jpg"
+      },
+      {
+        "code": "Gladiola 22157 SF",
+        "name": "Gladiola 22157 SF",
+        "imagePath": "color/MTS/16. Gladiola 22157 SF.jpg"
+      },
+      {
+        "code": "Ink 21032 SF",
+        "name": "Ink 21032 SF",
+        "imagePath": "color/MTS/7. Ink 21032 SF.jpg"
+      },
+      {
+        "code": "Kingfisher Blue 21122 SF",
+        "name": "Kingfisher Blue 21122 SF",
+        "imagePath": "color/MTS/15. Kingfisher Blue 21122 SF.jpg"
+      },
+      {
+        "code": "Lime 21163 SF",
+        "name": "Lime 21163 SF",
+        "imagePath": "color/MTS/4. Lime 21163 SF.jpg"
+      },
+      {
+        "code": "Marigold 21057 SF",
+        "name": "Marigold 21057 SF",
+        "imagePath": "color/MTS/3. Marigold 21057 SF.jpg"
+      },
+      {
+        "code": "Mocha 21038 SF",
+        "name": "Mocha 21038 SF",
+        "imagePath": "color/MTS/12. Mocha 21038 SF.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 SF",
+        "name": "Pearl Black 22109 SF",
+        "imagePath": "color/MTS/13. Pearl Black 22109 SF.jpg"
+      },
+      {
+        "code": "Poppy 21004 SF",
+        "name": "Poppy 21004 SF",
+        "imagePath": "color/MTS/8. Poppy 21004 SF.jpg"
+      },
+      {
+        "code": "Sandal 21077 SF",
+        "name": "Sandal 21077 SF",
+        "imagePath": "color/MTS/5. Sandal 21077 SF.jpg"
+      },
+      {
+        "code": "Slate 22099 SF",
+        "name": "Slate 22099 SF",
+        "imagePath": "color/MTS/19. Slate 22099 SF.jpg"
+      },
+      {
+        "code": "Tan 21127 SF",
+        "name": "Tan 21127 SF",
+        "imagePath": "color/MTS/2. Tan 21127 SF.jpg"
+      },
+      {
+        "code": "Warm Grey 21029 SF",
+        "name": "Warm Grey 21029 SF",
+        "imagePath": "color/MTS/11. Warm Grey 21029 SF.jpg"
+      },
+      {
+        "code": "American Walnut 14538 VNR RH",
+        "name": "American Walnut 14538 VNR RH",
+        "imagePath": "color/MWG/6. American Walnut 14538 VNR RH.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SF",
+        "name": "Auburn Oak 14142 SF",
+        "imagePath": "color/MWG/5. Auburn Oak 14142 SF.jpg"
+      },
+      {
+        "code": "Balinese Pine 10866 SF",
+        "name": "Balinese Pine 10866 SF",
+        "imagePath": "color/MWG/1. Balinese Pine 10866 SF.jpg"
+      },
+      {
+        "code": "Brazilian Walnut 14539 VNR RH",
+        "name": "Brazilian Walnut 14539 VNR RH",
+        "imagePath": "color/MWG/3. Brazilian Walnut 14539 VNR RH.jpg"
+      },
+      {
+        "code": "Dark Kraftwood 10843 SF",
+        "name": "Dark Kraftwood 10843 SF",
+        "imagePath": "color/MWG/17. Dark Kraftwood 10843 SF.jpg"
+      },
+      {
+        "code": "Earth Cherry 10880 SF",
+        "name": "Earth Cherry 10880 SF",
+        "imagePath": "color/MWG/14. Earth Cherry 10880 SF.jpg"
+      },
+      {
+        "code": "Hardrock Maple 10888 SF",
+        "name": "Hardrock Maple 10888 SF",
+        "imagePath": "color/MWG/12. Hardrock Maple 10888 SF.jpg"
+      },
+      {
+        "code": "Mahagony 10699 SF",
+        "name": "Mahagony 10699 SF",
+        "imagePath": "color/MWG/13. Mahagony 10699 SF.jpg"
+      },
+      {
+        "code": "Mansal Horizontal Walnut 14619 SF",
+        "name": "Mansal Horizontal Walnut 14619 SF",
+        "imagePath": "color/MWG/18. Mansal Horizontal Walnut 14619 SF.jpg"
+      },
+      {
+        "code": "Muddled Straw 10085 SF",
+        "name": "Muddled Straw 10085 SF",
+        "imagePath": "color/MWG/16. Muddled Straw 10085 SF.jpg"
+      },
+      {
+        "code": "Mystique Walnut 10511 SF",
+        "name": "Mystique Walnut 10511 SF",
+        "imagePath": "color/MWG/10. Mystique Walnut 10511 SF.jpg"
+      },
+      {
+        "code": "Neo Highland Pine 11005 SF",
+        "name": "Neo Highland Pine 11005 SF",
+        "imagePath": "color/MWG/11. Neo Highland Pine 11005 SF.jpg"
+      },
+      {
+        "code": "Nice Wood 10197 SF",
+        "name": "Nice Wood 10197 SF",
+        "imagePath": "color/MWG/8. Nice Wood 10197 SF.jpg"
+      },
+      {
+        "code": "Orchard Delight 10592 SF",
+        "name": "Orchard Delight 10592 SF",
+        "imagePath": "color/MWG/4. Orchard Delight 10592 SF.jpg"
+      },
+      {
+        "code": "Persian Walnut 14540 VNR RH",
+        "name": "Persian Walnut 14540 VNR RH",
+        "imagePath": "color/MWG/2. Persian Walnut 14540 VNR RH.jpg"
+      },
+      {
+        "code": "Sapelle 10019 SF",
+        "name": "Sapelle 10019 SF",
+        "imagePath": "color/MWG/15. Sapelle 10019 SF.jpg"
+      },
+      {
+        "code": "Savannah Cherry 10853 SF",
+        "name": "Savannah Cherry 10853 SF",
+        "imagePath": "color/MWG/9. Savannah Cherry 10853 SF.jpg"
+      },
+      {
+        "code": "Wenge 10858 SF",
+        "name": "Wenge 10858 SF",
+        "imagePath": "color/MWG/7. Wenge 10858 SF.jpg"
+      },
+      {
+        "code": "Winter Maple 14689 SF",
+        "name": "Winter Maple 14689 SF",
+        "imagePath": "color/MWG/19. Winter Maple 14689 SF.jpg"
+      },
+      {
+        "code": "P_192",
+        "name": "P_192",
+        "imagePath": "color/PFL/P_192.jpg"
+      },
+      {
+        "code": "P_2214",
+        "name": "P_2214",
+        "imagePath": "color/PFL/P_2214.jpg"
+      },
+      {
+        "code": "P_2218",
+        "name": "P_2218",
+        "imagePath": "color/PFL/P_2218.jpg"
+      },
+      {
+        "code": "P_2220",
+        "name": "P_2220",
+        "imagePath": "color/PFL/P_2220.jpg"
+      },
+      {
+        "code": "P_225",
+        "name": "P_225",
+        "imagePath": "color/PFL/P_225.jpg"
+      },
+      {
+        "code": "P_241",
+        "name": "P_241",
+        "imagePath": "color/PFL/P_241.jpg"
+      },
+      {
+        "code": "P_261",
+        "name": "P_261",
+        "imagePath": "color/PFL/P_261.jpg"
+      },
+      {
+        "code": "P_284",
+        "name": "P_284",
+        "imagePath": "color/PFL/P_284.jpg"
+      },
+      {
+        "code": "P_286",
+        "name": "P_286",
+        "imagePath": "color/PFL/P_286.jpg"
+      },
+      {
+        "code": "P_324",
+        "name": "P_324",
+        "imagePath": "color/PFL/P_324.jpg"
+      },
+      {
+        "code": "P_326",
+        "name": "P_326",
+        "imagePath": "color/PFL/P_326.jpg"
+      },
+      {
+        "code": "P_329",
+        "name": "P_329",
+        "imagePath": "color/PFL/P_329.jpg"
+      },
+      {
+        "code": "P_331",
+        "name": "P_331",
+        "imagePath": "color/PFL/P_331.jpg"
+      },
+      {
+        "code": "P_336",
+        "name": "P_336",
+        "imagePath": "color/PFL/P_336.jpg"
+      },
+      {
+        "code": "P_338",
+        "name": "P_338",
+        "imagePath": "color/PFL/P_338.jpg"
+      },
+      {
+        "code": "P_403",
+        "name": "P_403",
+        "imagePath": "color/PFL/P_403.jpg"
+      },
+      {
+        "code": "P_407",
+        "name": "P_407",
+        "imagePath": "color/PFL/P_407.jpg"
+      },
+      {
+        "code": "P_408",
+        "name": "P_408",
+        "imagePath": "color/PFL/P_408.jpg"
+      },
+      {
+        "code": "P_412",
+        "name": "P_412",
+        "imagePath": "color/PFL/P_412.jpg"
+      },
+      {
+        "code": "P_89",
+        "name": "P_89",
+        "imagePath": "color/PFL/P_89.jpg"
+      },
+      {
+        "code": "RAL 1003 Signalgelb",
+        "name": "RAL 1003 Signalgelb",
+        "imagePath": "color/PUP/RAL 1003 Signalgelb.jpg"
+      },
+      {
+        "code": "RAL 1006 Mailsgelb",
+        "name": "RAL 1006 Mailsgelb",
+        "imagePath": "color/PUP/RAL 1006 Mailsgelb.jpg"
+      },
+      {
+        "code": "RAL 1011 Braunbeige",
+        "name": "RAL 1011 Braunbeige",
+        "imagePath": "color/PUP/RAL 1011 Braunbeige.jpg"
+      },
+      {
+        "code": "RAL 1013 Perlweib",
+        "name": "RAL 1013 Perlweib",
+        "imagePath": "color/PUP/RAL 1013 Perlweib.jpg"
+      },
+      {
+        "code": "RAL 1028 Melonengelb",
+        "name": "RAL 1028 Melonengelb",
+        "imagePath": "color/PUP/RAL 1028 Melonengelb.jpg"
+      },
+      {
+        "code": "RAL 3002 Karminrot",
+        "name": "RAL 3002 Karminrot",
+        "imagePath": "color/PUP/RAL 3002 Karminrot.jpg"
+      },
+      {
+        "code": "RAL 3017 Rose",
+        "name": "RAL 3017 Rose",
+        "imagePath": "color/PUP/RAL 3017 Rose.jpg"
+      },
+      {
+        "code": "RAL 5005 Signalblau",
+        "name": "RAL 5005 Signalblau",
+        "imagePath": "color/PUP/RAL 5005 Signalblau.jpg"
+      },
+      {
+        "code": "RAL 5015 Himmelblau",
+        "name": "RAL 5015 Himmelblau",
+        "imagePath": "color/PUP/RAL 5015 Himmelblau.jpg"
+      },
+      {
+        "code": "RAL 6027 Lichtgrun",
+        "name": "RAL 6027 Lichtgrun",
+        "imagePath": "color/PUP/RAL 6027 Lichtgrun.jpg"
+      },
+      {
+        "code": "RAL 6037 Reingrun",
+        "name": "RAL 6037 Reingrun",
+        "imagePath": "color/PUP/RAL 6037 Reingrun.jpg"
+      },
+      {
+        "code": "RAL 7005 Mausgrau",
+        "name": "RAL 7005 Mausgrau",
+        "imagePath": "color/PUP/RAL 7005 Mausgrau.jpg"
+      },
+      {
+        "code": "RAL 7034 Gelgrau",
+        "name": "RAL 7034 Gelgrau",
+        "imagePath": "color/PUP/RAL 7034 Gelgrau.jpg"
+      },
+      {
+        "code": "RAL 7044 Seidengrau",
+        "name": "RAL 7044 Seidengrau",
+        "imagePath": "color/PUP/RAL 7044 Seidengrau.jpg"
+      },
+      {
+        "code": "RAL 8003 Lehmbraun",
+        "name": "RAL 8003 Lehmbraun",
+        "imagePath": "color/PUP/RAL 8003 Lehmbraun.jpg"
+      },
+      {
+        "code": "RAL 8012 Rotbraun",
+        "name": "RAL 8012 Rotbraun",
+        "imagePath": "color/PUP/RAL 8012 Rotbraun.jpg"
+      },
+      {
+        "code": "RAL 9016 Verkhrsweib",
+        "name": "RAL 9016 Verkhrsweib",
+        "imagePath": "color/PUP/RAL 9016 Verkhrsweib.jpg"
+      },
+      {
+        "code": "RAL 9017 Verkrhrsschwarz",
+        "name": "RAL 9017 Verkrhrsschwarz",
+        "imagePath": "color/PUP/RAL 9017 Verkrhrsschwarz.jpg"
+      },
+      {
+        "code": "Ashen Krakato 44279 CMT",
+        "name": "Ashen Krakato 44279 CMT",
+        "imagePath": "color/TXR/24. Ashen Krakato 44279 CMT.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SCT",
+        "name": "Auburn Oak 14142 SCT",
+        "imagePath": "color/TXR/10. Auburn Oak 14142 SCT.jpg"
+      },
+      {
+        "code": "Bran Krakato 44282 CMT",
+        "name": "Bran Krakato 44282 CMT",
+        "imagePath": "color/TXR/25. Bran Krakato 44282 CMT.jpg"
+      },
+      {
+        "code": "Canadian Balsam 14132 GNR",
+        "name": "Canadian Balsam 14132 GNR",
+        "imagePath": "color/TXR/13. Canadian Balsam 14132 GNR.jpg"
+      },
+      {
+        "code": "Canadian Walnut 10544 WV",
+        "name": "Canadian Walnut 10544 WV",
+        "imagePath": "color/TXR/5. Canadian Walnut 10544 WV.jpg"
+      },
+      {
+        "code": "Canterbury Oak 14140 SCT",
+        "name": "Canterbury Oak 14140 SCT",
+        "imagePath": "color/TXR/11. Canterbury Oak 14140 SCT.jpg"
+      },
+      {
+        "code": "Chamois Tropical 14810 WV",
+        "name": "Chamois Tropical 14810 WV",
+        "imagePath": "color/TXR/1. Chamois Tropical 14810 WV.jpg"
+      },
+      {
+        "code": "Cloudy Cambric 44754 LNN",
+        "name": "Cloudy Cambric 44754 LNN",
+        "imagePath": "color/TXR/22. Cloudy Cambric 44754 LNN.jpg"
+      },
+      {
+        "code": "Desert Recon 10081 ML",
+        "name": "Desert Recon 10081 ML",
+        "imagePath": "color/TXR/18. Desert Recon 10081 ML.jpg"
+      },
+      {
+        "code": "Doredos Pine 14613 STK",
+        "name": "Doredos Pine 14613 STK",
+        "imagePath": "color/TXR/12. Doredos Pine 14613 STK.jpg"
+      },
+      {
+        "code": "Ebony Aspen 14673 WV",
+        "name": "Ebony Aspen 14673 WV",
+        "imagePath": "color/TXR/6. Ebony Aspen 14673 WV.jpg"
+      },
+      {
+        "code": "Ebony Peat 14674 WV",
+        "name": "Ebony Peat 14674 WV",
+        "imagePath": "color/TXR/7. Ebony Peat 14674 WV.jpg"
+      },
+      {
+        "code": "Golden Oak 10851 VNZ",
+        "name": "Golden Oak 10851 VNZ",
+        "imagePath": "color/TXR/8. Golden Oak 10851 VNZ.jpg"
+      },
+      {
+        "code": "Hazel Cambric 44753 LNN",
+        "name": "Hazel Cambric 44753 LNN",
+        "imagePath": "color/TXR/19. Hazel Cambric 44753 LNN.jpg"
+      },
+      {
+        "code": "Japanese Bamboo 10657 VL",
+        "name": "Japanese Bamboo 10657 VL",
+        "imagePath": "color/TXR/4. Japanese Bamboo 10657 VL.jpg"
+      },
+      {
+        "code": "Livid Krakato 44281 CMT",
+        "name": "Livid Krakato 44281 CMT",
+        "imagePath": "color/TXR/23. Livid Krakato 44281 CMT.jpg"
+      },
+      {
+        "code": "Peconic Chestnut 14620 VLY",
+        "name": "Peconic Chestnut 14620 VLY",
+        "imagePath": "color/TXR/9. Peconic Chestnut 14620 VLY.jpg"
+      },
+      {
+        "code": "Pure Oak 10514 VNZ",
+        "name": "Pure Oak 10514 VNZ",
+        "imagePath": "color/TXR/3. Pure Oak 10514 VNZ.jpg"
+      },
+      {
+        "code": "Russet Tropical 14809 WV",
+        "name": "Russet Tropical 14809 WV",
+        "imagePath": "color/TXR/16. Russet Tropical 14809 WV.jpg"
+      },
+      {
+        "code": "Sandy Recon 10078 ML",
+        "name": "Sandy Recon 10078 ML",
+        "imagePath": "color/TXR/17. Sandy Recon 10078 ML.jpg"
+      },
+      {
+        "code": "Scandinavian Oak 10596 VNZ",
+        "name": "Scandinavian Oak 10596 VNZ",
+        "imagePath": "color/TXR/2. Scandinavian Oak 10596 VNZ.jpg"
+      },
+      {
+        "code": "Silver Oak 10879 VNZ",
+        "name": "Silver Oak 10879 VNZ",
+        "imagePath": "color/TXR/26. Silver Oak 10879 VNZ.jpg"
+      },
+      {
+        "code": "Straw Balsam 14161 GNR",
+        "name": "Straw Balsam 14161 GNR",
+        "imagePath": "color/TXR/15. Straw Balsam 14161 GNR.jpg"
+      },
+      {
+        "code": "Tan Cambric 44755 LNN",
+        "name": "Tan Cambric 44755 LNN",
+        "imagePath": "color/TXR/20. Tan Cambric 44755 LNN.jpg"
+      },
+      {
+        "code": "Tawny Balsam 14133 GNR",
+        "name": "Tawny Balsam 14133 GNR",
+        "imagePath": "color/TXR/14. Tawny Balsam 14133 GNR.jpg"
+      },
+      {
+        "code": "White (purl) Cambric 44752 LNN",
+        "name": "White (purl) Cambric 44752 LNN",
+        "imagePath": "color/TXR/21. White (purl) Cambric 44752 LNN.jpg"
       }
     ]
   },
+
   {
     "finishTypeCode": "SOLIDWOOD",
     "colors": [
       {
-        "code": "CC123",
-        "name": "Frosty White",
-        "imagePath": "colors/cc123.jpg"
+        "code": "Glass_AlmondGreen",
+        "name": "Glass_AlmondGreen",
+        "imagePath": "color/GLS/Glass_AlmondGreen.jpg"
       },
       {
-        "code": "CC234",
-        "name": "Sunset Orange",
-        "imagePath": "colors/cc234.png"
+        "code": "Glass_AtollBlue",
+        "name": "Glass_AtollBlue",
+        "imagePath": "color/GLS/Glass_AtollBlue.jpg"
       },
       {
-        "code": "CC254",
-        "name": "Sunset Orange",
-        "imagePath": "colors/cc234.png"
+        "code": "Glass_Black",
+        "name": "Glass_Black",
+        "imagePath": "color/GLS/Glass_Black.jpg"
+      },
+      {
+        "code": "Glass_CasisPurple",
+        "name": "Glass_CasisPurple",
+        "imagePath": "color/GLS/Glass_CasisPurple.jpg"
+      },
+      {
+        "code": "Glass_ChocoBrown",
+        "name": "Glass_ChocoBrown",
+        "imagePath": "color/GLS/Glass_ChocoBrown.jpg"
+      },
+      {
+        "code": "Glass_ExtraWhite",
+        "name": "Glass_ExtraWhite",
+        "imagePath": "color/GLS/Glass_ExtraWhite.jpg"
+      },
+      {
+        "code": "Glass_FlameRed",
+        "name": "Glass_FlameRed",
+        "imagePath": "color/GLS/Glass_FlameRed.jpg"
+      },
+      {
+        "code": "Glass_FusionOrange",
+        "name": "Glass_FusionOrange",
+        "imagePath": "color/GLS/Glass_FusionOrange.jpg"
+      },
+      {
+        "code": "Glass_Ivory",
+        "name": "Glass_Ivory",
+        "imagePath": "color/GLS/Glass_Ivory.jpg"
+      },
+      {
+        "code": "Glass_OliveGreen",
+        "name": "Glass_OliveGreen",
+        "imagePath": "color/GLS/Glass_OliveGreen.jpg"
+      },
+      {
+        "code": "Glass_OperaRed",
+        "name": "Glass_OperaRed",
+        "imagePath": "color/GLS/Glass_OperaRed.jpg"
+      },
+      {
+        "code": "Glass_PistaGreen",
+        "name": "Glass_PistaGreen",
+        "imagePath": "color/GLS/Glass_PistaGreen.jpg"
+      },
+      {
+        "code": "Glass_SolarYellow",
+        "name": "Glass_SolarYellow",
+        "imagePath": "color/GLS/Glass_SolarYellow.jpg"
+      },
+      {
+        "code": "Glass_TitaniumGrey",
+        "name": "Glass_TitaniumGrey",
+        "imagePath": "color/GLS/Glass_TitaniumGrey.jpg"
+      },
+      {
+        "code": "Glass_UltraWhite",
+        "name": "Glass_UltraWhite",
+        "imagePath": "color/GLS/Glass_UltraWhite.jpg"
+      },
+      {
+        "code": "Berry Bunch 22105 HGL",
+        "name": "Berry Bunch 22105 HGL",
+        "imagePath": "color/HGS/11. Berry Bunch 22105 HGL.jpg"
+      },
+      {
+        "code": "Black 21066 MR+",
+        "name": "Black 21066 MR+",
+        "imagePath": "color/HGS/5. Black 21066 MR+.jpg"
+      },
+      {
+        "code": "Carnival 21075 HGL",
+        "name": "Carnival 21075 HGL",
+        "imagePath": "color/HGS/12. Carnival 21075 HGL.jpg"
+      },
+      {
+        "code": "Champagne 21187 MR+",
+        "name": "Champagne 21187 MR+",
+        "imagePath": "color/HGS/2. Champagne 21187 MR+.jpg"
+      },
+      {
+        "code": "Frosty White 21091 MR+",
+        "name": "Frosty White 21091 MR+",
+        "imagePath": "color/HGS/1. Frosty White 21091 MR+.jpg"
+      },
+      {
+        "code": "Ivory Frost 49916 HGL",
+        "name": "Ivory Frost 49916 HGL",
+        "imagePath": "color/HGS/14. Ivory Frost 49916 HGL.jpg"
+      },
+      {
+        "code": "Lime 21163 MR+",
+        "name": "Lime 21163 MR+",
+        "imagePath": "color/HGS/7. Lime 21163 MR+.jpg"
+      },
+      {
+        "code": "Marigold 21057 MR+",
+        "name": "Marigold 21057 MR+",
+        "imagePath": "color/HGS/6. Marigold 21057 MR+.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 MR+",
+        "name": "Pearl Black 22109 MR+",
+        "imagePath": "color/HGS/4. Pearl Black 22109 MR+.jpg"
+      },
+      {
+        "code": "Poppy 21004 HGL",
+        "name": "Poppy 21004 HGL",
+        "imagePath": "color/HGS/10. Poppy 21004 HGL.jpg"
+      },
+      {
+        "code": "Prairie Green 21003 HGL",
+        "name": "Prairie Green 21003 HGL",
+        "imagePath": "color/HGS/16. Prairie Green 21003 HGL.jpg"
+      },
+      {
+        "code": "Saffron 21024 HGL",
+        "name": "Saffron 21024 HGL",
+        "imagePath": "color/HGS/9. Saffron 21024 HGL.jpg"
+      },
+      {
+        "code": "Shangrila 21055 MR+",
+        "name": "Shangrila 21055 MR+",
+        "imagePath": "color/HGS/8. Shangrila 21055 MR+.jpg"
+      },
+      {
+        "code": "Shore 22122 HGL",
+        "name": "Shore 22122 HGL",
+        "imagePath": "color/HGS/13. Shore 22122 HGL.jpg"
+      },
+      {
+        "code": "Steel Frost 49946 HGL",
+        "name": "Steel Frost 49946 HGL",
+        "imagePath": "color/HGS/15. Steel Frost 49946 HGL.jpg"
+      },
+      {
+        "code": "Tan 21127 MR+",
+        "name": "Tan 21127 MR+",
+        "imagePath": "color/HGS/3. Tan 21127 MR+.jpg"
+      },
+      {
+        "code": "Cherry Horizontal Walnut 14478 MR+",
+        "name": "Cherry Horizontal Walnut 14478 MR+",
+        "imagePath": "color/HGW/6. Cherry Horizontal Walnut 14478 MR+.jpg"
+      },
+      {
+        "code": "Cherry Walnut 14178 MR+",
+        "name": "Cherry Walnut 14178 MR+",
+        "imagePath": "color/HGW/4. Cherry Walnut 14178 MR+.jpg"
+      },
+      {
+        "code": "Columbian Walnut 14177 MR+",
+        "name": "Columbian Walnut 14177 MR+",
+        "imagePath": "color/HGW/3. Columbian Walnut 14177 MR+.jpg"
+      },
+      {
+        "code": "Ebony Sepia 14675 MR+",
+        "name": "Ebony Sepia 14675 MR+",
+        "imagePath": "color/HGW/2. Ebony Sepia 14675 MR+.jpg"
+      },
+      {
+        "code": "Elevated Wood 10502 MR+",
+        "name": "Elevated Wood 10502 MR+",
+        "imagePath": "color/HGW/5. Elevated Wood 10502 MR+.jpg"
+      },
+      {
+        "code": "Horizontal Wallis Plum 14406 MR+",
+        "name": "Horizontal Wallis Plum 14406 MR+",
+        "imagePath": "color/HGW/9. Horizontal Wallis Plum 14406 MR+.jpg"
+      },
+      {
+        "code": "Rustic Dreams 44773 MR+",
+        "name": "Rustic Dreams 44773 MR+",
+        "imagePath": "color/HGW/7. Rustic Dreams 44773 MR+.jpg"
+      },
+      {
+        "code": "Sapelle 10019 MR+",
+        "name": "Sapelle 10019 MR+",
+        "imagePath": "color/HGW/1. Sapelle 10019 MR+.jpg"
+      },
+      {
+        "code": "Soft Travertine 40232 MR+",
+        "name": "Soft Travertine 40232 MR+",
+        "imagePath": "color/HGW/8. Soft Travertine 40232 MR+.jpg"
+      },
+      {
+        "code": "Bronze 99988 MT",
+        "name": "Bronze 99988 MT",
+        "imagePath": "color/MTL/3. Bronze 99988 MT.jpg"
+      },
+      {
+        "code": "Silver 99999 MT",
+        "name": "Silver 99999 MT",
+        "imagePath": "color/MTL/1. Silver 99999 MT.jpg"
+      },
+      {
+        "code": "Steel 99989 MT",
+        "name": "Steel 99989 MT",
+        "imagePath": "color/MTL/2. Steel 99989 MT.jpg"
+      },
+      {
+        "code": "Beige 21037 SF",
+        "name": "Beige 21037 SF",
+        "imagePath": "color/MTS/10. Beige 21037 SF.jpg"
+      },
+      {
+        "code": "Berry Bunch 22105 SF",
+        "name": "Berry Bunch 22105 SF",
+        "imagePath": "color/MTS/18. Berry Bunch 22105 SF.jpg"
+      },
+      {
+        "code": "Black 21066 SF",
+        "name": "Black 21066 SF",
+        "imagePath": "color/MTS/14. Black 21066 SF.jpg"
+      },
+      {
+        "code": "Candy White 21941 SF",
+        "name": "Candy White 21941 SF",
+        "imagePath": "color/MTS/9. Candy White 21941 SF.jpg"
+      },
+      {
+        "code": "Carnival 21075 SF",
+        "name": "Carnival 21075 SF",
+        "imagePath": "color/MTS/17. Carnival 21075 SF.jpg"
+      },
+      {
+        "code": "Champagne 21187 SF",
+        "name": "Champagne 21187 SF",
+        "imagePath": "color/MTS/1. Champagne 21187 SF.jpg"
+      },
+      {
+        "code": "Dove Grey 22079 SF",
+        "name": "Dove Grey 22079 SF",
+        "imagePath": "color/MTS/6. Dove Grey 22079 SF.jpg"
+      },
+      {
+        "code": "Gladiola 22157 SF",
+        "name": "Gladiola 22157 SF",
+        "imagePath": "color/MTS/16. Gladiola 22157 SF.jpg"
+      },
+      {
+        "code": "Ink 21032 SF",
+        "name": "Ink 21032 SF",
+        "imagePath": "color/MTS/7. Ink 21032 SF.jpg"
+      },
+      {
+        "code": "Kingfisher Blue 21122 SF",
+        "name": "Kingfisher Blue 21122 SF",
+        "imagePath": "color/MTS/15. Kingfisher Blue 21122 SF.jpg"
+      },
+      {
+        "code": "Lime 21163 SF",
+        "name": "Lime 21163 SF",
+        "imagePath": "color/MTS/4. Lime 21163 SF.jpg"
+      },
+      {
+        "code": "Marigold 21057 SF",
+        "name": "Marigold 21057 SF",
+        "imagePath": "color/MTS/3. Marigold 21057 SF.jpg"
+      },
+      {
+        "code": "Mocha 21038 SF",
+        "name": "Mocha 21038 SF",
+        "imagePath": "color/MTS/12. Mocha 21038 SF.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 SF",
+        "name": "Pearl Black 22109 SF",
+        "imagePath": "color/MTS/13. Pearl Black 22109 SF.jpg"
+      },
+      {
+        "code": "Poppy 21004 SF",
+        "name": "Poppy 21004 SF",
+        "imagePath": "color/MTS/8. Poppy 21004 SF.jpg"
+      },
+      {
+        "code": "Sandal 21077 SF",
+        "name": "Sandal 21077 SF",
+        "imagePath": "color/MTS/5. Sandal 21077 SF.jpg"
+      },
+      {
+        "code": "Slate 22099 SF",
+        "name": "Slate 22099 SF",
+        "imagePath": "color/MTS/19. Slate 22099 SF.jpg"
+      },
+      {
+        "code": "Tan 21127 SF",
+        "name": "Tan 21127 SF",
+        "imagePath": "color/MTS/2. Tan 21127 SF.jpg"
+      },
+      {
+        "code": "Warm Grey 21029 SF",
+        "name": "Warm Grey 21029 SF",
+        "imagePath": "color/MTS/11. Warm Grey 21029 SF.jpg"
+      },
+      {
+        "code": "American Walnut 14538 VNR RH",
+        "name": "American Walnut 14538 VNR RH",
+        "imagePath": "color/MWG/6. American Walnut 14538 VNR RH.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SF",
+        "name": "Auburn Oak 14142 SF",
+        "imagePath": "color/MWG/5. Auburn Oak 14142 SF.jpg"
+      },
+      {
+        "code": "Balinese Pine 10866 SF",
+        "name": "Balinese Pine 10866 SF",
+        "imagePath": "color/MWG/1. Balinese Pine 10866 SF.jpg"
+      },
+      {
+        "code": "Brazilian Walnut 14539 VNR RH",
+        "name": "Brazilian Walnut 14539 VNR RH",
+        "imagePath": "color/MWG/3. Brazilian Walnut 14539 VNR RH.jpg"
+      },
+      {
+        "code": "Dark Kraftwood 10843 SF",
+        "name": "Dark Kraftwood 10843 SF",
+        "imagePath": "color/MWG/17. Dark Kraftwood 10843 SF.jpg"
+      },
+      {
+        "code": "Earth Cherry 10880 SF",
+        "name": "Earth Cherry 10880 SF",
+        "imagePath": "color/MWG/14. Earth Cherry 10880 SF.jpg"
+      },
+      {
+        "code": "Hardrock Maple 10888 SF",
+        "name": "Hardrock Maple 10888 SF",
+        "imagePath": "color/MWG/12. Hardrock Maple 10888 SF.jpg"
+      },
+      {
+        "code": "Mahagony 10699 SF",
+        "name": "Mahagony 10699 SF",
+        "imagePath": "color/MWG/13. Mahagony 10699 SF.jpg"
+      },
+      {
+        "code": "Mansal Horizontal Walnut 14619 SF",
+        "name": "Mansal Horizontal Walnut 14619 SF",
+        "imagePath": "color/MWG/18. Mansal Horizontal Walnut 14619 SF.jpg"
+      },
+      {
+        "code": "Muddled Straw 10085 SF",
+        "name": "Muddled Straw 10085 SF",
+        "imagePath": "color/MWG/16. Muddled Straw 10085 SF.jpg"
+      },
+      {
+        "code": "Mystique Walnut 10511 SF",
+        "name": "Mystique Walnut 10511 SF",
+        "imagePath": "color/MWG/10. Mystique Walnut 10511 SF.jpg"
+      },
+      {
+        "code": "Neo Highland Pine 11005 SF",
+        "name": "Neo Highland Pine 11005 SF",
+        "imagePath": "color/MWG/11. Neo Highland Pine 11005 SF.jpg"
+      },
+      {
+        "code": "Nice Wood 10197 SF",
+        "name": "Nice Wood 10197 SF",
+        "imagePath": "color/MWG/8. Nice Wood 10197 SF.jpg"
+      },
+      {
+        "code": "Orchard Delight 10592 SF",
+        "name": "Orchard Delight 10592 SF",
+        "imagePath": "color/MWG/4. Orchard Delight 10592 SF.jpg"
+      },
+      {
+        "code": "Persian Walnut 14540 VNR RH",
+        "name": "Persian Walnut 14540 VNR RH",
+        "imagePath": "color/MWG/2. Persian Walnut 14540 VNR RH.jpg"
+      },
+      {
+        "code": "Sapelle 10019 SF",
+        "name": "Sapelle 10019 SF",
+        "imagePath": "color/MWG/15. Sapelle 10019 SF.jpg"
+      },
+      {
+        "code": "Savannah Cherry 10853 SF",
+        "name": "Savannah Cherry 10853 SF",
+        "imagePath": "color/MWG/9. Savannah Cherry 10853 SF.jpg"
+      },
+      {
+        "code": "Wenge 10858 SF",
+        "name": "Wenge 10858 SF",
+        "imagePath": "color/MWG/7. Wenge 10858 SF.jpg"
+      },
+      {
+        "code": "Winter Maple 14689 SF",
+        "name": "Winter Maple 14689 SF",
+        "imagePath": "color/MWG/19. Winter Maple 14689 SF.jpg"
+      },
+      {
+        "code": "P_192",
+        "name": "P_192",
+        "imagePath": "color/PFL/P_192.jpg"
+      },
+      {
+        "code": "P_2214",
+        "name": "P_2214",
+        "imagePath": "color/PFL/P_2214.jpg"
+      },
+      {
+        "code": "P_2218",
+        "name": "P_2218",
+        "imagePath": "color/PFL/P_2218.jpg"
+      },
+      {
+        "code": "P_2220",
+        "name": "P_2220",
+        "imagePath": "color/PFL/P_2220.jpg"
+      },
+      {
+        "code": "P_225",
+        "name": "P_225",
+        "imagePath": "color/PFL/P_225.jpg"
+      },
+      {
+        "code": "P_241",
+        "name": "P_241",
+        "imagePath": "color/PFL/P_241.jpg"
+      },
+      {
+        "code": "P_261",
+        "name": "P_261",
+        "imagePath": "color/PFL/P_261.jpg"
+      },
+      {
+        "code": "P_284",
+        "name": "P_284",
+        "imagePath": "color/PFL/P_284.jpg"
+      },
+      {
+        "code": "P_286",
+        "name": "P_286",
+        "imagePath": "color/PFL/P_286.jpg"
+      },
+      {
+        "code": "P_324",
+        "name": "P_324",
+        "imagePath": "color/PFL/P_324.jpg"
+      },
+      {
+        "code": "P_326",
+        "name": "P_326",
+        "imagePath": "color/PFL/P_326.jpg"
+      },
+      {
+        "code": "P_329",
+        "name": "P_329",
+        "imagePath": "color/PFL/P_329.jpg"
+      },
+      {
+        "code": "P_331",
+        "name": "P_331",
+        "imagePath": "color/PFL/P_331.jpg"
+      },
+      {
+        "code": "P_336",
+        "name": "P_336",
+        "imagePath": "color/PFL/P_336.jpg"
+      },
+      {
+        "code": "P_338",
+        "name": "P_338",
+        "imagePath": "color/PFL/P_338.jpg"
+      },
+      {
+        "code": "P_403",
+        "name": "P_403",
+        "imagePath": "color/PFL/P_403.jpg"
+      },
+      {
+        "code": "P_407",
+        "name": "P_407",
+        "imagePath": "color/PFL/P_407.jpg"
+      },
+      {
+        "code": "P_408",
+        "name": "P_408",
+        "imagePath": "color/PFL/P_408.jpg"
+      },
+      {
+        "code": "P_412",
+        "name": "P_412",
+        "imagePath": "color/PFL/P_412.jpg"
+      },
+      {
+        "code": "P_89",
+        "name": "P_89",
+        "imagePath": "color/PFL/P_89.jpg"
+      },
+      {
+        "code": "RAL 1003 Signalgelb",
+        "name": "RAL 1003 Signalgelb",
+        "imagePath": "color/PUP/RAL 1003 Signalgelb.jpg"
+      },
+      {
+        "code": "RAL 1006 Mailsgelb",
+        "name": "RAL 1006 Mailsgelb",
+        "imagePath": "color/PUP/RAL 1006 Mailsgelb.jpg"
+      },
+      {
+        "code": "RAL 1011 Braunbeige",
+        "name": "RAL 1011 Braunbeige",
+        "imagePath": "color/PUP/RAL 1011 Braunbeige.jpg"
+      },
+      {
+        "code": "RAL 1013 Perlweib",
+        "name": "RAL 1013 Perlweib",
+        "imagePath": "color/PUP/RAL 1013 Perlweib.jpg"
+      },
+      {
+        "code": "RAL 1028 Melonengelb",
+        "name": "RAL 1028 Melonengelb",
+        "imagePath": "color/PUP/RAL 1028 Melonengelb.jpg"
+      },
+      {
+        "code": "RAL 3002 Karminrot",
+        "name": "RAL 3002 Karminrot",
+        "imagePath": "color/PUP/RAL 3002 Karminrot.jpg"
+      },
+      {
+        "code": "RAL 3017 Rose",
+        "name": "RAL 3017 Rose",
+        "imagePath": "color/PUP/RAL 3017 Rose.jpg"
+      },
+      {
+        "code": "RAL 5005 Signalblau",
+        "name": "RAL 5005 Signalblau",
+        "imagePath": "color/PUP/RAL 5005 Signalblau.jpg"
+      },
+      {
+        "code": "RAL 5015 Himmelblau",
+        "name": "RAL 5015 Himmelblau",
+        "imagePath": "color/PUP/RAL 5015 Himmelblau.jpg"
+      },
+      {
+        "code": "RAL 6027 Lichtgrun",
+        "name": "RAL 6027 Lichtgrun",
+        "imagePath": "color/PUP/RAL 6027 Lichtgrun.jpg"
+      },
+      {
+        "code": "RAL 6037 Reingrun",
+        "name": "RAL 6037 Reingrun",
+        "imagePath": "color/PUP/RAL 6037 Reingrun.jpg"
+      },
+      {
+        "code": "RAL 7005 Mausgrau",
+        "name": "RAL 7005 Mausgrau",
+        "imagePath": "color/PUP/RAL 7005 Mausgrau.jpg"
+      },
+      {
+        "code": "RAL 7034 Gelgrau",
+        "name": "RAL 7034 Gelgrau",
+        "imagePath": "color/PUP/RAL 7034 Gelgrau.jpg"
+      },
+      {
+        "code": "RAL 7044 Seidengrau",
+        "name": "RAL 7044 Seidengrau",
+        "imagePath": "color/PUP/RAL 7044 Seidengrau.jpg"
+      },
+      {
+        "code": "RAL 8003 Lehmbraun",
+        "name": "RAL 8003 Lehmbraun",
+        "imagePath": "color/PUP/RAL 8003 Lehmbraun.jpg"
+      },
+      {
+        "code": "RAL 8012 Rotbraun",
+        "name": "RAL 8012 Rotbraun",
+        "imagePath": "color/PUP/RAL 8012 Rotbraun.jpg"
+      },
+      {
+        "code": "RAL 9016 Verkhrsweib",
+        "name": "RAL 9016 Verkhrsweib",
+        "imagePath": "color/PUP/RAL 9016 Verkhrsweib.jpg"
+      },
+      {
+        "code": "RAL 9017 Verkrhrsschwarz",
+        "name": "RAL 9017 Verkrhrsschwarz",
+        "imagePath": "color/PUP/RAL 9017 Verkrhrsschwarz.jpg"
+      },
+      {
+        "code": "Ashen Krakato 44279 CMT",
+        "name": "Ashen Krakato 44279 CMT",
+        "imagePath": "color/TXR/24. Ashen Krakato 44279 CMT.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SCT",
+        "name": "Auburn Oak 14142 SCT",
+        "imagePath": "color/TXR/10. Auburn Oak 14142 SCT.jpg"
+      },
+      {
+        "code": "Bran Krakato 44282 CMT",
+        "name": "Bran Krakato 44282 CMT",
+        "imagePath": "color/TXR/25. Bran Krakato 44282 CMT.jpg"
+      },
+      {
+        "code": "Canadian Balsam 14132 GNR",
+        "name": "Canadian Balsam 14132 GNR",
+        "imagePath": "color/TXR/13. Canadian Balsam 14132 GNR.jpg"
+      },
+      {
+        "code": "Canadian Walnut 10544 WV",
+        "name": "Canadian Walnut 10544 WV",
+        "imagePath": "color/TXR/5. Canadian Walnut 10544 WV.jpg"
+      },
+      {
+        "code": "Canterbury Oak 14140 SCT",
+        "name": "Canterbury Oak 14140 SCT",
+        "imagePath": "color/TXR/11. Canterbury Oak 14140 SCT.jpg"
+      },
+      {
+        "code": "Chamois Tropical 14810 WV",
+        "name": "Chamois Tropical 14810 WV",
+        "imagePath": "color/TXR/1. Chamois Tropical 14810 WV.jpg"
+      },
+      {
+        "code": "Cloudy Cambric 44754 LNN",
+        "name": "Cloudy Cambric 44754 LNN",
+        "imagePath": "color/TXR/22. Cloudy Cambric 44754 LNN.jpg"
+      },
+      {
+        "code": "Desert Recon 10081 ML",
+        "name": "Desert Recon 10081 ML",
+        "imagePath": "color/TXR/18. Desert Recon 10081 ML.jpg"
+      },
+      {
+        "code": "Doredos Pine 14613 STK",
+        "name": "Doredos Pine 14613 STK",
+        "imagePath": "color/TXR/12. Doredos Pine 14613 STK.jpg"
+      },
+      {
+        "code": "Ebony Aspen 14673 WV",
+        "name": "Ebony Aspen 14673 WV",
+        "imagePath": "color/TXR/6. Ebony Aspen 14673 WV.jpg"
+      },
+      {
+        "code": "Ebony Peat 14674 WV",
+        "name": "Ebony Peat 14674 WV",
+        "imagePath": "color/TXR/7. Ebony Peat 14674 WV.jpg"
+      },
+      {
+        "code": "Golden Oak 10851 VNZ",
+        "name": "Golden Oak 10851 VNZ",
+        "imagePath": "color/TXR/8. Golden Oak 10851 VNZ.jpg"
+      },
+      {
+        "code": "Hazel Cambric 44753 LNN",
+        "name": "Hazel Cambric 44753 LNN",
+        "imagePath": "color/TXR/19. Hazel Cambric 44753 LNN.jpg"
+      },
+      {
+        "code": "Japanese Bamboo 10657 VL",
+        "name": "Japanese Bamboo 10657 VL",
+        "imagePath": "color/TXR/4. Japanese Bamboo 10657 VL.jpg"
+      },
+      {
+        "code": "Livid Krakato 44281 CMT",
+        "name": "Livid Krakato 44281 CMT",
+        "imagePath": "color/TXR/23. Livid Krakato 44281 CMT.jpg"
+      },
+      {
+        "code": "Peconic Chestnut 14620 VLY",
+        "name": "Peconic Chestnut 14620 VLY",
+        "imagePath": "color/TXR/9. Peconic Chestnut 14620 VLY.jpg"
+      },
+      {
+        "code": "Pure Oak 10514 VNZ",
+        "name": "Pure Oak 10514 VNZ",
+        "imagePath": "color/TXR/3. Pure Oak 10514 VNZ.jpg"
+      },
+      {
+        "code": "Russet Tropical 14809 WV",
+        "name": "Russet Tropical 14809 WV",
+        "imagePath": "color/TXR/16. Russet Tropical 14809 WV.jpg"
+      },
+      {
+        "code": "Sandy Recon 10078 ML",
+        "name": "Sandy Recon 10078 ML",
+        "imagePath": "color/TXR/17. Sandy Recon 10078 ML.jpg"
+      },
+      {
+        "code": "Scandinavian Oak 10596 VNZ",
+        "name": "Scandinavian Oak 10596 VNZ",
+        "imagePath": "color/TXR/2. Scandinavian Oak 10596 VNZ.jpg"
+      },
+      {
+        "code": "Silver Oak 10879 VNZ",
+        "name": "Silver Oak 10879 VNZ",
+        "imagePath": "color/TXR/26. Silver Oak 10879 VNZ.jpg"
+      },
+      {
+        "code": "Straw Balsam 14161 GNR",
+        "name": "Straw Balsam 14161 GNR",
+        "imagePath": "color/TXR/15. Straw Balsam 14161 GNR.jpg"
+      },
+      {
+        "code": "Tan Cambric 44755 LNN",
+        "name": "Tan Cambric 44755 LNN",
+        "imagePath": "color/TXR/20. Tan Cambric 44755 LNN.jpg"
+      },
+      {
+        "code": "Tawny Balsam 14133 GNR",
+        "name": "Tawny Balsam 14133 GNR",
+        "imagePath": "color/TXR/14. Tawny Balsam 14133 GNR.jpg"
+      },
+      {
+        "code": "White (purl) Cambric 44752 LNN",
+        "name": "White (purl) Cambric 44752 LNN",
+        "imagePath": "color/TXR/21. White (purl) Cambric 44752 LNN.jpg"
+      }
+    ]
+  },
+
+  {
+    "finishTypeCode": "PRELAM",
+    "colors": [
+      {
+        "code": "Glass_AlmondGreen",
+        "name": "Glass_AlmondGreen",
+        "imagePath": "color/GLS/Glass_AlmondGreen.jpg"
+      },
+      {
+        "code": "Glass_AtollBlue",
+        "name": "Glass_AtollBlue",
+        "imagePath": "color/GLS/Glass_AtollBlue.jpg"
+      },
+      {
+        "code": "Glass_Black",
+        "name": "Glass_Black",
+        "imagePath": "color/GLS/Glass_Black.jpg"
+      },
+      {
+        "code": "Glass_CasisPurple",
+        "name": "Glass_CasisPurple",
+        "imagePath": "color/GLS/Glass_CasisPurple.jpg"
+      },
+      {
+        "code": "Glass_ChocoBrown",
+        "name": "Glass_ChocoBrown",
+        "imagePath": "color/GLS/Glass_ChocoBrown.jpg"
+      },
+      {
+        "code": "Glass_ExtraWhite",
+        "name": "Glass_ExtraWhite",
+        "imagePath": "color/GLS/Glass_ExtraWhite.jpg"
+      },
+      {
+        "code": "Glass_FlameRed",
+        "name": "Glass_FlameRed",
+        "imagePath": "color/GLS/Glass_FlameRed.jpg"
+      },
+      {
+        "code": "Glass_FusionOrange",
+        "name": "Glass_FusionOrange",
+        "imagePath": "color/GLS/Glass_FusionOrange.jpg"
+      },
+      {
+        "code": "Glass_Ivory",
+        "name": "Glass_Ivory",
+        "imagePath": "color/GLS/Glass_Ivory.jpg"
+      },
+      {
+        "code": "Glass_OliveGreen",
+        "name": "Glass_OliveGreen",
+        "imagePath": "color/GLS/Glass_OliveGreen.jpg"
+      },
+      {
+        "code": "Glass_OperaRed",
+        "name": "Glass_OperaRed",
+        "imagePath": "color/GLS/Glass_OperaRed.jpg"
+      },
+      {
+        "code": "Glass_PistaGreen",
+        "name": "Glass_PistaGreen",
+        "imagePath": "color/GLS/Glass_PistaGreen.jpg"
+      },
+      {
+        "code": "Glass_SolarYellow",
+        "name": "Glass_SolarYellow",
+        "imagePath": "color/GLS/Glass_SolarYellow.jpg"
+      },
+      {
+        "code": "Glass_TitaniumGrey",
+        "name": "Glass_TitaniumGrey",
+        "imagePath": "color/GLS/Glass_TitaniumGrey.jpg"
+      },
+      {
+        "code": "Glass_UltraWhite",
+        "name": "Glass_UltraWhite",
+        "imagePath": "color/GLS/Glass_UltraWhite.jpg"
+      },
+      {
+        "code": "Berry Bunch 22105 HGL",
+        "name": "Berry Bunch 22105 HGL",
+        "imagePath": "color/HGS/11. Berry Bunch 22105 HGL.jpg"
+      },
+      {
+        "code": "Black 21066 MR+",
+        "name": "Black 21066 MR+",
+        "imagePath": "color/HGS/5. Black 21066 MR+.jpg"
+      },
+      {
+        "code": "Carnival 21075 HGL",
+        "name": "Carnival 21075 HGL",
+        "imagePath": "color/HGS/12. Carnival 21075 HGL.jpg"
+      },
+      {
+        "code": "Champagne 21187 MR+",
+        "name": "Champagne 21187 MR+",
+        "imagePath": "color/HGS/2. Champagne 21187 MR+.jpg"
+      },
+      {
+        "code": "Frosty White 21091 MR+",
+        "name": "Frosty White 21091 MR+",
+        "imagePath": "color/HGS/1. Frosty White 21091 MR+.jpg"
+      },
+      {
+        "code": "Ivory Frost 49916 HGL",
+        "name": "Ivory Frost 49916 HGL",
+        "imagePath": "color/HGS/14. Ivory Frost 49916 HGL.jpg"
+      },
+      {
+        "code": "Lime 21163 MR+",
+        "name": "Lime 21163 MR+",
+        "imagePath": "color/HGS/7. Lime 21163 MR+.jpg"
+      },
+      {
+        "code": "Marigold 21057 MR+",
+        "name": "Marigold 21057 MR+",
+        "imagePath": "color/HGS/6. Marigold 21057 MR+.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 MR+",
+        "name": "Pearl Black 22109 MR+",
+        "imagePath": "color/HGS/4. Pearl Black 22109 MR+.jpg"
+      },
+      {
+        "code": "Poppy 21004 HGL",
+        "name": "Poppy 21004 HGL",
+        "imagePath": "color/HGS/10. Poppy 21004 HGL.jpg"
+      },
+      {
+        "code": "Prairie Green 21003 HGL",
+        "name": "Prairie Green 21003 HGL",
+        "imagePath": "color/HGS/16. Prairie Green 21003 HGL.jpg"
+      },
+      {
+        "code": "Saffron 21024 HGL",
+        "name": "Saffron 21024 HGL",
+        "imagePath": "color/HGS/9. Saffron 21024 HGL.jpg"
+      },
+      {
+        "code": "Shangrila 21055 MR+",
+        "name": "Shangrila 21055 MR+",
+        "imagePath": "color/HGS/8. Shangrila 21055 MR+.jpg"
+      },
+      {
+        "code": "Shore 22122 HGL",
+        "name": "Shore 22122 HGL",
+        "imagePath": "color/HGS/13. Shore 22122 HGL.jpg"
+      },
+      {
+        "code": "Steel Frost 49946 HGL",
+        "name": "Steel Frost 49946 HGL",
+        "imagePath": "color/HGS/15. Steel Frost 49946 HGL.jpg"
+      },
+      {
+        "code": "Tan 21127 MR+",
+        "name": "Tan 21127 MR+",
+        "imagePath": "color/HGS/3. Tan 21127 MR+.jpg"
+      },
+      {
+        "code": "Cherry Horizontal Walnut 14478 MR+",
+        "name": "Cherry Horizontal Walnut 14478 MR+",
+        "imagePath": "color/HGW/6. Cherry Horizontal Walnut 14478 MR+.jpg"
+      },
+      {
+        "code": "Cherry Walnut 14178 MR+",
+        "name": "Cherry Walnut 14178 MR+",
+        "imagePath": "color/HGW/4. Cherry Walnut 14178 MR+.jpg"
+      },
+      {
+        "code": "Columbian Walnut 14177 MR+",
+        "name": "Columbian Walnut 14177 MR+",
+        "imagePath": "color/HGW/3. Columbian Walnut 14177 MR+.jpg"
+      },
+      {
+        "code": "Ebony Sepia 14675 MR+",
+        "name": "Ebony Sepia 14675 MR+",
+        "imagePath": "color/HGW/2. Ebony Sepia 14675 MR+.jpg"
+      },
+      {
+        "code": "Elevated Wood 10502 MR+",
+        "name": "Elevated Wood 10502 MR+",
+        "imagePath": "color/HGW/5. Elevated Wood 10502 MR+.jpg"
+      },
+      {
+        "code": "Horizontal Wallis Plum 14406 MR+",
+        "name": "Horizontal Wallis Plum 14406 MR+",
+        "imagePath": "color/HGW/9. Horizontal Wallis Plum 14406 MR+.jpg"
+      },
+      {
+        "code": "Rustic Dreams 44773 MR+",
+        "name": "Rustic Dreams 44773 MR+",
+        "imagePath": "color/HGW/7. Rustic Dreams 44773 MR+.jpg"
+      },
+      {
+        "code": "Sapelle 10019 MR+",
+        "name": "Sapelle 10019 MR+",
+        "imagePath": "color/HGW/1. Sapelle 10019 MR+.jpg"
+      },
+      {
+        "code": "Soft Travertine 40232 MR+",
+        "name": "Soft Travertine 40232 MR+",
+        "imagePath": "color/HGW/8. Soft Travertine 40232 MR+.jpg"
+      },
+      {
+        "code": "Bronze 99988 MT",
+        "name": "Bronze 99988 MT",
+        "imagePath": "color/MTL/3. Bronze 99988 MT.jpg"
+      },
+      {
+        "code": "Silver 99999 MT",
+        "name": "Silver 99999 MT",
+        "imagePath": "color/MTL/1. Silver 99999 MT.jpg"
+      },
+      {
+        "code": "Steel 99989 MT",
+        "name": "Steel 99989 MT",
+        "imagePath": "color/MTL/2. Steel 99989 MT.jpg"
+      },
+      {
+        "code": "Beige 21037 SF",
+        "name": "Beige 21037 SF",
+        "imagePath": "color/MTS/10. Beige 21037 SF.jpg"
+      },
+      {
+        "code": "Berry Bunch 22105 SF",
+        "name": "Berry Bunch 22105 SF",
+        "imagePath": "color/MTS/18. Berry Bunch 22105 SF.jpg"
+      },
+      {
+        "code": "Black 21066 SF",
+        "name": "Black 21066 SF",
+        "imagePath": "color/MTS/14. Black 21066 SF.jpg"
+      },
+      {
+        "code": "Candy White 21941 SF",
+        "name": "Candy White 21941 SF",
+        "imagePath": "color/MTS/9. Candy White 21941 SF.jpg"
+      },
+      {
+        "code": "Carnival 21075 SF",
+        "name": "Carnival 21075 SF",
+        "imagePath": "color/MTS/17. Carnival 21075 SF.jpg"
+      },
+      {
+        "code": "Champagne 21187 SF",
+        "name": "Champagne 21187 SF",
+        "imagePath": "color/MTS/1. Champagne 21187 SF.jpg"
+      },
+      {
+        "code": "Dove Grey 22079 SF",
+        "name": "Dove Grey 22079 SF",
+        "imagePath": "color/MTS/6. Dove Grey 22079 SF.jpg"
+      },
+      {
+        "code": "Gladiola 22157 SF",
+        "name": "Gladiola 22157 SF",
+        "imagePath": "color/MTS/16. Gladiola 22157 SF.jpg"
+      },
+      {
+        "code": "Ink 21032 SF",
+        "name": "Ink 21032 SF",
+        "imagePath": "color/MTS/7. Ink 21032 SF.jpg"
+      },
+      {
+        "code": "Kingfisher Blue 21122 SF",
+        "name": "Kingfisher Blue 21122 SF",
+        "imagePath": "color/MTS/15. Kingfisher Blue 21122 SF.jpg"
+      },
+      {
+        "code": "Lime 21163 SF",
+        "name": "Lime 21163 SF",
+        "imagePath": "color/MTS/4. Lime 21163 SF.jpg"
+      },
+      {
+        "code": "Marigold 21057 SF",
+        "name": "Marigold 21057 SF",
+        "imagePath": "color/MTS/3. Marigold 21057 SF.jpg"
+      },
+      {
+        "code": "Mocha 21038 SF",
+        "name": "Mocha 21038 SF",
+        "imagePath": "color/MTS/12. Mocha 21038 SF.jpg"
+      },
+      {
+        "code": "Pearl Black 22109 SF",
+        "name": "Pearl Black 22109 SF",
+        "imagePath": "color/MTS/13. Pearl Black 22109 SF.jpg"
+      },
+      {
+        "code": "Poppy 21004 SF",
+        "name": "Poppy 21004 SF",
+        "imagePath": "color/MTS/8. Poppy 21004 SF.jpg"
+      },
+      {
+        "code": "Sandal 21077 SF",
+        "name": "Sandal 21077 SF",
+        "imagePath": "color/MTS/5. Sandal 21077 SF.jpg"
+      },
+      {
+        "code": "Slate 22099 SF",
+        "name": "Slate 22099 SF",
+        "imagePath": "color/MTS/19. Slate 22099 SF.jpg"
+      },
+      {
+        "code": "Tan 21127 SF",
+        "name": "Tan 21127 SF",
+        "imagePath": "color/MTS/2. Tan 21127 SF.jpg"
+      },
+      {
+        "code": "Warm Grey 21029 SF",
+        "name": "Warm Grey 21029 SF",
+        "imagePath": "color/MTS/11. Warm Grey 21029 SF.jpg"
+      },
+      {
+        "code": "American Walnut 14538 VNR RH",
+        "name": "American Walnut 14538 VNR RH",
+        "imagePath": "color/MWG/6. American Walnut 14538 VNR RH.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SF",
+        "name": "Auburn Oak 14142 SF",
+        "imagePath": "color/MWG/5. Auburn Oak 14142 SF.jpg"
+      },
+      {
+        "code": "Balinese Pine 10866 SF",
+        "name": "Balinese Pine 10866 SF",
+        "imagePath": "color/MWG/1. Balinese Pine 10866 SF.jpg"
+      },
+      {
+        "code": "Brazilian Walnut 14539 VNR RH",
+        "name": "Brazilian Walnut 14539 VNR RH",
+        "imagePath": "color/MWG/3. Brazilian Walnut 14539 VNR RH.jpg"
+      },
+      {
+        "code": "Dark Kraftwood 10843 SF",
+        "name": "Dark Kraftwood 10843 SF",
+        "imagePath": "color/MWG/17. Dark Kraftwood 10843 SF.jpg"
+      },
+      {
+        "code": "Earth Cherry 10880 SF",
+        "name": "Earth Cherry 10880 SF",
+        "imagePath": "color/MWG/14. Earth Cherry 10880 SF.jpg"
+      },
+      {
+        "code": "Hardrock Maple 10888 SF",
+        "name": "Hardrock Maple 10888 SF",
+        "imagePath": "color/MWG/12. Hardrock Maple 10888 SF.jpg"
+      },
+      {
+        "code": "Mahagony 10699 SF",
+        "name": "Mahagony 10699 SF",
+        "imagePath": "color/MWG/13. Mahagony 10699 SF.jpg"
+      },
+      {
+        "code": "Mansal Horizontal Walnut 14619 SF",
+        "name": "Mansal Horizontal Walnut 14619 SF",
+        "imagePath": "color/MWG/18. Mansal Horizontal Walnut 14619 SF.jpg"
+      },
+      {
+        "code": "Muddled Straw 10085 SF",
+        "name": "Muddled Straw 10085 SF",
+        "imagePath": "color/MWG/16. Muddled Straw 10085 SF.jpg"
+      },
+      {
+        "code": "Mystique Walnut 10511 SF",
+        "name": "Mystique Walnut 10511 SF",
+        "imagePath": "color/MWG/10. Mystique Walnut 10511 SF.jpg"
+      },
+      {
+        "code": "Neo Highland Pine 11005 SF",
+        "name": "Neo Highland Pine 11005 SF",
+        "imagePath": "color/MWG/11. Neo Highland Pine 11005 SF.jpg"
+      },
+      {
+        "code": "Nice Wood 10197 SF",
+        "name": "Nice Wood 10197 SF",
+        "imagePath": "color/MWG/8. Nice Wood 10197 SF.jpg"
+      },
+      {
+        "code": "Orchard Delight 10592 SF",
+        "name": "Orchard Delight 10592 SF",
+        "imagePath": "color/MWG/4. Orchard Delight 10592 SF.jpg"
+      },
+      {
+        "code": "Persian Walnut 14540 VNR RH",
+        "name": "Persian Walnut 14540 VNR RH",
+        "imagePath": "color/MWG/2. Persian Walnut 14540 VNR RH.jpg"
+      },
+      {
+        "code": "Sapelle 10019 SF",
+        "name": "Sapelle 10019 SF",
+        "imagePath": "color/MWG/15. Sapelle 10019 SF.jpg"
+      },
+      {
+        "code": "Savannah Cherry 10853 SF",
+        "name": "Savannah Cherry 10853 SF",
+        "imagePath": "color/MWG/9. Savannah Cherry 10853 SF.jpg"
+      },
+      {
+        "code": "Wenge 10858 SF",
+        "name": "Wenge 10858 SF",
+        "imagePath": "color/MWG/7. Wenge 10858 SF.jpg"
+      },
+      {
+        "code": "Winter Maple 14689 SF",
+        "name": "Winter Maple 14689 SF",
+        "imagePath": "color/MWG/19. Winter Maple 14689 SF.jpg"
+      },
+      {
+        "code": "P_192",
+        "name": "P_192",
+        "imagePath": "color/PFL/P_192.jpg"
+      },
+      {
+        "code": "P_2214",
+        "name": "P_2214",
+        "imagePath": "color/PFL/P_2214.jpg"
+      },
+      {
+        "code": "P_2218",
+        "name": "P_2218",
+        "imagePath": "color/PFL/P_2218.jpg"
+      },
+      {
+        "code": "P_2220",
+        "name": "P_2220",
+        "imagePath": "color/PFL/P_2220.jpg"
+      },
+      {
+        "code": "P_225",
+        "name": "P_225",
+        "imagePath": "color/PFL/P_225.jpg"
+      },
+      {
+        "code": "P_241",
+        "name": "P_241",
+        "imagePath": "color/PFL/P_241.jpg"
+      },
+      {
+        "code": "P_261",
+        "name": "P_261",
+        "imagePath": "color/PFL/P_261.jpg"
+      },
+      {
+        "code": "P_284",
+        "name": "P_284",
+        "imagePath": "color/PFL/P_284.jpg"
+      },
+      {
+        "code": "P_286",
+        "name": "P_286",
+        "imagePath": "color/PFL/P_286.jpg"
+      },
+      {
+        "code": "P_324",
+        "name": "P_324",
+        "imagePath": "color/PFL/P_324.jpg"
+      },
+      {
+        "code": "P_326",
+        "name": "P_326",
+        "imagePath": "color/PFL/P_326.jpg"
+      },
+      {
+        "code": "P_329",
+        "name": "P_329",
+        "imagePath": "color/PFL/P_329.jpg"
+      },
+      {
+        "code": "P_331",
+        "name": "P_331",
+        "imagePath": "color/PFL/P_331.jpg"
+      },
+      {
+        "code": "P_336",
+        "name": "P_336",
+        "imagePath": "color/PFL/P_336.jpg"
+      },
+      {
+        "code": "P_338",
+        "name": "P_338",
+        "imagePath": "color/PFL/P_338.jpg"
+      },
+      {
+        "code": "P_403",
+        "name": "P_403",
+        "imagePath": "color/PFL/P_403.jpg"
+      },
+      {
+        "code": "P_407",
+        "name": "P_407",
+        "imagePath": "color/PFL/P_407.jpg"
+      },
+      {
+        "code": "P_408",
+        "name": "P_408",
+        "imagePath": "color/PFL/P_408.jpg"
+      },
+      {
+        "code": "P_412",
+        "name": "P_412",
+        "imagePath": "color/PFL/P_412.jpg"
+      },
+      {
+        "code": "P_89",
+        "name": "P_89",
+        "imagePath": "color/PFL/P_89.jpg"
+      },
+      {
+        "code": "RAL 1003 Signalgelb",
+        "name": "RAL 1003 Signalgelb",
+        "imagePath": "color/PUP/RAL 1003 Signalgelb.jpg"
+      },
+      {
+        "code": "RAL 1006 Mailsgelb",
+        "name": "RAL 1006 Mailsgelb",
+        "imagePath": "color/PUP/RAL 1006 Mailsgelb.jpg"
+      },
+      {
+        "code": "RAL 1011 Braunbeige",
+        "name": "RAL 1011 Braunbeige",
+        "imagePath": "color/PUP/RAL 1011 Braunbeige.jpg"
+      },
+      {
+        "code": "RAL 1013 Perlweib",
+        "name": "RAL 1013 Perlweib",
+        "imagePath": "color/PUP/RAL 1013 Perlweib.jpg"
+      },
+      {
+        "code": "RAL 1028 Melonengelb",
+        "name": "RAL 1028 Melonengelb",
+        "imagePath": "color/PUP/RAL 1028 Melonengelb.jpg"
+      },
+      {
+        "code": "RAL 3002 Karminrot",
+        "name": "RAL 3002 Karminrot",
+        "imagePath": "color/PUP/RAL 3002 Karminrot.jpg"
+      },
+      {
+        "code": "RAL 3017 Rose",
+        "name": "RAL 3017 Rose",
+        "imagePath": "color/PUP/RAL 3017 Rose.jpg"
+      },
+      {
+        "code": "RAL 5005 Signalblau",
+        "name": "RAL 5005 Signalblau",
+        "imagePath": "color/PUP/RAL 5005 Signalblau.jpg"
+      },
+      {
+        "code": "RAL 5015 Himmelblau",
+        "name": "RAL 5015 Himmelblau",
+        "imagePath": "color/PUP/RAL 5015 Himmelblau.jpg"
+      },
+      {
+        "code": "RAL 6027 Lichtgrun",
+        "name": "RAL 6027 Lichtgrun",
+        "imagePath": "color/PUP/RAL 6027 Lichtgrun.jpg"
+      },
+      {
+        "code": "RAL 6037 Reingrun",
+        "name": "RAL 6037 Reingrun",
+        "imagePath": "color/PUP/RAL 6037 Reingrun.jpg"
+      },
+      {
+        "code": "RAL 7005 Mausgrau",
+        "name": "RAL 7005 Mausgrau",
+        "imagePath": "color/PUP/RAL 7005 Mausgrau.jpg"
+      },
+      {
+        "code": "RAL 7034 Gelgrau",
+        "name": "RAL 7034 Gelgrau",
+        "imagePath": "color/PUP/RAL 7034 Gelgrau.jpg"
+      },
+      {
+        "code": "RAL 7044 Seidengrau",
+        "name": "RAL 7044 Seidengrau",
+        "imagePath": "color/PUP/RAL 7044 Seidengrau.jpg"
+      },
+      {
+        "code": "RAL 8003 Lehmbraun",
+        "name": "RAL 8003 Lehmbraun",
+        "imagePath": "color/PUP/RAL 8003 Lehmbraun.jpg"
+      },
+      {
+        "code": "RAL 8012 Rotbraun",
+        "name": "RAL 8012 Rotbraun",
+        "imagePath": "color/PUP/RAL 8012 Rotbraun.jpg"
+      },
+      {
+        "code": "RAL 9016 Verkhrsweib",
+        "name": "RAL 9016 Verkhrsweib",
+        "imagePath": "color/PUP/RAL 9016 Verkhrsweib.jpg"
+      },
+      {
+        "code": "RAL 9017 Verkrhrsschwarz",
+        "name": "RAL 9017 Verkrhrsschwarz",
+        "imagePath": "color/PUP/RAL 9017 Verkrhrsschwarz.jpg"
+      },
+      {
+        "code": "Ashen Krakato 44279 CMT",
+        "name": "Ashen Krakato 44279 CMT",
+        "imagePath": "color/TXR/24. Ashen Krakato 44279 CMT.jpg"
+      },
+      {
+        "code": "Auburn Oak 14142 SCT",
+        "name": "Auburn Oak 14142 SCT",
+        "imagePath": "color/TXR/10. Auburn Oak 14142 SCT.jpg"
+      },
+      {
+        "code": "Bran Krakato 44282 CMT",
+        "name": "Bran Krakato 44282 CMT",
+        "imagePath": "color/TXR/25. Bran Krakato 44282 CMT.jpg"
+      },
+      {
+        "code": "Canadian Balsam 14132 GNR",
+        "name": "Canadian Balsam 14132 GNR",
+        "imagePath": "color/TXR/13. Canadian Balsam 14132 GNR.jpg"
+      },
+      {
+        "code": "Canadian Walnut 10544 WV",
+        "name": "Canadian Walnut 10544 WV",
+        "imagePath": "color/TXR/5. Canadian Walnut 10544 WV.jpg"
+      },
+      {
+        "code": "Canterbury Oak 14140 SCT",
+        "name": "Canterbury Oak 14140 SCT",
+        "imagePath": "color/TXR/11. Canterbury Oak 14140 SCT.jpg"
+      },
+      {
+        "code": "Chamois Tropical 14810 WV",
+        "name": "Chamois Tropical 14810 WV",
+        "imagePath": "color/TXR/1. Chamois Tropical 14810 WV.jpg"
+      },
+      {
+        "code": "Cloudy Cambric 44754 LNN",
+        "name": "Cloudy Cambric 44754 LNN",
+        "imagePath": "color/TXR/22. Cloudy Cambric 44754 LNN.jpg"
+      },
+      {
+        "code": "Desert Recon 10081 ML",
+        "name": "Desert Recon 10081 ML",
+        "imagePath": "color/TXR/18. Desert Recon 10081 ML.jpg"
+      },
+      {
+        "code": "Doredos Pine 14613 STK",
+        "name": "Doredos Pine 14613 STK",
+        "imagePath": "color/TXR/12. Doredos Pine 14613 STK.jpg"
+      },
+      {
+        "code": "Ebony Aspen 14673 WV",
+        "name": "Ebony Aspen 14673 WV",
+        "imagePath": "color/TXR/6. Ebony Aspen 14673 WV.jpg"
+      },
+      {
+        "code": "Ebony Peat 14674 WV",
+        "name": "Ebony Peat 14674 WV",
+        "imagePath": "color/TXR/7. Ebony Peat 14674 WV.jpg"
+      },
+      {
+        "code": "Golden Oak 10851 VNZ",
+        "name": "Golden Oak 10851 VNZ",
+        "imagePath": "color/TXR/8. Golden Oak 10851 VNZ.jpg"
+      },
+      {
+        "code": "Hazel Cambric 44753 LNN",
+        "name": "Hazel Cambric 44753 LNN",
+        "imagePath": "color/TXR/19. Hazel Cambric 44753 LNN.jpg"
+      },
+      {
+        "code": "Japanese Bamboo 10657 VL",
+        "name": "Japanese Bamboo 10657 VL",
+        "imagePath": "color/TXR/4. Japanese Bamboo 10657 VL.jpg"
+      },
+      {
+        "code": "Livid Krakato 44281 CMT",
+        "name": "Livid Krakato 44281 CMT",
+        "imagePath": "color/TXR/23. Livid Krakato 44281 CMT.jpg"
+      },
+      {
+        "code": "Peconic Chestnut 14620 VLY",
+        "name": "Peconic Chestnut 14620 VLY",
+        "imagePath": "color/TXR/9. Peconic Chestnut 14620 VLY.jpg"
+      },
+      {
+        "code": "Pure Oak 10514 VNZ",
+        "name": "Pure Oak 10514 VNZ",
+        "imagePath": "color/TXR/3. Pure Oak 10514 VNZ.jpg"
+      },
+      {
+        "code": "Russet Tropical 14809 WV",
+        "name": "Russet Tropical 14809 WV",
+        "imagePath": "color/TXR/16. Russet Tropical 14809 WV.jpg"
+      },
+      {
+        "code": "Sandy Recon 10078 ML",
+        "name": "Sandy Recon 10078 ML",
+        "imagePath": "color/TXR/17. Sandy Recon 10078 ML.jpg"
+      },
+      {
+        "code": "Scandinavian Oak 10596 VNZ",
+        "name": "Scandinavian Oak 10596 VNZ",
+        "imagePath": "color/TXR/2. Scandinavian Oak 10596 VNZ.jpg"
+      },
+      {
+        "code": "Silver Oak 10879 VNZ",
+        "name": "Silver Oak 10879 VNZ",
+        "imagePath": "color/TXR/26. Silver Oak 10879 VNZ.jpg"
+      },
+      {
+        "code": "Straw Balsam 14161 GNR",
+        "name": "Straw Balsam 14161 GNR",
+        "imagePath": "color/TXR/15. Straw Balsam 14161 GNR.jpg"
+      },
+      {
+        "code": "Tan Cambric 44755 LNN",
+        "name": "Tan Cambric 44755 LNN",
+        "imagePath": "color/TXR/20. Tan Cambric 44755 LNN.jpg"
+      },
+      {
+        "code": "Tawny Balsam 14133 GNR",
+        "name": "Tawny Balsam 14133 GNR",
+        "imagePath": "color/TXR/14. Tawny Balsam 14133 GNR.jpg"
+      },
+      {
+        "code": "White (purl) Cambric 44752 LNN",
+        "name": "White (purl) Cambric 44752 LNN",
+        "imagePath": "color/TXR/21. White (purl) Cambric 44752 LNN.jpg"
       }
     ]
   }

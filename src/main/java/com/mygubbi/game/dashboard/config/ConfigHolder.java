@@ -48,8 +48,8 @@ public class ConfigHolder {
             System.out.println("imageBasePath after adding /:" + imageBasePath);
         }
 
-        //ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
-        ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
+        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
+        //ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
         finishTypeColors = proposalDataProvider.getFinishTypeColors().stream().collect(
                 Collectors.toMap(FinishTypeColor::getFinishTypeCode, Function.identity()));
