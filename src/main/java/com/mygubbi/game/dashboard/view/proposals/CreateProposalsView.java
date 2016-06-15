@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
 import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
@@ -48,7 +49,8 @@ import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
 /**
  * Created by test on 31-03-2016.
  */
-public class CreateProposalsView extends Panel implements View {
+public class CreateProposalsView extends Panel implements View
+{
 
 
     private final String NEW_TITLE = "New Proposal";
@@ -102,13 +104,16 @@ public class CreateProposalsView extends Panel implements View {
     private Button addFromCatalogueButton;
     private FileAttachmentComponent fileAttachmentComponent;
 
-    public CreateProposalsView() {
+    public CreateProposalsView()
+    {
     }
 
     @Override
-    public void enter(ViewChangeListener.ViewChangeEvent event) {
+    public void enter(ViewChangeListener.ViewChangeEvent event)
+    {
         String parameters = event.getParameters();
-        if (StringUtils.isNotEmpty(parameters)) {
+        if (StringUtils.isNotEmpty(parameters))
+        {
             int proposalId = Integer.parseInt(parameters);
             this.proposalHeader = proposalDataProvider.getProposalHeader(proposalId);
             this.proposal = new Proposal();
@@ -116,7 +121,9 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal.setProducts(proposalDataProvider.getProposalProducts(proposalId));
             this.proposal.setFileAttachments(proposalDataProvider.getProposalDocuments(proposalId));
             proposalHeader.setVersion(NEW_VERSION);
-        } else {
+        }
+        else
+        {
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setTitle(NEW_TITLE);
             proposalHeader.setVersion(NEW_VERSION);
@@ -153,10 +160,12 @@ public class CreateProposalsView extends Panel implements View {
         handleState();
     }
 
-    private void handleState() {
+    private void handleState()
+    {
 
         ProposalState proposalState = ProposalState.valueOf(proposalHeader.getStatus());
-        switch (proposalState) {
+        switch (proposalState)
+        {
             case draft:
                 addCustomizedButton.setEnabled(true);
                 addFromCatalogueButton.setEnabled(true);
@@ -178,7 +187,8 @@ public class CreateProposalsView extends Panel implements View {
         }
     }
 
-    private void setHeaderFieldsReadOnly(boolean readOnly) {
+    private void setHeaderFieldsReadOnly(boolean readOnly)
+    {
         proposalTitleField.setReadOnly(readOnly);
         crmId.setReadOnly(readOnly);
         quotationField.setReadOnly(readOnly);
@@ -199,7 +209,8 @@ public class CreateProposalsView extends Panel implements View {
         designPerson.setReadOnly(readOnly);
     }
 
-    private Component buildHeader() {
+    private Component buildHeader()
+    {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
         horizontalLayout.setMargin(new MarginInfo(false, true, false, true));
@@ -308,17 +319,22 @@ public class CreateProposalsView extends Panel implements View {
         return horizontalLayout;
     }
 
-    private void cancel(Button.ClickEvent clickEvent) {
+    private void cancel(Button.ClickEvent clickEvent)
+    {
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to cancel this Proposal?",
                 "Yes", "No", dialog -> {
-                    if (!dialog.isCanceled()) {
-                        try {
+                    if (!dialog.isCanceled())
+                    {
+                        try
+                        {
                             binder.commit();
                             proposalHeader.setStatus(ProposalState.cancelled.name());
                             boolean success = proposalDataProvider.saveProposal(proposalHeader);
-                            if (success) {
+                            if (success)
+                            {
                                 success = proposalDataProvider.cancelProposal(proposalHeader.getId());
-                                if (success) {
+                                if (success)
+                                {
                                     reviseButton.setVisible(false);
                                     submitButton.setVisible(false);
                                     publishButton.setVisible(false);
@@ -327,30 +343,41 @@ public class CreateProposalsView extends Panel implements View {
                                     cancelButton.setVisible(false);
                                     draftLabel.setValue("[ " + ProposalState.cancelled.name() + " ]");
                                     handleState();
-                                } else {
+                                }
+                                else
+                                {
                                     NotificationUtil.showNotification("Couldn't cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                             }
-                        } catch (FieldGroup.CommitException e) {
+                        }
+                        catch (FieldGroup.CommitException e)
+                        {
                             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         }
                     }
                 });
     }
 
-    private void publish(Button.ClickEvent clickEvent) {
+    private void publish(Button.ClickEvent clickEvent)
+    {
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to publish this Proposal?",
                 "Yes", "No", dialog -> {
-                    if (!dialog.isCanceled()) {
-                        try {
+                    if (!dialog.isCanceled())
+                    {
+                        try
+                        {
                             binder.commit();
                             proposalHeader.setStatus(ProposalState.published.name());
                             boolean success = proposalDataProvider.saveProposal(proposalHeader);
-                            if (success) {
+                            if (success)
+                            {
                                 success = proposalDataProvider.publishProposal(proposalHeader.getId());
-                                if (success) {
+                                if (success)
+                                {
                                     reviseButton.setVisible(false);
                                     submitButton.setVisible(false);
                                     publishButton.setVisible(false);
@@ -358,27 +385,37 @@ public class CreateProposalsView extends Panel implements View {
                                     saveButton.setVisible(false);
                                     draftLabel.setValue("[ " + ProposalState.published.name() + " ]");
                                     handleState();
-                                } else {
+                                }
+                                else
+                                {
                                     NotificationUtil.showNotification("Couldn't publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                             }
-                        } catch (FieldGroup.CommitException e) {
+                        }
+                        catch (FieldGroup.CommitException e)
+                        {
                             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         }
                     }
                 });
     }
 
-    private void revise(Button.ClickEvent clickEvent) {
-        try {
+    private void revise(Button.ClickEvent clickEvent)
+    {
+        try
+        {
             binder.commit();
             proposalHeader.setStatus(ProposalState.draft.name());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
-            if (success) {
+            if (success)
+            {
                 success = proposalDataProvider.reviseProposal(proposalHeader.getId());
-                if (success) {
+                if (success)
+                {
                     reviseButton.setVisible(false);
                     publishButton.setVisible(false);
                     submitButton.setVisible(true);
@@ -386,23 +423,31 @@ public class CreateProposalsView extends Panel implements View {
                     deleteButton.setVisible(true);
                     draftLabel.setValue("[ " + ProposalState.draft.name() + " ]");
                     handleState();
-                } else {
+                }
+                else
+                {
                     NotificationUtil.showNotification("Couldn't revise Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
-            } else {
+            }
+            else
+            {
                 NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
-        } catch (FieldGroup.CommitException e) {
+        }
+        catch (FieldGroup.CommitException e)
+        {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
 
     }
 
-    private void deleteProposal(Button.ClickEvent clickEvent) {
+    private void deleteProposal(Button.ClickEvent clickEvent)
+    {
 
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to delete this Proposal?",
                 "Yes", "No", dialog -> {
-                    if (!dialog.isCanceled()) {
+                    if (!dialog.isCanceled())
+                    {
                         proposalDataProvider.deleteProposal(proposalHeader.getId());
                         DashboardEventBus.post(new ProposalEvent.ProposalUpdated());
                     }
@@ -412,22 +457,30 @@ public class CreateProposalsView extends Panel implements View {
 
     }
 
-    private String getFormattedTitle(String title) {
-        if (title.length() <= 40) {
+    private String getFormattedTitle(String title)
+    {
+        if (title.length() <= 40)
+        {
             return title;
-        } else {
+        }
+        else
+        {
             return title.substring(0, 40) + "...";
         }
 
     }
 
-    private StreamResource createQuoteResource() {
+    private StreamResource createQuoteResource()
+    {
         StreamResource.StreamSource source = () -> {
             String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productSelections);
             InputStream input = null;
-            try {
+            try
+            {
                 input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 e.printStackTrace();
             }
             return input;
@@ -435,13 +488,17 @@ public class CreateProposalsView extends Panel implements View {
         return new StreamResource(source, "Quotation.xlsx");
     }
 
-    private StreamResource createJobcardResource() {
+    private StreamResource createJobcardResource()
+    {
         StreamResource.StreamSource source = () -> {
             String jobcardFile = proposalDataProvider.getJobCardFile(this.productSelections);
             InputStream input = null;
-            try {
+            try
+            {
                 input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 e.printStackTrace();
             }
             return input;
@@ -449,57 +506,78 @@ public class CreateProposalsView extends Panel implements View {
         return new StreamResource(source, "JobCard.xlsx");
     }
 
-    private void close(Button.ClickEvent clickEvent) {
+    private void close(Button.ClickEvent clickEvent)
+    {
 
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this Proposal? Unsaved data will be lost.",
                 "Yes", "No", dialog -> {
-                    if (!dialog.isCanceled()) {
+                    if (!dialog.isCanceled())
+                    {
                         UI.getCurrent().getNavigator()
                                 .navigateTo(DashboardViewType.PROPOSALS.name());
                     }
                 });
     }
 
-    private void save(Button.ClickEvent clickEvent) {
-        if (StringUtils.isEmpty(proposalHeader.getTitle())) {
+    private void save(Button.ClickEvent clickEvent)
+    {
+        if (StringUtils.isEmpty(proposalHeader.getTitle()))
+        {
             proposalHeader.setTitle("New Proposal");
         }
-        try {
+        try
+        {
             binder.commit();
-        } catch (FieldGroup.CommitException e) {
+        }
+        catch (FieldGroup.CommitException e)
+        {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
 
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
-        if (success) {
+        if (success)
+        {
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-        } else {
+        }
+        else
+        {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
 
     }
 
-    private void submit(Button.ClickEvent clickEvent) {
-        try {
+    private void submit(Button.ClickEvent clickEvent)
+    {
+        try
+        {
             binder.commit();
             proposalHeader.setStatus(ProposalState.active.name());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
-            if (success) {
+            if (success)
+            {
                 boolean mapped = true;
-                for (Product product : proposal.getProducts()) {
+                for (Product product : proposal.getProducts())
+                {
                     Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId());
                     mapped = populatedProduct.allModulesMapped() && !populatedProduct.getModules().isEmpty();
-                    if (!mapped) break;
+                    if (!mapped)
+                    {
+                        break;
+                    }
                 }
 
-                if (!mapped) {
+                if (!mapped)
+                {
                     NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                } else {
+                }
+                else
+                {
 
                     success = proposalDataProvider.submitProposal(proposalHeader.getId());
-                    if (success) {
+                    if (success)
+                    {
                         reviseButton.setVisible(true);
                         publishButton.setVisible(true);
                         submitButton.setVisible(false);
@@ -508,20 +586,27 @@ public class CreateProposalsView extends Panel implements View {
                         draftLabel.setValue("[ " + ProposalState.active.name() + " ]");
                         NotificationUtil.showNotification("Submitted successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                         handleState();
-                    } else {
+                    }
+                    else
+                    {
                         NotificationUtil.showNotification("Couldn't Activate Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     }
                 }
-            } else {
+            }
+            else
+            {
                 NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
-        } catch (FieldGroup.CommitException e) {
+        }
+        catch (FieldGroup.CommitException e)
+        {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
     }
 
 
-    private Component buildForm() {
+    private Component buildForm()
+    {
 
         VerticalLayout verticalLayout = new VerticalLayout();
 
@@ -550,7 +635,8 @@ public class CreateProposalsView extends Panel implements View {
         return verticalLayout;
     }
 
-    private Component buildDetailsLeft() {
+    private Component buildDetailsLeft()
+    {
 
         FormLayout formLayoutLeft = new FormLayout();
         formLayoutLeft.setSizeFull();
@@ -595,7 +681,8 @@ public class CreateProposalsView extends Panel implements View {
         return formLayoutLeft;
     }
 
-    private Component buildDetailsRight() {
+    private Component buildDetailsRight()
+    {
         FormLayout formLayoutRight = new FormLayout();
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
@@ -623,7 +710,8 @@ public class CreateProposalsView extends Panel implements View {
 
     }
 
-    private FormLayout buildContactDetailsRight() {
+    private FormLayout buildContactDetailsRight()
+    {
         FormLayout formLayoutRight = new FormLayout();
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
@@ -649,7 +737,8 @@ public class CreateProposalsView extends Panel implements View {
         return formLayoutRight;
     }
 
-    private FormLayout buildContactDetailsLeft() {
+    private FormLayout buildContactDetailsLeft()
+    {
         FormLayout formLayoutLeft = new FormLayout();
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
@@ -675,7 +764,8 @@ public class CreateProposalsView extends Panel implements View {
         return formLayoutLeft;
     }
 
-    private void designerChanged(Property.ValueChangeEvent valueChangeEvent) {
+    private void designerChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
         String phone = (String) designPerson.getItem(designPerson.getValue()).getItemProperty(User.PHONE).getValue();
         designContact.setReadOnly(false);
         ((TextField) designContact).setValue(phone);
@@ -686,7 +776,8 @@ public class CreateProposalsView extends Panel implements View {
         designEmail.setReadOnly(true);
     }
 
-    private void salesPersonChanged(Property.ValueChangeEvent valueChangeEvent) {
+    private void salesPersonChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
         String phone = (String) salesPerson.getItem(salesPerson.getValue()).getItemProperty(User.PHONE).getValue();
         salesContact.setReadOnly(false);
         ((TextField) salesContact).setValue(phone);
@@ -697,7 +788,8 @@ public class CreateProposalsView extends Panel implements View {
         salesEmail.setReadOnly(true);
     }
 
-    private ComboBox getSalesPersonCombo() {
+    private ComboBox getSalesPersonCombo()
+    {
         List<User> list = proposalDataProvider.getSalesUsers();
         final BeanContainer<String, User> container =
                 new BeanContainer<>(User.class);
@@ -709,9 +801,12 @@ public class CreateProposalsView extends Panel implements View {
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(User.NAME);
 
-        if (StringUtils.isNotEmpty(proposalHeader.getSalesName())) {
+        if (StringUtils.isNotEmpty(proposalHeader.getSalesName()))
+        {
             select.setValue(proposalHeader.getSalesName());
-        } else if (container.size() > 0) {
+        }
+        else if (container.size() > 0)
+        {
             select.setValue(select.getItemIds().iterator().next());
             proposalHeader.setSalesName((String) select.getValue());
             proposalHeader.setSalesPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
@@ -721,7 +816,8 @@ public class CreateProposalsView extends Panel implements View {
         return select;
     }
 
-    private ComboBox getDesignPersonCombo() {
+    private ComboBox getDesignPersonCombo()
+    {
         List<User> list = proposalDataProvider.getDesignerUsers();
         final BeanContainer<String, User> container =
                 new BeanContainer<>(User.class);
@@ -733,9 +829,12 @@ public class CreateProposalsView extends Panel implements View {
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(User.NAME);
 
-        if (StringUtils.isNotEmpty(proposalHeader.getDesignerName())) {
+        if (StringUtils.isNotEmpty(proposalHeader.getDesignerName()))
+        {
             select.setValue(proposalHeader.getDesignerName());
-        } else if (container.size() > 0) {
+        }
+        else if (container.size() > 0)
+        {
             select.setValue(select.getItemIds().iterator().next());
             proposalHeader.setDesignerName((String) select.getValue());
             proposalHeader.setDesignerPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
@@ -745,7 +844,8 @@ public class CreateProposalsView extends Panel implements View {
         return select;
     }
 
-    private FormLayout buildMainFormLayoutRight() {
+    private FormLayout buildMainFormLayoutRight()
+    {
 
         FormLayout formLayoutRight = new FormLayout();
         formLayoutRight.setSizeFull();
@@ -765,7 +865,8 @@ public class CreateProposalsView extends Panel implements View {
         return formLayoutRight;
     }
 
-    private FormLayout buildMainFormLayoutLeft() {
+    private FormLayout buildMainFormLayoutLeft()
+    {
 
         FormLayout formLayoutLeft = new FormLayout();
         formLayoutLeft.setSizeFull();
@@ -788,7 +889,8 @@ public class CreateProposalsView extends Panel implements View {
         return formLayoutLeft;
     }
 
-    private Component buildProductDetails() {
+    private Component buildProductDetails()
+    {
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
@@ -843,7 +945,7 @@ public class CreateProposalsView extends Panel implements View {
         productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
-        productsGrid.setColumns(Product.SEQ, "roomText", Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
+        productsGrid.setColumns(Product.SEQ, Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
 
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
@@ -854,26 +956,33 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Category");
         columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Type");
-        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener()
+        {
             @Override
-            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent)
+            {
 
                 Product product = (Product) rendererClickEvent.getItemId();
 
-                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name())) {
-                    if (product.getModules().isEmpty()) {
+                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name()))
+                {
+                    if (product.getModules().isEmpty())
+                    {
                         Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId());
                         product.setModules(productDetails.getModules());
                         product.setAddons(productDetails.getAddons());
                     }
 
-                    if (product.getFileAttachmentList().isEmpty()) {
+                    if (product.getFileAttachmentList().isEmpty())
+                    {
                         List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
                         product.setFileAttachmentList(productAttachments);
                     }
 
                     CustomizedProductDetailsWindow.open(proposal, product);
-                } else {
+                }
+                else
+                {
                     CatalogueProduct catalogueProduct = new CatalogueProduct();
                     catalogueProduct.populateFromProduct(product);
                     CatalogItemDetailsWindow.open(proposal, catalogueProduct);
@@ -882,16 +991,21 @@ public class CreateProposalsView extends Panel implements View {
             }
 
             @Override
-            public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+            public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent)
+            {
 
 
-                if (!proposalHeader.getStatus().equals(ProposalState.draft.name())) {
+                if (!proposalHeader.getStatus().equals(ProposalState.draft.name()))
+                {
                     NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-                } else {
+                }
+                else
+                {
 
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Product?",
                             "Yes", "No", dialog -> {
-                                if (dialog.isConfirmed()) {
+                                if (dialog.isConfirmed())
+                                {
                                     Product product = (Product) rendererClickEvent.getItemId();
 
                                     proposal.getProducts().remove(product);
@@ -899,8 +1013,10 @@ public class CreateProposalsView extends Panel implements View {
                                     int seq = product.getSeq();
                                     productContainer.removeAllItems();
 
-                                    for (Product product1 : proposal.getProducts()) {
-                                        if (product1.getSeq() > seq) {
+                                    for (Product product1 : proposal.getProducts())
+                                    {
+                                        if (product1.getSeq() > seq)
+                                        {
                                             product1.setSeq(product1.getSeq() - 1);
                                             proposalDataProvider.updateProduct(product1);
                                         }
@@ -918,7 +1034,8 @@ public class CreateProposalsView extends Panel implements View {
             }
         }));
 
-        if (!proposal.getProducts().isEmpty()) {
+        if (!proposal.getProducts().isEmpty())
+        {
             productContainer.addAll(proposal.getProducts());
             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
@@ -944,24 +1061,28 @@ public class CreateProposalsView extends Panel implements View {
         return verticalLayout;
     }
 
-    private void updateTotal(SelectionEvent selectionEvent) {
+    private void updateTotal(SelectionEvent selectionEvent)
+    {
         Collection<?> objects = productsGrid.getSelectedRows();
         boolean anythingSelected = true;
         this.productSelections.getProductIds().clear();
 
-        if (objects.size() == 0) {
+        if (objects.size() == 0)
+        {
             anythingSelected = false;
             objects = this.productsGrid.getContainerDataSource().getItemIds();
         }
 
         double grandTotal = 0;
 
-        for (Object object : objects) {
+        for (Object object : objects)
+        {
             Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
             grandTotal += amount;
             Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
 
-            if (anythingSelected) {
+            if (anythingSelected)
+            {
                 this.productSelections.getProductIds().add(id);
             }
         }
@@ -971,66 +1092,68 @@ public class CreateProposalsView extends Panel implements View {
         this.grandTotal.setReadOnly(true);
     }
 
-    private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
+    private GeneratedPropertyContainer createGeneratedProductPropertyContainer()
+    {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productContainer);
         genContainer.addGeneratedProperty("actions", getActionTextGenerator());
-        genContainer.addGeneratedProperty("roomText", getRoomTextGenerator());
+        //genContainer.addGeneratedProperty("roomText", getRoomTextGenerator());
         genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
         return genContainer;
     }
 
-    private PropertyValueGenerator<String> getActionTextGenerator() {
-        return new PropertyValueGenerator<String>() {
+    private PropertyValueGenerator<String> getActionTextGenerator()
+    {
+        return new PropertyValueGenerator<String>()
+        {
 
             @Override
-            public String getValue(Item item, Object o, Object o1) {
+            public String getValue(Item item, Object o, Object o1)
+            {
                 return "";
             }
 
             @Override
-            public Class<String> getType() {
+            public Class<String> getType()
+            {
                 return String.class;
             }
         };
     }
 
-    private PropertyValueGenerator<String> getRoomTextGenerator() {
-        return new PropertyValueGenerator<String>() {
+    private PropertyValueGenerator<String> getProductCategoryTextGenerator()
+    {
+        return new PropertyValueGenerator<String>()
+        {
 
             @Override
-            public String getValue(Item item, Object o, Object o1) {
+            public String getValue(Item item, Object o, Object o1)
+            {
                 Product product = (Product) ((BeanItem) item).getBean();
-                if (StringUtils.isNotEmpty(product.getRoom())) {
-                    return product.getRoom();
-                } else {
-                    List<LookupItem> rooms = proposalDataProvider.getLookupItems(ProposalDataProvider.ROOM_LOOKUP);
-                    return rooms.stream().filter(lookupItem -> lookupItem.getCode().equals(product.getRoomCode())).findFirst().get().getTitle();
+
+                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name()))
+                {
+                    if (StringUtils.isNotEmpty(product.getProductCategory()))
+                    {
+                        return product.getProductCategory();
+                    }
+                    else
+                    {
+                        List<LookupItem> lookupItems = proposalDataProvider.getLookupItems(ProposalDataProvider.CATEGORY_LOOKUP);
+                        return lookupItems.stream().filter(lookupItem -> lookupItem.getCode().equals(product.getProductCategoryCode())).findFirst().get().getTitle();
+                    }
+                }
+                else
+                {
+                    List<LookupItem> subCategories = proposalDataProvider.getLookupItems(ProposalDataProvider.SUB_CATEGORY_LOOKUP);
+                    return subCategories.stream().filter(
+                            lookupItem -> lookupItem.getCode().equals(product.getProductCategoryCode()))
+                            .collect(Collectors.toList()).get(0).getTitle();
                 }
             }
 
             @Override
-            public Class<String> getType() {
-                return String.class;
-            }
-        };
-    }
-
-    private PropertyValueGenerator<String> getProductCategoryTextGenerator() {
-        return new PropertyValueGenerator<String>() {
-
-            @Override
-            public String getValue(Item item, Object o, Object o1) {
-                Product product = (Product) ((BeanItem) item).getBean();
-                if (StringUtils.isNotEmpty(product.getProductCategory())) {
-                    return product.getProductCategory();
-                } else {
-                    List<LookupItem> lookupItems = proposalDataProvider.getLookupItems(ProposalDataProvider.CATEGORY_LOOKUP);
-                    return lookupItems.stream().filter(lookupItem -> lookupItem.getCode().equals(product.getProductCategoryCode())).findFirst().get().getTitle();
-                }
-            }
-
-            @Override
-            public Class<String> getType() {
+            public Class<String> getType()
+            {
                 return String.class;
             }
         };
@@ -1038,7 +1161,8 @@ public class CreateProposalsView extends Panel implements View {
 
 
     @Subscribe
-    public void productCreatedOrUpdated(final ProposalEvent.ProductCreatedOrUpdatedEvent event) {
+    public void productCreatedOrUpdated(final ProposalEvent.ProductCreatedOrUpdatedEvent event)
+    {
         List<Product> products = proposal.getProducts();
         boolean removed = products.remove(event.getProduct());
         products.add(event.getProduct());
@@ -1051,10 +1175,12 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     @Subscribe
-    public void productDelete(final ProposalEvent.ProductDeletedEvent event) {
+    public void productDelete(final ProposalEvent.ProductDeletedEvent event)
+    {
         List<Product> products = proposal.getProducts();
         boolean removed = products.remove(event.getProduct());
-        if (removed) {
+        if (removed)
+        {
             productContainer.removeAllItems();
             productContainer.addAll(products);
             productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
