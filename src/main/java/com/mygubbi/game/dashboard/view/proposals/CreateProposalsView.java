@@ -983,7 +983,6 @@ public class CreateProposalsView extends Panel implements View {
     private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productContainer);
         genContainer.addGeneratedProperty("actions", getActionTextGenerator());
-        //genContainer.addGeneratedProperty("roomText", getRoomTextGenerator());
         genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
         return genContainer;
     }

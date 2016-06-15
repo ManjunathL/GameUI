@@ -17,6 +17,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.sort.Sort;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
@@ -55,7 +56,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private static final String DELETE = "Delete";
 
     private TextField itemTitleField;
-    private ComboBox roomSelection;
+    private TextField roomText;
     private ComboBox makeType;
     private ComboBox productSelection;
     private ComboBox baseCarcassSelection;
@@ -189,19 +190,10 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutLeft.addComponent(this.productSelection);
 
-        this.roomSelection = getSimpleItemFilledCombo("Room", ProposalDataProvider.ROOM_LOOKUP, null);
-        roomSelection.setRequired(true);
-        binder.bind(roomSelection, ROOM_CODE);
-        roomSelection.addValueChangeListener(valueChangeEvent -> {
-            String code = (String) valueChangeEvent.getProperty().getValue();
-            String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
-            product.setRoom(title);
-        });
-        if (roomSelection.size() > 0) {
-            String code = StringUtils.isNotEmpty(product.getRoomCode()) ? product.getRoomCode() : (String) roomSelection.getItemIds().iterator().next();
-            roomSelection.setValue(code);
-        }
-        formLayoutLeft.addComponent(this.roomSelection);
+        roomText = (TextField) binder.buildAndBind("Room", ROOM_CODE);
+        roomText.setRequired(true);
+        roomText.setNullRepresentation("");
+        formLayoutLeft.addComponent(roomText);
 
         this.makeType = getSimpleItemFilledCombo("Make Type", ProposalDataProvider.MAKE_LOOKUP, null);
         makeType.setRequired(true);
@@ -425,7 +417,7 @@ public class CustomizedProductDetailsWindow extends Window {
             moduleContainer.removeAllItems();
             moduleContainer.addAll(product.getModules());
             modulesGrid.clearSortOrder();
-            //todo: Sunil modulesGrid.sort(SEQ, SortDirection.ASCENDING);
+            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
             modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
             updateTotalAmount();
@@ -522,7 +514,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (!product.getModules().isEmpty()) {
             moduleContainer.addAll(product.getModules());
-            //todo: Sunil modulesGrid.sort(SEQ, SortDirection.ASCENDING);
+            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
         }
 
         return modulesGrid;
@@ -849,7 +841,7 @@ public class CustomizedProductDetailsWindow extends Window {
         moduleContainer.removeAllItems();
         moduleContainer.addAll(modules);
         modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
-        //todo: Sunil modulesGrid.sort(Module.SEQ, SortDirection.ASCENDING);
+        modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
         updateTotalAmount();
 
         if (product.allModulesMapped()) {
@@ -888,7 +880,7 @@ public class CustomizedProductDetailsWindow extends Window {
             case published:
                 itemTitleField.setReadOnly(true);
                 productSelection.setReadOnly(true);
-                roomSelection.setReadOnly(true);
+                roomText.setReadOnly(true);
                 makeType.setReadOnly(true);
                 shutterDesign.setReadOnly(true);
                 baseCarcassSelection.setReadOnly(true);
