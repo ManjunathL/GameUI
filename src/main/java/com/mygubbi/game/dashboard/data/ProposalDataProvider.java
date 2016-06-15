@@ -1,15 +1,5 @@
 package com.mygubbi.game.dashboard.data;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -19,13 +9,22 @@ import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
-
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by nitinpuri on 05-04-2016.
@@ -41,6 +40,7 @@ public class ProposalDataProvider {
     public static final String SHUTTER_DESIGN_LOOKUP = "shutterdesign";
     public static final String CARCASS_LOOKUP = "carcassmaterial";
     public static final String FINISH_TYPE_LOOKUP = "finishtype";
+    public static final String SUB_CATEGORY_LOOKUP = "psubcategory";
     public static final String FINISH_LOOKUP = "finish";
     private static final String ROLE_DESIGNER = "designer";
     private static final String ROLE_SALES = "sales";
@@ -335,9 +335,8 @@ public class ProposalDataProvider {
     }
 
     public List<CatalogueProduct> getCatalogueProducts(String categoryCode, String subCategoryCode) {
-        JSONArray array = dataProviderMode.getResourceArray("catalogue", new HashMap<String, String>() {
+        JSONArray array = dataProviderMode.getResourceArray("catalog-products", new HashMap<String, String>() {
             {
-                put("category", categoryCode);
                 put("subcategory", subCategoryCode);
             }
         });
@@ -354,13 +353,7 @@ public class ProposalDataProvider {
 
     public CatalogueProduct getCatalogueProduct(String productId) {
 
-        String resourcePath = "catalogue";
-
-        if (dataProviderMode instanceof FileDataProviderMode) {
-            resourcePath = "catalogue_product";
-        }
-
-        JSONObject jsonObject = dataProviderMode.getResource(resourcePath, new HashMap<String, String>() {
+        JSONObject jsonObject = dataProviderMode.getResource("catalogproduct", new HashMap<String, String>() {
             {
                 put("productId", productId);
             }
@@ -384,12 +377,6 @@ public class ProposalDataProvider {
     }
 
     public List<LookupItem> getLookupItems(String type) {
-
-/*
-        if (type.equals(FINISH_LOOKUP)) {
-            return getFinishes();
-        }
-*/
 
         List<LookupItem> cachedItems = ServerManager.getInstance().getLookupItems(type);
 
