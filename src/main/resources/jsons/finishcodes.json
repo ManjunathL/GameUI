@@ -1,0 +1,104 @@
+[
+  {
+    "finishMaterial": "LAMINATE",
+    "finishCode": "D01",
+    "colorGroupCode": "MTS",
+    "title": "Ply - Matt Solid"
+  },
+  {
+    "finishMaterial": "LAMINATE",
+    "finishCode": "D02",
+    "colorGroupCode": "MTS",
+    "title": "MDF - Matt Solid"
+  },
+  {
+    "finishMaterial": "LAMINATE",
+    "finishCode": "D03",
+    "colorGroupCode": "MWG",
+    "title": "Ply - Matt Woodgrain"
+  },
+  {
+    "finishMaterial": "LAMINATE",
+    "finishCode": "D04",
+    "colorGroupCode": "MWG",
+    "title": "MDF - Matt Woodgrain"
+  },
+  {
+    "finishMaterial": "LAMINATE",
+    "finishCode": "D05",
+    "colorGroupCode": "HGS",
+    "title": "MDF - Highglass Solid"
+  },
+  {
+    "finishMaterial": "LAMINATE",
+    "finishCode": "D06",
+    "colorGroupCode": "HGW",
+    "title": "MDF - Highgloss-Woodgrain"
+  },
+  {
+    "finishMaterial": "LAMINATE",
+    "finishCode": "D07",
+    "colorGroupCode": "TXR",
+    "title": "Ply - Texture"
+  },
+  {
+    "finishMaterial": "LAMINATE",
+    "finishCode": "D08",
+    "colorGroupCode": "TXR",
+    "title": "MDF - Texture"
+  },
+  {
+    "finishMaterial": "ACRYLIC",
+    "finishCode": "D09",
+    "colorGroupCode": "ALL",
+    "title": "MDF - Acrylic"
+  },
+  {
+    "finishMaterial": "PAINT",
+    "finishCode": "D10",
+    "colorGroupCode": "PUP",
+    "title": "MDF - Glossy PU Paint"
+  },
+  {
+    "finishMaterial": "PAINT",
+    "finishCode": "D11",
+    "colorGroupCode": "PUP",
+    "title": "MDF - Matt PU Paint"
+  },
+  {
+    "finishMaterial": "FOIL",
+    "finishCode": "D12",
+    "colorGroupCode": "PFL",
+    "title": "MDF - Glossy Foil"
+  },
+  {
+    "finishMaterial": "FOIL",
+    "finishCode": "D13",
+    "colorGroupCode": "PFL",
+    "title": "MDF - Matt Woodgrain Texture Foil"
+  },
+  {
+    "finishMaterial": "VENEER",
+    "finishCode": "D14",
+    "colorGroupCode": "ALL",
+    "title": "MDF - Veneer"
+  },
+  {
+    "finishMaterial": "SOLIDWOOD",
+    "finishCode": "D15",
+    "colorGroupCode": "ALL",
+    "title": "MDF - Solid Wood"
+  },
+  {
+    "finishMaterial": "PRELAM",
+    "finishCode": "D16",
+    "colorGroupCode": "ALL",
+    "title": "MDF - Matt Gloss Prelam"
+  },
+  {
+    "finishMaterial": "PRELAM",
+    "finishCode": "D17",
+    "colorGroupCode": "ALL",
+    "title": "Ply - Matt Gloss Prelam"
+  }
+]

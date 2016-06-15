@@ -21,6 +21,7 @@ import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
@@ -60,7 +61,7 @@ public class ModuleDetailsWindow extends Window {
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final BeanFieldGroup<Module> binder = new BeanFieldGroup<>(Module.class);
 
-    private List<LookupItem> shutterFinishMasterList;
+    private List<Finish> shutterFinishMasterList;
     private Image moduleImage;
     private ThemeResource emptyModuleImage;
     private ImageStrip accessoryImageStrip;
@@ -361,11 +362,11 @@ public class ModuleDetailsWindow extends Window {
         formLayoutRight.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
-        shutterFinishMasterList = proposalDataProvider.getLookupItems(ProposalDataProvider.FINISH_LOOKUP);
-        List<LookupItem> filteredShutterFinish = filterShutterFinishByType();
-        this.shutterFinishSelection = getSimpleItemFilledCombo("Finish", filteredShutterFinish, null);
+        shutterFinishMasterList = proposalDataProvider.getFinishes(); //LookupItems(ProposalDataProvider.FINISH_LOOKUP);
+        List<Finish> filteredShutterFinish = filterShutterFinishByType();
+        this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
         binder.bind(shutterFinishSelection, Module.SHUTTER_FINISH_CODE);
-        shutterFinishSelection.addValueChangeListener(this::refreshPrice);
+        shutterFinishSelection.addValueChangeListener(this::finishChanged);//refreshPrice);
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
         totalAmount = new TextField("Total Amount");
@@ -377,54 +378,19 @@ public class ModuleDetailsWindow extends Window {
         colorLayout.setSizeFull();
         verticalLayout.addComponent(colorLayout);
 
-        this.colorCombo = getColorsCombo("Colors", ServerManager.getInstance().getFinishTypeColors().get(module.getFinishTypeCode()).getColors());
+        List<Color> colors = filterColorsByType();
+        this.colorCombo = getColorsCombo("Colors", colors);
         binder.bind(colorCombo, Module.COLOR_CODE);
         formLayoutLeft.addComponent(this.colorCombo);
 
         return verticalLayout;
     }
 
-    private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
-        refreshPrice();
-    }
-
-    private List<LookupItem> filterShutterFinishByType() {
-        List<LookupItem> filteredShutterFinish = new ArrayList<>();
-
-        String finishTypeCode = (String) finishTypeSelection.getValue();
-
-        if (finishTypeCode.startsWith(DEF_CODE_PREFIX)) finishTypeCode = finishTypeCode.substring(DEF_CODE_PREFIX.length());
-
-        for (LookupItem shutterFinishComboItem : shutterFinishMasterList) {
-            if (finishTypeCode.equals(shutterFinishComboItem.getAdditionalType())) {
-                filteredShutterFinish.add(shutterFinishComboItem);
-            }
-        }
-
-        if (finishTypeCode.equals(product.getFinishTypeCode())) {
-            LookupItem defaultItem = filteredShutterFinish.stream().filter(simpleComboItem -> simpleComboItem.getCode().equals(product.getFinishCode())).findFirst().get();
-            filteredShutterFinish.add(new LookupItem(DEF_CODE_PREFIX + defaultItem.getCode(), "Default (" + defaultItem.getTitle() + ")", defaultItem.getAdditionalType()));
-        }
-
-        return filteredShutterFinish;
-    }
-
-    private List<Color> filterColorsByType() {
-        String finishTypeCode = (String) finishTypeSelection.getValue();
-        if (finishTypeCode.startsWith(DEF_CODE_PREFIX)) finishTypeCode = finishTypeCode.substring(DEF_CODE_PREFIX.length());
-        return ServerManager.getInstance().getFinishTypeColors().get(finishTypeCode).getColors();
-    }
-
-    private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
-        List<LookupItem> filteredShutterFinish = filterShutterFinishByType();
-        this.shutterFinishSelection.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, LookupItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
-        if (filteredShutterFinish.size() > 0) shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
-
+    private void finishChanged(Property.ValueChangeEvent valueChangeEvent) {
         List<Color> filteredColors = filterColorsByType();
         String previousColorCode = (String) this.colorCombo.getValue();
         colorCombo.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, Color>)colorCombo.getContainerDataSource()).addAll(filteredColors);
+        ((BeanContainer<String, Color>) colorCombo.getContainerDataSource()).addAll(filteredColors);
 
         if (filteredColors.stream().anyMatch(color -> color.getCode().equals(previousColorCode))) {
             colorCombo.setValue(previousColorCode);
@@ -432,6 +398,50 @@ public class ModuleDetailsWindow extends Window {
             colorCombo.setValue(colorCombo.getItemIds().iterator().next());
         }
 
+        refreshPrice();
+    }
+
+    private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
+        refreshPrice();
+    }
+
+    private List<Finish> filterShutterFinishByType() {
+        List<Finish> filteredShutterFinish = new ArrayList<>();
+
+        String finishTypeCode = (String) finishTypeSelection.getValue();
+
+        if (finishTypeCode.startsWith(DEF_CODE_PREFIX)) finishTypeCode = finishTypeCode.substring(DEF_CODE_PREFIX.length());
+
+        for (Finish shutterFinishComboItem : shutterFinishMasterList) {
+            if (finishTypeCode.equals(shutterFinishComboItem.getFinishMaterial())) {
+                filteredShutterFinish.add(shutterFinishComboItem);
+            }
+        }
+
+        if (finishTypeCode.equals(product.getFinishTypeCode())) {
+            Finish defaultItem = filteredShutterFinish.stream().filter(finish -> finish.getFinishCode().equals(product.getFinishCode())).findFirst().get();
+            Finish newFinish = new Finish();
+            newFinish.setTitle("Default (" + defaultItem.getTitle() + ")");
+            newFinish.setFinishCode(DEF_CODE_PREFIX + defaultItem.getFinishCode());
+            newFinish.setFinishMaterial(defaultItem.getFinishMaterial());
+            newFinish.setColorGroupCode(defaultItem.getColorGroupCode());
+
+            filteredShutterFinish.add(newFinish);
+        }
+
+        return filteredShutterFinish;
+    }
+
+    private List<Color> filterColorsByType() {
+        Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
+        return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode());
+    }
+
+    private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
+        List<Finish> filteredShutterFinish = filterShutterFinishByType();
+        this.shutterFinishSelection.getContainerDataSource().removeAllItems();
+        ((BeanContainer<String, Finish>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
+        if (filteredShutterFinish.size() > 0) shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
     }
 
     private void enableApply() {
@@ -562,6 +572,23 @@ public class ModuleDetailsWindow extends Window {
         w.focus();
     }
 
+    private ComboBox getFinishItemFilledCombo(String caption, List<Finish> list, Property.ValueChangeListener listener) {
+
+        final BeanContainer<String, Finish> container =
+                new BeanContainer<>(Finish.class);
+        container.setBeanIdProperty(Finish.FINISH_CODE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(Finish.TITLE);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
+    }
+
     private ComboBox getSimpleItemFilledCombo(String caption, List<LookupItem> list, Property.ValueChangeListener listener) {
 
         final BeanContainer<String, LookupItem> container =
@@ -593,6 +620,7 @@ public class ModuleDetailsWindow extends Window {
         select.setItemIconPropertyId("colorImageResource");
         select.setStyleName("colors-combo");
         select.setItemCaptionPropertyId("name");
+        select.setFilteringMode(FilteringMode.CONTAINS);
         if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
     }

@@ -1,5 +1,6 @@
 package com.mygubbi.game.dashboard.data;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -14,11 +15,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygubbi.game.dashboard.ServerManager;
+import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 
 import com.mygubbi.game.dashboard.view.NotificationUtil;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
@@ -231,6 +234,26 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<Color> getColorsByGroup(String colorGroupCode) {
+        JSONArray array = dataProviderMode.getResourceArray("colorcodes", new HashMap<String, String>() {
+            {
+                put("colorGroupCode", colorGroupCode);
+            }
+        });
+        try {
+            ArrayList<Color> colors = new ArrayList<>(Arrays.asList(this.mapper.readValue(array.toString(), Color[].class)));
+
+            colors.stream().forEach(color -> {
+                color.setColorImageResource(new FileResource(new File(ConfigHolder.getInstance().getImageBasePath() + color.getImagePath())));
+            });
+
+            return colors;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     public boolean addProductDoc(int productId, int proposalId, FileAttachment fileAttachment) {
         try {
             fileAttachment.setUploadedBy(getUserId());
@@ -312,7 +335,7 @@ public class ProposalDataProvider {
     }
 
     public List<CatalogueProduct> getCatalogueProducts(String categoryCode, String subCategoryCode) {
-        JSONArray array = dataProviderMode.getResourceArray("products", new HashMap<String, String>() {
+        JSONArray array = dataProviderMode.getResourceArray("catalogue", new HashMap<String, String>() {
             {
                 put("category", categoryCode);
                 put("subcategory", subCategoryCode);
@@ -331,10 +354,10 @@ public class ProposalDataProvider {
 
     public CatalogueProduct getCatalogueProduct(String productId) {
 
-        String resourcePath = "products";
+        String resourcePath = "catalogue";
 
         if (dataProviderMode instanceof FileDataProviderMode) {
-            resourcePath = "product";
+            resourcePath = "catalogue_product";
         }
 
         JSONObject jsonObject = dataProviderMode.getResource(resourcePath, new HashMap<String, String>() {
@@ -362,9 +385,11 @@ public class ProposalDataProvider {
 
     public List<LookupItem> getLookupItems(String type) {
 
+/*
         if (type.equals(FINISH_LOOKUP)) {
             return getFinishes();
         }
+*/
 
         List<LookupItem> cachedItems = ServerManager.getInstance().getLookupItems(type);
 
@@ -392,20 +417,11 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<LookupItem> getFinishes() {
-
-        List<LookupItem> cachedItems = ServerManager.getInstance().getLookupItems(FINISH_LOOKUP);
-        if (cachedItems != null) {
-            return cachedItems;
-        }
-        JSONArray array = dataProviderMode.getResourceArray("finishlookup", new HashMap<>());
+    public List<Finish> getFinishes() {
+        JSONArray array = dataProviderMode.getResourceArray("finishcodes", new HashMap<>());
         try {
-            LookupItem[] items = this.mapper.readValue(array.toString(), LookupItem[].class);
-            List<LookupItem> lookupItems = new ArrayList<>(Arrays.asList(items));
-
-            ServerManager.getInstance().addLookupItems(FINISH_LOOKUP, lookupItems);
-
-            return lookupItems;
+            Finish[] items = this.mapper.readValue(array.toString(), Finish[].class);
+            return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
             e.printStackTrace();
             NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);

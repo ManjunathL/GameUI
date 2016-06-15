@@ -126,6 +126,7 @@ public class CatalogItemDetailsWindow extends Window {
         formLayoutLeft.addComponent(productTitleField);
 
         this.descriptionField = new TextArea("Description");
+        this.descriptionField.setNullRepresentation("");
         this.binder.bind(this.descriptionField, CatalogueProduct.DESC);
         this.descriptionField.setReadOnly(true);
         formLayoutLeft.addComponent(this.descriptionField);

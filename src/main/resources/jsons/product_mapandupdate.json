@@ -7,7 +7,7 @@
       "seq": 1,
       "extCode": "ADD1_536",
       "extDefCode": "ADD1_536",
-      "colorCode": "CC123",
+      "colorCode": "RAL 1003 Signalgelb",
       "unitType": "Base"
     },
     {
@@ -15,7 +15,7 @@
       "seq": 2,
       "extCode": "FUL1_536",
       "extDefCode": "ADD1_536",
-      "colorCode": "CC254",
+      "colorCode": "RAL 1006 Mailsgelb",
       "unitType": "Wall"
     },
     {
@@ -23,7 +23,7 @@
       "seq": 3,
       "extCode": "FUL1_537",
       "extDefCode": "ADD1_536",
-      "colorCode": "CC234",
+      "colorCode": "RAL 1003 Signalgelb",
       "unitType": "Base"
     },
     {
@@ -31,7 +31,7 @@
       "seq": 4,
       "extCode": "ADD1_537",
       "extDefCode": "",
-      "colorCode": "CC876",
+      "colorCode": "RAL 1006 Mailsgelb",
       "unitType": "Base"
     }
   ]

@@ -75,7 +75,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private Product product;
     private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
-    private List<LookupItem> shutterFinishMasterList;
+    private List<Finish> shutterFinishMasterList;
     private BeanItemContainer<Module> moduleContainer;
     private Grid modulesGrid;
     private TextField totalAmount;
@@ -333,14 +333,14 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutRight.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
-        shutterFinishMasterList = proposalDataProvider.getLookupItems(ProposalDataProvider.FINISH_LOOKUP);
-        List<LookupItem> filteredShutterFinish = filterShutterFinishByType();
-        this.shutterFinishSelection = getSimpleItemFilledCombo("Finish", filteredShutterFinish, null);
+        shutterFinishMasterList = proposalDataProvider.getFinishes();//todLookupItems(ProposalDataProvider.FINISH_LOOKUP);
+        List<Finish> filteredShutterFinish = filterShutterFinishByType();
+        this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
         shutterFinishSelection.setRequired(true);
         binder.bind(shutterFinishSelection, SHUTTER_FINISH_CODE);
         shutterFinishSelection.addValueChangeListener(this::refreshPrice);
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, LookupItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
+        ((BeanContainer<String, Finish>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
         if (shutterFinishSelection.size() > 0) {
             String code = StringUtils.isNotEmpty(product.getFinishCode()) ? product.getFinishCode() : (String) shutterFinishSelection.getItemIds().iterator().next();
             shutterFinishSelection.setValue(code);
@@ -355,13 +355,13 @@ public class CustomizedProductDetailsWindow extends Window {
         return formLayoutRight;
     }
 
-    private List<LookupItem> filterShutterFinishByType() {
-        List<LookupItem> filteredShutterFinish = new ArrayList<>();
+    private List<Finish> filterShutterFinishByType() {
+        List<Finish> filteredShutterFinish = new ArrayList<>();
 
         String selectedFinishTypeCode = (String) finishTypeSelection.getValue();
 
-        for (LookupItem shutterFinishComboItem : shutterFinishMasterList) {
-            if (selectedFinishTypeCode.equals(shutterFinishComboItem.getAdditionalType())) {
+        for (Finish shutterFinishComboItem : shutterFinishMasterList) {
+            if (selectedFinishTypeCode.equals(shutterFinishComboItem.getFinishMaterial())) {
                 filteredShutterFinish.add(shutterFinishComboItem);
             }
         }
@@ -369,9 +369,9 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
-        List<LookupItem> filteredShutterFinish = filterShutterFinishByType();
+        List<Finish> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, LookupItem>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
+        ((BeanContainer<String, Finish>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
         if (filteredShutterFinish.size() > 0)
             shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
 
@@ -381,7 +381,9 @@ public class CustomizedProductDetailsWindow extends Window {
         this.quoteUploadCtrl = new Upload("Import Quotation Sheet", (filename, mimeType) -> {
             LOG.debug("Received upload - " + filename);
 
-            if (!binder.isValid()) {
+            try {
+                binder.commit();
+            } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Please fill all mandatory fields before upload!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return null;
             }
@@ -481,7 +483,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setSizeFull();
         modulesGrid.setColumnReorderingAllowed(true);
         modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE,
-                Module.MAKE_TYPE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, "colorName", Module.AMOUNT, "action");
+                Module.MAKE_TYPE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
 
         List<Grid.Column> columns = modulesGrid.getColumns();
         int idx = 0;
@@ -529,7 +531,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private GeneratedPropertyContainer createGeneratedModulePropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(moduleContainer);
         genContainer.addGeneratedProperty("action", getEmptyActionTextGenerator());
-        genContainer.addGeneratedProperty("colorName", getColorNameGenerator());
+        //genContainer.addGeneratedProperty("colorName", getColorNameGenerator());
         return genContainer;
     }
 
@@ -558,6 +560,7 @@ public class CustomizedProductDetailsWindow extends Window {
         };
     }
 
+/*
     private PropertyValueGenerator<String> getColorNameGenerator() {
         return new PropertyValueGenerator<String>() {
 
@@ -574,6 +577,7 @@ public class CustomizedProductDetailsWindow extends Window {
             }
         };
     }
+*/
 
     private Converter<String, String> getResourceConverter() {
         return new Converter<String, String>() {
@@ -736,7 +740,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         deleteNotRequired ?
                                 "Are you sure? Unsaved data will be lost."
                                 : "The product will be Deleted as the   modules mapping is not yet saved. Are sure you want to proceed?",
-                        "Close", "Cancel", dialog -> {
+                        "Yes", "No", dialog -> {
 
                             if (!dialog.isCanceled()) {
                                 if (!deleteNotRequired) {
@@ -796,6 +800,23 @@ public class CustomizedProductDetailsWindow extends Window {
 
     public static void closeWindow() {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
+    }
+
+    private ComboBox getFinishItemFilledCombo(String caption, List<Finish> list, Property.ValueChangeListener listener) {
+
+        final BeanContainer<String, Finish> container =
+                new BeanContainer<>(Finish.class);
+        container.setBeanIdProperty(Finish.FINISH_CODE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(Finish.TITLE);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
     }
 
     private ComboBox getSimpleItemFilledCombo(String caption, List<LookupItem> list, Property.ValueChangeListener listener) {
