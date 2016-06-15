@@ -1,259 +1,415 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
 
-import java.util.List;
-
 import com.mygubbi.game.dashboard.ServerManager;
+import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.domain.ProductItem;
-import com.mygubbi.game.dashboard.domain.ProductSuggest;
-import com.mygubbi.game.dashboard.domain.Proposal;
-import com.mygubbi.game.dashboard.domain.ProposalHeader;
+import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
-import com.vaadin.event.FieldEvents;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
+import com.mygubbi.game.dashboard.event.ProposalEvent;
+import com.mygubbi.game.dashboard.view.NotificationUtil;
+import com.vaadin.data.Property;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.Position;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import com.zybnet.autocomplete.server.AutocompleteField;
-import com.zybnet.autocomplete.server.AutocompleteQueryListener;
-import com.zybnet.autocomplete.server.AutocompleteSuggestionPickedListener;
+import org.apache.commons.lang.StringUtils;
+import org.vaadin.dialogs.ConfirmDialog;
+
+import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class CatalogItemDetailsWindow extends Window {
 
-    private final AutocompleteField<ProductSuggest> productSuggestField = new AutocompleteField<ProductSuggest>();
-    private TextField itemTitleField;
-    private Embedded productImage;
-
-    
-    private TextField typeField;
-    private TextField quantityField;
+    private static final String COMBO_WIDTH = "300px";
+    private ComboBox categoryCombo;
+    private ComboBox subCategoryCombo;
+    private ComboBox productCombo;
+    private TextField productTitleField;
+    private ComboBox materialCombo;
+    private ComboBox finishCombo;
     private TextField amountField;
+
     private TextArea descriptionField;
+    private Image productImage;
+    private ThemeResource emptyImage;
 
     private Button closeBtn;
     private Button saveBtn;
 
-    private Proposal proposal;
+    private final CatalogueProduct product;
+    private final Proposal proposal;
+    private final BeanFieldGroup<CatalogueProduct> binder = new BeanFieldGroup<>(CatalogueProduct.class);
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
-    
+    private final List<CatalogueProductCategory> categories;
 
-    
-    private CatalogItemDetailsWindow(Proposal proposal) {
+    private CatalogItemDetailsWindow(Proposal proposal, CatalogueProduct product) {
 
         this.proposal = proposal;
-        
+        this.product = product;
+        this.binder.setItemDataSource(this.product);
+        categories = proposalDataProvider.getCatalogueProductCategories();
+
+        fillCatalogueProduct();
+
         setModal(true);
-        setCloseShortcut(KeyCode.ESCAPE, null);
         setResizable(false);
-        setClosable(true);
+        setClosable(false);
         setSizeFull();
-        setCaption("Add Standard Item");
-        
+        setCaption("Add Catalogue Product");
+
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setMargin(new MarginInfo(true, false, false, false));
-        
+
         HorizontalLayout horizontalLayout0 = new HorizontalLayout();
         horizontalLayout0.setSizeFull();
-        horizontalLayout0.addComponent(buildAddItemBasicFormLeft());
-        horizontalLayout0.addComponent(buildAddItemBasicFormRight());
+        horizontalLayout0.addComponent(buildLeftForm());
+        horizontalLayout0.addComponent(buildRightForm());
         vLayout.addComponent(horizontalLayout0);
-        
+
         vLayout.addComponent(new Label("</br></br>", ContentMode.HTML));
         vLayout.addComponent(buildFooter());
-        
+
         setContent(vLayout);
         Responsive.makeResponsive(horizontalLayout0);
     }
 
-    
-    private FormLayout buildAddItemBasicFormLeft() 
-    {
+    private void fillCatalogueProduct() {
+        if (StringUtils.isNotEmpty(product.getCatalogueId())) {
+            CatalogueProduct catalogueProduct = this.proposalDataProvider.getCatalogueProduct(product.getCatalogueId());
+            product.setMf(catalogueProduct.getMf());
+            product.setImages(catalogueProduct.getImages());
+            product.setProductId(product.getCatalogueId());
+            product.setName(product.getTitle());
+            product.setDesc(catalogueProduct.getDesc());
+        }
+    }
+
+    private FormLayout buildLeftForm() {
         FormLayout formLayoutLeft = new FormLayout();
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.itemTitleField = new TextField("Item Title");	
-        formLayoutLeft.addComponent(itemTitleField);
-        
-        productSuggestField.setCaption("Product");
-        productSuggestField.setDelay(200);
-        productSuggestField.setStyleName("search");
-        productSuggestField.setQueryListener(new AutocompleteQueryListener<ProductSuggest>() 
-        {
-            @Override
-            public void handleUserQuery(AutocompleteField<ProductSuggest> field, String query) 
-            {
-            	field.clearChoices();
-            	handleSearchQuery(field, query);
-            }
-        });
-        productSuggestField.setSuggestionPickedListener(new AutocompleteSuggestionPickedListener<ProductSuggest>() 
-        {
-            @Override
-            public void onSuggestionPicked(ProductSuggest page) {
-              handleSuggestionSelection(page);
-            }
-        });
-        
-        formLayoutLeft.addComponent(productSuggestField);
-        this.productImage = new Embedded("");
-        formLayoutLeft.addComponent(this.productImage);
-        
+        this.categoryCombo = getCategoryCombo();
+        this.categoryCombo.setRequired(true);
+        this.categoryCombo.addValueChangeListener(this::categoryChanged);
+        formLayoutLeft.addComponent(this.categoryCombo);
+
+        this.subCategoryCombo = getSubCategoryCombo();
+        this.subCategoryCombo.setRequired(true);
+        this.binder.bind(this.subCategoryCombo, CatalogueProduct.PRODUCT_CATEGORY_CODE);
+        this.subCategoryCombo.addValueChangeListener(this::subCategoryChanged);
+        formLayoutLeft.addComponent(this.subCategoryCombo);
+
+        this.productCombo = getProductCombo();
+        this.productCombo.setRequired(true);
+        this.binder.bind(this.productCombo, CatalogueProduct.CATALOGUE_ID);
+        this.productCombo.addValueChangeListener(this::productChanged);
+        formLayoutLeft.addComponent(this.productCombo);
+
+        this.productTitleField = new TextField("Title");
+        this.productTitleField.setRequired(true);
+        this.productTitleField.setNullRepresentation("");
+        this.binder.bind(this.productTitleField, CatalogueProduct.TITLE);
+        formLayoutLeft.addComponent(productTitleField);
+
+        this.descriptionField = new TextArea("Description");
+        this.binder.bind(this.descriptionField, CatalogueProduct.DESC);
+        this.descriptionField.setReadOnly(true);
+        formLayoutLeft.addComponent(this.descriptionField);
+
         return formLayoutLeft;
     }
 
-    private void handleSearchQuery(AutocompleteField<ProductSuggest> field, String query) 
-    {
-		try 
-		{
-			List<ProductSuggest> result = proposalDataProvider.getProductSuggestions(query);
-			for (ProductSuggest page : result) 
-			{
-				field.addSuggestion(page, page.getTitle());
-			}
-			System.out.println("Total results " + result.size());
-		} 
-		catch (Exception e) 
-		{
-			throw new RuntimeException(e);
-		}
-    }
-    
-    private void handleSuggestionSelection(ProductSuggest suggestion) 
-    {
-    	System.out.println("Selected " + suggestion.title + ":" + suggestion.amount + ":" + suggestion.id);
-    	ProductItem productItem = proposalDataProvider.getProduct(suggestion.id);
-    	this.quantityField.setValue("1");
-    	this.itemTitleField.setValue(productItem.itemTitle);
-    	this.amountField.setValue(productItem.rate + "");
-    	this.descriptionField.setValue(productItem.description);
-    	this.productImage.setSource(new ExternalResource(productItem.image));
-    }
-    
-    private FormLayout buildAddItemBasicFormRight() 
-    {
+    private FormLayout buildRightForm() {
         FormLayout formLayoutRight = new FormLayout();
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.typeField = new TextField("Type");
-        this.typeField.setValue("STANDARD");
-        this.typeField.setReadOnly(true);
-        formLayoutRight.addComponent(this.typeField);
+        this.materialCombo = getMaterialCombo();
+        this.materialCombo.setRequired(true);
+        this.binder.bind(this.materialCombo, CatalogueProduct.SELECTED_MATERIAL);
+        this.materialCombo.addValueChangeListener(this::materialChanged);
+        formLayoutRight.addComponent(this.materialCombo);
 
-        this.quantityField = new TextField("Qty");
-        this.quantityField.addTextChangeListener(new FieldEvents.TextChangeListener() 
-        {
-			@Override
-			public void textChange(TextChangeEvent event) {
-				String qtyStr = event.getText();
-				System.out.println(qtyStr);
-			}
-		});
-        
-        formLayoutRight.addComponent(this.quantityField);
+        this.finishCombo = getFinishCombo();
+        this.finishCombo.setRequired(true);
+        this.binder.bind(this.finishCombo, CatalogueProduct.SELECTED_FINISH);
+        this.finishCombo.addValueChangeListener(this::finishChanged);
+        formLayoutRight.addComponent(this.finishCombo);
 
         this.amountField = new TextField("Amount");
-        this.amountField.setEnabled(false);
+        this.amountField.setRequired(true);
+        this.binder.bind(this.amountField, CatalogueProduct.AMOUNT);
         formLayoutRight.addComponent(this.amountField);
-        
-        this.descriptionField = new TextArea("Description");
-        this.descriptionField.setEnabled(false);
-        formLayoutRight.addComponent(this.descriptionField);
+
+        formLayoutRight.addComponent(new Label("</br>", ContentMode.HTML));
+
+        if (product.getImages().isEmpty()) {
+            emptyImage = new ThemeResource("img/empty-poster.png");
+            productImage = new Image("", emptyImage);
+        } else {
+            String imageBasePath = ConfigHolder.getInstance().getImageBasePath();
+            this.productImage = new Image("", new FileResource(new File(imageBasePath + product.getImages().get(0))));
+        }
+        productImage.setCaption(null);
+        productImage.setWidth("220px");
+        formLayoutRight.addComponent(this.productImage);
+
         return formLayoutRight;
     }
 
-    private Component buildFooter() 
-    {
+    private Component buildFooter() {
         HorizontalLayout footer = new HorizontalLayout();
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
         footer.setWidth(100.0f, Unit.PERCENTAGE);
 
         closeBtn = new Button("Close");
-        closeBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        closeBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                close_window();
-            }
+        closeBtn.addClickListener((ClickListener) clickEvent -> {
+            ConfirmDialog.show(UI.getCurrent(), "",
+                    "Changes will be discarded. Are you sure you want to proceed?",
+                    "Yes", "No", dialog -> {
+                        if (!dialog.isCanceled()) {
+                            binder.discard();
+                            close();
+                        }
+                    });
         });
-        closeBtn.focus();
         footer.addComponent(closeBtn);
         footer.setSpacing(true);
 
         saveBtn = new Button("Save");
         saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        saveBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) 
-            {
-                try 
-                {
-                    // Updated user should also be persisted to database. But
-                    // not in this demo.
+        saveBtn.addClickListener((ClickListener) event -> {
+            if (!binder.isValid()) {
+                NotificationUtil.showNotification("Please ensure all mandatory fields are filled.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            } else {
 
-                    Notification success = new Notification(
-                            "Item details saved successfully");
-                    success.setDelayMsec(2000);
-                    success.setStyleName("bar success small");
-                    success.setPosition(Position.BOTTOM_CENTER);
-                    success.show(Page.getCurrent());
+                try {
+                    binder.commit();
+                    product.setRoom(((BeanContainer<String, CatalogueProductCategory>) this.categoryCombo.getContainerDataSource())
+                            .getItem(this.categoryCombo.getValue()).getBean().getName());
+                    product.setProductCategory(((BeanContainer<String, CatalogueProductSubCategory>) this.subCategoryCombo.getContainerDataSource())
+                            .getItem(this.subCategoryCombo.getValue()).getBean().getName());
 
-                    DashboardEventBus.post(new DashboardEvent.ItemDetailsEvent());
-                    close();
-                } 
-                catch (Exception e) 
-                {
-                    Notification.show("Error while saving Item details",
-                            Type.ERROR_MESSAGE);
+                    boolean success = proposalDataProvider.updateProduct(product);
+                    if (success) {
+                        NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                        DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
+                        close();
+                    } else {
+                        NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    }
+                } catch (FieldGroup.CommitException e) {
+                    e.printStackTrace();
                 }
-
             }
         });
         saveBtn.focus();
         saveBtn.setVisible(true);
         footer.addComponent(saveBtn);
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
-
         return footer;
     }
 
-    public static void open(ProposalHeader proposalHeader) {
+    private void finishChanged(Property.ValueChangeEvent valueChangeEvent) {
+        CatalogueProduct catalogueProduct = ((BeanContainer<String, CatalogueProduct>) this.productCombo.getContainerDataSource())
+                .getItem(this.productCombo.getValue()).getBean();
+        double price = getPrice(materialCombo.getValue().toString(), finishCombo.getValue().toString(), catalogueProduct.getMf());
+        amountField.setValue(price + "");
+    }
+
+    private void materialChanged(Property.ValueChangeEvent valueChangeEvent) {
+        CatalogueProduct catalogueProduct = ((BeanContainer<String, CatalogueProduct>) this.productCombo.getContainerDataSource())
+                .getItem(this.productCombo.getValue()).getBean();
+
+        List<String> finishes = collectFinish(catalogueProduct.getMf(), materialCombo.getValue().toString());
+        Object prevFinish = this.finishCombo.getValue();
+        this.finishCombo.getContainerDataSource().removeAllItems();
+        this.finishCombo.addItems(finishes);
+        this.finishCombo.setValue(finishes.get(0));
+
+        if (prevFinish != null && prevFinish.equals(finishes.get(0))) {
+            this.finishChanged(null);
+        }
+
+    }
+
+    private void productChanged(Property.ValueChangeEvent valueChangeEvent) {
+        CatalogueProduct catalogueProduct = ((BeanContainer<String, CatalogueProduct>) this.productCombo.getContainerDataSource())
+                .getItem(this.productCombo.getValue()).getBean();
+
+        this.productTitleField.setValue(catalogueProduct.getTitle());
+        this.descriptionField.setReadOnly(false);
+        this.descriptionField.setValue(catalogueProduct.getDesc());
+        this.descriptionField.setReadOnly(true);
+        String imageBasePath = ConfigHolder.getInstance().getImageBasePath();
+        this.productImage.setSource(new FileResource(new File(imageBasePath + catalogueProduct.getImages().get(0))));
+        Object prevMaterial = this.materialCombo.getValue();
+        this.materialCombo.getContainerDataSource().removeAllItems();
+        List<String> itemIds = collectMaterial(catalogueProduct.getMf());
+        this.materialCombo.addItems(itemIds);
+        this.materialCombo.setValue(itemIds.get(0));
+        if (prevMaterial != null && prevMaterial.equals(itemIds.get(0))) {
+            this.materialChanged(null);
+        }
+    }
+
+    private void subCategoryChanged(Property.ValueChangeEvent valueChangeEvent) {
+        String categoryCode = categoryCombo.getValue().toString();
+        String subCategoryCode = subCategoryCombo.getValue().toString();
+
+        List<CatalogueProduct> products = this.proposalDataProvider.getCatalogueProducts(categoryCode, subCategoryCode);
+        BeanContainer<String, CatalogueProduct> containerDataSource = (BeanContainer<String, CatalogueProduct>) productCombo.getContainerDataSource();
+        containerDataSource.removeAllItems();
+        containerDataSource.addAll(products);
+        this.productCombo.setValue(this.productCombo.getItemIds().iterator().next());
+    }
+
+    private void categoryChanged(Property.ValueChangeEvent valueChangeEvent) {
+        CatalogueProductCategory category = ((BeanContainer<String, CatalogueProductCategory>) this.categoryCombo.getContainerDataSource())
+                .getItem(this.categoryCombo.getValue()).getBean();
+
+        BeanContainer<String, CatalogueProductSubCategory> containerDataSource = (BeanContainer<String, CatalogueProductSubCategory>) subCategoryCombo.getContainerDataSource();
+        containerDataSource.removeAllItems();
+        containerDataSource.addAll(category.getSubCategories());
+        subCategoryCombo.setValue(subCategoryCombo.getItemIds().iterator().next());
+    }
+
+    private ComboBox getCategoryCombo() {
+        final BeanContainer<String, CatalogueProductCategory> container =
+                new BeanContainer<>(CatalogueProductCategory.class);
+        container.setBeanIdProperty(CatalogueProductCategory.CODE);
+        container.addAll(this.categories);
+
+        ComboBox select = new ComboBox("Category");
+        select.setWidth(COMBO_WIDTH);
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(CatalogueProductCategory.NAME);
+        if (StringUtils.isNotEmpty(product.getProductCategoryCode())) {
+            select.setValue(getCategoryFromSubCategory(product.getProductCategoryCode()).getCode());
+        }
+        //if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
+    }
+
+    private ComboBox getSubCategoryCombo() {
+        final BeanContainer<String, CatalogueProductSubCategory> container =
+                new BeanContainer<>(CatalogueProductSubCategory.class);
+        container.setBeanIdProperty(CatalogueProductSubCategory.CODE);
+        ComboBox select = new ComboBox("Sub Category");
+        select.setWidth(COMBO_WIDTH);
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(CatalogueProductSubCategory.NAME);
+        if (StringUtils.isNotEmpty(product.getProductCategoryCode())) {
+            container.removeAllItems();
+            container.addAll(getCategoryFromSubCategory(product.getProductCategoryCode()).getSubCategories());
+            select.setValue(product.getProductCategoryCode());
+        }
+        //if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
+    }
+
+    private ComboBox getProductCombo() {
+        final BeanContainer<String, CatalogueProduct> container =
+                new BeanContainer<>(CatalogueProduct.class);
+        container.setBeanIdProperty(CatalogueProduct.PRODUCT_ID);
+
+        ComboBox select = new ComboBox("Product");
+        select.setWidth(COMBO_WIDTH);
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(CatalogueProduct.NAME);
+        if (StringUtils.isNotEmpty(product.getProductId())) {
+            String categoryCode = categoryCombo.getValue().toString();
+            String subCategoryCode = subCategoryCombo.getValue().toString();
+            List<CatalogueProduct> products = this.proposalDataProvider.getCatalogueProducts(categoryCode, subCategoryCode);
+            container.addAll(products);
+            select.setValue(product.getProductId());
+        }
+        return select;
+    }
+
+    private ComboBox getMaterialCombo() {
+        ComboBox select = new ComboBox("Material");
+        select.setWidth(COMBO_WIDTH);
+        BeanItemContainer<String> newDataSource = new BeanItemContainer<>(String.class);
+        select.setContainerDataSource(newDataSource);
+        select.setNullSelectionAllowed(false);
+        if (StringUtils.isNotEmpty(product.getBaseCarcassCode())) {
+            CatalogueProduct catalogueProduct = ((BeanContainer<String, CatalogueProduct>) this.productCombo.getContainerDataSource())
+                    .getItem(this.productCombo.getValue()).getBean();
+            newDataSource.addAll(collectMaterial(catalogueProduct.getMf()));
+            select.setValue(product.getBaseCarcassCode());
+        }
+        return select;
+    }
+
+    private ComboBox getFinishCombo() {
+
+        ComboBox select = new ComboBox("Finish");
+        select.setWidth(COMBO_WIDTH);
+        BeanItemContainer<String> newDataSource = new BeanItemContainer<>(String.class);
+        select.setContainerDataSource(newDataSource);
+        select.setNullSelectionAllowed(false);
+        if (StringUtils.isNotEmpty(product.getFinishCode())) {
+            CatalogueProduct catalogueProduct = ((BeanContainer<String, CatalogueProduct>) this.productCombo.getContainerDataSource())
+                    .getItem(this.productCombo.getValue()).getBean();
+            newDataSource.addAll(collectFinish(catalogueProduct.getMf(), materialCombo.getValue().toString()));
+            select.setValue(product.getFinishCode());
+        }
+        return select;
+    }
+
+    private List<CatalogueMaterialFinish> filterMFByMaterial(String material, List<CatalogueMaterialFinish> mfList) {
+        return mfList.stream().filter(catalogueMaterialFinish -> catalogueMaterialFinish.getMaterial().equals(material)).collect(Collectors.toList());
+    }
+
+    private List<String> collectMaterial(List<CatalogueMaterialFinish> mfList) {
+        return mfList.stream().map(CatalogueMaterialFinish::getMaterial).collect(Collectors.toList());
+    }
+
+    private List<String> collectFinish(List<CatalogueMaterialFinish> mfList, String material) {
+        return filterMFByMaterial(material, mfList).stream().map(CatalogueMaterialFinish::getFinish).collect(Collectors.toList());
+    }
+
+    private double getPrice(String material, String finish, List<CatalogueMaterialFinish> mfList) {
+
+        return mfList.stream().filter(
+                catalogueMaterialFinish ->
+                        catalogueMaterialFinish.getMaterial().equals(material)
+                                && catalogueMaterialFinish.getFinish().equals(finish))
+                .collect(Collectors.toList())
+                .get(0).getBasePrice();
+    }
+
+    private CatalogueProductCategory getCategoryFromSubCategory(String subCategoryCode) {
+        return categories.stream().filter(
+                catalogueProductCategory -> catalogueProductCategory.getSubCategories().stream().anyMatch(
+                        catalogueProductSubCategory -> catalogueProductSubCategory.getCode().equals(subCategoryCode)))
+                .collect(Collectors.toList())
+                .get(0);
+    }
+
+    public static void open(Proposal proposal, CatalogueProduct product) {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        Proposal proposal = new Proposal();
-        proposal.setProposalHeader(proposalHeader);
-        Window w = new CatalogItemDetailsWindow(proposal);
+        Window w = new CatalogItemDetailsWindow(proposal, product);
         UI.getCurrent().addWindow(w);
         w.focus();
     }
 
-    public static void close_window() {
-        DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-    }
- 
 }

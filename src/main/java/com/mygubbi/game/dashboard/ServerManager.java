@@ -5,13 +5,19 @@ import com.mygubbi.game.dashboard.data.DataProviderMode;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.data.RestDataProviderMode;
 import com.mygubbi.game.dashboard.data.UserDataProvider;
+import com.mygubbi.game.dashboard.domain.Color;
+import com.mygubbi.game.dashboard.domain.FinishTypeColor;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
+import com.vaadin.server.FileResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Created by nitinpuri on 26-05-2016.
@@ -23,6 +29,8 @@ public class ServerManager {
     private static final ServerManager INSTANCE = new ServerManager();
     private ProposalDataProvider proposalDataProvider;
     private UserDataProvider userDataProvider;
+    private Map<String, FinishTypeColor> finishTypeColors;
+    private Map<String, Color> colors;
 
     private Map<String, List<LookupItem>> lookupItemsByType = new HashMap<>();
 
@@ -31,8 +39,29 @@ public class ServerManager {
     }
 
     private void init() {
-        ConfigHolder ch = ConfigHolder.getInstance();
-        String dataProviderModeClass = ch.getStringValue("dataProviderMode", "");
+        initConfigHolder();
+        initDataProviders();
+        cacheColorMap();
+    }
+
+    private void cacheColorMap() {
+        finishTypeColors = proposalDataProvider.getFinishTypeColors().stream().collect(
+                Collectors.toMap(FinishTypeColor::getFinishTypeCode, Function.identity()));
+
+        colors = new HashMap<>();
+
+        for (Map.Entry<String, FinishTypeColor> entry : finishTypeColors.entrySet()) {
+            entry.getValue().getColors().stream().forEach(
+                    color -> {
+                        color.setColorImageResource(new FileResource(new File(ConfigHolder.getInstance().getImageBasePath() + color.getImagePath())));
+                        colors.put(color.getCode(), color);
+                    }
+            );
+        }
+    }
+
+    private void initDataProviders() {
+        String dataProviderModeClass = ConfigHolder.getInstance().getStringValue("dataProviderMode", "");
         LOG.info("Using data provider mode - " + dataProviderModeClass);
 
         try {
@@ -46,7 +75,10 @@ public class ServerManager {
             e.printStackTrace();
             System.exit(1);
         }
+    }
 
+    private void initConfigHolder() {
+        ConfigHolder.getInstance();
     }
 
     public static ServerManager getInstance() {
@@ -59,6 +91,14 @@ public class ServerManager {
 
     public UserDataProvider getUserDataProvider() {
         return userDataProvider;
+    }
+
+    public Map<String, FinishTypeColor> getFinishTypeColors() {
+        return finishTypeColors;
+    }
+
+    public Map<String, Color> getColors() {
+        return colors;
     }
 
     synchronized public void addLookupItems(String type, List<LookupItem> lookupItems) {

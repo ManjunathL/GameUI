@@ -73,7 +73,6 @@ public class Accessories {
 
 
 	public Accessories() {
-		// TODO Auto-generated constructor stub
 	}
 
 }

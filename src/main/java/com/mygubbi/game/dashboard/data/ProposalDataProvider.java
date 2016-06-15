@@ -300,6 +300,58 @@ public class ProposalDataProvider {
 
     }
 
+    public List<CatalogueProductCategory> getCatalogueProductCategories() {
+        JSONArray array = dataProviderMode.getResourceArray("categories", new HashMap<>());
+        try {
+            CatalogueProductCategory[] items = this.mapper.readValue(array.toString(), CatalogueProductCategory[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<CatalogueProduct> getCatalogueProducts(String categoryCode, String subCategoryCode) {
+        JSONArray array = dataProviderMode.getResourceArray("products", new HashMap<String, String>() {
+            {
+                put("category", categoryCode);
+                put("subcategory", subCategoryCode);
+            }
+        });
+        try {
+            CatalogueProduct[] items = this.mapper.readValue(array.toString(), CatalogueProduct[].class);
+            ArrayList<CatalogueProduct> catalogueProducts = new ArrayList<>(Arrays.asList(items));
+            catalogueProducts.stream().forEach(CatalogueProduct::popuplateProduct);
+            return catalogueProducts;
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public CatalogueProduct getCatalogueProduct(String productId) {
+
+        String resourcePath = "products";
+
+        if (dataProviderMode instanceof FileDataProviderMode) {
+            resourcePath = "product";
+        }
+
+        JSONObject jsonObject = dataProviderMode.getResource(resourcePath, new HashMap<String, String>() {
+            {
+                put("productId", productId);
+            }
+        });
+        try {
+            CatalogueProduct item = this.mapper.readValue(jsonObject.toString(), CatalogueProduct.class);
+            item.popuplateProduct();
+            return item;
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
     public List<User> getSalesUsers() {
         return getUsersByRole(ROLE_SALES);
     }
@@ -406,8 +458,13 @@ public class ProposalDataProvider {
             String productJson = this.mapper.writeValueAsString(product);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/update", productJson);
-            return !jsonObject.has("error");
-        } catch (IOException e) {
+            if (!jsonObject.has("error")) {
+                product.setId(jsonObject.getInt("id"));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (IOException | JSONException e) {
             throw new RuntimeException("Couldn't update product", e);
         }
     }
@@ -581,14 +638,10 @@ public class ProposalDataProvider {
         }
     }
 
-    private String urlEncode(String addonProductTypeCode)
-    {
-        try
-        {
+    private String urlEncode(String addonProductTypeCode) {
+        try {
             return URLEncoder.encode(addonProductTypeCode, Charset.defaultCharset().name());
-        }
-        catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             return addonProductTypeCode;
         }
     }

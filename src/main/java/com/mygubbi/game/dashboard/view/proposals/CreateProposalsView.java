@@ -825,8 +825,14 @@ public class CreateProposalsView extends Panel implements View {
                 }
         );
 
-        addFromCatalogueButton.addClickListener(clickEvent ->
-                CatalogItemDetailsWindow.open(CreateProposalsView.this.proposalHeader)
+        addFromCatalogueButton.addClickListener(
+                clickEvent -> {
+                    CatalogueProduct newProduct = new CatalogueProduct();
+                    newProduct.setType(CatalogueProduct.TYPES.CATALOGUE.name());
+                    newProduct.setSeq(this.proposal.getProducts().size() + 1);
+                    newProduct.setProposalId(this.proposalHeader.getId());
+                    CatalogItemDetailsWindow.open(CreateProposalsView.this.proposal, newProduct);
+                }
         );
 
         productContainer = new BeanItemContainer<>(Product.class);
@@ -854,18 +860,24 @@ public class CreateProposalsView extends Panel implements View {
 
                 Product product = (Product) rendererClickEvent.getItemId();
 
-                if (product.getModules().isEmpty()) {
-                    Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId());
-                    product.setModules(productDetails.getModules());
-                    product.setAddons(productDetails.getAddons());
-                }
+                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name())) {
+                    if (product.getModules().isEmpty()) {
+                        Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId());
+                        product.setModules(productDetails.getModules());
+                        product.setAddons(productDetails.getAddons());
+                    }
 
-                if (product.getFileAttachmentList().isEmpty()) {
-                    List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
-                    product.setFileAttachmentList(productAttachments);
-                }
+                    if (product.getFileAttachmentList().isEmpty()) {
+                        List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
+                        product.setFileAttachmentList(productAttachments);
+                    }
 
-                CustomizedProductDetailsWindow.open(proposal, product);
+                    CustomizedProductDetailsWindow.open(proposal, product);
+                } else {
+                    CatalogueProduct catalogueProduct = new CatalogueProduct();
+                    catalogueProduct.populateFromProduct(product);
+                    CatalogItemDetailsWindow.open(proposal, catalogueProduct);
+                }
 
             }
 
@@ -1036,7 +1048,6 @@ public class CreateProposalsView extends Panel implements View {
         productsGrid.getSelectionModel().reset();
         updateTotal(null);
         productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
-        //updateTotalAmount();
     }
 
     @Subscribe

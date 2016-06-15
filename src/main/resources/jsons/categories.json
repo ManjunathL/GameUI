@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Living & Dining",
+    "id": "livingndining",
+    "code": "living & dining",
+    "subCategories": [
+      {
+        "name": "Entertainment Unit",
+        "id": "entunit",
+        "code": "entunit"
+      },
+      {
+        "name": "Shoe Rack",
+        "id": "shoerack",
+        "code": "shoerack"
+      },
+      {
+        "name": "Crockery Unit",
+        "id": "crockunit",
+        "code": "crockunit"
+      },
+      {
+        "name": "Foyer Unit",
+        "id": "foyerunit",
+        "code": "foyerunit"
+      },
+      {
+        "name": "Sideboard",
+        "id": "sideboard",
+        "code": "sideboard"
+      }
+    ]
+  },
+  {
+    "name": "Kitchen",
+    "id": "kitchen",
+    "code": "kitchen",
+    "minPriceLimit": 0,
+    "maxPriceLimit": 1000000,
+    "subCategories": [
+      {
+        "name": "L Shaped Kitchen",
+        "id": "lshapedk",
+        "code": "lshapedk"
+      },
+      {
+        "name": "U Shaped Kitchen",
+        "id": "ushapedk",
+        "code": "ushapedk"
+      },
+      {
+        "name": "Straight Kitchen",
+        "id": "straightk",
+        "code": "straightk"
+      },
+      {
+        "name": "Parallel Kitchen",
+        "id": "parallelk",
+        "code": "parallelk"
+      }
+    ]
+  },
+  {
+    "name": "Bedroom",
+    "id": "bedroom",
+    "code": "bedroom",
+    "minPriceLimit": 0,
+    "maxPriceLimit": 400000,
+    "subCategories": [
+      {
+        "name": "Wardrobe",
+        "id": "wardrobe",
+        "code": "wardrobe"
+      },
+      {
+        "name": "Study Table",
+        "id": "studytable",
+        "code": "studytable"
+      },
+      {
+        "name": "Side Table",
+        "id": "sidetable",
+        "code": "sidetable"
+      },
+      {
+        "name": "Book Rack",
+        "id": "bookrack",
+        "code": "bookrack"
+      }
+    ]
+  }
+]

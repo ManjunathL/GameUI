@@ -233,7 +233,6 @@ public class CustomizedProductDetailsWindow extends Window {
         return formLayoutLeft;
     }
 
-    //todo: include addons price
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
         List<Module> modules = product.getModules();
         //double total = 0;
@@ -565,7 +564,7 @@ public class CustomizedProductDetailsWindow extends Window {
             @Override
             public String getValue(Item item, Object o, Object o1) {
                 String colorCode = (String) item.getItemProperty(Module.COLOR_CODE).getValue();
-                Color color = ConfigHolder.getInstance().getColors().get(colorCode);
+                Color color = ServerManager.getInstance().getColors().get(colorCode);
                 return color != null ? color.getName() : "UNKNOWN";
             }
 

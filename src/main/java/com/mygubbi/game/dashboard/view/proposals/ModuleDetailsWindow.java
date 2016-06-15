@@ -377,7 +377,7 @@ public class ModuleDetailsWindow extends Window {
         colorLayout.setSizeFull();
         verticalLayout.addComponent(colorLayout);
 
-        this.colorCombo = getColorsCombo("Colors", ConfigHolder.getInstance().getFinishTypeColors().get(module.getFinishTypeCode()).getColors());
+        this.colorCombo = getColorsCombo("Colors", ServerManager.getInstance().getFinishTypeColors().get(module.getFinishTypeCode()).getColors());
         binder.bind(colorCombo, Module.COLOR_CODE);
         formLayoutLeft.addComponent(this.colorCombo);
 
@@ -412,7 +412,7 @@ public class ModuleDetailsWindow extends Window {
     private List<Color> filterColorsByType() {
         String finishTypeCode = (String) finishTypeSelection.getValue();
         if (finishTypeCode.startsWith(DEF_CODE_PREFIX)) finishTypeCode = finishTypeCode.substring(DEF_CODE_PREFIX.length());
-        return ConfigHolder.getInstance().getFinishTypeColors().get(finishTypeCode).getColors();
+        return ServerManager.getInstance().getFinishTypeColors().get(finishTypeCode).getColors();
     }
 
     private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {

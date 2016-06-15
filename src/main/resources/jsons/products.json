@@ -1,0 +1,306 @@
+[
+  {
+    "id": "dowitcherl-shaped-kitchen",
+    "productId": "dowitcherl-shaped-kitchen",
+    "name": "Dowitcher L-Shaped Kitchen",
+    "desc": "An L-shaped kitchen where each leg of the kitchen has a dedicated task assigned to it. Make great use of all the storage space is equally distributed overhead and below. The frosted glass doors interspersed with solid doors makes for a smart visual appeal as well.",
+    "dimension": "WxDxH 10'-2\" X 6'-10\" X 2'-9\"",
+    "category": "Kitchen",
+    "subcategory": "L Shaped Kitchen",
+    "categoryId": "kitchen",
+    "subcategoryId": "lshapedk",
+    "tags": "all, Space Design Kitchen, Space Detais L-Shaped",
+    "designer": "mygubbi",
+    "curr": "INR",
+    "popularity": 1,
+    "relevance": 1,
+    "shortlisted": 1,
+    "likes": 1,
+    "styleSortSeq": 4,
+    "createDt": "01-02-2015",
+    "pageId": "dowitcherl-shaped-kitchen",
+    "styleName": "Monochrome",
+    "styleId": "cmono",
+    "priceRange": "Standard",
+    "priceId": "standard",
+    "defaultPrice": "179466",
+    "defaultMaterial": "MDF",
+    "defaultFinish": "Foil",
+    "mf": [
+      {
+        "basePrice": "179466",
+        "material": "MDF",
+        "finish": "Foil"
+      }
+    ],
+    "images": [
+      "Dowitcher_BrownLarch_low_98c4d5b0-24fa-4f3c-8fb5-027f96938166.png"
+    ],
+    "components": [
+      {
+        "name": "Base Unit 2 Doors + 1 Shelf",
+        "size": "820X900X560",
+        "qty": "1"
+      },
+      {
+        "name": "Base Unit 2 Meta Box Drawers",
+        "size": "820X600X560",
+        "qty": "1"
+      },
+      {
+        "name": "Base Unit For Cylinder 1 Door",
+        "size": "820X450X560",
+        "qty": "1"
+      },
+      {
+        "name": "Base Unit For Blind Corner 1 Door Lemans Corner",
+        "size": "820X1100X560",
+        "qty": "1"
+      },
+      {
+        "name": "Base Unit 1 Door + 1 Shelf",
+        "size": "820X450X560",
+        "qty": "1"
+      },
+      {
+        "name": "Base Unit For Sink 2 Doors",
+        "size": "820X900X560",
+        "qty": "1"
+      },
+      {
+        "name": "Wall Unit Double Flap 1 Wooden Door & 1 Glass Door With",
+        "size": "720X900X330",
+        "qty": "2"
+      },
+      {
+        "name": "Wall Unit 1 Door + 2 Shelves",
+        "size": "720X450X330",
+        "qty": "1"
+      },
+      {
+        "name": "Base Unit Filler From 30 To 150 Mm (With Door)",
+        "size": "-",
+        "qty": "1"
+      },
+      {
+        "name": "Base Unit End Panel",
+        "size": "-",
+        "qty": "2"
+      },
+      {
+        "name": "Wall Unit End Panel",
+        "size": "-",
+        "qty": "3"
+      },
+      {
+        "name": "Pvc Cutlery Tray",
+        "size": "-",
+        "qty": "1"
+      }
+    ],
+    "accessories": []
+  },
+  {
+    "id": "snowcock-l-shape-kitchen",
+    "productId": "snowcock-l-shape-kitchen",
+    "name": "Snowcock L Shape Kitchen",
+    "desc": "When it comes to rising the elegance, nobody does it better than us. From grander finish to class material, mygubbi overtakes in offering the best products. Snowcock, the L-Shaped Kitchen, will not only be highly useful but would also assist in boosting aura of your lodgings. The perfect blend of green wooden doors with holistic cabinetry, this L-shaped kitchen will enthrall all the seers. With plentiful space provided to afford abundant foot movements, cooking will be a delightful chore now. There is an island at one end of the kitchen to provide eating space or additional prep area. Settle on this one if you are hunting for clutter-free work station to cook tasty treats.",
+    "dimension": "10'4\" x 4'8\" x 7'",
+    "category": "Kitchen",
+    "subcategory": "L Shape Kitchen",
+    "categoryId": "kitchen",
+    "subcategoryId": "lshapedk",
+    "tags": "all, Space Design Kitchen, Space Detais L-Shaped",
+    "designer": "mygubbi",
+    "curr": "INR",
+    "popularity": 1,
+    "relevance": 1,
+    "shortlisted": 1,
+    "likes": 1,
+    "styleSortSeq": 3,
+    "createDt": "",
+    "pageId": "snowcock-l-shape-kitchen",
+    "styleName": "Fresh",
+    "styleId": "cfresh",
+    "priceRange": "Premium",
+    "priceId": "premium",
+    "defaultPrice": "230817",
+    "defaultMaterial": "MDF",
+    "defaultFinish": "LAMINATE ",
+    "mf": [
+      {
+        "basePrice": "230817",
+        "material": "MDF",
+        "finish": "LAMINATE "
+      },
+      {
+        "basePrice": "249048",
+        "material": "PLY",
+        "finish": "LAMINATE "
+      }
+    ],
+    "images": [
+      "056_Snowcock_L-shape_Kitchen.jpg"
+    ],
+    "components": [],
+    "accessories": []
+  },
+  {
+    "id": "dolf-study-table",
+    "productId": "dolf-study-table",
+    "name": "Dolf Study Table",
+    "desc": "In an age powered by technology, one can remain competitive and on top of things only by staying connected. This sturdy and practical desk offers you a perfect space to browse without any pretence. The scrubbed wooden finish of the table evokes the old school charm. The lower cabinet can be used to organize files and folders and the drawers on the top can hold your stationery and other office supplies.",
+    "dimension": "WxDxH 5'-0\" X 2'-0\" X 2'-6\"",
+    "category": "Bedroom",
+    "subcategory": "Study Table",
+    "categoryId": "bedroom",
+    "subcategoryId": "studytable",
+    "tags": "all, Space Design Bedroom, Space Details Study Table",
+    "designer": "mygubbi",
+    "curr": "INR",
+    "popularity": 1,
+    "relevance": 1,
+    "shortlisted": 1,
+    "likes": 1,
+    "styleSortSeq": 4,
+    "createDt": "01-02-2015",
+    "pageId": "dolf-study-table",
+    "styleName": "Monochrome",
+    "styleId": "cmono",
+    "priceRange": "Standard",
+    "priceId": "standard",
+    "defaultPrice": "0",
+    "defaultMaterial": "MDF",
+    "defaultFinish": "Pre Lam",
+    "mf": [
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Pre Lam"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Post Form Lam"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Foil"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Poly-Gloss"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "5Pc"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "HG Lacquer"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Acrylic"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Veneer on MDF"
+      }
+    ],
+    "images": [
+      "2.Dolf_Front_BrownOak.png",
+      "1.Dolf_Side_BrownOak",
+      "5.Dolf_Side_Dimension",
+      "3.Dolf_Front_Cherry_White",
+      "4.Dolf_Front_Cream"
+    ],
+    "components": [],
+    "accessories": []
+  },
+  {
+    "id": "romana-crockery-unit",
+    "productId": "romana-crockery-unit",
+    "name": "Romana Crockery Unit",
+    "desc": "The very practical straight lines in this crockery unit design speaks of a very matter-of-fact attitude. The predesigned shelf helps to keep your cutlery and conveniently making your home attractive and elegant for that complete look.",
+    "dimension": "WxDxH 6'-0\" X 1'-6\" X 6'-0\"",
+    "category": "Living & Dining",
+    "subcategory": "Crockery Unit",
+    "categoryId": "livingndining",
+    "subcategoryId": "crockunit",
+    "tags": "All, Space Design Living & Dining, Space Details Crockery unit",
+    "designer": "mygubbi",
+    "curr": "INR",
+    "popularity": 1,
+    "relevance": 1,
+    "shortlisted": 1,
+    "likes": 1,
+    "styleSortSeq": 4,
+    "createDt": "01-02-2015",
+    "pageId": "romana-crockery-unit",
+    "styleName": "Monochrome",
+    "styleId": "cmono",
+    "priceRange": "Standard",
+    "priceId": "standard",
+    "defaultPrice": "0",
+    "defaultMaterial": "MDF",
+    "defaultFinish": "Pre Lam",
+    "mf": [
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Pre Lam"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Post Form Lam"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Foil"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Poly-Gloss"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "5Pc"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "HG Lacquer"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Acrylic"
+      },
+      {
+        "basePrice": "0",
+        "material": "MDF",
+        "finish": "Veneer on MDF"
+      }
+    ],
+    "images": [
+      "1.Romana_Front_SandOak.jpg",
+      "4.Romana_Side_SandOak",
+      "5.Romano_Dimension",
+      "3.Romana_Front_Cherry",
+      "2.Romana_Front_BrownLarch"
+    ],
+    "components": [],
+    "accessories": []
+  }
+]

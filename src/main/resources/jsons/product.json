@@ -1,0 +1,79 @@
+{
+  "id": "romana-crockery-unit",
+  "productId": "romana-crockery-unit",
+  "name": "Romana Crockery Unit",
+  "desc": "The very practical straight lines in this crockery unit design speaks of a very matter-of-fact attitude. The predesigned shelf helps to keep your cutlery and conveniently making your home attractive and elegant for that complete look.",
+  "dimension": "WxDxH 6'-0\" X 1'-6\" X 6'-0\"",
+  "category": "Living & Dining",
+  "subcategory": "Crockery Unit",
+  "categoryId": "livingndining",
+  "subcategoryId": "crockunit",
+  "tags": "All, Space Design Living & Dining, Space Details Crockery unit",
+  "designer": "mygubbi",
+  "curr": "INR",
+  "popularity": 1,
+  "relevance": 1,
+  "shortlisted": 1,
+  "likes": 1,
+  "styleSortSeq": 4,
+  "createDt": "01-02-2015",
+  "pageId": "romana-crockery-unit",
+  "styleName": "Monochrome",
+  "styleId": "cmono",
+  "priceRange": "Standard",
+  "priceId": "standard",
+  "defaultPrice": "0",
+  "defaultMaterial": "MDF",
+  "defaultFinish": "Pre Lam",
+  "mf": [
+    {
+      "basePrice": "0",
+      "material": "MDF",
+      "finish": "Pre Lam"
+    },
+    {
+      "basePrice": "0",
+      "material": "MDF",
+      "finish": "Post Form Lam"
+    },
+    {
+      "basePrice": "0",
+      "material": "MDF",
+      "finish": "Foil"
+    },
+    {
+      "basePrice": "0",
+      "material": "MDF",
+      "finish": "Poly-Gloss"
+    },
+    {
+      "basePrice": "0",
+      "material": "MDF",
+      "finish": "5Pc"
+    },
+    {
+      "basePrice": "0",
+      "material": "MDF",
+      "finish": "HG Lacquer"
+    },
+    {
+      "basePrice": "0",
+      "material": "MDF",
+      "finish": "Acrylic"
+    },
+    {
+      "basePrice": "0",
+      "material": "MDF",
+      "finish": "Veneer on MDF"
+    }
+  ],
+  "images": [
+    "1.Romana_Front_SandOak.jpg",
+    "4.Romana_Side_SandOak",
+    "5.Romano_Dimension",
+    "3.Romana_Front_Cherry",
+    "2.Romana_Front_BrownLarch"
+  ],
+  "components": [],
+  "accessories": []
+}

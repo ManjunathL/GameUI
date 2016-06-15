@@ -20,6 +20,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String TITLE = "title";
     public static final String PRODUCT_CATEGORY = "productCategory";
     public static final String PRODUCT_CATEGORY_CODE = "productCategoryCode";
+    public static final String CATALOGUE_ID = "catalogueId";
     public static final String ROOM = "room";
     public static final String ROOM_CODE = "roomCode";
     public static final String SHUTTER_DESIGN = "shutterDesign";
@@ -365,8 +366,7 @@ public class Product implements FileAttachmentsHolder {
         Product product = (Product) o;
 
         if (id != product.id) return false;
-        if (proposalId != product.proposalId) return false;
-        return title != null ? title.equals(product.title) : product.title == null;
+        return proposalId == product.proposalId;
 
     }
 
@@ -374,7 +374,6 @@ public class Product implements FileAttachmentsHolder {
     public int hashCode() {
         int result = id;
         result = 31 * result + proposalId;
-        result = 31 * result + (title != null ? title.hashCode() : 0);
         return result;
     }
 }

@@ -30,8 +30,6 @@ public class ConfigHolder {
     private static final Logger LOG = LogManager.getLogger(ConfigHolder.class);
     private static ConfigHolder INSTANCE = new ConfigHolder();
     private JsonObject serverConfig = new JsonObject();
-    private Map<String, FinishTypeColor> finishTypeColors;
-    private Map<String, Color> colors;
     private String imageBasePath;
 
     private ConfigHolder() {
@@ -39,31 +37,7 @@ public class ConfigHolder {
         String configFiles = System.getProperty("configFiles", "config/conf.dev.json");
         List<String> configFileList = StringUtils.fastSplit(configFiles, ',');
         loadConfig(configFileList);
-
-        imageBasePath = getStringValue("imageBasePath", "");
-        System.out.println("imageBasePath:" + imageBasePath);
-        if (!imageBasePath.endsWith("/"))
-        {
-            imageBasePath = imageBasePath + "/";
-            System.out.println("imageBasePath after adding /:" + imageBasePath);
-        }
-
-        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
-        //ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
-
-        finishTypeColors = proposalDataProvider.getFinishTypeColors().stream().collect(
-                Collectors.toMap(FinishTypeColor::getFinishTypeCode, Function.identity()));
-
-        colors = new HashMap<>();
-
-        for (Map.Entry<String, FinishTypeColor> entry : finishTypeColors.entrySet()) {
-            entry.getValue().getColors().stream().forEach(
-                    color -> {
-                        color.setColorImageResource(new FileResource(new File(imageBasePath + color.getImagePath())));
-                        colors.put(color.getCode(), color);
-                    }
-            );
-        }
+        initImageBasePath();
     }
 
     public static ConfigHolder getInstance() {
@@ -86,6 +60,16 @@ public class ConfigHolder {
         LOG.info("Final merged config : " + this.serverConfig.toString());
     }
 
+    private void initImageBasePath() {
+        imageBasePath = getStringValue("imageBasePath", "");
+        System.out.println("imageBasePath:" + imageBasePath);
+        if (!imageBasePath.endsWith("/"))
+        {
+            imageBasePath = imageBasePath + "/";
+            System.out.println("imageBasePath after adding /:" + imageBasePath);
+        }
+    }
+
     public String getStringValue(String key, String defaultValue) {
         if (!this.serverConfig.has(key)) return defaultValue;
         return this.serverConfig.getAsJsonPrimitive(key).getAsString();
@@ -99,14 +83,6 @@ public class ConfigHolder {
     public boolean getBoolean(String key, boolean defaultValue) {
         if (!this.serverConfig.has(key)) return defaultValue;
         return this.serverConfig.getAsJsonPrimitive(key).getAsBoolean();
-    }
-
-    public Map<String, FinishTypeColor> getFinishTypeColors() {
-        return finishTypeColors;
-    }
-
-    public Map<String, Color> getColors() {
-        return colors;
     }
 
     public String getImageBasePath() {
