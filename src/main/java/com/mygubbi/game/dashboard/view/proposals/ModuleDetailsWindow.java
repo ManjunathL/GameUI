@@ -261,7 +261,7 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void mgModuleChanged(Property.ValueChangeEvent valueChangeEvent) {
-        MGModule mgModule = ((BeanItem<MGModule>)this.mgModuleCombo.getItem(this.mgModuleCombo.getValue())).getBean();
+        MGModule mgModule = ((BeanItem<MGModule>) this.mgModuleCombo.getItem(this.mgModuleCombo.getValue())).getBean();
         if (mgModule == null) {
             this.description.setReadOnly(false);
             this.description.setValue("");
@@ -410,7 +410,8 @@ public class ModuleDetailsWindow extends Window {
 
         String finishTypeCode = (String) finishTypeSelection.getValue();
 
-        if (finishTypeCode.startsWith(DEF_CODE_PREFIX)) finishTypeCode = finishTypeCode.substring(DEF_CODE_PREFIX.length());
+        if (finishTypeCode.startsWith(DEF_CODE_PREFIX))
+            finishTypeCode = finishTypeCode.substring(DEF_CODE_PREFIX.length());
 
         for (Finish shutterFinishComboItem : shutterFinishMasterList) {
             if (finishTypeCode.equals(shutterFinishComboItem.getFinishMaterial())) {
@@ -441,7 +442,8 @@ public class ModuleDetailsWindow extends Window {
         List<Finish> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, Finish>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
-        if (filteredShutterFinish.size() > 0) shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
+        if (filteredShutterFinish.size() > 0)
+            shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
     }
 
     private void enableApply() {
@@ -497,8 +499,7 @@ public class ModuleDetailsWindow extends Window {
             module.setCarcassCode(removeDefaultPrefix(module.getCarcassCode()));
             module.setFinishTypeCode(removeDefaultPrefix(module.getFinishTypeCode()));
             module.setFinishCode(removeDefaultPrefix(module.getFinishCode()));
-            if (carcassMaterialSelection.isReadOnly())
-            {
+            if (carcassMaterialSelection.isReadOnly()) {
                 module.setFixedCarcassCode((String) carcassMaterialSelection.getValue());
             }
 

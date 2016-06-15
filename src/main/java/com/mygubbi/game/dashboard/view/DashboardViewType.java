@@ -14,7 +14,7 @@ public enum DashboardViewType {
     PROPOSALS(new ViewType("Proposals", ProposalsView.class, FontAwesome.ANCHOR, false, new ArrayList<ViewType>() {{
         add(new ViewType("New Proposal", CreateProposalsView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
     }})),
-    CATALOG(new ViewType("Catalog", CatalogView.class, FontAwesome.BAR_CHART_O, false, new ArrayList<ViewType>(){{
+    CATALOG(new ViewType("Catalog", CatalogView.class, FontAwesome.BAR_CHART_O, false, new ArrayList<ViewType>() {{
         add(new ViewType("JSON", CatalogView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
     }}));
 

@@ -95,7 +95,7 @@ public final class ProposalsView extends TabSheet implements View {
 
                         UI.getCurrent().getNavigator()
                                 .navigateTo("New Proposal/" + proposalId);
-                                        //DashboardViewType.PROPOSALS.getViewType().getSubViewTypes().stream().filter(viewType -> viewType.getViewClass().equals(CreateProposalsView.class)).findFirst().get().getViewName());
+                        //DashboardViewType.PROPOSALS.getViewType().getSubViewTypes().stream().filter(viewType -> viewType.getViewClass().equals(CreateProposalsView.class)).findFirst().get().getViewName());
 
 
 

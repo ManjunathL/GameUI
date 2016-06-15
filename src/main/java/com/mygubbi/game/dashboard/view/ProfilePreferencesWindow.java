@@ -48,10 +48,8 @@ public class ProfilePreferencesWindow extends Window {
     private PasswordField confirmPasswordField;
 
 
-
-
     private ProfilePreferencesWindow(final User user,
-            final boolean preferencesTabOpen) {
+                                     final boolean preferencesTabOpen) {
 
         addStyleName("profile-window");
         setId(ID);
@@ -143,8 +141,8 @@ public class ProfilePreferencesWindow extends Window {
 
         emailField = new TextField("Email");
         emailField.setWidth("100%");
-       // emailField.setRequired(true);
-       // emailField.setNullRepresentation("");
+        // emailField.setRequired(true);
+        // emailField.setNullRepresentation("");
         emailField.setDescription("enter your email");
         emailField.setReadOnly(true);
         details.addComponent(emailField);
@@ -202,7 +200,7 @@ public class ProfilePreferencesWindow extends Window {
         footer.addComponent(ok);
         footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
         footer.setSpacing(true);
-        Button close=new Button("Cancel");
+        Button close = new Button("Cancel");
         close.addStyleName(ValoTheme.BUTTON_PRIMARY);
         close.addClickListener(new Button.ClickListener() {
             @Override
@@ -223,6 +221,7 @@ public class ProfilePreferencesWindow extends Window {
         UI.getCurrent().addWindow(w);
         w.focus();
     }
+
     public static void close_window() {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
 /*

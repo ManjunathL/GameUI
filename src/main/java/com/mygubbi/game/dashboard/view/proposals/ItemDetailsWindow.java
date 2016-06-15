@@ -620,7 +620,7 @@ public class ItemDetailsWindow extends Window {
 	}
 
 	*//*
-	 * Summary Section 
+     * Summary Section
 	 *//*
 	
     private Component buildSummaryForm() 

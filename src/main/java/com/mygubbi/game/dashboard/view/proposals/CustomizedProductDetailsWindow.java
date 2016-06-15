@@ -560,25 +560,6 @@ public class CustomizedProductDetailsWindow extends Window {
         };
     }
 
-/*
-    private PropertyValueGenerator<String> getColorNameGenerator() {
-        return new PropertyValueGenerator<String>() {
-
-            @Override
-            public String getValue(Item item, Object o, Object o1) {
-                String colorCode = (String) item.getItemProperty(Module.COLOR_CODE).getValue();
-                Color color = ServerManager.getInstance().getColors().get(colorCode);
-                return color != null ? color.getName() : "UNKNOWN";
-            }
-
-            @Override
-            public Class<String> getType() {
-                return String.class;
-            }
-        };
-    }
-*/
-
     private Converter<String, String> getResourceConverter() {
         return new Converter<String, String>() {
             @Override
