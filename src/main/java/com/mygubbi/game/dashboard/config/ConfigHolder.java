@@ -31,6 +31,7 @@ public class ConfigHolder {
     private static ConfigHolder INSTANCE = new ConfigHolder();
     private JsonObject serverConfig = new JsonObject();
     private String imageBasePath;
+    private String catalogueImageBasePath;
 
     private ConfigHolder() {
 
@@ -68,6 +69,12 @@ public class ConfigHolder {
             imageBasePath = imageBasePath + "/";
             System.out.println("imageBasePath after adding /:" + imageBasePath);
         }
+
+        catalogueImageBasePath = getStringValue("catalogueImageBasePath", "");
+        if (!catalogueImageBasePath.endsWith("/"))
+        {
+            catalogueImageBasePath = catalogueImageBasePath + "/";
+        }
     }
 
     public String getStringValue(String key, String defaultValue) {
@@ -87,5 +94,9 @@ public class ConfigHolder {
 
     public String getImageBasePath() {
         return imageBasePath;
+    }
+
+    public String getCatalogueImageBasePath() {
+        return catalogueImageBasePath;
     }
 }

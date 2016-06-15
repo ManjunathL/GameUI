@@ -437,14 +437,20 @@ public class CreateProposalsView extends Panel implements View {
 
     private StreamResource createJobcardResource() {
         StreamResource.StreamSource source = () -> {
-            String jobcardFile = proposalDataProvider.getJobCardFile(this.productSelections);
-            InputStream input = null;
-            try {
-                input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            if (this.productSelections.getProductIds().size() == 1) {
+                String jobcardFile = proposalDataProvider.getJobCardFile(this.productSelections);
+                InputStream input = null;
+                try {
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return input;
+            } else {
+                NotificationUtil.showNotification("Please select a single product to download its Job Card.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                return null;
             }
-            return input;
         };
         return new StreamResource(source, "JobCard.xlsx");
     }

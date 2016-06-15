@@ -1,7 +1,8 @@
 {
-  "restUrl_ignored" : "http://192.168.1.4:1443/gapi",
-  "restUrl" : "http://localhost:1443/gapi",
-  "imageBasePath" : "D:\\tmp\\images\\",
-  "dataProviderMode_ignored" : "com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode",
-  "dataProviderMode" : "com.mygubbi.game.dashboard.data.RestDataProviderMode"
+  "restUrl_ignored": "http://192.168.1.4:1443/gapi",
+  "restUrl": "http://localhost:1443/gapi",
+  "imageBasePath": "C:\\tmp\\images\\",
+  "catalogueImageBasePath": "https://res.cloudinary.com/mygubbi/image/upload/f_auto/c_fit,w_220/",
+  "dataProviderMode": "com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode",
+  "dataProviderMode_ignored": "com.mygubbi.game.dashboard.data.RestDataProviderMode"
 }

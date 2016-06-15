@@ -14,6 +14,7 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
@@ -42,7 +43,7 @@ public class CatalogItemDetailsWindow extends Window {
     private TextField amountField;
 
     private TextArea descriptionField;
-    private Image productImage;
+    private Embedded productImage;
     private ThemeResource emptyImage;
 
     private Button closeBtn;
@@ -160,10 +161,10 @@ public class CatalogItemDetailsWindow extends Window {
 
         if (product.getImages().isEmpty()) {
             emptyImage = new ThemeResource("img/empty-poster.png");
-            productImage = new Image("", emptyImage);
+            productImage = new Embedded("", emptyImage);
         } else {
-            String imageBasePath = ConfigHolder.getInstance().getImageBasePath();
-            this.productImage = new Image("", new FileResource(new File(imageBasePath + product.getImages().get(0))));
+            String imageBasePath = ConfigHolder.getInstance().getCatalogueImageBasePath();
+            this.productImage = new Embedded("", new ExternalResource(imageBasePath + product.getImages().get(0)));
         }
         productImage.setCaption(null);
         productImage.setWidth("220px");
@@ -202,6 +203,7 @@ public class CatalogItemDetailsWindow extends Window {
                     binder.commit();
                     product.setRoom(((BeanContainer<String, CatalogueProductCategory>) this.categoryCombo.getContainerDataSource())
                             .getItem(this.categoryCombo.getValue()).getBean().getName());
+                    product.setRoomCode(product.getRoom());
                     product.setProductCategory(((BeanContainer<String, CatalogueProductSubCategory>) this.subCategoryCombo.getContainerDataSource())
                             .getItem(this.subCategoryCombo.getValue()).getBean().getName());
 
@@ -256,8 +258,8 @@ public class CatalogItemDetailsWindow extends Window {
         this.descriptionField.setReadOnly(false);
         this.descriptionField.setValue(catalogueProduct.getDesc());
         this.descriptionField.setReadOnly(true);
-        String imageBasePath = ConfigHolder.getInstance().getImageBasePath();
-        this.productImage.setSource(new FileResource(new File(imageBasePath + catalogueProduct.getImages().get(0))));
+        String imageBasePath = ConfigHolder.getInstance().getCatalogueImageBasePath();
+        this.productImage.setSource(new ExternalResource(imageBasePath + catalogueProduct.getImages().get(0)));
         Object prevMaterial = this.materialCombo.getValue();
         this.materialCombo.getContainerDataSource().removeAllItems();
         List<String> itemIds = collectMaterial(catalogueProduct.getMf());
