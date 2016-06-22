@@ -171,10 +171,10 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        itemTitleField = (TextField) binder.buildAndBind("Product Title", TITLE);
-        itemTitleField.setRequired(true);
-        itemTitleField.setNullRepresentation("");
-        formLayoutLeft.addComponent(itemTitleField);
+        roomText = (TextField) binder.buildAndBind("Room", ROOM_CODE);
+        roomText.setRequired(true);
+        roomText.setNullRepresentation("");
+        formLayoutLeft.addComponent(roomText);
 
         this.productSelection = getSimpleItemFilledCombo("Product Category", ProposalDataProvider.CATEGORY_LOOKUP, null);
         productSelection.setRequired(true);
@@ -190,16 +190,17 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutLeft.addComponent(this.productSelection);
 
-        roomText = (TextField) binder.buildAndBind("Room", ROOM_CODE);
-        roomText.setRequired(true);
-        roomText.setNullRepresentation("");
-        formLayoutLeft.addComponent(roomText);
+        itemTitleField = (TextField) binder.buildAndBind("Title", TITLE);
+        itemTitleField.setRequired(true);
+        itemTitleField.setNullRepresentation("");
+        formLayoutLeft.addComponent(itemTitleField);
 
         this.makeType = getSimpleItemFilledCombo("Make Type", ProposalDataProvider.MAKE_LOOKUP, null);
         makeType.setRequired(true);
         binder.bind(makeType, MAKE_TYPE_CODE);
         if (makeType.size() > 0) {
             String code = StringUtils.isNotEmpty(product.getMakeTypeCode()) ? product.getMakeTypeCode() : (String) makeType.getItemIds().iterator().next();
+
             makeType.setValue(code);
         }
         formLayoutLeft.addComponent(this.makeType);

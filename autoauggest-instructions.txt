@@ -4,4 +4,8 @@ Latest version is missing in global maven repository, so the latest jar is added
 
 Please add this jar to local maven respository using the following command (change file path accordingly):
 
-mvn install:install-file -Dfile=C:\worspace\gamedev\lib\vaadin-autocomplete-1.1.1a.jar -DgroupId=com.zybnet -DartifactId=vaadin-autocomplete-new -Dversion=1.1.1a -Dpackaging=jar
+mvn install:install-file -Dfile=C:\worspace\gamedev\lib\vaadin-autocomplete-1.1.1a.jar -DgroupId=com.zybnet-DartifactId=vaadin-autocomplete-new -Dversion=1.1.1a -Dpackaging=jar
+
+then run npm install
+
+Excel template password = "MyGubbiGame"

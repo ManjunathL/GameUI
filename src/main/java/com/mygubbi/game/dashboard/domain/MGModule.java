@@ -3,6 +3,8 @@ package com.mygubbi.game.dashboard.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.StrictMath.round;
+
 /**
  * Created by nitinpuri on 19-05-2016.
  */
@@ -11,9 +13,9 @@ public class MGModule {
     private String code;
     private String carcassCode;
     private String description;
-    private double width;
-    private double depth;
-    private double height;
+    private int width;
+    private int depth;
+    private int height;
     private String imagePath;
     private List<ModuleAccessory> accessories = new ArrayList<>();
 
@@ -33,7 +35,7 @@ public class MGModule {
         this.description = description;
     }
 
-    public double getWidth() {
+    public int getWidth() {
         return width;
     }
 
@@ -41,23 +43,23 @@ public class MGModule {
         return getWidth() + " x " + getDepth() + " x " + getHeight();
     }
 
-    public void setWidth(double width) {
+    public void setWidth(int width) {
         this.width = width;
     }
 
-    public double getDepth() {
+    public int getDepth() {
         return depth;
     }
 
-    public void setDepth(double depth) {
+    public void setDepth(int depth) {
         this.depth = depth;
     }
 
-    public double getHeight() {
+    public int getHeight() {
         return height;
     }
 
-    public void setHeight(double height) {
+    public void setHeight(int height) {
         this.height = height;
     }
 

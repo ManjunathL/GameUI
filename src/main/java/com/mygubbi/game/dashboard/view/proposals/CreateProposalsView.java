@@ -19,10 +19,7 @@ import com.vaadin.data.util.*;
 import com.vaadin.event.SelectionEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.StreamResource;
+import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -99,7 +96,7 @@ public class CreateProposalsView extends Panel implements View {
     private Button reviseButton;
     private Button publishButton;
     private Button cancelButton;
-    private Button addCustomizedButton;
+    private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
     private FileAttachmentComponent fileAttachmentComponent;
 
@@ -159,7 +156,7 @@ public class CreateProposalsView extends Panel implements View {
         ProposalState proposalState = ProposalState.valueOf(proposalHeader.getStatus());
         switch (proposalState) {
             case draft:
-                addCustomizedButton.setEnabled(true);
+                addKitchenOrWardrobeButton.setEnabled(true);
                 addFromCatalogueButton.setEnabled(true);
                 fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
                 setHeaderFieldsReadOnly(false);
@@ -168,7 +165,7 @@ public class CreateProposalsView extends Panel implements View {
             case active:
             case cancelled:
             case published:
-                addCustomizedButton.setEnabled(false);
+                addKitchenOrWardrobeButton.setEnabled(false);
                 addFromCatalogueButton.setEnabled(false);
                 fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
                 setHeaderFieldsReadOnly(true);
@@ -814,17 +811,18 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.addComponent(spacingLabel);
         horizontalLayout.setExpandRatio(spacingLabel, 1.0f);
 
-        addCustomizedButton = new Button("Add Customized");
-        addCustomizedButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        horizontalLayout.addComponent(addCustomizedButton);
+        addKitchenOrWardrobeButton = new Button("+ Kitchen/Wardrobe");
 
-        addFromCatalogueButton = new Button("Add from Catalogue");
+        addKitchenOrWardrobeButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        horizontalLayout.addComponent(addKitchenOrWardrobeButton);
+
+        addFromCatalogueButton = new Button("+ Kitchen/Wardrobe from Catalogue");
         addFromCatalogueButton.addStyleName(ValoTheme.BUTTON_SMALL);
         horizontalLayout.addComponent(addFromCatalogueButton);
 
         verticalLayout.addComponent(horizontalLayout);
 
-        addCustomizedButton.addClickListener(
+        addKitchenOrWardrobeButton.addClickListener(
                 clickEvent -> {
                     Product newProduct = new Product();
                     newProduct.setType(Product.TYPES.CUSTOMIZED.name());
