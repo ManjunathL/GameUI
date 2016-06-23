@@ -170,7 +170,7 @@ public class ModuleDetailsWindow extends Window {
             mgModuleChanged(null);
         }
 
-        if (module.getMakeType().equals(Module.DEFAULT)) {
+        if (module.getMakeType().contains(Module.DEFAULT)) {
             makeType.setValue(DEF_CODE_PREFIX + module.getMakeTypeCode());
         } else {
             makeType.setValue(module.getMakeTypeCode());
@@ -180,19 +180,19 @@ public class ModuleDetailsWindow extends Window {
             carcassMaterialSelection.setValue(module.getFixedCarcassCode());
             carcassMaterialSelection.setReadOnly(true);
         } else {
-            if (module.getCarcass().equals(Module.DEFAULT)) {
+            if (module.getCarcass().contains(Module.DEFAULT)) {
                 carcassMaterialSelection.setValue(DEF_CODE_PREFIX + module.getCarcassCode());
             } else {
                 carcassMaterialSelection.setValue(module.getCarcassCode());
             }
         }
-        if (module.getFinishType().equals(Module.DEFAULT)) {
+        if (module.getFinishType().contains(Module.DEFAULT)) {
             finishTypeSelection.setValue(DEF_CODE_PREFIX + module.getFinishTypeCode());
         } else {
             finishTypeSelection.setValue(module.getFinishTypeCode());
         }
 
-        if (module.getFinish().equals(Module.DEFAULT)) {
+        if (module.getFinish().contains(Module.DEFAULT)) {
             shutterFinishSelection.setValue(DEF_CODE_PREFIX + module.getFinishCode());
         } else {
             shutterFinishSelection.setValue(module.getFinishCode());
@@ -200,16 +200,16 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void initModule() {
-        if (Module.DEFAULT.equals(module.getMakeType())) {
+        if (module.getMakeType().contains(Module.DEFAULT)) {
             module.setMakeTypeCode(product.getMakeTypeCode());
         }
-        if (Module.DEFAULT.equals(module.getCarcass())) {
+        if (module.getCarcass().contains(Module.DEFAULT)) {
             module.setCarcassCodeBasedOnUnitType(product);
         }
-        if (Module.DEFAULT.equals(module.getFinishType())) {
+        if (module.getFinishType().contains(Module.DEFAULT)) {
             module.setFinishTypeCode(product.getFinishTypeCode());
         }
-        if (Module.DEFAULT.equals(module.getFinish())) {
+        if (module.getFinish().contains(Module.DEFAULT)) {
             module.setFinishCode(product.getFinishCode());
         }
     }
@@ -299,7 +299,11 @@ public class ModuleDetailsWindow extends Window {
             mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), module.getMakeTypeCode()));
 
             for (ModuleAccessory moduleAccessory : mgModule.getAccessories()) {
-                accessoryImageStrip.addImage(new FileResource(new File(basePath + moduleAccessory.getImagePath())));
+                File sourceFile = new File(basePath + moduleAccessory.getImagePath());
+                if (sourceFile.exists())
+                {
+                    accessoryImageStrip.addImage(new FileResource(sourceFile));
+                }
             }
 
             refreshPrice();
@@ -503,32 +507,32 @@ public class ModuleDetailsWindow extends Window {
                 module.setFixedCarcassCode((String) carcassMaterialSelection.getValue());
             }
 
+            String makeTypeTitle = (String) makeType.getItem(module.getMakeTypeCode()).getItemProperty("title").getValue();
             if (!product.getMakeTypeCode().equals(module.getMakeTypeCode()) || !((String) makeType.getValue()).contains(DEF_CODE_PREFIX)) {
-                String title = (String) makeType.getItem(module.getMakeTypeCode()).getItemProperty("title").getValue();
-                module.setMakeType(title);
+                module.setMakeType(makeTypeTitle);
             } else {
-                module.setMakeType(Module.DEFAULT);
+                module.setMakeType(getDefaultText(makeTypeTitle));
             }
             String carcassCodeBasedOnType = getCarcassCodeBasedOnType();
+            String carcassTitle = (String) carcassMaterialSelection.getItem(module.getCarcassCode()).getItemProperty("title").getValue();
             if (!carcassCodeBasedOnType.equals(module.getCarcassCode()) || !((String) carcassMaterialSelection.getValue()).contains(DEF_CODE_PREFIX)) {
-                String title = (String) carcassMaterialSelection.getItem(module.getCarcassCode()).getItemProperty("title").getValue();
-                module.setCarcass(title);
+                module.setCarcass(carcassTitle);
             } else {
-                module.setCarcass(Module.DEFAULT);
+                module.setCarcass(getDefaultText(carcassTitle));
             }
 
+            String finishTypeTitle = (String) finishTypeSelection.getItem(module.getFinishTypeCode()).getItemProperty("title").getValue();
             if (!product.getFinishTypeCode().equals(module.getFinishTypeCode()) || !((String) finishTypeSelection.getValue()).contains(DEF_CODE_PREFIX)) {
-                String title = (String) finishTypeSelection.getItem(module.getFinishTypeCode()).getItemProperty("title").getValue();
-                module.setFinishType(title);
+                module.setFinishType(finishTypeTitle);
             } else {
-                module.setFinishType(Module.DEFAULT);
+                module.setFinishType(getDefaultText(finishTypeTitle));
             }
 
+            String finishTitle = (String) shutterFinishSelection.getItem(module.getFinishCode()).getItemProperty("title").getValue();
             if (!product.getFinishCode().equals(module.getFinishCode()) || !((String) shutterFinishSelection.getValue()).contains(DEF_CODE_PREFIX)) {
-                String title = (String) shutterFinishSelection.getItem(module.getFinishCode()).getItemProperty("title").getValue();
-                module.setFinish(title);
+                module.setFinish(finishTitle);
             } else {
-                module.setFinish(Module.DEFAULT);
+                module.setFinish(getDefaultText(finishTitle));
             }
 
             mgModuleCombo.removeValueChangeListener(this::mgModuleChanged);
@@ -548,6 +552,10 @@ public class ModuleDetailsWindow extends Window {
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 
         return footer;
+    }
+
+    private String getDefaultText(String itemTitle) {
+        return Module.DEFAULT + " (" + itemTitle + ")";
     }
 
     private String removeDefaultPrefix(String code) {
@@ -640,7 +648,7 @@ public class ModuleDetailsWindow extends Window {
                 }
             }
 
-            list.add(new LookupItem(DEF_CODE_PREFIX + defaultCode, "Default (" + title + ")", additionalType));
+            list.add(new LookupItem(DEF_CODE_PREFIX + defaultCode, Module.DEFAULT + " (" + title + ")", additionalType));
         }
         return getSimpleItemFilledCombo(caption, list, listener);
     }

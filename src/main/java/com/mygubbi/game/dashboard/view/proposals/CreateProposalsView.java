@@ -645,11 +645,11 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.addComponent(designPerson);
         designEmail = binder.buildAndBind("Email", DESIGNER_EMAIL);
         ((TextField) designEmail).setNullRepresentation("");
-        designEmail.setReadOnly(true);
+        designEmail.setRequired(true);
         formLayoutRight.addComponent(designEmail);
         designContact = binder.buildAndBind("Phone", DESIGNER_PHONE);
         ((TextField) designContact).setNullRepresentation("");
-        designContact.setReadOnly(true);
+        designContact.setRequired(true);
         designPerson.addValueChangeListener(this::designerChanged);
         formLayoutRight.addComponent(designContact);
         return formLayoutRight;
@@ -671,11 +671,11 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.addComponent(salesPerson);
         salesEmail = binder.buildAndBind("Email", SALES_EMAIL);
         ((TextField) salesEmail).setNullRepresentation("");
-        salesEmail.setReadOnly(true);
+        salesEmail.setRequired(true);
         formLayoutLeft.addComponent(salesEmail);
         salesContact = binder.buildAndBind("Phone", SALES_PHONE);
         ((TextField) salesContact).setNullRepresentation("");
-        salesContact.setReadOnly(true);
+        salesContact.setRequired(true);
         formLayoutLeft.addComponent(salesContact);
         salesPerson.addValueChangeListener(this::salesPersonChanged);
         return formLayoutLeft;
@@ -683,24 +683,24 @@ public class CreateProposalsView extends Panel implements View {
 
     private void designerChanged(Property.ValueChangeEvent valueChangeEvent) {
         String phone = (String) designPerson.getItem(designPerson.getValue()).getItemProperty(User.PHONE).getValue();
-        designContact.setReadOnly(false);
+        //designContact.setReadOnly(false);
         ((TextField) designContact).setValue(phone);
-        designContact.setReadOnly(true);
+        //designContact.setReadOnly(true);
         String email = (String) designPerson.getItem(designPerson.getValue()).getItemProperty(User.EMAIL).getValue();
-        designEmail.setReadOnly(false);
+        //designEmail.setReadOnly(false);
         ((TextField) designEmail).setValue(email);
-        designEmail.setReadOnly(true);
+        //designEmail.setReadOnly(true);
     }
 
     private void salesPersonChanged(Property.ValueChangeEvent valueChangeEvent) {
         String phone = (String) salesPerson.getItem(salesPerson.getValue()).getItemProperty(User.PHONE).getValue();
-        salesContact.setReadOnly(false);
+        //salesContact.setReadOnly(false);
         ((TextField) salesContact).setValue(phone);
-        salesContact.setReadOnly(true);
+        //salesContact.setReadOnly(true);
         String email = (String) salesPerson.getItem(salesPerson.getValue()).getItemProperty(User.EMAIL).getValue();
-        salesEmail.setReadOnly(false);
+        //salesEmail.setReadOnly(false);
         ((TextField) salesEmail).setValue(email);
-        salesEmail.setReadOnly(true);
+        //salesEmail.setReadOnly(true);
     }
 
     private ComboBox getSalesPersonCombo() {

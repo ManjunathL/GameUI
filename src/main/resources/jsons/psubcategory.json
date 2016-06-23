@@ -1,0 +1,67 @@
+[
+  {
+    "title": "Entertainment Unit",
+    "id": "entunit",
+    "code": "entunit"
+  },
+  {
+    "title": "Shoe Rack",
+    "id": "shoerack",
+    "code": "shoerack"
+  },
+  {
+    "title": "Crockery Unit",
+    "id": "crockunit",
+    "code": "crockunit"
+  },
+  {
+    "title": "Foyer Unit",
+    "id": "foyerunit",
+    "code": "foyerunit"
+  },
+  {
+    "title": "Sideboard",
+    "id": "sideboard",
+    "code": "sideboard"
+  },
+  {
+    "title": "L Shaped Kitchen",
+    "id": "lshapedk",
+    "code": "lshapedk"
+  },
+  {
+    "title": "U Shaped Kitchen",
+    "id": "ushapedk",
+    "code": "ushapedk"
+  },
+  {
+    "title": "Straight Kitchen",
+    "id": "straightk",
+    "code": "straightk"
+  },
+  {
+    "title": "Parallel Kitchen",
+    "id": "parallelk",
+    "code": "parallelk"
+  },
+  {
+    "title": "Wardrobe",
+    "id": "wardrobe",
+    "code": "wardrobe"
+  },
+  {
+    "title": "Study Table",
+    "id": "studytable",
+    "code": "studytable"
+  },
+  {
+    "title": "Side Table",
+    "id": "sidetable",
+    "code": "sidetable"
+  },
+  {
+    "title": "Book Rack",
+    "id": "bookrack",
+    "code": "bookrack"
+  }
+]

@@ -237,28 +237,33 @@ public class CustomizedProductDetailsWindow extends Window {
 
             if (component == makeType) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.MAKE_TYPE).getValue();
-                if (text.equals(Module.DEFAULT)) {
+                if (text.contains(Module.DEFAULT)) {
                     moduleContainer.getItem(module).getItemProperty(Module.MAKE_TYPE_CODE).setValue(makeType.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.MAKE_TYPE).setValue(getDefaultText(getSelectedItemText(makeType)));
                 }
             } else if (component == baseCarcassSelection && module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name())) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).getValue();
-                if (text.equals(Module.DEFAULT)) {
+                if (text.contains(Module.DEFAULT)) {
                     moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL_CODE).setValue(baseCarcassSelection.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).setValue(getDefaultText(getSelectedItemText(baseCarcassSelection)));
                 }
             } else if (component == wallCarcassSelection && module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).getValue();
-                if (text.equals(Module.DEFAULT)) {
+                if (text.contains(Module.DEFAULT)) {
                     moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL_CODE).setValue(wallCarcassSelection.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).setValue(getDefaultText(getSelectedItemText(wallCarcassSelection)));
                 }
             } else if (component == finishTypeSelection) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).getValue();
-                if (text.equals(Module.DEFAULT)) {
+                if (text.contains(Module.DEFAULT)) {
                     moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE_CODE).setValue(finishTypeSelection.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).setValue(getDefaultText(getSelectedItemText(finishTypeSelection)));
                 }
             } else if (component == shutterFinishSelection) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH).getValue();
-                if (text.equals(Module.DEFAULT)) {
+                if (text.contains(Module.DEFAULT)) {
                     moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH_CODE).setValue(shutterFinishSelection.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH).setValue(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
                 }
             }
 
@@ -363,6 +368,15 @@ public class CustomizedProductDetailsWindow extends Window {
         if (filteredShutterFinish.size() > 0)
             shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
 
+        List<Module> modules = product.getModules();
+
+        for (Module module : modules) {
+            String text = (String) moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).getValue();
+            if (text.contains(Module.DEFAULT)) {
+                moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE_CODE).setValue(finishTypeSelection.getValue());
+                moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).setValue(getDefaultText(getSelectedItemText(finishTypeSelection)));
+            }
+        }
     }
 
     private Component getQuoteUploadControl() {
@@ -435,16 +449,31 @@ public class CustomizedProductDetailsWindow extends Window {
     private void initModules(Product product) {
         for (Module module : product.getModules()) {
 
-            module.setMakeType(Module.DEFAULT);
-            module.setCarcass(Module.DEFAULT);
-            module.setFinishType(Module.DEFAULT);
-            module.setFinish(Module.DEFAULT);
+            module.setMakeType(getDefaultText(getSelectedItemText(makeType)));
+            module.setCarcass(getDefaultText(
+                    (module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
+                            ? getSelectedItemText(wallCarcassSelection)
+                            : getSelectedItemText(baseCarcassSelection))));
+            module.setFinishType(getDefaultText(getSelectedItemText(finishTypeSelection)));
+            module.setFinish(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
 
             module.setMakeTypeCode(product.getMakeTypeCode());
             module.setCarcassCodeBasedOnUnitType(product);
             module.setFinishTypeCode(product.getFinishTypeCode());
             module.setFinishCode(product.getFinishCode());
         }
+    }
+
+    private String getDefaultText(String selectedItemText) {
+        return Module.DEFAULT + " (" + selectedItemText + ")";
+    }
+
+    private String getSelectedFinishText(ComboBox shutterFinishSelection) {
+        return ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean().getTitle();
+    }
+
+    private String getSelectedItemText(ComboBox combo) {
+        return ((BeanContainer<String, LookupItem>) combo.getContainerDataSource()).getItem(combo.getValue()).getBean().getTitle();
     }
 
     private void enableSave() {
@@ -473,6 +502,17 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE,
                 Module.MAKE_TYPE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
 
+        modulesGrid.setCellStyleGenerator(cell -> {
+            if (cell.getPropertyId().equals(Module.MAKE_TYPE)
+                    || cell.getPropertyId().equals(Module.CARCASS_MATERIAL)
+                    || cell.getPropertyId().equals(Module.FINISH_TYPE)
+                    || cell.getPropertyId().equals(Module.SHUTTER_FINISH)) {
+                if (!((String) cell.getValue()).contains(Module.DEFAULT)) {
+                    return "module-cell-highlight";
+                }
+            }
+            return "";
+        });
         List<Grid.Column> columns = modulesGrid.getColumns();
         int idx = 0;
         Grid.Column statusColumn = columns.get(idx++);
