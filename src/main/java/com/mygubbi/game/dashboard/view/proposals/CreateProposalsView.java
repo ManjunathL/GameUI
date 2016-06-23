@@ -811,12 +811,13 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.addComponent(spacingLabel);
         horizontalLayout.setExpandRatio(spacingLabel, 1.0f);
 
-        addKitchenOrWardrobeButton = new Button("+ Kitchen/Wardrobe");
-
+        addKitchenOrWardrobeButton = new Button("Kitchen/Wardrobe");
+        addKitchenOrWardrobeButton.setIcon(FontAwesome.PLUS_CIRCLE);
         addKitchenOrWardrobeButton.addStyleName(ValoTheme.BUTTON_SMALL);
         horizontalLayout.addComponent(addKitchenOrWardrobeButton);
 
-        addFromCatalogueButton = new Button("+ Kitchen/Wardrobe from Catalogue");
+        addFromCatalogueButton = new Button("From Catalogue");
+        addFromCatalogueButton.setIcon(FontAwesome.PLUS_CIRCLE);
         addFromCatalogueButton.addStyleName(ValoTheme.BUTTON_SMALL);
         horizontalLayout.addComponent(addFromCatalogueButton);
 

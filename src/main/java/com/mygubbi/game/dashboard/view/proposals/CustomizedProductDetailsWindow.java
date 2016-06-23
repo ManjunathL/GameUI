@@ -3,7 +3,6 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.ServerManager;
-import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
@@ -54,6 +53,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private static final Logger LOG = LogManager.getLogger(CustomizedProductDetailsWindow.class);
     private static final String CLOSE = "Close";
     private static final String DELETE = "Delete";
+    private static final String MAKE_TYPE_PREMIUM = "P";
 
     private TextField itemTitleField;
     private TextField roomText;
@@ -101,7 +101,7 @@ public class CustomizedProductDetailsWindow extends Window {
         setSizeFull();
         setResizable(false);
         setClosable(false);
-        setCaption("Add Customized Product");
+        setCaption("Add Kitchen/Wardrobe");
 
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setSizeFull();
@@ -122,7 +122,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         tabSheet = new TabSheet();
         tabSheet.setSizeFull();
-        tabSheet.addTab(buildModulesForm(), "Modules");
+        tabSheet.addTab(buildModulesGrid(), "Modules");
         tabSheet.addTab(buildAddonsForm(), "Addons");
 
         fileAttachmentComponent = new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(),
@@ -199,8 +199,7 @@ public class CustomizedProductDetailsWindow extends Window {
         makeType.setRequired(true);
         binder.bind(makeType, MAKE_TYPE_CODE);
         if (makeType.size() > 0) {
-            String code = StringUtils.isNotEmpty(product.getMakeTypeCode()) ? product.getMakeTypeCode() : (String) makeType.getItemIds().iterator().next();
-
+            String code = StringUtils.isNotEmpty(product.getMakeTypeCode()) ? product.getMakeTypeCode() : MAKE_TYPE_PREMIUM;
             makeType.setValue(code);
         }
         formLayoutLeft.addComponent(this.makeType);
@@ -284,11 +283,7 @@ public class CustomizedProductDetailsWindow extends Window {
         }
 
         updateTotalAmount();
-/*
-        totalAmount.setReadOnly(false);
-        totalAmount.setValue(total + "");
-        totalAmount.setReadOnly(true);
-*/
+
     }
 
     private FormLayout buildAddItemBasicFormRight() {
@@ -464,7 +459,7 @@ public class CustomizedProductDetailsWindow extends Window {
         return proposal.getProposalHeader().getFolderPath();
     }
 
-    private Component buildModulesForm() {
+    private Component buildModulesGrid() {
         HorizontalLayout hLayout = new HorizontalLayout();
         hLayout.setSizeFull();
 
@@ -535,6 +530,7 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setMakeTypeCode((String) this.makeType.getValue());
         product.setWallCarcassCode((String) this.wallCarcassSelection.getValue());
         product.setBaseCarcassCode((String) this.baseCarcassSelection.getValue());
+        product.setTitle(itemTitleField.getValue());
         return product;
     }
 

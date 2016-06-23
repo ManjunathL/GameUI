@@ -7,7 +7,6 @@ import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
-import com.mygubbi.game.dashboard.view.DashboardViewType;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -15,6 +14,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.gridutil.cell.GridCellFilter;
@@ -75,6 +75,8 @@ public final class ProposalsView extends TabSheet implements View {
         columns.get(idx++).setHeaderCaption("Designer");
         columns.get(idx++).setHeaderCaption("Create Date");
         columns.get(idx++).setHeaderCaption("Created By");
+        grid.sort("createdOn", SortDirection.DESCENDING);
+
 
         GridCellFilter filter = new GridCellFilter(grid);
 

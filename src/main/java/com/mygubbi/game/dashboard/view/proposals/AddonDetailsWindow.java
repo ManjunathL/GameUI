@@ -64,7 +64,7 @@ public class AddonDetailsWindow extends Window {
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("60%");
         setClosable(false);
-        setCaption("Addon Configuration");
+        setCaption("Addon Configuration for "+product.getTitle());
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(new MarginInfo(true, true, true, true));

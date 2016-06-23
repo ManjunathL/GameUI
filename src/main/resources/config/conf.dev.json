@@ -3,6 +3,6 @@
   "restUrl": "http://localhost:1443/gapi",
   "imageBasePath": "C:\\tmp\\images\\",
   "catalogueImageBasePath": "https://res.cloudinary.com/mygubbi/image/upload/f_auto/c_fit,w_220/",
-  "dataProviderMode": "com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode",
-  "dataProviderMode_ignored": "com.mygubbi.game.dashboard.data.RestDataProviderMode"
+  "dataProviderMode_ignored": "com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode",
+  "dataProviderMode": "com.mygubbi.game.dashboard.data.RestDataProviderMode"
 }

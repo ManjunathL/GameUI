@@ -53,7 +53,7 @@ public class ModuleDetailsWindow extends Window {
     private ComboBox shutterFinishSelection;
     private ComboBox finishTypeSelection;
 
-    private Button cancelBtn;
+    private Button closeBtn;
     private Button applyButton;
 
     private Module module;
@@ -82,7 +82,7 @@ public class ModuleDetailsWindow extends Window {
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("60%");
         setClosable(false);
-        setCaption("Edit Module Configuration");
+        setCaption("Edit Module Configuration for " + product.getTitle());
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         VerticalLayout verticalLayoutLeft = new VerticalLayout();
@@ -475,13 +475,13 @@ public class ModuleDetailsWindow extends Window {
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
         footer.setWidth(100.0f, Unit.PERCENTAGE);
 
-        cancelBtn = new Button("Cancel");
-        cancelBtn.addClickListener((ClickListener) clickEvent -> {
+        closeBtn = new Button("Close");
+        closeBtn.addClickListener((ClickListener) clickEvent -> {
             binder.discard();
             close();
         });
-        cancelBtn.focus();
-        footer.addComponent(cancelBtn);
+        closeBtn.focus();
+        footer.addComponent(closeBtn);
         footer.setSpacing(true);
 
         applyButton = new Button("Apply");
@@ -545,7 +545,7 @@ public class ModuleDetailsWindow extends Window {
         }
 
         footer.addComponent(applyButton);
-        footer.setComponentAlignment(cancelBtn, Alignment.TOP_RIGHT);
+        footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 
         return footer;
     }
