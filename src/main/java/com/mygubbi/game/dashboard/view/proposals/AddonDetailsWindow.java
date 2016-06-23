@@ -54,7 +54,7 @@ public class AddonDetailsWindow extends Window {
     private BeanContainer<String, AddonCategory> categoryBeanContainer;
     private boolean readOnly;
 
-    public AddonDetailsWindow(AddonProduct addonProduct, Product product, boolean readOnly) {
+    public AddonDetailsWindow(AddonProduct addonProduct, Product product, boolean readOnly, String title) {
         this.addonProduct = addonProduct;
         this.product = product;
         this.readOnly = readOnly;
@@ -64,7 +64,7 @@ public class AddonDetailsWindow extends Window {
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("60%");
         setClosable(false);
-        setCaption("Addon Configuration for "+product.getTitle());
+        setCaption("Addon Configuration for " + title);
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(new MarginInfo(true, true, true, true));
@@ -434,8 +434,8 @@ public class AddonDetailsWindow extends Window {
         }
     }
 
-    public static void open(AddonProduct addon, Product product, boolean readOnly) {
-        Window w = new AddonDetailsWindow(addon, product, readOnly);
+    public static void open(AddonProduct addon, Product product, boolean readOnly, String title) {
+        Window w = new AddonDetailsWindow(addon, product, readOnly, title);
         UI.getCurrent().addWindow(w);
         w.focus();
 
