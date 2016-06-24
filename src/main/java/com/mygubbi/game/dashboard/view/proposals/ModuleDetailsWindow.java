@@ -414,8 +414,6 @@ public class ModuleDetailsWindow extends Window {
 
         if (filteredColors.stream().anyMatch(color -> color.getCode().equals(previousColorCode))) {
             colorCombo.setValue(previousColorCode);
-        } else {
-            colorCombo.setValue(colorCombo.getItemIds().iterator().next());
         }
 
         refreshPrice();
@@ -658,7 +656,6 @@ public class ModuleDetailsWindow extends Window {
         select.setStyleName("colors-combo");
         select.setItemCaptionPropertyId("name");
         select.setFilteringMode(FilteringMode.CONTAINS);
-        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
     }
 
