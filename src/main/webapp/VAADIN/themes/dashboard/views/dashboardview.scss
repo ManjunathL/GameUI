@@ -306,4 +306,32 @@
   .module-cell-highlight {
     background-color: #d6cefd !important;
   }
+
+  .v-label-warning {
+        background: white;
+        color: #474747;
+        border: 2px solid #2c9720;
+        border-radius: 4px;
+        padding: 7px 19px 7px 37px;
+        font-weight: 400;
+        font-size: 15px;
+  }
+
+  .v-label-warning:before {
+        font-family: ThemeIcons;
+        content: "\f00c";
+        margin-right: 0.5em;
+        margin-left: -19px;
+        color: #2c9720;
+  }
+
+  .v-label-warning {
+        border-color: #fb6b02;
+  }
+
+  .v-label-warning:before {
+        content: "\26A0";
+        color: #fb6b02;
+  }
+
 }

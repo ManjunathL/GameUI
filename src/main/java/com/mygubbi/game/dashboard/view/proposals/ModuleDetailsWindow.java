@@ -41,6 +41,7 @@ public class ModuleDetailsWindow extends Window {
     private final List<MGModule> mgModules;
     private final Product product;
     private final String DEF_CODE_PREFIX = "def_";
+    private static final String LABEL_WARNING = "warning";
 
     private TextField importedModule;
     private TextField description;
@@ -68,6 +69,7 @@ public class ModuleDetailsWindow extends Window {
     private String basePath = ConfigHolder.getInstance().getImageBasePath();
     private TextField totalAmount;
     private boolean readOnly;
+    private final Label defaultsOverridden;
 
     private ModuleDetailsWindow(Module module, Product product, boolean readOnly) {
 
@@ -109,6 +111,13 @@ public class ModuleDetailsWindow extends Window {
         horizontalLayout2.addComponent(buildModuleSelectionsComponent());
         verticalLayoutLeft.addComponent(horizontalLayout2);
         horizontalLayout2.setHeightUndefined();
+
+        defaultsOverridden = new Label("Note that the defaults have been overridden.");
+        defaultsOverridden.setStyleName(LABEL_WARNING);
+        defaultsOverridden.setVisible(false);
+
+        verticalLayoutLeft.addComponent(defaultsOverridden);
+        verticalLayoutLeft.setComponentAlignment(defaultsOverridden, Alignment.MIDDLE_CENTER);
 
         Component footerLayOut = buildFooter();
         verticalLayoutLeft.addComponent(footerLayOut);
@@ -174,6 +183,7 @@ public class ModuleDetailsWindow extends Window {
             makeType.setValue(DEF_CODE_PREFIX + module.getMakeTypeCode());
         } else {
             makeType.setValue(module.getMakeTypeCode());
+            defaultsOverridden.setVisible(true);
         }
 
         if (StringUtils.isNotEmpty(module.getFixedCarcassCode())) {
@@ -184,18 +194,21 @@ public class ModuleDetailsWindow extends Window {
                 carcassMaterialSelection.setValue(DEF_CODE_PREFIX + module.getCarcassCode());
             } else {
                 carcassMaterialSelection.setValue(module.getCarcassCode());
+                defaultsOverridden.setVisible(true);
             }
         }
         if (module.getFinishType().contains(Module.DEFAULT)) {
             finishTypeSelection.setValue(DEF_CODE_PREFIX + module.getFinishTypeCode());
         } else {
             finishTypeSelection.setValue(module.getFinishTypeCode());
+            defaultsOverridden.setVisible(true);
         }
 
         if (module.getFinish().contains(Module.DEFAULT)) {
             shutterFinishSelection.setValue(DEF_CODE_PREFIX + module.getFinishCode());
         } else {
             shutterFinishSelection.setValue(module.getFinishCode());
+            defaultsOverridden.setVisible(true);
         }
     }
 
@@ -330,6 +343,9 @@ public class ModuleDetailsWindow extends Window {
         totalAmount.setReadOnly(false);
         totalAmount.setValue(modulePrice.getTotalCost() + "");
         totalAmount.setReadOnly(true);
+
+        checkDefaultsOverridden();
+
     }
 
     private Component buildModuleSelectionsComponent() {
@@ -409,6 +425,17 @@ public class ModuleDetailsWindow extends Window {
         refreshPrice();
     }
 
+    private void checkDefaultsOverridden() {
+        if (!((String) makeType.getValue()).startsWith(DEF_CODE_PREFIX)
+            || !((String) carcassMaterialSelection.getValue()).startsWith(DEF_CODE_PREFIX)
+            || !((String) finishTypeSelection.getValue()).startsWith(DEF_CODE_PREFIX)
+            || !((String) shutterFinishSelection.getValue()).startsWith(DEF_CODE_PREFIX)) {
+            defaultsOverridden.setVisible(true);
+        } else {
+            defaultsOverridden.setVisible(false);
+        }
+    }
+
     private List<Finish> filterShutterFinishByType() {
         List<Finish> filteredShutterFinish = new ArrayList<>();
 
@@ -448,6 +475,7 @@ public class ModuleDetailsWindow extends Window {
         ((BeanContainer<String, Finish>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
         if (filteredShutterFinish.size() > 0)
             shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
+        checkDefaultsOverridden();
     }
 
     private void enableApply() {
