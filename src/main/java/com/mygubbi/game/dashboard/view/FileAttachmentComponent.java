@@ -1,8 +1,12 @@
 package com.mygubbi.game.dashboard.view;
 
+import com.mygubbi.game.dashboard.ServerManager;
+import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.FileAttachment;
+import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.domain.User;
 import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
@@ -30,6 +34,7 @@ import java.util.List;
 public class FileAttachmentComponent extends VerticalLayout {
 
     private static final Logger LOG = LogManager.getLogger(FileAttachmentComponent.class);
+    private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
     private final SaveAttachmentsListener saveListener;
     private final DeleteAttachmentsListener deleteListener;
@@ -42,6 +47,7 @@ public class FileAttachmentComponent extends VerticalLayout {
     private final String uploadBasePath;
     private Upload fileUploadCtrl;
     private boolean readOnly;
+    private ComboBox fileType;
 
     public FileAttachmentComponent(FileAttachmentsHolder attachmentsHolder, String uploadBasePath,
                                    SaveAttachmentsListener saveListener, DeleteAttachmentsListener deleteListener,
@@ -61,9 +67,15 @@ public class FileAttachmentComponent extends VerticalLayout {
         FormLayout left = new FormLayout();
         fileTitle = new TextField("Title");
         fileTitle.setRequired(true);
-        left.setWidth("300px");
         left.addComponent(fileTitle);
         fileUploadHLayout.addComponent(left);
+
+        FormLayout middle = new FormLayout();
+        fileType = getFileTypeCombo();
+        fileType.setRequired(true);
+        middle.addComponent(fileType);
+        fileUploadHLayout.addComponent(middle);
+
         FormLayout right = new FormLayout();
         right.addComponent(getFileUploadControl());
         fileUploadHLayout.addComponent(right);
@@ -80,12 +92,13 @@ public class FileAttachmentComponent extends VerticalLayout {
         attachmentGrid.setSizeFull();
         attachmentGrid.setHeight("280px");
         attachmentGrid.setColumnReorderingAllowed(true);
-        attachmentGrid.setColumns(FileAttachment.SEQ, FileAttachment.TITLE, FileAttachment.FILENAME, FileAttachment.UPLOADED_BY, FileAttachment.UPLOADED_ON, "action");
+        attachmentGrid.setColumns(FileAttachment.SEQ, FileAttachment.TITLE, FileAttachment.TYPE, FileAttachment.FILENAME, FileAttachment.UPLOADED_BY, FileAttachment.UPLOADED_ON, "action");
 
         List<Grid.Column> columns = attachmentGrid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Title");
+        columns.get(idx++).setHeaderCaption("Type");
         columns.get(idx++).setHeaderCaption("File Name");
         columns.get(idx++).setHeaderCaption("Uploaded By");
         columns.get(idx++).setHeaderCaption("Uploaded On");
@@ -162,6 +175,24 @@ public class FileAttachmentComponent extends VerticalLayout {
         return verticalLayout;
     }
 
+    private ComboBox getFileTypeCombo() {
+        List<LookupItem> list = proposalDataProvider.getLookupItems(ProposalDataProvider.ATTACHMENT_TYPE_LOOKUP);
+        final BeanContainer<String, LookupItem> container =
+                new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty(LookupItem.TITLE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox("&nbsp;&nbsp;&nbsp;Type");
+        select.setCaptionAsHtml(true);
+        select.setWidth("300px");
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(LookupItem.TITLE);
+
+        return select;
+
+    }
+
     private GeneratedPropertyContainer createGeneratedFAPropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(attachmentContainer);
         genContainer.addGeneratedProperty("action", getFileActionTextGenerator());
@@ -204,15 +235,15 @@ public class FileAttachmentComponent extends VerticalLayout {
     }
 
     private Component getFileUploadControl() {
-        this.fileUploadCtrl = new Upload("Upload File", (filename, mimeType) -> {
+        this.fileUploadCtrl = new Upload("&nbsp;&nbsp;&nbsp;Upload File", (filename, mimeType) -> {
 
             if (StringUtils.isEmpty(filename)) {
                 NotificationUtil.showNotification("Please specify the file.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return null;
             }
 
-            if (StringUtils.isEmpty(fileTitle.getValue())) {
-                NotificationUtil.showNotification("Please fill the title before upload!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            if (StringUtils.isEmpty(fileTitle.getValue()) || StringUtils.isEmpty((String) fileType.getValue())) {
+                NotificationUtil.showNotification("Please fill the title & type before upload!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return null;
             }
 
@@ -227,6 +258,7 @@ public class FileAttachmentComponent extends VerticalLayout {
             return fos;
         });
 
+        fileUploadCtrl.setCaptionAsHtml(true);
         fileUploadCtrl.setStyleName("upload-btn");
         fileUploadCtrl.addProgressListener((Upload.ProgressListener) (readBytes, contentLength) -> LOG.debug("Upload file Progress " + (readBytes * 100 / contentLength)));
         fileUploadCtrl.addSucceededListener((Upload.SucceededListener) event -> {
@@ -235,6 +267,7 @@ public class FileAttachmentComponent extends VerticalLayout {
             fileAttachment.setFileName(event.getFilename());
             fileAttachment.setSeq(attachmentsHolder.getFileAttachmentList().size() + 1);
             fileAttachment.setTitle(fileTitle.getValue());
+            fileAttachment.setAttachmentType(fileType.getValue().toString());
             fileAttachment.setUploadedBy(getUserId());
             fileAttachment.setUploadedOn(new Date());
 

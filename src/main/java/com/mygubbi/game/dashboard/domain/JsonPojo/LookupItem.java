@@ -2,6 +2,8 @@ package com.mygubbi.game.dashboard.domain.JsonPojo;
 
 public class LookupItem {
 
+    public static final String CODE = "code";
+    public static final String TITLE = "title";
     private String code;
     private String title;
     private String additionalType;

@@ -35,13 +35,13 @@ public class ProposalDataProvider {
     private final ObjectMapper mapper;
 
     public static final String CATEGORY_LOOKUP = "category";
-    public static final String ROOM_LOOKUP = "room";
+    public static final String ATTACHMENT_TYPE_LOOKUP = "attachmenttype";
     public static final String MAKE_LOOKUP = "maketype";
     public static final String SHUTTER_DESIGN_LOOKUP = "shutterdesign";
     public static final String CARCASS_LOOKUP = "carcassmaterial";
     public static final String FINISH_TYPE_LOOKUP = "finishtype";
     public static final String SUB_CATEGORY_LOOKUP = "psubcategory";
-    public static final String FINISH_LOOKUP = "finish";
+    public static final String CITY_LOOKUP = "city";
     private static final String ROLE_DESIGNER = "designer";
     private static final String ROLE_SALES = "sales";
 

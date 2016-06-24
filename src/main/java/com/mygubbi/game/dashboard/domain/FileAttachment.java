@@ -13,6 +13,7 @@ public class FileAttachment {
     public static final String FILENAME = "fileName";
     public static final String UPLOADED_BY = "uploadedBy";
     public static final String UPLOADED_ON = "uploadedOn";
+    public static final String TYPE = "attachmentType";
 
     private int id;
     private int seq;
@@ -20,6 +21,7 @@ public class FileAttachment {
     private String fileName;
     private String uploadedBy;
     private Date uploadedOn;
+    private String attachmentType;
 
     private int proposalId;
     private int productId;
@@ -111,5 +113,13 @@ public class FileAttachment {
 
     public void setProductId(int productId) {
         this.productId = productId;
+    }
+
+    public String getAttachmentType() {
+        return attachmentType;
+    }
+
+    public void setAttachmentType(String attachmentType) {
+        this.attachmentType = attachmentType;
     }
 }

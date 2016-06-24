@@ -210,6 +210,8 @@ public class ModuleDetailsWindow extends Window {
             shutterFinishSelection.setValue(module.getFinishCode());
             defaultsOverridden.setVisible(true);
         }
+
+        checkDefaultsOverridden();
     }
 
     private void initModule() {
@@ -451,7 +453,7 @@ public class ModuleDetailsWindow extends Window {
         if (finishTypeCode.equals(product.getFinishTypeCode())) {
             Finish defaultItem = filteredShutterFinish.stream().filter(finish -> finish.getFinishCode().equals(product.getFinishCode())).findFirst().get();
             Finish newFinish = new Finish();
-            newFinish.setTitle("Default (" + defaultItem.getTitle() + ")");
+            newFinish.setTitle(Module.DEFAULT + " (" + defaultItem.getTitle() + ")");
             newFinish.setFinishCode(DEF_CODE_PREFIX + defaultItem.getFinishCode());
             newFinish.setFinishMaterial(defaultItem.getFinishMaterial());
             newFinish.setColorGroupCode(defaultItem.getColorGroupCode());
@@ -469,10 +471,16 @@ public class ModuleDetailsWindow extends Window {
 
     private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
         List<Finish> filteredShutterFinish = filterShutterFinishByType();
+        String prevValue = this.shutterFinishSelection.getValue().toString();
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, Finish>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
-        if (filteredShutterFinish.size() > 0)
-            shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
+        if (filteredShutterFinish.size() > 0) {
+            if (shutterFinishSelection.getItemIds().contains(prevValue)) {
+                shutterFinishSelection.setValue(prevValue);
+            } else {
+                shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
+            }
+        }
         checkDefaultsOverridden();
     }
 

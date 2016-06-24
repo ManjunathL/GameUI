@@ -507,7 +507,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     || cell.getPropertyId().equals(Module.CARCASS_MATERIAL)
                     || cell.getPropertyId().equals(Module.FINISH_TYPE)
                     || cell.getPropertyId().equals(Module.SHUTTER_FINISH)) {
-                if (!((String) cell.getValue()).contains(Module.DEFAULT)) {
+                if (cell.getValue() != null && !((String) cell.getValue()).contains(Module.DEFAULT)) {
                     return "module-cell-highlight";
                 }
             }

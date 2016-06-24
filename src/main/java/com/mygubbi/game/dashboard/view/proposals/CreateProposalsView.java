@@ -71,7 +71,7 @@ public class CreateProposalsView extends Panel implements View {
     private Field<?> projectName;
     private Field<?> projectAddressLine1;
     private Field<?> projectAddressLine2;
-    private Field<?> projectCityField;
+    private ComboBox projectCityField;
 
     private ComboBox salesPerson;
     private Field<?> salesEmail;
@@ -621,8 +621,9 @@ public class CreateProposalsView extends Panel implements View {
         projectAddressLine2 = binder.buildAndBind("Address Line 2", P_ADDRESS2);
         ((TextField) projectAddressLine2).setNullRepresentation("");
         formLayoutRight.addComponent(projectAddressLine2);
-        projectCityField = binder.buildAndBind("City", P_CITY);
-        ((TextField) projectCityField).setNullRepresentation("");
+        projectCityField = getCityCombo();
+        binder.bind(projectCityField, P_CITY);
+        projectCityField.setRequired(true);
         formLayoutRight.addComponent(projectCityField);
 
         return formLayoutRight;
@@ -711,6 +712,7 @@ public class CreateProposalsView extends Panel implements View {
         container.addAll(list);
 
         ComboBox select = new ComboBox("Sales");
+        select.setWidth("300px");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(User.NAME);
@@ -727,6 +729,28 @@ public class CreateProposalsView extends Panel implements View {
         return select;
     }
 
+    private ComboBox getCityCombo() {
+        List<LookupItem> list = proposalDataProvider.getLookupItems(ProposalDataProvider.CITY_LOOKUP);
+        final BeanContainer<String, LookupItem> container =
+                new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty(LookupItem.TITLE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox("City");
+        select.setWidth("300px");
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(LookupItem.TITLE);
+
+        if (StringUtils.isNotEmpty(proposalHeader.getPcity())) {
+            select.setValue(proposalHeader.getPcity());
+        } else if (container.size() == 1) {
+            select.setValue(select.getItemIds().iterator().next());
+        }
+
+        return select;
+    }
+
     private ComboBox getDesignPersonCombo() {
         List<User> list = proposalDataProvider.getDesignerUsers();
         final BeanContainer<String, User> container =
@@ -735,6 +759,7 @@ public class CreateProposalsView extends Panel implements View {
         container.addAll(list);
 
         ComboBox select = new ComboBox("Designer");
+        select.setWidth("300px");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(User.NAME);
