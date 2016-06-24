@@ -16,10 +16,14 @@ import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.*;
+import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.SelectionEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.*;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -37,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
@@ -99,6 +104,8 @@ public class CreateProposalsView extends Panel implements View {
     private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
     private FileAttachmentComponent fileAttachmentComponent;
+    private TextField discountPercentage;
+    private TextField discountTotal;
 
     public CreateProposalsView() {
     }
@@ -147,7 +154,7 @@ public class CreateProposalsView extends Panel implements View {
         vLayout.addComponent(tabs);
         setContent(vLayout);
         Responsive.makeResponsive(tabs);
-        updateTotal(null);
+        updateTotal();
         handleState();
     }
 
@@ -941,7 +948,7 @@ public class CreateProposalsView extends Panel implements View {
                                     productContainer.addAll(proposal.getProducts());
                                     productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
                                     productsGrid.getSelectionModel().reset();
-                                    updateTotal(null);
+                                    updateTotal();
                                     proposalDataProvider.deleteProduct(product.getId());
                                     NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                                 }
@@ -962,22 +969,77 @@ public class CreateProposalsView extends Panel implements View {
         label.setStyleName("font-italics");
         verticalLayout.addComponent(label);
 
-        FormLayout formLayout = new FormLayout();
-        formLayout.setStyleName("grand-total-flayout");
-        this.grandTotal = new TextField("<h2>Grand Total:</h2>");
+        HorizontalLayout amountsLayout = new HorizontalLayout();
+
+        FormLayout discountForm = new FormLayout();
+        discountForm.setStyleName("grand-total-flayout");
+        this.discountPercentage = new TextField("<h2>Discount(%):</h2>");
+        this.discountPercentage.setConverter(new StringToDoubleConverter());
+        this.discountPercentage.setStyleName("amount-text");
+        this.discountPercentage.addStyleName("margin-top-18");
+        this.discountPercentage.setCaptionAsHtml(true);
+        this.discountPercentage.setValue("0");
+        this.discountPercentage.setNullRepresentation("0");
+        discountForm.addComponent(this.discountPercentage);
+        discountForm.setSizeUndefined();
+        amountsLayout.addComponent(discountForm);
+
+        FormLayout discountTotalForm = new FormLayout();
+        discountTotalForm.setStyleName("grand-total-flayout");
+        this.discountTotal = new TextField("<h2>&nbsp;&nbsp;&nbsp;Total after discount:</h2>");
+        this.discountTotal.setStyleName("amount-text");
+        this.discountTotal.addStyleName("margin-top-18");
+        this.discountTotal.setCaptionAsHtml(true);
+        this.discountTotal.setReadOnly(true);
+        this.discountTotal.setNullRepresentation("0");
+        this.discountTotal.setConverter(getAmountConverter());
+        discountTotalForm.addComponent(this.discountTotal);
+        discountTotalForm.setSizeUndefined();
+        amountsLayout.addComponent(discountTotalForm);
+
+        FormLayout totalForm = new FormLayout();
+        totalForm.setStyleName("grand-total-flayout");
+        this.grandTotal = new TextField("<h2>&nbsp;&nbsp;&nbsp;Total without discount:</h2>");
         this.grandTotal.setStyleName("amount-text");
         this.grandTotal.addStyleName("margin-top-18");
         this.grandTotal.setCaptionAsHtml(true);
+        this.grandTotal.setNullRepresentation("0");
+        this.grandTotal.setConverter(getAmountConverter());
         this.grandTotal.setReadOnly(true);
-        formLayout.addComponent(this.grandTotal);
-        formLayout.setSizeUndefined();
+        totalForm.addComponent(this.grandTotal);
+        totalForm.setSizeUndefined();
+        amountsLayout.addComponent(totalForm);
 
-        verticalLayout.addComponent(formLayout);
+        this.discountPercentage.addValueChangeListener(this::updateTotal);
+
+        verticalLayout.addComponent(amountsLayout);
 
         return verticalLayout;
     }
 
+    private StringToDoubleConverter getAmountConverter() {
+        return new StringToDoubleConverter() {
+            @Override
+            protected Number convertToNumber(String value, Class<? extends Number> targetType, Locale locale) throws ConversionException {
+                Number number = super.convertToNumber(value, targetType, locale);
+                if (number == null) {
+                    return 0;
+                } else {
+                    return number.longValue();
+                }
+            }
+        };
+    }
+
     private void updateTotal(SelectionEvent selectionEvent) {
+        updateTotal();
+    }
+
+    private void updateTotal(Property.ValueChangeEvent valueChangeEvent) {
+        updateTotal();
+    }
+
+    private void updateTotal() {
         Collection<?> objects = productsGrid.getSelectedRows();
         boolean anythingSelected = true;
         this.productSelections.getProductIds().clear();
@@ -999,9 +1061,20 @@ public class CreateProposalsView extends Panel implements View {
             }
         }
 
+        Double discountPercent = (Double) this.discountPercentage.getConvertedValue();
+        double discountAmount = grandTotal * discountPercent / 100.0;
+        Double totalAfterDiscount = grandTotal - discountAmount;
+
+        this.discountTotal.setReadOnly(false);
+        this.discountTotal.setValue(totalAfterDiscount + "");
+        this.discountTotal.setReadOnly(true);
+
         this.grandTotal.setReadOnly(false);
         this.grandTotal.setValue(grandTotal + "");
         this.grandTotal.setReadOnly(true);
+
+        productSelections.setDiscountPercentage(discountPercent);
+        productSelections.setDiscountAmount(discountAmount);
     }
 
     private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
@@ -1065,7 +1138,7 @@ public class CreateProposalsView extends Panel implements View {
         productContainer.addAll(products);
         productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
         productsGrid.getSelectionModel().reset();
-        updateTotal(null);
+        updateTotal();
         productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
     }
 
@@ -1078,7 +1151,7 @@ public class CreateProposalsView extends Panel implements View {
             productContainer.addAll(products);
             productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
             productsGrid.getSelectionModel().reset();
-            updateTotal(null);
+            updateTotal();
             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
         //updateTotalAmount();

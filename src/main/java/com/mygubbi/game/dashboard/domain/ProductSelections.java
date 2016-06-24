@@ -9,6 +9,8 @@ import java.util.List;
 public class ProductSelections {
     private int proposalId;
     private List<Integer> productIds = new ArrayList<>();
+    private double discountAmount;
+    private double discountPercentage;
 
     public int getProposalId() {
         return proposalId;
@@ -26,4 +28,19 @@ public class ProductSelections {
         this.productIds = productIds;
     }
 
+    public double getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(double discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    public double getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(double discountPercentage) {
+        this.discountPercentage = discountPercentage;
+    }
 }
