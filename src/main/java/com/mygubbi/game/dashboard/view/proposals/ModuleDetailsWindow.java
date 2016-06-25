@@ -72,6 +72,7 @@ public class ModuleDetailsWindow extends Window {
     private boolean readOnly;
     private final Label defaultsOverridden;
     private Button applyNextButton;
+    private VerticalLayout accessoryImageLayout;
 
     private ModuleDetailsWindow(Module module, Product product, boolean readOnly, int moduleIndex) {
 
@@ -85,7 +86,7 @@ public class ModuleDetailsWindow extends Window {
 
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("60%");
+        setWidth("70%");
         setClosable(false);
         setCaption("Edit Module Configuration for " + product.getTitle());
 
@@ -125,9 +126,9 @@ public class ModuleDetailsWindow extends Window {
         Component footerLayOut = buildFooter();
         verticalLayoutLeft.addComponent(footerLayOut);
 
-        VerticalLayout verticalLayoutRight = buildImagesComponent();
-        verticalLayoutRight.setWidth("30%");
-        horizontalLayout.addComponent(verticalLayoutRight);
+        Component imageComponent = buildImagesComponent();
+        imageComponent.setWidth("30%");
+        horizontalLayout.addComponent(imageComponent);
 
         setContent(horizontalLayout);
 
@@ -147,33 +148,23 @@ public class ModuleDetailsWindow extends Window {
         }
     }
 
-    private VerticalLayout buildImagesComponent() {
-
+    private Component buildImagesComponent() {
+        Panel panel = new Panel();
+        panel.setSizeFull();
         VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setSizeFull();
-
-/*
+        //verticalLayout.setSizeFull();
         Label accessoriesLabel = new Label("Accessories");
         accessoriesLabel.setStyleName(ValoTheme.LABEL_SMALL);
+        accessoriesLabel.setSizeUndefined();
         accessoriesLabel.setHeight("22px");
         verticalLayout.addComponent(accessoriesLabel);
-*/
-
-        createAccessoryImageStrip();
-        verticalLayout.addComponent(accessoryImageStrip);
-
-        return verticalLayout;
-    }
-
-    private void createAccessoryImageStrip() {
-        accessoryImageStrip = new ImageStrip(ImageStrip.Alignment.VERTICAL);
-        accessoryImageStrip.setAnimated(true);
-        accessoryImageStrip.setImageBoxWidth(120);
-        accessoryImageStrip.setImageBoxHeight(120);
-        accessoryImageStrip.setImageMaxWidth(105);
-        accessoryImageStrip.setImageMaxHeight(105);
-        accessoryImageStrip.setMaxAllowed(3);
-        accessoryImageStrip.setHeight("520px");
+        verticalLayout.setComponentAlignment(accessoriesLabel, Alignment.MIDDLE_CENTER);
+        accessoryImageLayout = new VerticalLayout();
+        accessoryImageLayout.setSizeFull();
+        verticalLayout.addComponent(accessoryImageLayout);
+        verticalLayout.setExpandRatio(accessoryImageLayout, 1.0f);
+        panel.setContent(verticalLayout);
+        return panel;
     }
 
     private void updateValues() {
@@ -214,6 +205,9 @@ public class ModuleDetailsWindow extends Window {
             defaultsOverridden.setVisible(true);
         }
 
+        if (StringUtils.isEmpty((String) mgModuleCombo.getValue()) && mgModules.size() == 1) {
+            mgModuleCombo.setValue(mgModuleCombo.getItemIds().iterator().next());
+        }
         checkDefaultsOverridden();
     }
 
@@ -288,10 +282,7 @@ public class ModuleDetailsWindow extends Window {
             this.dimensions.setValue("");
             this.dimensions.setReadOnly(true);
             this.moduleImage.setSource(emptyModuleImage);
-            VerticalLayout parent = (VerticalLayout) this.accessoryImageStrip.getParent();
-            AbstractSingleComponentContainer.removeFromParent(this.accessoryImageStrip);
-            createAccessoryImageStrip();
-            parent.addComponent(accessoryImageStrip);
+            emptyAccessoryImages();
             disableApply();
         } else {
             this.description.setReadOnly(false);
@@ -309,24 +300,31 @@ public class ModuleDetailsWindow extends Window {
                 carcassMaterialSelection.setReadOnly(false);
             }
 
-            VerticalLayout parent = (VerticalLayout) this.accessoryImageStrip.getParent();
-            AbstractSingleComponentContainer.removeFromParent(this.accessoryImageStrip);
-            createAccessoryImageStrip();
-            parent.addComponent(accessoryImageStrip);
-
             mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), module.getMakeTypeCode()));
+
+            emptyAccessoryImages();
 
             for (ModuleAccessory moduleAccessory : mgModule.getAccessories()) {
                 File sourceFile = new File(basePath + moduleAccessory.getImagePath());
                 if (sourceFile.exists())
                 {
-                    accessoryImageStrip.addImage(new FileResource(sourceFile));
+                    Image img = new Image("",new FileResource(sourceFile));
+                    img.setWidth("200px");
+                    accessoryImageLayout.addComponent(img);
+                    accessoryImageLayout.setComponentAlignment(img, Alignment.MIDDLE_CENTER);
+                    Label c = new Label(moduleAccessory.getTitle());
+                    accessoryImageLayout.addComponent(c);
+                    accessoryImageLayout.setComponentAlignment(c, Alignment.MIDDLE_CENTER);
                 }
             }
 
             refreshPrice();
             enableApply();
         }
+    }
+
+    private void emptyAccessoryImages() {
+        this.accessoryImageLayout.forEach(component -> AbstractSingleComponentContainer.removeFromParent(component));
     }
 
     private void refreshPrice() {
@@ -519,6 +517,7 @@ public class ModuleDetailsWindow extends Window {
         footer.setWidth(100.0f, Unit.PERCENTAGE);
 
         closeBtn = new Button("Close");
+        closeBtn.setStyleName("module-close-btn");
         closeBtn.addClickListener((ClickListener) clickEvent -> {
             binder.discard();
             close();
@@ -599,7 +598,8 @@ public class ModuleDetailsWindow extends Window {
             mgModuleCombo.removeValueChangeListener(this::mgModuleChanged);
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
             close();
-            DashboardEventBus.post(new ProposalEvent.ModuleUpdated(module, loadNext, moduleIndex));
+            ProposalEvent.ModuleUpdated event1 = new ProposalEvent.ModuleUpdated(module, loadNext, moduleIndex);
+            DashboardEventBus.post(event1);
         };
     }
 

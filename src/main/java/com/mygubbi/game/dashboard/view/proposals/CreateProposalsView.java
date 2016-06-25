@@ -537,6 +537,7 @@ public class CreateProposalsView extends Panel implements View {
                         proposalDataProvider.deleteProposal(proposalHeader.getId());
                         DashboardEventBus.post(new ProposalEvent.ProposalUpdated());
                     }
+                    DashboardEventBus.unregister(this);
                     UI.getCurrent().getNavigator()
                             .navigateTo(DashboardViewType.PROPOSALS.name());
                 });
@@ -591,6 +592,7 @@ public class CreateProposalsView extends Panel implements View {
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this Proposal? Unsaved data will be lost.",
                 "Yes", "No", dialog -> {
                     if (!dialog.isCanceled()) {
+                        DashboardEventBus.unregister(this);
                         UI.getCurrent().getNavigator()
                                 .navigateTo(DashboardViewType.PROPOSALS.name());
                     }

@@ -41,9 +41,7 @@ import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static com.mygubbi.game.dashboard.domain.Product.*;
 
@@ -87,6 +85,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ArrayList<AddonProduct> addonsCopy;
     private boolean deleteNotRequired;
     private Button addonAddButton;
+    private static Set<CustomizedProductDetailsWindow> previousInstances = new HashSet<>();
 
     public CustomizedProductDetailsWindow(Proposal proposal, Product product) {
         this.proposal = proposal;
@@ -759,6 +758,7 @@ public class CustomizedProductDetailsWindow extends Window {
         closeBtn.addClickListener((Button.ClickListener) clickEvent -> {
 
             if (isProposalReadonly()) {
+                DashboardEventBus.unregister(this);
                 closeWindow();
             } else {
                 ConfirmDialog.show(UI.getCurrent(), "",
@@ -776,6 +776,7 @@ public class CustomizedProductDetailsWindow extends Window {
                                     this.product.setModules(this.modulesCopy);
                                     this.product.setAddons(this.addonsCopy);
                                 }
+                                DashboardEventBus.unregister(this);
                                 closeWindow();
                             }
                         });
@@ -801,6 +802,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 if (success) {
                     NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                     DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
+                    DashboardEventBus.unregister(this);
                     close();
                 } else {
                     NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -887,6 +889,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     @Subscribe
     public void moduleUpdated(final ProposalEvent.ModuleUpdated event) {
+
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
         modules.remove(event.getModule());
         modules.add(event.getModule());
@@ -923,7 +926,14 @@ public class CustomizedProductDetailsWindow extends Window {
 
     public static void open(Proposal proposal, Product product) {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        Window w = new CustomizedProductDetailsWindow(proposal, product);
+        CustomizedProductDetailsWindow w = new CustomizedProductDetailsWindow(proposal, product);
+        try {
+            previousInstances.forEach(DashboardEventBus::unregister);
+        } catch (Exception e) {
+            //ignore
+        }
+        previousInstances.clear();
+        previousInstances.add(w);
         UI.getCurrent().addWindow(w);
         w.focus();
 
