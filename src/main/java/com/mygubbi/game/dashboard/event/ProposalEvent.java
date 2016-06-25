@@ -71,6 +71,13 @@ public abstract class ProposalEvent {
         }
     }
 
+    public static class ProposalAddonUpdated extends AddonUpdated {
+
+        public ProposalAddonUpdated(AddonProduct addonProduct) {
+            super(addonProduct);
+        }
+    }
+
     public static class ProductDeletedEvent {
         private final Product product;
 

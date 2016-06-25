@@ -106,6 +106,9 @@ public class CreateProposalsView extends Panel implements View {
     private FileAttachmentComponent fileAttachmentComponent;
     private TextField discountPercentage;
     private TextField discountTotal;
+    private Button addonAddButton;
+    private BeanItemContainer<AddonProduct> addonsContainer;
+    private Grid addonsGrid;
 
     public CreateProposalsView() {
     }
@@ -120,6 +123,7 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal.setProposalHeader(this.proposalHeader);
             this.proposal.setProducts(proposalDataProvider.getProposalProducts(proposalId));
             this.proposal.setFileAttachments(proposalDataProvider.getProposalDocuments(proposalId));
+            this.proposal.setAddons(proposalDataProvider.getProposalAddons(proposalId));
             proposalHeader.setVersion(NEW_VERSION);
         } else {
             proposalHeader = proposalDataProvider.createProposal();
@@ -144,6 +148,7 @@ public class CreateProposalsView extends Panel implements View {
         TabSheet tabs = new TabSheet();
         tabs.addTab(buildForm(), "Header");
         tabs.addTab(buildProductDetails(), "Products");
+        tabs.addTab(buildAddons(), "Addons");
         fileAttachmentComponent = new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
                 attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
                 attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId()),
@@ -158,6 +163,125 @@ public class CreateProposalsView extends Panel implements View {
         handleState();
     }
 
+    private Component buildAddons() {
+
+        VerticalLayout verticalLayout = new VerticalLayout();
+        addonAddButton = new Button("Add");
+        addonAddButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        addonAddButton.setStyleName("add-addon-btn");
+        addonAddButton.addClickListener(clickEvent -> {
+            AddonProduct addonProduct = new AddonProduct();
+            addonProduct.setSeq(proposal.getAddons().size() + 1);
+            addonProduct.setAdd(true);
+            AddonDetailsWindow.open(addonProduct, false, "Add Addon", true);
+        });
+
+        verticalLayout.addComponent(addonAddButton);
+        verticalLayout.setComponentAlignment(addonAddButton, Alignment.MIDDLE_RIGHT);
+
+        addonsContainer = new BeanItemContainer<>(AddonProduct.class);
+
+        GeneratedPropertyContainer genContainer = createGeneratedAddonsPropertyContainer();
+
+        addonsGrid = new Grid(genContainer);
+        addonsGrid.setSizeFull();
+        addonsGrid.setColumnReorderingAllowed(true);
+        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.BRAND_CODE,
+                AddonProduct.TITLE, AddonProduct.CATALOGUE_CODE, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
+
+        List<Grid.Column> columns = addonsGrid.getColumns();
+        int idx = 0;
+        columns.get(idx++).setHeaderCaption("#");
+        columns.get(idx++).setHeaderCaption("Category");
+        columns.get(idx++).setHeaderCaption("Product Type");
+        columns.get(idx++).setHeaderCaption("Brand");
+        columns.get(idx++).setHeaderCaption("Product Name");
+        columns.get(idx++).setHeaderCaption("Product Code");
+        columns.get(idx++).setHeaderCaption("UOM");
+        columns.get(idx++).setHeaderCaption("Rate");
+        columns.get(idx++).setHeaderCaption("Qty");
+        columns.get(idx++).setHeaderCaption("Amount");
+        Grid.Column actionColumn = columns.get(idx++);
+        actionColumn.setHeaderCaption("Actions");
+        actionColumn.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+            @Override
+            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
+                addon.setAdd(false);
+                boolean readOnly = isProposalReadonly();
+                AddonDetailsWindow.open(addon, readOnly, "Edit Addon", true);
+            }
+
+            @Override
+            public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                if (isProposalReadonly()) {
+                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                } else {
+                    ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
+                            "Yes", "No", dialog -> {
+                                if (dialog.isConfirmed()) {
+                                    AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
+                                    proposalDataProvider.removeProposalAddon(addon.getId());
+                                    List<AddonProduct> addons = proposal.getAddons();
+                                    addons.remove(addon);
+
+                                    int seq = addon.getSeq();
+                                    addonsContainer.removeAllItems();
+
+                                    for (AddonProduct addonProduct : addons) {
+                                        if (addonProduct.getSeq() > seq) {
+                                            addonProduct.setSeq(addonProduct.getSeq() - 1);
+                                        }
+                                    }
+                                    addonsContainer.addAll(addons);
+                                    addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
+                                    //updateTotal();
+                                }
+                            });
+                }
+            }
+        }));
+
+        verticalLayout.addComponent(addonsGrid);
+        verticalLayout.setExpandRatio(addonsGrid, 1);
+
+        List<AddonProduct> existingAddons = proposal.getAddons();
+        int seq = 0;
+        for (AddonProduct existingAddon : existingAddons) {
+            existingAddon.setSeq(++seq);
+        }
+        addonsContainer.addAll(existingAddons);
+        addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
+
+        return verticalLayout;
+
+    }
+
+    private boolean isProposalReadonly() {
+        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name());
+    }
+
+    private GeneratedPropertyContainer createGeneratedAddonsPropertyContainer() {
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(addonsContainer);
+        genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
+        return genContainer;
+    }
+
+    private PropertyValueGenerator<String> getEmptyActionTextGenerator() {
+        return new PropertyValueGenerator<String>() {
+
+            @Override
+            public String getValue(Item item, Object o, Object o1) {
+                return "";
+            }
+
+            @Override
+            public Class<String> getType() {
+                return String.class;
+            }
+        };
+    }
+
     private void handleState() {
 
         ProposalState proposalState = ProposalState.valueOf(proposalHeader.getStatus());
@@ -168,6 +292,7 @@ public class CreateProposalsView extends Panel implements View {
                 fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
                 setHeaderFieldsReadOnly(false);
                 fileAttachmentComponent.setReadOnly(false);
+                addonAddButton.setEnabled(true);
                 break;
             case active:
             case cancelled:
@@ -177,6 +302,7 @@ public class CreateProposalsView extends Panel implements View {
                 fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
                 setHeaderFieldsReadOnly(true);
                 fileAttachmentComponent.setReadOnly(true);
+                addonAddButton.setEnabled(false);
                 break;
             default:
                 throw new RuntimeException("Unknown State");
@@ -924,8 +1050,7 @@ public class CreateProposalsView extends Panel implements View {
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-
-                if (!proposalHeader.getStatus().equals(ProposalState.draft.name())) {
+                if (isProposalReadonly()) {
                     NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
                 } else {
 
@@ -1154,7 +1279,29 @@ public class CreateProposalsView extends Panel implements View {
             updateTotal();
             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
-        //updateTotalAmount();
     }
+
+    @Subscribe
+    public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
+        AddonProduct eventAddonProduct = event.getAddonProduct();
+        persistAddon(eventAddonProduct);
+        List<AddonProduct> addons = proposal.getAddons();
+        addons.remove(eventAddonProduct);
+        addons.add(eventAddonProduct);
+        addonsContainer.removeAllItems();
+        addonsContainer.addAll(addons);
+        addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
+        addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
+        //updateTotal();
+    }
+
+    private void persistAddon(AddonProduct eventAddonProduct) {
+        if (eventAddonProduct.getId() == 0) {
+            proposalDataProvider.addProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+        } else {
+            proposalDataProvider.updateProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+        }
+    }
+
 }
 

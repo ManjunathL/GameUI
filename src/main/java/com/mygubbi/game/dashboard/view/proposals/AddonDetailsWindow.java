@@ -30,7 +30,8 @@ import java.util.List;
  */
 public class AddonDetailsWindow extends Window {
 
-    private final Product product;
+    private static final String BLANK_ROOM_CODE = "";
+    private final boolean isProposalAddon;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final AddonProduct addonProduct;
     private final BeanFieldGroup<AddonProduct> binder = new BeanFieldGroup<>(AddonProduct.class);
@@ -54,10 +55,10 @@ public class AddonDetailsWindow extends Window {
     private BeanContainer<String, AddonCategory> categoryBeanContainer;
     private boolean readOnly;
 
-    public AddonDetailsWindow(AddonProduct addonProduct, Product product, boolean readOnly, String title) {
+    public AddonDetailsWindow(AddonProduct addonProduct, boolean readOnly, String title, boolean isProposalAddon) {
         this.addonProduct = addonProduct;
-        this.product = product;
         this.readOnly = readOnly;
+        this.isProposalAddon = isProposalAddon;
         this.originalImagePath = this.addonProduct.getImagePath();
         this.binder.setItemDataSource(this.addonProduct);
         setModal(true);
@@ -218,7 +219,7 @@ public class AddonDetailsWindow extends Window {
 
         String prevCode = addonProduct.getProductTypeCode();
 
-        List<AddonProductType> list = proposalDataProvider.getAddonProductTypes(this.product.getRoomCode(), (String) this.category.getValue());
+        List<AddonProductType> list = proposalDataProvider.getAddonProductTypes(BLANK_ROOM_CODE, (String) this.category.getValue());
         this.productTypeBeanContainer.removeAllItems();
         this.productTypeBeanContainer.addAll(list);
 
@@ -298,7 +299,7 @@ public class AddonDetailsWindow extends Window {
     }
 
     private ComboBox getProductTypeCombo() {
-        List<AddonProductType> list = proposalDataProvider.getAddonProductTypes(this.product.getRoomCode(), (String) this.category.getValue());
+        List<AddonProductType> list = proposalDataProvider.getAddonProductTypes(BLANK_ROOM_CODE, (String) this.category.getValue());
 
         productTypeBeanContainer = new BeanContainer<>(AddonProductType.class);
         productTypeBeanContainer.setBeanIdProperty(AddonProductType.PRODUCT_TYPE_CODE);
@@ -358,7 +359,7 @@ public class AddonDetailsWindow extends Window {
     }
 
     private ComboBox getCategoryCombo() {
-        List<AddonCategory> list = proposalDataProvider.getAddonCategories(this.product.getRoomCode());
+        List<AddonCategory> list = proposalDataProvider.getAddonCategories(BLANK_ROOM_CODE);
 
         categoryBeanContainer = new BeanContainer<>(AddonCategory.class);
         categoryBeanContainer.setBeanIdProperty(AddonCategory.CATGEORY_CODE);
@@ -368,12 +369,12 @@ public class AddonDetailsWindow extends Window {
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(categoryBeanContainer);
         select.setItemCaptionPropertyId(AddonCategory.CATGEORY_CODE);
-        if (StringUtils.isNotEmpty(addonProduct.getAddonCategoryCode())) {
-            select.setValue(addonProduct.getAddonCategoryCode());
+        if (StringUtils.isNotEmpty(addonProduct.getCategoryCode())) {
+            select.setValue(addonProduct.getCategoryCode());
         } else {
             Object next = select.getItemIds().iterator().next();
             select.setValue(next);
-            addonProduct.setAddonCategoryCode(next.toString());
+            addonProduct.setCategoryCode(next.toString());
         }
         return select;
     }
@@ -405,12 +406,16 @@ public class AddonDetailsWindow extends Window {
                 try {
                     binder.commit();
 
-                    addonProduct.setAddonCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
+                    addonProduct.setCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
                     addonProduct.setProductType(this.productTypeBeanContainer.getItem(this.productType.getValue()).getBean().getProductTypeCode());
                     addonProduct.setBrand(this.brandBeanContainer.getItem(this.brand.getValue()).getBean().getBrandCode());
                     addonProduct.setCode(this.catalogueCodeBeanContainer.getItem(this.catalogueCode.getValue()).getBean().getCode());
 
-                    DashboardEventBus.post(new ProposalEvent.AddonUpdated(addonProduct));
+                    if (isProposalAddon) {
+                        DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));
+                    } else {
+                        DashboardEventBus.post(new ProposalEvent.AddonUpdated(addonProduct));
+                    }
                     close();
                 } catch (FieldGroup.CommitException e) {
                     e.printStackTrace();
@@ -434,8 +439,8 @@ public class AddonDetailsWindow extends Window {
         }
     }
 
-    public static void open(AddonProduct addon, Product product, boolean readOnly, String title) {
-        Window w = new AddonDetailsWindow(addon, product, readOnly, title);
+    public static void open(AddonProduct addon, boolean readOnly, String title, boolean isProposalAddon) {
+        Window w = new AddonDetailsWindow(addon, readOnly, title, isProposalAddon);
         UI.getCurrent().addWindow(w);
         w.focus();
 

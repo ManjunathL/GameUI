@@ -14,6 +14,7 @@ public final class Proposal implements FileAttachmentsHolder{
     private ProposalHeader proposalHeader = new ProposalHeader();
     private List<Product> products = new ArrayList<>();
     private List<FileAttachment> fileAttachments = new ArrayList<>();
+    private List<AddonProduct> addons = new ArrayList<>();
 
     public ProposalHeader getProposalHeader() {
         return proposalHeader;
@@ -40,4 +41,11 @@ public final class Proposal implements FileAttachmentsHolder{
         this.fileAttachments = fileAttachments;
     }
 
+    public List<AddonProduct> getAddons() {
+        return addons;
+    }
+
+    public void setAddons(List<AddonProduct> addons) {
+        this.addons = addons;
+    }
 }

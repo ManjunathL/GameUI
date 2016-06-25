@@ -19,21 +19,22 @@ public class AddonProduct implements Cloneable {
     public static final String QUANTITY = "quantity";
     public static final String RATE = "rate";
     public static final String UOM = "uom";
-    public static final String ADDON_CATEGORY_CODE = "addonCategoryCode";
+    public static final String ADDON_CATEGORY_CODE = "categoryCode";
     public static final String PRODUCT_TYPE_CODE = "productTypeCode";
     public static final String BRAND_CODE = "brandCode";
-    public static final String ADDON_CATEGORY = "addonCategory";
+    public static final String ADDON_CATEGORY = "category";
     public static final String PRODUCT_TYPE = "productType";
     public static final String BRAND = "brand";
     public static final String CATALOGUE_CODE = "catalogueCode";
 
     private int seq;
     private int id;
+    private int proposalId;
     private String code;
     private String catalogueCode;
     private String title;
-    private String addonCategoryCode;
-    private String addonCategory;
+    private String categoryCode;
+    private String category;
     private String productTypeCode;
     private String productType;
     private String brandCode;
@@ -43,6 +44,7 @@ public class AddonProduct implements Cloneable {
     private String imagePath;
     private int quantity;
     private double rate;
+    private String updatedBy;
 
     private boolean add = false;
 
@@ -120,12 +122,12 @@ public class AddonProduct implements Cloneable {
         this.rate = rate;
     }
 
-    public String getAddonCategoryCode() {
-        return addonCategoryCode;
+    public String getCategoryCode() {
+        return categoryCode;
     }
 
-    public void setAddonCategoryCode(String addonCategoryCode) {
-        this.addonCategoryCode = addonCategoryCode;
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
     }
 
     public String getProductTypeCode() {
@@ -152,12 +154,12 @@ public class AddonProduct implements Cloneable {
         this.catalogueCode = catalogueCode;
     }
 
-    public String getAddonCategory() {
-        return addonCategory;
+    public String getCategory() {
+        return category;
     }
 
-    public void setAddonCategory(String addonCategory) {
-        this.addonCategory = addonCategory;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getProductType() {
@@ -192,6 +194,22 @@ public class AddonProduct implements Cloneable {
         this.add = add;
     }
 
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public int getProposalId() {
+        return proposalId;
+    }
+
+    public void setProposalId(int proposalId) {
+        this.proposalId = proposalId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -201,7 +219,7 @@ public class AddonProduct implements Cloneable {
 
         if (id != that.id) return false;
         if (!code.equals(that.code)) return false;
-        if (!addonCategoryCode.equals(that.addonCategoryCode)) return false;
+        if (!categoryCode.equals(that.categoryCode)) return false;
         if (!productTypeCode.equals(that.productTypeCode)) return false;
         return brandCode.equals(that.brandCode);
 
@@ -211,7 +229,7 @@ public class AddonProduct implements Cloneable {
     public int hashCode() {
         int result = id;
         result = 31 * result + code.hashCode();
-        result = 31 * result + addonCategoryCode.hashCode();
+        result = 31 * result + categoryCode.hashCode();
         result = 31 * result + productTypeCode.hashCode();
         result = 31 * result + brandCode.hashCode();
         return result;

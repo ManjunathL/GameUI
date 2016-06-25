@@ -667,4 +667,58 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<AddonProduct> getProposalAddons(int id) {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/addon.list", new HashMap<String, String>() {
+            {
+                put("proposalId", id + "");
+            }
+        });
+        try {
+            AddonProduct[] items = this.mapper.readValue(array.toString(), AddonProduct[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
+    public boolean removeProposalAddon(int addonId) {
+        String faJson = "{\"id\": " + addonId + "}";
+        JSONObject jsonObject = dataProviderMode.postResource(
+                "proposal/addon.remove", faJson);
+        return !jsonObject.has("error");
+    }
+
+    public boolean addProposalAddon(int proposalId, AddonProduct addonProduct) {
+        try {
+            addonProduct.setUpdatedBy(getUserId());
+            addonProduct.setProposalId(proposalId);
+            String faJson = this.mapper.writeValueAsString(addonProduct);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "proposal/addon.add", faJson);
+            if (!jsonObject.has("error")) {
+                addonProduct.setId(this.mapper.readValue(jsonObject.toString(), AddonProduct.class).getId());
+                return true;
+            } else {
+                return false;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't add proposal addon", e);
+        }
+    }
+
+    public boolean updateProposalAddon(int proposalId, AddonProduct addonProduct) {
+        try {
+            addonProduct.setUpdatedBy(getUserId());
+            addonProduct.setProposalId(proposalId);
+            String faJson = this.mapper.writeValueAsString(addonProduct);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "proposal/addon.update", faJson);
+            return !jsonObject.has("error");
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't add proposal addon", e);
+        }
+    }
+
 }
