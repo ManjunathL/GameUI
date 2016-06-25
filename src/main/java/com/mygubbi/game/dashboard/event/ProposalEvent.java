@@ -25,13 +25,25 @@ public abstract class ProposalEvent {
 
     public static class ModuleUpdated {
         private Module module;
+        private boolean loadNext;
+        private int moduleIndex;
 
-        public ModuleUpdated(Module module) {
+        public ModuleUpdated(Module module, boolean loadNext, int moduleIndex) {
             this.module = module;
+            this.loadNext = loadNext;
+            this.moduleIndex = moduleIndex;
         }
 
         public Module getModule() {
             return module;
+        }
+
+        public boolean isLoadNext() {
+            return loadNext;
+        }
+
+        public int getModuleIndex() {
+            return moduleIndex;
         }
     }
 

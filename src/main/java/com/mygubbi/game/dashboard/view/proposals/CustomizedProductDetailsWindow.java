@@ -537,11 +537,14 @@ public class CustomizedProductDetailsWindow extends Window {
                 return;
             }
             Module module = (Module) rendererClickEvent.getItemId();
-            if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
-                boolean readOnly = !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name());
-                ModuleDetailsWindow.open(module, createProductFromUI(), readOnly);
+            boolean unmappableModulePresent = isAnyModuleUnmappable();
+            //if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
+            if (!unmappableModulePresent) {
+                boolean readOnly = isProposalReadonly();
+                int index = modulesGrid.getContainerDataSource().indexOfId(module);
+                ModuleDetailsWindow.open(module, createProductFromUI(), readOnly, index + 1);
             } else {
-                NotificationUtil.showNotification("Cannot edit unmapped module.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Cannot proceed as there are unmapped module(s).", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
         }));
 
@@ -554,6 +557,14 @@ public class CustomizedProductDetailsWindow extends Window {
         }
 
         return modulesGrid;
+    }
+
+    private boolean isAnyModuleUnmappable() {
+        return product.getModules().stream().filter(module1 -> module1.getImportStatus().equals(ImportStatusType.n.name())).findAny().isPresent();
+    }
+
+    private boolean isProposalReadonly() {
+        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name());
     }
 
     private GeneratedPropertyContainer createGeneratedModulePropertyContainer() {
@@ -571,6 +582,7 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setWallCarcassCode((String) this.wallCarcassSelection.getValue());
         product.setBaseCarcassCode((String) this.baseCarcassSelection.getValue());
         product.setTitle(itemTitleField.getValue());
+        product.setModules(this.product.getModules());
         return product;
     }
 
@@ -671,13 +683,13 @@ public class CustomizedProductDetailsWindow extends Window {
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                 addon.setAdd(false);
-                boolean readOnly = !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name());
+                boolean readOnly = isProposalReadonly();
                 AddonDetailsWindow.open(addon, product, readOnly, itemTitleField.getValue());
             }
 
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
-                if (!proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name())) {
+                if (isProposalReadonly()) {
                     NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
                 } else {
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
@@ -743,7 +755,7 @@ public class CustomizedProductDetailsWindow extends Window {
         closeBtn = new Button(caption);
         closeBtn.addClickListener((Button.ClickListener) clickEvent -> {
 
-            if (!proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name())) {
+            if (isProposalReadonly()) {
                 closeWindow();
             } else {
                 ConfirmDialog.show(UI.getCurrent(), "",
@@ -881,9 +893,17 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
         updateTotalAmount();
 
+        if (event.isLoadNext()) {
+            loadNextModule(event.getModuleIndex());
+        }
         if (product.allModulesMapped()) {
             enableSave();
         }
+    }
+
+    private void loadNextModule(int currentModuleIndex) {
+        Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex);
+        ModuleDetailsWindow.open(module, createProductFromUI(), isProposalReadonly(), currentModuleIndex + 1);
     }
 
     @Subscribe

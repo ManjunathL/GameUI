@@ -278,7 +278,11 @@ public class CatalogItemDetailsWindow extends Window {
         BeanContainer<String, CatalogueProduct> containerDataSource = (BeanContainer<String, CatalogueProduct>) productCombo.getContainerDataSource();
         containerDataSource.removeAllItems();
         containerDataSource.addAll(products);
-        this.productCombo.setValue(this.productCombo.getItemIds().iterator().next());
+        if (!products.isEmpty()) {
+            this.productCombo.setValue(this.productCombo.getItemIds().iterator().next());
+        } else {
+            NotificationUtil.showNotification("No Products found in Catalogue!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        }
     }
 
     private void categoryChanged(Property.ValueChangeEvent valueChangeEvent) {

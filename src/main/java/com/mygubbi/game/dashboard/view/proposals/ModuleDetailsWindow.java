@@ -42,6 +42,7 @@ public class ModuleDetailsWindow extends Window {
     private final Product product;
     private final String DEF_CODE_PREFIX = "def_";
     private static final String LABEL_WARNING = "warning";
+    private final int moduleIndex;
 
     private TextField importedModule;
     private TextField description;
@@ -70,12 +71,14 @@ public class ModuleDetailsWindow extends Window {
     private TextField totalAmount;
     private boolean readOnly;
     private final Label defaultsOverridden;
+    private Button applyNextButton;
 
-    private ModuleDetailsWindow(Module module, Product product, boolean readOnly) {
+    private ModuleDetailsWindow(Module module, Product product, boolean readOnly, int moduleIndex) {
 
         this.product = product;
         this.module = module;
         this.readOnly = readOnly;
+        this.moduleIndex = moduleIndex;
         initModule();
         this.mgModules = proposalDataProvider.getMGModules(module.getExtCode(), module.getExtDefCode());
         this.binder.setItemDataSource(this.module);
@@ -140,7 +143,7 @@ public class ModuleDetailsWindow extends Window {
             colorCombo.setReadOnly(true);
             finishTypeSelection.setReadOnly(true);
             shutterFinishSelection.setReadOnly(true);
-            applyButton.setEnabled(false);
+            disableApply();
         }
     }
 
@@ -486,10 +489,12 @@ public class ModuleDetailsWindow extends Window {
 
     private void enableApply() {
         applyButton.setEnabled(true);
+        applyNextButton.setEnabled(true);
     }
 
     private void disableApply() {
         applyButton.setEnabled(false);
+        applyNextButton.setEnabled(false);
     }
 
     private PropertyValueGenerator<String> getActionTextGenerator() {
@@ -524,7 +529,29 @@ public class ModuleDetailsWindow extends Window {
 
         applyButton = new Button("Apply");
         applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        applyButton.addClickListener(event -> {
+        applyButton.addClickListener(getApplyListener(false));
+        applyButton.focus();
+        applyButton.setVisible(true);
+
+        applyNextButton = new Button("Apply & Load Next");
+        applyNextButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        applyNextButton.addClickListener(getApplyListener(true));
+        applyNextButton.focus();
+        applyNextButton.setVisible(!isLastModule());
+
+        if (mgModuleCombo.getValue() == null) {
+            disableApply();
+        }
+
+        footer.addComponent(applyButton);
+        footer.addComponent(applyNextButton);
+        footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
+
+        return footer;
+    }
+
+    private ClickListener getApplyListener(boolean loadNext) {
+        return event -> {
 
             try {
                 binder.commit();
@@ -571,21 +598,13 @@ public class ModuleDetailsWindow extends Window {
 
             mgModuleCombo.removeValueChangeListener(this::mgModuleChanged);
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
-
-            DashboardEventBus.post(new ProposalEvent.ModuleUpdated(module));
             close();
-        });
-        applyButton.focus();
-        applyButton.setVisible(true);
+            DashboardEventBus.post(new ProposalEvent.ModuleUpdated(module, loadNext, moduleIndex));
+        };
+    }
 
-        if (mgModuleCombo.getValue() == null) {
-            disableApply();
-        }
-
-        footer.addComponent(applyButton);
-        footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
-
-        return footer;
+    private boolean isLastModule() {
+        return moduleIndex == product.getModules().size();
     }
 
     private String getDefaultText(String itemTitle) {
@@ -609,8 +628,8 @@ public class ModuleDetailsWindow extends Window {
         return defaultIndex == -1 ? title : title.substring(0, defaultIndex);
     }
 
-    public static void open(Module module, Product product, boolean readOnly) {
-        Window w = new ModuleDetailsWindow(module, product, readOnly);
+    public static void open(Module module, Product product, boolean readOnly, int moduleIndex) {
+        Window w = new ModuleDetailsWindow(module, product, readOnly, moduleIndex);
         UI.getCurrent().addWindow(w);
         w.focus();
     }
