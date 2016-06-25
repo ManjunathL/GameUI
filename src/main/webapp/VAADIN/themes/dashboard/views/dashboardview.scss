@@ -334,4 +334,14 @@
         color: #fb6b02;
   }
 
+  .product-details-grid-tabs.v-horizontallayout,
+  .product-details-grid-tabs.v-horizontallayout .v-tabsheet,
+  .product-details-grid-tabs.v-horizontallayout .v-tabsheet .v-tabsheet-content .v-tabsheet-tabsheetpanel,
+  .product-details-grid-tabs.v-horizontallayout .v-tabsheet .v-tabsheet-content .v-tabsheet-tabsheetpanel .v-scrollable {
+    height: 100% !important;
+  }
+
+  .product-details-grid-tabs.v-horizontallayout .v-tabsheet .v-tabsheet-content {
+    height: 90% !important;
+  }
 }

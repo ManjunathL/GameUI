@@ -115,10 +115,11 @@ public class CustomizedProductDetailsWindow extends Window {
         horizontalLayout0.addComponent(buildAddItemBasicFormRight());
         vLayout.addComponent(horizontalLayout0);
         horizontalLayout0.setHeightUndefined();
-        vLayout.setExpandRatio(horizontalLayout0, 0.3f);
+        vLayout.setExpandRatio(horizontalLayout0, 0.35f);
 
         HorizontalLayout horizontalLayout1 = new HorizontalLayout();
         horizontalLayout1.setSizeFull();
+        horizontalLayout1.setStyleName("product-details-grid-tabs");
 
         tabSheet = new TabSheet();
         tabSheet.setSizeFull();
@@ -139,11 +140,11 @@ public class CustomizedProductDetailsWindow extends Window {
         horizontalLayout1.addComponent(tabSheet);
         horizontalLayout1.setHeightUndefined();
         vLayout.addComponent(horizontalLayout1);
-        vLayout.setExpandRatio(horizontalLayout1, 0.6f);
+        vLayout.setExpandRatio(horizontalLayout1, 0.57f);
 
         Component footerLayOut = buildFooter();
         vLayout.addComponent(footerLayOut);
-        vLayout.setExpandRatio(footerLayOut, 0.1f);
+        vLayout.setExpandRatio(footerLayOut, 0.08f);
 
         handleState();
 
@@ -498,6 +499,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid = new Grid(genContainer);
         modulesGrid.setStyleName("modules-grid");
         modulesGrid.setSizeFull();
+        modulesGrid.setResponsive(true);
         modulesGrid.setColumnReorderingAllowed(true);
         modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE,
                 Module.MAKE_TYPE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
@@ -658,6 +660,7 @@ public class CustomizedProductDetailsWindow extends Window {
         GeneratedPropertyContainer genContainer = createGeneratedAddonsPropertyContainer();
 
         addonsGrid = new Grid(genContainer);
+        addonsGrid.setResponsive(true);
         addonsGrid.setSizeFull();
         addonsGrid.setHeight("325px");
         addonsGrid.setColumnReorderingAllowed(true);
