@@ -360,6 +360,7 @@ public class CreateProposalsView extends Panel implements View {
         downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
         downloadButton.addStyleName("margin-right-10");
         downloadButton.setWidth("85px");
+        downloadButton.addClickListener(this::checkProductsAvailable);
 
         StreamResource myResource = createQuoteResource();
         FileDownloader fileDownloader = new FileDownloader(myResource);
@@ -375,6 +376,7 @@ public class CreateProposalsView extends Panel implements View {
         jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
         jobcardButton.addStyleName("margin-right-10");
         jobcardButton.setWidth("100px");
+        jobcardButton.addClickListener(this::checkSingleProductSelection);
 
         StreamResource jobcardResource = createJobcardResource();
         FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
@@ -425,6 +427,18 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_RIGHT);
 
         return horizontalLayout;
+    }
+
+    private void checkSingleProductSelection(Button.ClickEvent clickEvent) {
+        if (this.productSelections.getProductIds().size() != 1) {
+            NotificationUtil.showNotification("Please select a single product to download its Job Card.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+        }
+    }
+
+    private void checkProductsAvailable(Button.ClickEvent clickEvent) {
+        if (proposal.getProducts().isEmpty()) {
+            NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+        }
     }
 
     private void cancel(MenuBar.MenuItem selectedItem) {
@@ -543,14 +557,18 @@ public class CreateProposalsView extends Panel implements View {
 
     private StreamResource createQuoteResource() {
         StreamResource.StreamSource source = () -> {
-            String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productSelections);
-            InputStream input = null;
-            try {
-                input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (!proposal.getProducts().isEmpty()) {
+                String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productSelections);
+                InputStream input = null;
+                try {
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return input;
+            } else {
+                return null;
             }
-            return input;
         };
         return new StreamResource(source, "Quotation.xlsx");
     }
@@ -568,7 +586,6 @@ public class CreateProposalsView extends Panel implements View {
                 }
                 return input;
             } else {
-                NotificationUtil.showNotification("Please select a single product to download its Job Card.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
                 return null;
             }
         };
