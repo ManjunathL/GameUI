@@ -134,6 +134,9 @@ public class ModuleDetailsWindow extends Window {
 
         updateValues();
         handleState();
+
+        makeType.addValueChangeListener(this::makeTypeChanged);
+
     }
 
     private void handleState() {
@@ -300,31 +303,34 @@ public class ModuleDetailsWindow extends Window {
                 carcassMaterialSelection.setReadOnly(false);
             }
 
-            mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), module.getMakeTypeCode()));
-
-            emptyAccessoryImages();
-
-            for (ModuleAccessory moduleAccessory : mgModule.getAccessories()) {
-                File sourceFile = new File(basePath + moduleAccessory.getImagePath());
-                if (sourceFile.exists())
-                {
-                    Image img = new Image("",new FileResource(sourceFile));
-                    img.setWidth("200px");
-                    accessoryImageLayout.addComponent(img);
-                    accessoryImageLayout.setComponentAlignment(img, Alignment.MIDDLE_CENTER);
-                    Label c = new Label(moduleAccessory.getTitle());
-                    accessoryImageLayout.addComponent(c);
-                    accessoryImageLayout.setComponentAlignment(c, Alignment.MIDDLE_CENTER);
-                }
-            }
-
+            refreshAccessories(mgModule);
             refreshPrice();
             enableApply();
         }
     }
 
+    private void refreshAccessories(MGModule mgModule) {
+        mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), module.getMakeTypeCode()));
+
+        emptyAccessoryImages();
+
+        for (ModuleAccessory moduleAccessory : mgModule.getAccessories()) {
+            File sourceFile = new File(basePath + moduleAccessory.getImagePath());
+            if (sourceFile.exists())
+            {
+                Image img = new Image("",new FileResource(sourceFile));
+                img.setWidth("200px");
+                accessoryImageLayout.addComponent(img);
+                accessoryImageLayout.setComponentAlignment(img, Alignment.MIDDLE_CENTER);
+                Label c = new Label(moduleAccessory.getTitle());
+                accessoryImageLayout.addComponent(c);
+                accessoryImageLayout.setComponentAlignment(c, Alignment.MIDDLE_CENTER);
+            }
+        }
+    }
+
     private void emptyAccessoryImages() {
-        this.accessoryImageLayout.forEach(component -> AbstractSingleComponentContainer.removeFromParent(component));
+        this.accessoryImageLayout.removeAllComponents();
     }
 
     private void refreshPrice() {
@@ -407,6 +413,13 @@ public class ModuleDetailsWindow extends Window {
         formLayoutLeft.addComponent(this.colorCombo);
 
         return verticalLayout;
+    }
+
+    private void makeTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
+        MGModule mgModule = ((BeanItem<MGModule>) this.mgModuleCombo.getItem(this.mgModuleCombo.getValue())).getBean();
+        if (mgModule != null) {
+            refreshAccessories(mgModule);
+        }
     }
 
     private void finishChanged(Property.ValueChangeEvent valueChangeEvent) {
