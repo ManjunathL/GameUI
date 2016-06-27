@@ -924,6 +924,7 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) proposalTitleField).addTextChangeListener(textChangeEvent -> {
             String changedText = textChangeEvent.getText();
             proposalTitleLabel.setValue(getFormattedTitle(changedText) + "&nbsp;");
+            proposalTitleLabel.setDescription(changedText);
         });
 
         formLayoutLeft.addComponent(proposalTitleField);
