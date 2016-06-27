@@ -94,13 +94,10 @@ public class CreateProposalsView extends Panel implements View {
     private Proposal proposal;
     private Button saveButton;
     private BeanItemContainer productContainer;
-    private Button deleteButton;
     private TextField grandTotal;
 
     private ProductSelections productSelections;
-    private Button reviseButton;
     private Button publishButton;
-    private Button cancelButton;
     private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
     private FileAttachmentComponent fileAttachmentComponent;
@@ -109,6 +106,9 @@ public class CreateProposalsView extends Panel implements View {
     private Button addonAddButton;
     private BeanItemContainer<AddonProduct> addonsContainer;
     private Grid addonsGrid;
+    private MenuBar.MenuItem deleteMenuItem;
+    private MenuBar.MenuItem cancelMenuItem;
+    private MenuBar.MenuItem reviseMenuItem;
 
     public CreateProposalsView() {
     }
@@ -235,7 +235,6 @@ public class CreateProposalsView extends Panel implements View {
                                     }
                                     addonsContainer.addAll(addons);
                                     addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
-                                    //updateTotal();
                                 }
                             });
                 }
@@ -333,50 +332,40 @@ public class CreateProposalsView extends Panel implements View {
     private Component buildHeader() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
-        horizontalLayout.setMargin(new MarginInfo(false, true, false, true));
 
-        HorizontalLayout horizontalLayout2 = new HorizontalLayout();
-        horizontalLayout.addComponent(horizontalLayout2);
-
+        HorizontalLayout left = new HorizontalLayout();
         String title = proposalHeader.getTitle();
         proposalTitleLabel = new Label(getFormattedTitle(title) + "&nbsp;", ContentMode.HTML);
         proposalTitleLabel.addStyleName(ValoTheme.LABEL_H2);
         proposalTitleLabel.setWidth("1%");
         proposalTitleLabel.setDescription(title);
-        horizontalLayout2.addComponent(proposalTitleLabel);
-        horizontalLayout2.setComponentAlignment(proposalTitleLabel, Alignment.MIDDLE_LEFT);
+        left.addComponent(proposalTitleLabel);
 
         draftLabel = new Label("[ " + proposalHeader.getStatus() + " ]");
         draftLabel.addStyleName(ValoTheme.LABEL_COLORED);
         draftLabel.addStyleName(ValoTheme.LABEL_H2);
-        horizontalLayout2.addComponent(draftLabel);
-        horizontalLayout2.setComponentAlignment(draftLabel, Alignment.MIDDLE_LEFT);
+        draftLabel.setWidth("1%");
+        left.addComponent(draftLabel);
 
-        VerticalLayout verticalLayout = new VerticalLayout();
-        horizontalLayout.addComponent(verticalLayout);
-        horizontalLayout.setComponentAlignment(verticalLayout, Alignment.MIDDLE_CENTER);
+        horizontalLayout.addComponent(left);
+        horizontalLayout.setComponentAlignment(left, Alignment.MIDDLE_LEFT);
+        horizontalLayout.setExpandRatio(left, 3);
 
-        HorizontalLayout horizontalLayout1 = new HorizontalLayout();
-        horizontalLayout1.setSizeFull();
-        horizontalLayout1.setSpacing(true);
-        verticalLayout.addComponent(horizontalLayout1);
-
-        Label spacingLabel = new Label("&nbsp;", ContentMode.HTML);
-        horizontalLayout1.addComponent(spacingLabel);
-        horizontalLayout1.setExpandRatio(spacingLabel, 1.0f);
-
+        HorizontalLayout right = new HorizontalLayout();
         Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         downloadButton.setCaptionAsHtml(true);
         downloadButton.setIcon(FontAwesome.DOWNLOAD);
         downloadButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
         downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        downloadButton.addStyleName("margin-right-10");
+        downloadButton.setWidth("85px");
 
         StreamResource myResource = createQuoteResource();
         FileDownloader fileDownloader = new FileDownloader(myResource);
         fileDownloader.extend(downloadButton);
-        horizontalLayout1.addComponent(downloadButton);
-        horizontalLayout1.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
+        right.addComponent(downloadButton);
+        right.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
 
         Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         jobcardButton.setCaptionAsHtml(true);
@@ -384,62 +373,61 @@ public class CreateProposalsView extends Panel implements View {
         jobcardButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
         jobcardButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        jobcardButton.addStyleName("margin-right-10");
+        jobcardButton.setWidth("100px");
 
         StreamResource jobcardResource = createJobcardResource();
         FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
         jobcardDownloader.extend(jobcardButton);
-        horizontalLayout1.addComponent(jobcardButton);
-        horizontalLayout1.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);
+        right.addComponent(jobcardButton);
+        right.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);
 
         submitButton = new Button("Submit");
         submitButton.setVisible(ProposalState.draft.name().equals(proposalHeader.getStatus()));
         submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        submitButton.addStyleName("margin-right-10");
         submitButton.addClickListener(this::submit);
-        horizontalLayout1.addComponent(submitButton);
-        horizontalLayout1.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
+        right.addComponent(submitButton);
+        right.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
 
         publishButton = new Button("Publish");
         publishButton.setVisible(ProposalState.active.name().equals(proposalHeader.getStatus()));
         publishButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        publishButton.addStyleName("margin-right-10");
         publishButton.addClickListener(this::publish);
-        horizontalLayout1.addComponent(publishButton);
-        horizontalLayout1.setComponentAlignment(publishButton, Alignment.MIDDLE_RIGHT);
-
-        reviseButton = new Button("Revise");
-        reviseButton.setVisible(ProposalState.active.name().equals(proposalHeader.getStatus()));
-        reviseButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        reviseButton.addClickListener(this::revise);
-        horizontalLayout1.addComponent(reviseButton);
-        horizontalLayout1.setComponentAlignment(reviseButton, Alignment.MIDDLE_RIGHT);
-
-        cancelButton = new Button("Cancel");
-        cancelButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        cancelButton.addClickListener(this::cancel);
-        horizontalLayout1.addComponent(cancelButton);
-        horizontalLayout1.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
-
-        deleteButton = new Button("Delete");
-        deleteButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        deleteButton.addClickListener(this::deleteProposal);
-        horizontalLayout1.addComponent(deleteButton);
-        horizontalLayout1.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
+        right.addComponent(publishButton);
+        right.setComponentAlignment(publishButton, Alignment.MIDDLE_RIGHT);
 
         saveButton = new Button("Save");
         saveButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        saveButton.addStyleName("margin-right-10");
         saveButton.addClickListener(this::save);
-        horizontalLayout1.addComponent(saveButton);
-        horizontalLayout1.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
+        right.addComponent(saveButton);
+        right.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
 
-        Button closeButton = new Button("Close");
-        closeButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        closeButton.addClickListener(this::close);
-        horizontalLayout1.addComponent(closeButton);
-        horizontalLayout1.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
+        MenuBar menu = new MenuBar();
+        menu.setStyleName(ValoTheme.MENUBAR_SMALL);
+        menu.addStyleName("margin-right-10");
+
+        MenuBar.MenuItem moreMenuItem = menu.addItem("more", null);
+        reviseMenuItem = moreMenuItem.addItem("Revise", this::revise);
+        reviseMenuItem.setVisible(ProposalState.active.name().equals(proposalHeader.getStatus()));
+
+        cancelMenuItem = moreMenuItem.addItem("Cancel", this::cancel);
+        deleteMenuItem = moreMenuItem.addItem("Delete", this::deleteProposal);
+        moreMenuItem.addItem("Close", this::close);
+
+        right.addComponent(menu);
+        right.setComponentAlignment(menu, Alignment.MIDDLE_RIGHT);
+
+        horizontalLayout.addComponent(right);
+        horizontalLayout.setExpandRatio(right, 7);
+        horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_RIGHT);
 
         return horizontalLayout;
     }
 
-    private void cancel(Button.ClickEvent clickEvent) {
+    private void cancel(MenuBar.MenuItem selectedItem) {
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to cancel this Proposal?",
                 "Yes", "No", dialog -> {
                     if (!dialog.isCanceled()) {
@@ -450,12 +438,12 @@ public class CreateProposalsView extends Panel implements View {
                             if (success) {
                                 success = proposalDataProvider.cancelProposal(proposalHeader.getId());
                                 if (success) {
-                                    reviseButton.setVisible(false);
+                                    reviseMenuItem.setVisible(false);
                                     submitButton.setVisible(false);
                                     publishButton.setVisible(false);
-                                    deleteButton.setVisible(false);
+                                    deleteMenuItem.setVisible(false);
                                     saveButton.setVisible(false);
-                                    cancelButton.setVisible(false);
+                                    cancelMenuItem.setVisible(false);
                                     draftLabel.setValue("[ " + ProposalState.cancelled.name() + " ]");
                                     handleState();
                                 } else {
@@ -482,10 +470,10 @@ public class CreateProposalsView extends Panel implements View {
                             if (success) {
                                 success = proposalDataProvider.publishProposal(proposalHeader.getId());
                                 if (success) {
-                                    reviseButton.setVisible(false);
+                                    reviseMenuItem.setVisible(false);
                                     submitButton.setVisible(false);
                                     publishButton.setVisible(false);
-                                    deleteButton.setVisible(false);
+                                    deleteMenuItem.setVisible(false);
                                     saveButton.setVisible(false);
                                     draftLabel.setValue("[ " + ProposalState.published.name() + " ]");
                                     handleState();
@@ -502,7 +490,7 @@ public class CreateProposalsView extends Panel implements View {
                 });
     }
 
-    private void revise(Button.ClickEvent clickEvent) {
+    private void revise(MenuBar.MenuItem selectedItem) {
         try {
             binder.commit();
             proposalHeader.setStatus(ProposalState.draft.name());
@@ -510,11 +498,11 @@ public class CreateProposalsView extends Panel implements View {
             if (success) {
                 success = proposalDataProvider.reviseProposal(proposalHeader.getId());
                 if (success) {
-                    reviseButton.setVisible(false);
+                    reviseMenuItem.setVisible(false);
                     publishButton.setVisible(false);
                     submitButton.setVisible(true);
                     saveButton.setVisible(true);
-                    deleteButton.setVisible(true);
+                    deleteMenuItem.setVisible(true);
                     draftLabel.setValue("[ " + ProposalState.draft.name() + " ]");
                     handleState();
                 } else {
@@ -529,7 +517,7 @@ public class CreateProposalsView extends Panel implements View {
 
     }
 
-    private void deleteProposal(Button.ClickEvent clickEvent) {
+    private void deleteProposal(MenuBar.MenuItem selectedItem) {
 
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to delete this Proposal?",
                 "Yes", "No", dialog -> {
@@ -545,10 +533,10 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private String getFormattedTitle(String title) {
-        if (title.length() <= 40) {
+        if (title.length() <= 30) {
             return title;
         } else {
-            return title.substring(0, 40) + "...";
+            return title.substring(0, 30) + "...";
         }
 
     }
@@ -587,7 +575,7 @@ public class CreateProposalsView extends Panel implements View {
         return new StreamResource(source, "JobCard.xlsx");
     }
 
-    private void close(Button.ClickEvent clickEvent) {
+    private void close(MenuBar.MenuItem selectedItem) {
 
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this Proposal? Unsaved data will be lost.",
                 "Yes", "No", dialog -> {
@@ -629,7 +617,7 @@ public class CreateProposalsView extends Panel implements View {
                 boolean mapped = true;
                 for (Product product : proposal.getProducts()) {
                     Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId());
-                    mapped = populatedProduct.allModulesMapped() && !populatedProduct.getModules().isEmpty();
+                    mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (populatedProduct.allModulesMapped() && !populatedProduct.getModules().isEmpty());
                     if (!mapped) {
                         break;
                     }
@@ -641,10 +629,10 @@ public class CreateProposalsView extends Panel implements View {
 
                     success = proposalDataProvider.submitProposal(proposalHeader.getId());
                     if (success) {
-                        reviseButton.setVisible(true);
+                        reviseMenuItem.setVisible(true);
                         publishButton.setVisible(true);
                         submitButton.setVisible(false);
-                        deleteButton.setVisible(false);
+                        deleteMenuItem.setVisible(false);
                         saveButton.setVisible(false);
                         draftLabel.setValue("[ " + ProposalState.active.name() + " ]");
                         NotificationUtil.showNotification("Submitted successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
@@ -819,24 +807,16 @@ public class CreateProposalsView extends Panel implements View {
 
     private void designerChanged(Property.ValueChangeEvent valueChangeEvent) {
         String phone = (String) designPerson.getItem(designPerson.getValue()).getItemProperty(User.PHONE).getValue();
-        //designContact.setReadOnly(false);
         ((TextField) designContact).setValue(phone);
-        //designContact.setReadOnly(true);
         String email = (String) designPerson.getItem(designPerson.getValue()).getItemProperty(User.EMAIL).getValue();
-        //designEmail.setReadOnly(false);
         ((TextField) designEmail).setValue(email);
-        //designEmail.setReadOnly(true);
     }
 
     private void salesPersonChanged(Property.ValueChangeEvent valueChangeEvent) {
         String phone = (String) salesPerson.getItem(salesPerson.getValue()).getItemProperty(User.PHONE).getValue();
-        //salesContact.setReadOnly(false);
         ((TextField) salesContact).setValue(phone);
-        //salesContact.setReadOnly(true);
         String email = (String) salesPerson.getItem(salesPerson.getValue()).getItemProperty(User.EMAIL).getValue();
-        //salesEmail.setReadOnly(false);
         ((TextField) salesEmail).setValue(email);
-        //salesEmail.setReadOnly(true);
     }
 
     private ComboBox getSalesPersonCombo() {
@@ -1294,7 +1274,6 @@ public class CreateProposalsView extends Panel implements View {
         addonsContainer.addAll(addons);
         addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
         addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
-        //updateTotal();
     }
 
     private void persistAddon(AddonProduct eventAddonProduct) {
