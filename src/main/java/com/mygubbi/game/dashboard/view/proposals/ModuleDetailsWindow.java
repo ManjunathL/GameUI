@@ -66,7 +66,6 @@ public class ModuleDetailsWindow extends Window {
     private List<Finish> shutterFinishMasterList;
     private Image moduleImage;
     private ThemeResource emptyModuleImage;
-    private ImageStrip accessoryImageStrip;
     private String basePath = ConfigHolder.getInstance().getImageBasePath();
     private TextField totalAmount;
     private boolean readOnly;
@@ -86,7 +85,7 @@ public class ModuleDetailsWindow extends Window {
 
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("70%");
+        setWidth("75%");
         setClosable(false);
         setCaption("Edit Module Configuration for " + product.getTitle());
 
@@ -310,7 +309,7 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void refreshAccessories(MGModule mgModule) {
-        mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), module.getMakeTypeCode()));
+        mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), (String) makeType.getValue()));
 
         emptyAccessoryImages();
 
@@ -318,11 +317,11 @@ public class ModuleDetailsWindow extends Window {
             File sourceFile = new File(basePath + moduleAccessory.getImagePath());
             if (sourceFile.exists())
             {
-                Image img = new Image("",new FileResource(sourceFile));
+                Image img = new Image("", new FileResource(sourceFile));
                 img.setWidth("200px");
                 accessoryImageLayout.addComponent(img);
                 accessoryImageLayout.setComponentAlignment(img, Alignment.MIDDLE_CENTER);
-                Label c = new Label(moduleAccessory.getTitle());
+                Label c = new Label(moduleAccessory.getTitle() + " (" + moduleAccessory.getMake() + ")");
                 accessoryImageLayout.addComponent(c);
                 accessoryImageLayout.setComponentAlignment(c, Alignment.MIDDLE_CENTER);
             }
