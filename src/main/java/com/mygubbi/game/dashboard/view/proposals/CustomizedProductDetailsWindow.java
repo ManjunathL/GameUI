@@ -6,6 +6,7 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
+import com.mygubbi.game.dashboard.domain.JsonPojo.ShutterDesign;
 import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -42,6 +43,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.*;
 
@@ -204,7 +206,7 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutLeft.addComponent(this.makeType);
 
-        this.shutterDesign = getSimpleItemFilledCombo("Shutter Design", ProposalDataProvider.SHUTTER_DESIGN_LOOKUP, null);
+        this.shutterDesign = getShutterDesignCombo();
         shutterDesign.setRequired(true);
         binder.bind(shutterDesign, SHUTTER_DESIGN_CODE);
         if (shutterDesign.size() > 0) {
@@ -866,6 +868,24 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox getSimpleItemFilledCombo(String caption, String dataType, Property.ValueChangeListener listener) {
         List<LookupItem> list = proposalDataProvider.getLookupItems(dataType);
         return getSimpleItemFilledCombo(caption, list, listener);
+    }
+
+    private ComboBox getShutterDesignCombo() {
+        List<ShutterDesign> list = proposalDataProvider.getLookupItems(ProposalDataProvider.SHUTTER_DESIGN_LOOKUP)
+                .stream().map(ShutterDesign::new).collect(Collectors.toList());
+        final BeanContainer<String, ShutterDesign> container = new BeanContainer<>(ShutterDesign.class);
+        container.setBeanIdProperty(ShutterDesign.CODE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox("Shutter Design");
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setStyleName("designs-combo");
+        select.setContainerDataSource(container);
+        select.setItemIconPropertyId(ShutterDesign.IMAGE_RESOURCE);
+        select.setItemCaptionPropertyId(ShutterDesign.TITLE);
+        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
     }
 
     private void updateTotalAmount() {
