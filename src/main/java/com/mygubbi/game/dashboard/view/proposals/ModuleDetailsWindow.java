@@ -309,7 +309,7 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void refreshAccessories(MGModule mgModule) {
-        mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), (String) makeType.getValue()));
+        mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), removeDefaultPrefix((String) makeType.getValue())));
 
         emptyAccessoryImages();
 
