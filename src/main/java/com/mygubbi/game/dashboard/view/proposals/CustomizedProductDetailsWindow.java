@@ -53,11 +53,9 @@ public class CustomizedProductDetailsWindow extends Window {
     private static final Logger LOG = LogManager.getLogger(CustomizedProductDetailsWindow.class);
     private static final String CLOSE = "Close";
     private static final String DELETE = "Delete";
-    private static final String MAKE_TYPE_PREMIUM = "P";
 
     private TextField itemTitleField;
     private TextField roomText;
-    private ComboBox makeType;
     private ComboBox productSelection;
     private ComboBox baseCarcassSelection;
     private ComboBox wallCarcassSelection;
@@ -197,14 +195,6 @@ public class CustomizedProductDetailsWindow extends Window {
         itemTitleField.setNullRepresentation("");
         formLayoutLeft.addComponent(itemTitleField);
 
-        this.makeType = getSimpleItemFilledCombo("Make Type", ProposalDataProvider.MAKE_LOOKUP, null);
-        makeType.setRequired(true);
-        binder.bind(makeType, MAKE_TYPE_CODE);
-        if (makeType.size() > 0) {
-            String code = StringUtils.isNotEmpty(product.getMakeTypeCode()) ? product.getMakeTypeCode() : MAKE_TYPE_PREMIUM;
-            makeType.setValue(code);
-        }
-        formLayoutLeft.addComponent(this.makeType);
 
         this.shutterDesign = getShutterDesignCombo();
         shutterDesign.setRequired(true);
@@ -223,7 +213,9 @@ public class CustomizedProductDetailsWindow extends Window {
         totalAmount.setReadOnly(true);
         totalAmount.setCaptionAsHtml(true);
 
-        makeType.addValueChangeListener(this::refreshPrice);
+        formLayoutLeft.setSpacing(true);
+        formLayoutLeft.addComponent(totalAmount);
+
         return formLayoutLeft;
     }
 
@@ -237,13 +229,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         for (Module module : modules) {
 
-            if (component == makeType) {
-                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.MAKE_TYPE).getValue();
-                if (text.contains(Module.DEFAULT)) {
-                    moduleContainer.getItem(module).getItemProperty(Module.MAKE_TYPE_CODE).setValue(makeType.getValue());
-                    moduleContainer.getItem(module).getItemProperty(Module.MAKE_TYPE).setValue(getDefaultText(getSelectedItemText(makeType)));
-                }
-            } else if (component == baseCarcassSelection && module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name())) {
+             if (component == baseCarcassSelection && module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name())) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).getValue();
                 if (text.contains(Module.DEFAULT)) {
                     moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL_CODE).setValue(baseCarcassSelection.getValue());
@@ -344,7 +330,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         formLayoutRight.addComponent(getQuoteUploadControl());
 
-        formLayoutRight.addComponent(totalAmount);
+
 
 
         return formLayoutRight;
@@ -451,15 +437,12 @@ public class CustomizedProductDetailsWindow extends Window {
     private void initModules(Product product) {
         for (Module module : product.getModules()) {
 
-            module.setMakeType(getDefaultText(getSelectedItemText(makeType)));
             module.setCarcass(getDefaultText(
                     (module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
                             ? getSelectedItemText(wallCarcassSelection)
                             : getSelectedItemText(baseCarcassSelection))));
             module.setFinishType(getDefaultText(getSelectedItemText(finishTypeSelection)));
             module.setFinish(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
-
-            module.setMakeTypeCode(product.getMakeTypeCode());
             module.setCarcassCodeBasedOnUnitType(product);
             module.setFinishTypeCode(product.getFinishTypeCode());
             module.setFinishCode(product.getFinishCode());
@@ -502,12 +485,10 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setSizeFull();
         modulesGrid.setResponsive(true);
         modulesGrid.setColumnReorderingAllowed(true);
-        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE,
-                Module.MAKE_TYPE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
+        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
 
         modulesGrid.setCellStyleGenerator(cell -> {
-            if (cell.getPropertyId().equals(Module.MAKE_TYPE)
-                    || cell.getPropertyId().equals(Module.CARCASS_MATERIAL)
+            if (cell.getPropertyId().equals(Module.CARCASS_MATERIAL)
                     || cell.getPropertyId().equals(Module.FINISH_TYPE)
                     || cell.getPropertyId().equals(Module.SHUTTER_FINISH)) {
                 if (cell.getValue() != null && !((String) cell.getValue()).contains(Module.DEFAULT)) {
@@ -526,7 +507,6 @@ public class CustomizedProductDetailsWindow extends Window {
         columns.get(idx++).setHeaderCaption("Unit Type");
         columns.get(idx++).setHeaderCaption("Imported Module");
         columns.get(idx++).setHeaderCaption("MG Module *");
-        columns.get(idx++).setHeaderCaption("Make Type");
         columns.get(idx++).setHeaderCaption("Carcass Material");
         columns.get(idx++).setHeaderCaption("Finish Material");
         columns.get(idx++).setHeaderCaption("Shutter Finish");
@@ -581,7 +561,6 @@ public class CustomizedProductDetailsWindow extends Window {
         Product product = new Product();
         product.setFinishTypeCode((String) this.finishTypeSelection.getValue());
         product.setFinishCode((String) this.shutterFinishSelection.getValue());
-        product.setMakeTypeCode((String) this.makeType.getValue());
         product.setWallCarcassCode((String) this.wallCarcassSelection.getValue());
         product.setBaseCarcassCode((String) this.baseCarcassSelection.getValue());
         product.setTitle(itemTitleField.getValue());
@@ -971,7 +950,6 @@ public class CustomizedProductDetailsWindow extends Window {
                 itemTitleField.setReadOnly(true);
                 productSelection.setReadOnly(true);
                 roomText.setReadOnly(true);
-                makeType.setReadOnly(true);
                 shutterDesign.setReadOnly(true);
                 baseCarcassSelection.setReadOnly(true);
                 wallCarcassSelection.setReadOnly(true);

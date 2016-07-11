@@ -25,8 +25,6 @@ public class Product implements FileAttachmentsHolder {
     public static final String ROOM_CODE = "roomCode";
     public static final String SHUTTER_DESIGN = "shutterDesign";
     public static final String SHUTTER_DESIGN_CODE = "shutterDesignCode";
-    public static final String MAKE_TYPE = "makeType";
-    public static final String MAKE_TYPE_CODE = "makeTypeCode";
     public static final String BASE_CARCASS = "baseCarcass";
     public static final String BASE_CARCASS_CODE = "baseCarcassCode";
     public static final String WALL_CARCASS = "wallCarcass";
@@ -55,8 +53,6 @@ public class Product implements FileAttachmentsHolder {
     private String shutterDesignCode;
     private String catalogueName;
     private String catalogueId;
-    private String makeType;
-    private String makeTypeCode;
     private String baseCarcass;
     private String baseCarcassCode;
     private String wallCarcass;
@@ -199,22 +195,6 @@ public class Product implements FileAttachmentsHolder {
 
     public void setRoomCode(String roomCode) {
         this.roomCode = roomCode;
-    }
-
-    public String getMakeType() {
-        return makeType;
-    }
-
-    public void setMakeType(String makeType) {
-        this.makeType = makeType;
-    }
-
-    public String getMakeTypeCode() {
-        return makeTypeCode;
-    }
-
-    public void setMakeTypeCode(String makeTypeCode) {
-        this.makeTypeCode = makeTypeCode;
     }
 
     public String getBaseCarcassCode() {

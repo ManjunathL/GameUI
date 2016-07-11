@@ -36,7 +36,6 @@ public class ProposalDataProvider {
 
     public static final String CATEGORY_LOOKUP = "category";
     public static final String ATTACHMENT_TYPE_LOOKUP = "attachmenttype";
-    public static final String MAKE_LOOKUP = "maketype";
     public static final String SHUTTER_DESIGN_LOOKUP = "shutterdesign";
     public static final String CARCASS_LOOKUP = "carcassmaterial";
     public static final String FINISH_TYPE_LOOKUP = "finishtype";
@@ -552,13 +551,12 @@ public class ProposalDataProvider {
 
     }
 
-    public List<ModuleAccessory> getModuleAccessories(String moduleCode, String makeTypeCode) {
+    public List<ModuleAccessory> getModuleAccessories(String moduleCode) {
         try {
             JSONArray jsonArray = dataProviderMode.getResourceArray(
                     "module/accessories", new HashMap<String, String>() {
                         {
                             put("mgCode", moduleCode);
-                            put("makeType", makeTypeCode);
                         }
                     });
 

@@ -22,8 +22,6 @@ public class Module implements Cloneable {
     public static final String IMPORTED_MODULE_DEFAULT_CODE = "extDefCode";
     public static final String IMPORTED_MODULE_TEXT = "extText";
     public static final String MG_MODULE_CODE = "mgCode";
-    public static final String MAKE_TYPE = "makeType";
-    public static final String MAKE_TYPE_CODE = "makeTypeCode";
     public static final String CARCASS_MATERIAL = "carcass";
     public static final String CARCASS_MATERIAL_CODE = "carcassCode";
     public static final String FINISH_TYPE = "finishType";
@@ -53,8 +51,6 @@ public class Module implements Cloneable {
     private String colorCode;
     private String colorName;
     private String colorImagePath;
-    private String makeType;
-    private String makeTypeCode;
     private double amount;
     private String remarks;
     private String importStatus;
@@ -146,22 +142,6 @@ public class Module implements Cloneable {
 
     public void setExtDefCode(String extDefCode) {
         this.extDefCode = extDefCode;
-    }
-
-    public String getMakeType() {
-        return makeType;
-    }
-
-    public void setMakeType(String makeType) {
-        this.makeType = makeType;
-    }
-
-    public String getMakeTypeCode() {
-        return makeTypeCode;
-    }
-
-    public void setMakeTypeCode(String makeTypeCode) {
-        this.makeTypeCode = makeTypeCode;
     }
 
     public String getCarcassCode() {
@@ -284,6 +264,6 @@ public class Module implements Cloneable {
 
     @Override
     public String toString() {
-        return "mgCode - " + this.getMgCode() + ", carcassCode - " + this.getCarcassCode() + ", finishCode - " + this.getFinishCode() + ", makeTypeCode - " + this.getMakeTypeCode();
+        return "mgCode - " + this.getMgCode() + ", carcassCode - " + this.getCarcassCode() + ", finishCode - " + this.getFinishCode();
     }
 }

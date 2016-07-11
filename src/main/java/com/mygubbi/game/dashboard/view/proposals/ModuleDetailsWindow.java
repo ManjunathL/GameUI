@@ -50,7 +50,7 @@ public class ModuleDetailsWindow extends Window {
     private ComboBox mgModuleCombo;
     private ComboBox carcassMaterialSelection;
     private ComboBox colorCombo;
-    private ComboBox makeType;
+
 
     private ComboBox shutterFinishSelection;
     private ComboBox finishTypeSelection;
@@ -134,14 +134,13 @@ public class ModuleDetailsWindow extends Window {
         updateValues();
         handleState();
 
-        makeType.addValueChangeListener(this::makeTypeChanged);
 
     }
 
     private void handleState() {
         if (readOnly) {
             mgModuleCombo.setReadOnly(true);
-            makeType.setReadOnly(true);
+
             carcassMaterialSelection.setReadOnly(true);
             colorCombo.setReadOnly(true);
             finishTypeSelection.setReadOnly(true);
@@ -173,13 +172,6 @@ public class ModuleDetailsWindow extends Window {
         if (!StringUtils.isEmpty(module.getMgCode())) {
             mgModuleCombo.setValue(module.getMgCode());
             mgModuleChanged(null);
-        }
-
-        if (module.getMakeType().contains(Module.DEFAULT)) {
-            makeType.setValue(DEF_CODE_PREFIX + module.getMakeTypeCode());
-        } else {
-            makeType.setValue(module.getMakeTypeCode());
-            defaultsOverridden.setVisible(true);
         }
 
         if (StringUtils.isNotEmpty(module.getFixedCarcassCode())) {
@@ -214,9 +206,6 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void initModule() {
-        if (module.getMakeType().contains(Module.DEFAULT)) {
-            module.setMakeTypeCode(product.getMakeTypeCode());
-        }
         if (module.getCarcass().contains(Module.DEFAULT)) {
             module.setCarcassCodeBasedOnUnitType(product);
         }
@@ -309,7 +298,7 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void refreshAccessories(MGModule mgModule) {
-        mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode(), removeDefaultPrefix((String) makeType.getValue())));
+        mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode()));
 
         emptyAccessoryImages();
 
@@ -342,7 +331,6 @@ public class ModuleDetailsWindow extends Window {
         moduleForPrice.setMgCode((String) mgModuleCombo.getValue());
         moduleForPrice.setCarcassCode(removeDefaultPrefix((String) carcassMaterialSelection.getValue()));
         moduleForPrice.setFinishCode(removeDefaultPrefix((String) shutterFinishSelection.getValue()));
-        moduleForPrice.setMakeTypeCode(removeDefaultPrefix((String) makeType.getValue()));
 
         LOG.info("Asking for module price - " + moduleForPrice.toString());
         ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
@@ -369,11 +357,6 @@ public class ModuleDetailsWindow extends Window {
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         horizontalLayout.addComponent(formLayoutLeft);
-
-        this.makeType = getSimpleItemFilledCombo("Make Type", ProposalDataProvider.MAKE_LOOKUP, null, product.getMakeTypeCode());
-        binder.bind(makeType, Module.MAKE_TYPE_CODE);
-        makeType.addValueChangeListener(this::refreshPrice);
-        formLayoutLeft.addComponent(this.makeType);
 
         this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", ProposalDataProvider.CARCASS_LOOKUP, null, getCarcassCodeBasedOnType());
         binder.bind(carcassMaterialSelection, Module.CARCASS_MATERIAL_CODE);
@@ -414,13 +397,6 @@ public class ModuleDetailsWindow extends Window {
         return verticalLayout;
     }
 
-    private void makeTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
-        MGModule mgModule = ((BeanItem<MGModule>) this.mgModuleCombo.getItem(this.mgModuleCombo.getValue())).getBean();
-        if (mgModule != null) {
-            refreshAccessories(mgModule);
-        }
-    }
-
     private void finishChanged(Property.ValueChangeEvent valueChangeEvent) {
         List<Color> filteredColors = filterColorsByType();
         String previousColorCode = (String) this.colorCombo.getValue();
@@ -439,8 +415,7 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void checkDefaultsOverridden() {
-        if (!((String) makeType.getValue()).startsWith(DEF_CODE_PREFIX)
-            || !((String) carcassMaterialSelection.getValue()).startsWith(DEF_CODE_PREFIX)
+        if (!((String) carcassMaterialSelection.getValue()).startsWith(DEF_CODE_PREFIX)
             || !((String) finishTypeSelection.getValue()).startsWith(DEF_CODE_PREFIX)
             || !((String) shutterFinishSelection.getValue()).startsWith(DEF_CODE_PREFIX)) {
             defaultsOverridden.setVisible(true);
@@ -571,7 +546,6 @@ public class ModuleDetailsWindow extends Window {
                 NotificationUtil.showNotification("Problem while applying changes. Please contact GAME Admin", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
 
-            module.setMakeTypeCode(removeDefaultPrefix(module.getMakeTypeCode()));
             module.setCarcassCode(removeDefaultPrefix(module.getCarcassCode()));
             module.setFinishTypeCode(removeDefaultPrefix(module.getFinishTypeCode()));
             module.setFinishCode(removeDefaultPrefix(module.getFinishCode()));
@@ -579,12 +553,6 @@ public class ModuleDetailsWindow extends Window {
                 module.setFixedCarcassCode((String) carcassMaterialSelection.getValue());
             }
 
-            String makeTypeTitle = (String) makeType.getItem(module.getMakeTypeCode()).getItemProperty("title").getValue();
-            if (!product.getMakeTypeCode().equals(module.getMakeTypeCode()) || !((String) makeType.getValue()).contains(DEF_CODE_PREFIX)) {
-                module.setMakeType(makeTypeTitle);
-            } else {
-                module.setMakeType(getDefaultText(makeTypeTitle));
-            }
             String carcassCodeBasedOnType = getCarcassCodeBasedOnType();
             String carcassTitle = (String) carcassMaterialSelection.getItem(module.getCarcassCode()).getItemProperty("title").getValue();
             if (!carcassCodeBasedOnType.equals(module.getCarcassCode()) || !((String) carcassMaterialSelection.getValue()).contains(DEF_CODE_PREFIX)) {
