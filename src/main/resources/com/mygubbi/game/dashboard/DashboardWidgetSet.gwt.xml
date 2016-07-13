@@ -45,4 +45,6 @@
     <inherits name="com.zybnet.autocomplete.AutocompleteWidgetSet" />
 
     <inherits name="org.vaadin.peter.imagestrip.ImageStripApplicationWidgetset" />
+
+    <inherits name="org.vaadin.cssinject.Cssinject_addonWidgetset" />
 </module>

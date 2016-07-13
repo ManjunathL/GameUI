@@ -634,7 +634,7 @@ public class CreateProposalsView extends Panel implements View {
                 boolean mapped = true;
                 for (Product product : proposal.getProducts()) {
                     Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId());
-                    mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (populatedProduct.allModulesMapped() && !populatedProduct.getModules().isEmpty());
+                    mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (populatedProduct.accessorryPacksSelected() && !populatedProduct.getModules().isEmpty());
                     if (!mapped) {
                         break;
                     }

@@ -423,9 +423,7 @@ public class ProposalDataProvider {
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/mapandupdate", productJson);
 
-            Product product1 = this.mapper.readValue(jsonObject.toString(), Product.class);
-            product1.setGenerated();
-            return product1;
+            return this.mapper.readValue(jsonObject.toString(), Product.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't map modules", e);
         }

@@ -423,7 +423,7 @@ public class CustomizedProductDetailsWindow extends Window {
             if (product.hasImportErrorStatus()) {
                 NotificationUtil.showNotification("Error in mapping module(s), please upload new sheet!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 disableSave();
-            } else if (product.allModulesMapped()) {
+            } else if (product.accessorryPacksSelected()) {
                 enableSave();
                 NotificationUtil.showNotification("File uploaded successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             } else {
@@ -485,7 +485,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setSizeFull();
         modulesGrid.setResponsive(true);
         modulesGrid.setColumnReorderingAllowed(true);
-        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.MG_MODULE_CODE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
+        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
 
         modulesGrid.setCellStyleGenerator(cell -> {
             if (cell.getPropertyId().equals(Module.CARCASS_MATERIAL)
@@ -505,8 +505,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Unit Type");
-        columns.get(idx++).setHeaderCaption("Imported Module");
-        columns.get(idx++).setHeaderCaption("MG Module *");
+        columns.get(idx++).setHeaderCaption("Module");
         columns.get(idx++).setHeaderCaption("Carcass Material");
         columns.get(idx++).setHeaderCaption("Finish Material");
         columns.get(idx++).setHeaderCaption("Shutter Finish");
@@ -796,10 +795,6 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.focus();
         saveBtn.setVisible(true);
 
-        if (!product.allModulesMapped() || product.getModules().isEmpty()) {
-            disableSave();
-        }
-
         footer.addComponent(saveBtn);
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 
@@ -900,9 +895,6 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (event.isLoadNext()) {
             loadNextModule(event.getModuleIndex());
-        }
-        if (product.allModulesMapped()) {
-            enableSave();
         }
     }
 

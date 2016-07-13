@@ -83,18 +83,13 @@ public class Product implements FileAttachmentsHolder {
         this.seq = seq;
     }
 
-    public void setGenerated() {
-        for (Module module : modules) {
-            module.setGenerated();
-        }
-    }
-
     public boolean hasImportErrorStatus() {
         return this.getModules().stream().anyMatch(module -> module.getImportStatus().equals(Module.ImportStatusType.n.name()));
     }
 
-    public boolean allModulesMapped() {
-        return this.getModules().stream().allMatch(module -> StringUtils.isNotEmpty(module.getMgCode()));
+    public boolean accessorryPacksSelected() {
+        //todo: check accessory packs are selected or not
+        return false;//this.getModules().stream().allMatch(module -> StringUtils.isNotEmpty(module.getMgCode()));
     }
 
     public int getId() {

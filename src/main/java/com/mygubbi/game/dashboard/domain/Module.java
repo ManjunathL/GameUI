@@ -65,14 +65,6 @@ public class Module implements Cloneable {
         }
     }
 
-    public void setGenerated() {
-        if (importStatus.equals(ImportStatusType.d.name())) {
-            extText = extCode + " / " + extDefCode;
-        } else {
-            extText = extCode;
-        }
-    }
-
     public void setCarcassCodeBasedOnUnitType(Product product) {
         this.setCarcassCode(
                 this.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())

@@ -60,6 +60,11 @@
             <artifactId>vaadin-client-compiler</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>cssinject</artifactId>
+            <version>2.0.3</version>
+        </dependency>
         <!--<dependency>
             <groupId>com.vaadin.addon</groupId>
             <artifactId>vaadin-charts</artifactId>
