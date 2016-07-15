@@ -43,6 +43,7 @@ public class ProposalDataProvider {
     public static final String CITY_LOOKUP = "city";
     private static final String ROLE_DESIGNER = "designer";
     private static final String ROLE_SALES = "sales";
+    public static final String ACCESSORY_LOOKUP="accessories";
 
     public ProposalDataProvider(DataProviderMode dataProviderMode) {
         this.dataProviderMode = dataProviderMode;

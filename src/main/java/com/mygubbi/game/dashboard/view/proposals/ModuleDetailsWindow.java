@@ -6,6 +6,7 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.Accessories;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
@@ -47,10 +48,11 @@ public class ModuleDetailsWindow extends Window {
     private static final String LABEL_WARNING = "warning";
     private final int moduleIndex;
 
+    private Label accessoryHeading;
+
     private TextField importedModule;
     private TextField description;
     private TextField dimensions;
-    private ComboBox mgModuleCombo;
     private ComboBox carcassMaterialSelection;
     private ComboBox colorCombo;
     private ComboBox exposedSidesCombo;
@@ -72,6 +74,7 @@ public class ModuleDetailsWindow extends Window {
     private Button applyButton;
 
     private Module module;
+    private ModuleAccessory moduleAccessory;
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final BeanFieldGroup<Module> binder = new BeanFieldGroup<>(Module.class);
@@ -117,7 +120,8 @@ public class ModuleDetailsWindow extends Window {
         verticalLayout1.setSpacing(false);
         horizontalLayoutupper.setMargin(new MarginInfo(false, false, false, false));
         Responsive.makeResponsive(this);
-        horizontalLayoutupper.setSizeFull();
+        horizontalLayoutupper.setWidth("100%");
+        horizontalLayoutupper.setHeight("250px");
 
         HorizontalLayout horizontalLayout1=new HorizontalLayout();
         horizontalLayout1.setSizeFull();
@@ -140,6 +144,10 @@ public class ModuleDetailsWindow extends Window {
         defaultsOverridden = new Label("Note that the defaults have been overridden.");
         defaultsOverridden.setStyleName(LABEL_WARNING);
         defaultsOverridden.setVisible(false);
+
+        accessoryHeading = new Label("Accessory Configuration");
+        accessoryHeading.setStyleName("margin-left-10");
+        verticalLayout1.addComponent(accessoryHeading);
 
         verticalLayout.addComponent(defaultsOverridden);
         verticalLayout.setComponentAlignment(defaultsOverridden, Alignment.MIDDLE_CENTER);
@@ -191,7 +199,6 @@ public class ModuleDetailsWindow extends Window {
 
     private void handleState() {
         if (readOnly) {
-            mgModuleCombo.setReadOnly(true);
             carcassMaterialSelection.setReadOnly(true);
             colorCombo.setReadOnly(true);
             finishTypeSelection.setReadOnly(true);
@@ -203,10 +210,6 @@ public class ModuleDetailsWindow extends Window {
 
 
     private void updateValues() {
-        if (!StringUtils.isEmpty(module.getMgCode())) {
-            mgModuleCombo.setValue(module.getMgCode());
-            mgModuleChanged(null);
-        }
 
         if (StringUtils.isNotEmpty(module.getFixedCarcassCode())) {
             carcassMaterialSelection.setValue(module.getFixedCarcassCode());
@@ -233,9 +236,6 @@ public class ModuleDetailsWindow extends Window {
             defaultsOverridden.setVisible(true);
         }
 
-        if (StringUtils.isEmpty((String) mgModuleCombo.getValue()) && mgModules.size() == 1) {
-            mgModuleCombo.setValue(mgModuleCombo.getItemIds().iterator().next());
-        }
         checkDefaultsOverridden();
     }
 
@@ -295,7 +295,7 @@ public class ModuleDetailsWindow extends Window {
         formLayout.addComponent(this.shutterFinishSelection);
 
         List<Color> colors = filterColorsByType();
-        this.colorCombo = getColorsCombo("Colors", colors);
+        this.colorCombo = getColorsCombo("Color", colors);
         binder.bind(colorCombo, Module.COLOR_CODE);
         formLayout.addComponent(this.colorCombo);
 
@@ -315,11 +315,6 @@ public class ModuleDetailsWindow extends Window {
         this.importedModule.setReadOnly(true);
         formLayout.addComponent(importedModule);
 
-        this.mgModuleCombo = getMGModuleCombo("MG Module");
-        binder.bind(this.mgModuleCombo, Module.MG_MODULE_CODE);
-        this.mgModuleCombo.addValueChangeListener(this::mgModuleChanged);
-        formLayout.addComponent(this.mgModuleCombo);
-
         this.description = new TextField("Description");
         this.description.setReadOnly(true);
         formLayout.addComponent(this.description);
@@ -327,14 +322,10 @@ public class ModuleDetailsWindow extends Window {
         this.dimensions = new TextField("Dimensions");
         formLayout.addComponent(this.dimensions);
 
-        this.exposedSidesCombo = getMGModuleCombo("Exposed Sides");
-//        binder.bind(this.mgModuleCombo, Module.MG_MODULE_CODE);
-//        this.mgModuleCombo.addValueChangeListener(this::mgModuleChanged);
+        this.exposedSidesCombo = new ComboBox("Exposed Sides");
         formLayout.addComponent(this.exposedSidesCombo);
 
-        this.exposedBottomCombo = getMGModuleCombo("Exposed Bottom");
-//        binder.bind(this.mgModuleCombo, Module.MG_MODULE_CODE);
-//        this.mgModuleCombo.addValueChangeListener(this::mgModuleChanged);
+        this.exposedBottomCombo =new ComboBox("Exposed Bottom");
         formLayout.addComponent(this.exposedBottomCombo);
 
         return formLayout;
@@ -345,17 +336,18 @@ public class ModuleDetailsWindow extends Window {
         formLayout.setSizeFull();
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.accessoryPack1 = getMGModuleCombo("Accessory Pack 1");
+        this.accessoryPack1 = getSimpleItemFilledCombo("Accessory Pack 1",ProposalDataProvider.ACCESSORY_LOOKUP,null, module.UNIT_TYPE);
+        binder.bind(finishTypeSelection, Module.UNIT_TYPE);
         accessoryPack1.setWidth("150px");
         formLayout.addComponent(this.accessoryPack1);
 
-        this.addons1 = getMGModuleCombo("Addons 1");
+        this.addons1 = new ComboBox("Addons 1");
         addons1.setWidth("150px");
         formLayout.addComponent(this.addons1);
-        this.addons2 = getMGModuleCombo("Addons 2");
+        this.addons2 = new ComboBox("Addons 2");
         addons2.setWidth("150px");
         formLayout.addComponent(this.addons2);
-        this.addons3 = getMGModuleCombo("Addons 3");
+        this.addons3 = new ComboBox("Addons 3");
         addons3.setWidth("150px");
         formLayout.addComponent(this.addons3);
 
@@ -368,17 +360,17 @@ public class ModuleDetailsWindow extends Window {
 
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.accessoryPack2 = getMGModuleCombo("Accessory Pack 2");
+        this.accessoryPack2 = new ComboBox("Accessory Pack 2");
         accessoryPack2.setWidth("150px");
         formLayout.addComponent(this.accessoryPack2);
 
-        this.addons1 = getMGModuleCombo("Addons 1");
+        this.addons1 = new ComboBox("Addons 1");
         addons1.setWidth("150px");
         formLayout.addComponent(this.addons1);
-        this.addons2 = getMGModuleCombo("Addons 2");
+        this.addons2 =new ComboBox("Addons 2");
         addons2.setWidth("150px");
         formLayout.addComponent(this.addons2);
-        this.addons3 = getMGModuleCombo("Addons 3");
+        this.addons3 =new ComboBox("Addons 3");
         addons3.setWidth("150px");
         formLayout.addComponent(this.addons3);
 
@@ -390,17 +382,17 @@ public class ModuleDetailsWindow extends Window {
         formLayout.setSizeFull();
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.accessoryPack3 = getMGModuleCombo("Accessory Pack 3");
+        this.accessoryPack3 =new ComboBox("Accessory Pack 3");
         accessoryPack3.setWidth("150px");
         formLayout.addComponent(this.accessoryPack3);
 
-        this.addons1 = getMGModuleCombo("Addons 1");
+        this.addons1 = new ComboBox("Addons 1");
         addons1.setWidth("150px");
         formLayout.addComponent(this.addons1);
-        this.addons2 = getMGModuleCombo("Addons 2");
+        this.addons2 = new ComboBox("Addons 2");
         addons2.setWidth("150px");
         formLayout.addComponent(this.addons2);
-        this.addons3 = getMGModuleCombo("Addons 3");
+        this.addons3 =new ComboBox("Addons 3");
         addons3.setWidth("150px");
         formLayout.addComponent(this.addons3);
 
@@ -428,41 +420,6 @@ public class ModuleDetailsWindow extends Window {
     }
 
 
-
-    private void mgModuleChanged(Property.ValueChangeEvent valueChangeEvent) {
-        MGModule mgModule = ((BeanItem<MGModule>) this.mgModuleCombo.getItem(this.mgModuleCombo.getValue())).getBean();
-        if (mgModule == null) {
-            this.description.setReadOnly(false);
-            this.description.setValue("");
-            this.description.setReadOnly(true);
-            this.dimensions.setReadOnly(false);
-            this.dimensions.setValue("");
-            this.dimensions.setReadOnly(true);
-            this.moduleImage.setSource(emptyModuleImage);
-            emptyAccessoryImages();
-            disableApply();
-        } else {
-            this.description.setReadOnly(false);
-            this.description.setValue(mgModule.getDescription());
-            this.description.setReadOnly(true);
-            this.dimensions.setReadOnly(false);
-            this.dimensions.setValue(mgModule.getDimensions());
-            this.dimensions.setReadOnly(true);
-            this.moduleImage.setSource(new FileResource(new File(basePath + mgModule.getImagePath())));
-            mgModuleCombo.setNullSelectionAllowed(false);
-            if (StringUtils.isNotEmpty(mgModule.getCarcassCode())) {
-                carcassMaterialSelection.setValue(mgModule.getCarcassCode());
-                carcassMaterialSelection.setReadOnly(true);
-            } else {
-                carcassMaterialSelection.setReadOnly(false);
-            }
-
-            refreshAccessories(mgModule);
-            refreshPrice();
-            enableApply();
-        }
-    }
-
     private void refreshAccessories(MGModule mgModule) {
         mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode()));
 
@@ -489,12 +446,7 @@ public class ModuleDetailsWindow extends Window {
 
     private void refreshPrice() {
 
-        if (StringUtils.isEmpty((String) mgModuleCombo.getValue())) {
-            return;
-        }
-
         Module moduleForPrice = new Module();
-        moduleForPrice.setMgCode((String) mgModuleCombo.getValue());
         moduleForPrice.setCarcassCode(removeDefaultPrefix((String) carcassMaterialSelection.getValue()));
         moduleForPrice.setFinishCode(removeDefaultPrefix((String) shutterFinishSelection.getValue()));
 
@@ -639,12 +591,9 @@ public class ModuleDetailsWindow extends Window {
         applyNextButton.focus();
         applyNextButton.setVisible(!isLastModule());
 
-        if (mgModuleCombo.getValue() == null) {
-            disableApply();
-        }
+
 
         footer.addComponent(applyButton);
-        footer.setSpacing(false);
         footer.addComponent(applyNextButton);
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 
@@ -690,7 +639,6 @@ public class ModuleDetailsWindow extends Window {
                 module.setFinish(getDefaultText(finishTitle));
             }
 
-            mgModuleCombo.removeValueChangeListener(this::mgModuleChanged);
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
             close();
             ProposalEvent.ModuleUpdated event1 = new ProposalEvent.ModuleUpdated(module, loadNext, moduleIndex);
@@ -800,16 +748,6 @@ public class ModuleDetailsWindow extends Window {
         return getSimpleItemFilledCombo(caption, list, listener);
     }
 
-    private ComboBox getMGModuleCombo(String caption) {
-        final BeanContainer<String, MGModule> container =
-                new BeanContainer<>(MGModule.class);
-        container.setBeanIdProperty(MGModule.CODE);
-        container.addAll(mgModules);
-        ComboBox select = new ComboBox(caption);
-        select.setNullSelectionAllowed(true);
-        select.setWidth("250px");
-        select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId(MGModule.CODE);
-        return select;
-    }
+
 }
+
