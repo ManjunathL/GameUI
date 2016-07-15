@@ -1,5 +1,8 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by nitinpuri on 01-05-2016.
  */
@@ -54,6 +57,9 @@ public class Module implements Cloneable {
     private double amount;
     private String remarks;
     private String importStatus;
+
+
+    private List<AccessoryPack> accessoryPacks=new ArrayList<>();
 
     @Override
     public Object clone() {
@@ -214,6 +220,15 @@ public class Module implements Cloneable {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+
+    public List<AccessoryPack> getAccessoryPacks() {
+        return accessoryPacks;
+    }
+
+    public void setAccessoryPacks(List<AccessoryPack> accessoryPacks) {
+        this.accessoryPacks = accessoryPacks;
     }
 
     @Override
