@@ -57,7 +57,8 @@ public class Module implements Cloneable {
     private double amount;
     private String remarks;
     private String importStatus;
-
+    private double area;
+    private double amountWOAccessories;
 
     private List<AccessoryPack> accessoryPacks=new ArrayList<>();
 
@@ -267,6 +268,22 @@ public class Module implements Cloneable {
 
     public void setFixedCarcassCode(String fixedCarcassCode) {
         this.fixedCarcassCode = fixedCarcassCode;
+    }
+
+    public double getArea() {
+        return area;
+    }
+
+    public void setArea(double area) {
+        this.area = area;
+    }
+
+    public double getAmountWOAccessories() {
+        return amountWOAccessories;
+    }
+
+    public void setAmountWOAccessories(double amountWOAccessories) {
+        this.amountWOAccessories = amountWOAccessories;
     }
 
     @Override

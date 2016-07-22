@@ -11,6 +11,8 @@ public class ModulePrice {
     private double hardwareCost;
     private double labourCost;
     private double totalCost;
+    private double woodworkCost;
+    private double moduleArea;
 
     public double getCarcassCost() {
         return carcassCost;
@@ -58,5 +60,21 @@ public class ModulePrice {
 
     public void setTotalCost(double totalCost) {
         this.totalCost = totalCost;
+    }
+
+    public double getModuleArea() {
+        return moduleArea;
+    }
+
+    public void setModuleArea(double moduleArea) {
+        this.moduleArea = moduleArea;
+    }
+
+    public double getWoodworkCost() {
+        return woodworkCost;
+    }
+
+    public void setWoodworkCost(double woodworkCost) {
+        this.woodworkCost = woodworkCost;
     }
 }

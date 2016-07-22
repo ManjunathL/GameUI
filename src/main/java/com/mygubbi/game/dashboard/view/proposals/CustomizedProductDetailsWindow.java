@@ -78,6 +78,8 @@ public class CustomizedProductDetailsWindow extends Window {
     private BeanItemContainer<Module> moduleContainer;
     private Grid modulesGrid;
     private TextField totalAmount;
+    private TextField psftCost;
+    private TextField psftCostWOAccessories;
     private FileAttachmentComponent fileAttachmentComponent;
     private BeanItemContainer<AddonProduct> addonsContainer;
     private Grid addonsGrid;
@@ -205,18 +207,46 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutLeft.addComponent(this.shutterDesign);
 
-        totalAmount = new TextField("<h2>Total Amount:</h2>");
-        totalAmount.setValue("0");
-        totalAmount.setImmediate(true);
-        totalAmount.setStyleName("amount-text");
-        binder.bind(totalAmount, AMOUNT);
-        totalAmount.setReadOnly(true);
-        totalAmount.setCaptionAsHtml(true);
-
+        psftCost = new TextField("<h2>Total Cost (psft):</h2>");
+        psftCost.setValue("0");
+        psftCost.setImmediate(true);
+        psftCost.setStyleName("amount-text");
+        psftCost.setReadOnly(true);
+        psftCost.setCaptionAsHtml(true);
         formLayoutLeft.setSpacing(true);
-        formLayoutLeft.addComponent(totalAmount);
+        formLayoutLeft.addComponent(psftCost);
+
+        psftCostWOAccessories = new TextField("<h2>Total Cost w/o Accessories (psft):</h2>");
+        psftCostWOAccessories.setValue("0");
+        psftCostWOAccessories.setImmediate(true);
+        psftCostWOAccessories.setStyleName("amount-text");
+        psftCostWOAccessories.setReadOnly(true);
+        psftCostWOAccessories.setCaptionAsHtml(true);
+        formLayoutLeft.setSpacing(true);
+        formLayoutLeft.addComponent(psftCostWOAccessories);
 
         return formLayoutLeft;
+    }
+
+    private void updatePsftCosts() {
+
+        List<Module> modules = product.getModules();
+
+        double totalCost = 0;
+        double totalCostWOAccessories = 0;
+        double totalModuleArea = 0;
+
+        for (Module module : modules) {
+            totalCost += module.getAmount();
+            totalCostWOAccessories += module.getAmountWOAccessories();
+            totalModuleArea += module.getArea();
+        }
+
+        if (totalModuleArea != 0) {
+            psftCost.setValue((totalCost / totalModuleArea) + "");
+            psftCostWOAccessories.setValue((totalCostWOAccessories / totalModuleArea) + "");
+        }
+
     }
 
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
@@ -268,6 +298,8 @@ public class CustomizedProductDetailsWindow extends Window {
                     LOG.info("got new amount - " + amount);
                     //total += amount;
                     boundModules.get(boundModules.indexOf(module)).setAmount(amount);
+                    boundModules.get(boundModules.indexOf(module)).setAmountWOAccessories(modulePrice.getWoodworkCost());
+                    boundModules.get(boundModules.indexOf(module)).setArea(modulePrice.getModuleArea());
                     moduleContainer.getItem(module).getItemProperty(Module.AMOUNT).setValue(amount);
                 } else {
                     //total += module.getAmount();
@@ -276,6 +308,7 @@ public class CustomizedProductDetailsWindow extends Window {
         }
 
         updateTotalAmount();
+        updatePsftCosts();
 
     }
 
@@ -330,8 +363,16 @@ public class CustomizedProductDetailsWindow extends Window {
 
         formLayoutRight.addComponent(getQuoteUploadControl());
 
+        totalAmount = new TextField("<h2>Total Amount:</h2>");
+        totalAmount.setValue("0");
+        totalAmount.setImmediate(true);
+        totalAmount.setStyleName("amount-text");
+        binder.bind(totalAmount, AMOUNT);
+        totalAmount.setReadOnly(true);
+        totalAmount.setCaptionAsHtml(true);
 
-
+        formLayoutRight.setSpacing(true);
+        formLayoutRight.addComponent(totalAmount);
 
         return formLayoutRight;
     }
