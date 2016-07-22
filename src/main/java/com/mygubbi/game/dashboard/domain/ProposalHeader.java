@@ -8,6 +8,7 @@ import java.util.Date;
 public class ProposalHeader {
 
     public enum ProposalState {draft, active, published, cancelled}
+    public enum EDIT {W, R}
 
     public static final String ID = "id";
     public static final String STATUS = "status";
@@ -72,6 +73,7 @@ public class ProposalHeader {
     private String createdBy;
     private Date updatedOn;
     private String updatedBy;
+    private String editFlag;
 
     public int getId() {
         return id;
@@ -320,4 +322,17 @@ public class ProposalHeader {
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
     }
+
+    public String getEditFlag() {
+        return editFlag;
+    }
+
+    public void setEditFlag(String editFlag) {
+        this.editFlag = editFlag;
+    }
+
+    public boolean isReadonly() {
+        return getEditFlag().equals(EDIT.R.name());
+    }
+
 }

@@ -587,7 +587,7 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private boolean isProposalReadonly() {
-        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name());
+        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name()) || proposal.getProposalHeader().isReadonly();
     }
 
     private GeneratedPropertyContainer createGeneratedModulePropertyContainer() {
@@ -973,31 +973,39 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void handleState() {
 
-        ProposalHeader.ProposalState proposalState = ProposalHeader.ProposalState.valueOf(proposal.getProposalHeader().getStatus());
-        switch (proposalState) {
-            case draft:
-                break;
-            case active:
-            case cancelled:
-            case published:
-                itemTitleField.setReadOnly(true);
-                productSelection.setReadOnly(true);
-                roomText.setReadOnly(true);
-                shutterDesign.setReadOnly(true);
-                baseCarcassSelection.setReadOnly(true);
-                wallCarcassSelection.setReadOnly(true);
-                finishTypeSelection.setReadOnly(true);
-                shutterFinishSelection.setReadOnly(true);
-                quoteUploadCtrl.setEnabled(false);
-                addonAddButton.setEnabled(false);
-                closeBtn.setCaption(CLOSE);
-                fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
-                saveBtn.setEnabled(false);
-                fileAttachmentComponent.setReadOnly(true);
-                break;
-            default:
-                throw new RuntimeException("Unknown State");
+        if (proposal.getProposalHeader().isReadonly()) {
+            setComponentsReadonly();
+        } else {
+            ProposalHeader.ProposalState proposalState = ProposalHeader.ProposalState.valueOf(proposal.getProposalHeader().getStatus());
+            switch (proposalState) {
+                case draft:
+                    break;
+                case active:
+                case cancelled:
+                case published:
+                    setComponentsReadonly();
+                    break;
+                default:
+                    throw new RuntimeException("Unknown State");
+            }
         }
+    }
+
+    private void setComponentsReadonly() {
+        itemTitleField.setReadOnly(true);
+        productSelection.setReadOnly(true);
+        roomText.setReadOnly(true);
+        shutterDesign.setReadOnly(true);
+        baseCarcassSelection.setReadOnly(true);
+        wallCarcassSelection.setReadOnly(true);
+        finishTypeSelection.setReadOnly(true);
+        shutterFinishSelection.setReadOnly(true);
+        quoteUploadCtrl.setEnabled(false);
+        addonAddButton.setEnabled(false);
+        closeBtn.setCaption(CLOSE);
+        fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
+        saveBtn.setEnabled(false);
+        fileAttachmentComponent.setReadOnly(true);
     }
 
 }

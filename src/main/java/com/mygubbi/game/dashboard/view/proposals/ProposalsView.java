@@ -92,21 +92,9 @@ public final class ProposalsView extends TabSheet implements View {
         grid.addSelectionListener(selectionEvent -> {
                     if (!selectionEvent.getAdded().isEmpty()) {
                         Object selected = ((Grid.SingleSelectionModel) grid.getSelectionModel()).getSelectedRow();
-                        String title = grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.TITLE).getValue().toString();
                         int proposalId = (Integer) grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.ID).getValue();
-
                         UI.getCurrent().getNavigator()
                                 .navigateTo("New Proposal/" + proposalId);
-                        //DashboardViewType.PROPOSALS.getViewType().getSubViewTypes().stream().filter(viewType -> viewType.getViewClass().equals(CreateProposalsView.class)).findFirst().get().getViewName());
-
-
-
-/*
-                        final ProposalDetailsView proposalDetailsView = new ProposalDetailsView(proposalId, title);
-                        addTab(proposalDetailsView).setClosable(true);
-                        setSelectedTab(getComponentCount() - 1);
-                        getTab(proposalDetailsView).setCaption(title);
-*/
                     }
                 }
         );

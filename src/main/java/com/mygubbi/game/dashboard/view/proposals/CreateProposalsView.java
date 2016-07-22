@@ -282,30 +282,37 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void handleState() {
-
-        ProposalState proposalState = ProposalState.valueOf(proposalHeader.getStatus());
-        switch (proposalState) {
-            case draft:
-                addKitchenOrWardrobeButton.setEnabled(true);
-                addFromCatalogueButton.setEnabled(true);
-                fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
-                setHeaderFieldsReadOnly(false);
-                fileAttachmentComponent.setReadOnly(false);
-                addonAddButton.setEnabled(true);
-                break;
-            case active:
-            case cancelled:
-            case published:
-                addKitchenOrWardrobeButton.setEnabled(false);
-                addFromCatalogueButton.setEnabled(false);
-                fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
-                setHeaderFieldsReadOnly(true);
-                fileAttachmentComponent.setReadOnly(true);
-                addonAddButton.setEnabled(false);
-                break;
-            default:
-                throw new RuntimeException("Unknown State");
+        if (proposalHeader.isReadonly()) {
+            setComponentsReadonly();
+        } else {
+            ProposalState proposalState = ProposalState.valueOf(proposalHeader.getStatus());
+            switch (proposalState) {
+                case draft:
+                    addKitchenOrWardrobeButton.setEnabled(true);
+                    addFromCatalogueButton.setEnabled(true);
+                    fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
+                    setHeaderFieldsReadOnly(false);
+                    fileAttachmentComponent.setReadOnly(false);
+                    addonAddButton.setEnabled(true);
+                    break;
+                case active:
+                case cancelled:
+                case published:
+                    setComponentsReadonly();
+                    break;
+                default:
+                    throw new RuntimeException("Unknown State");
+            }
         }
+    }
+
+    private void setComponentsReadonly() {
+        addKitchenOrWardrobeButton.setEnabled(false);
+        addFromCatalogueButton.setEnabled(false);
+        fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
+        setHeaderFieldsReadOnly(true);
+        fileAttachmentComponent.setReadOnly(true);
+        addonAddButton.setEnabled(false);
     }
 
     private void setHeaderFieldsReadOnly(boolean readOnly) {
