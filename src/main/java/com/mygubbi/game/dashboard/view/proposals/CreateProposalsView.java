@@ -125,10 +125,12 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal.setFileAttachments(proposalDataProvider.getProposalDocuments(proposalId));
             this.proposal.setAddons(proposalDataProvider.getProposalAddons(proposalId));
             proposalHeader.setVersion(NEW_VERSION);
+            proposalHeader.setEditFlag(EDIT.W.name()); //todo: this has to be removed once server side is fixed
         } else {
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setTitle(NEW_TITLE);
             proposalHeader.setVersion(NEW_VERSION);
+            proposalHeader.setEditFlag(EDIT.W.name());
             proposalHeader.setStatus(ProposalState.draft.name());
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(proposalHeader);
@@ -641,7 +643,7 @@ public class CreateProposalsView extends Panel implements View {
                 boolean mapped = true;
                 for (Product product : proposal.getProducts()) {
                     Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId());
-                    mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (populatedProduct.accessorryPacksSelected() && !populatedProduct.getModules().isEmpty());
+                    mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (!populatedProduct.getModules().isEmpty());
                     if (!mapped) {
                         break;
                     }

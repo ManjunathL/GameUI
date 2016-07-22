@@ -6,33 +6,26 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
-import com.mygubbi.game.dashboard.domain.JsonPojo.Accessories;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.shared.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.vaadin.cssinject.CSSInject;
-
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,7 +35,6 @@ import java.util.List;
 public class ModuleDetailsWindow extends Window {
 
     private static final Logger LOG = LogManager.getLogger(ModuleDetailsWindow.class);
-    private final List<MGModule> mgModules;
     private final Product product;
     private final String DEF_CODE_PREFIX = "def_";
     private static final String LABEL_WARNING = "warning";
@@ -62,9 +54,17 @@ public class ModuleDetailsWindow extends Window {
     private ComboBox accessoryPack2;
     private ComboBox accessoryPack3;
 
-    private ComboBox addons1;
-    private ComboBox addons2;
-    private ComboBox addons3;
+    private ComboBox addons11;
+    private ComboBox addons12;
+    private ComboBox addons13;
+
+    private ComboBox addons21;
+    private ComboBox addons22;
+    private ComboBox addons23;
+
+    private ComboBox addons31;
+    private ComboBox addons32;
+    private ComboBox addons33;
 
 
     private ComboBox shutterFinishSelection;
@@ -74,11 +74,14 @@ public class ModuleDetailsWindow extends Window {
     private Button applyButton;
 
     private Module module;
-    private ModuleAccessory moduleAccessory;
+    private AccessoryPack accessoryPack;
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final BeanFieldGroup<Module> binder = new BeanFieldGroup<>(Module.class);
 
+
+    private List<AccessoryAddon> accessoryAddonsList;
+    private List<AccessoryPack> accessoryPackList;
     private List<Finish> shutterFinishMasterList;
     private Image moduleImage;
     private ThemeResource emptyModuleImage;
@@ -87,7 +90,7 @@ public class ModuleDetailsWindow extends Window {
     private boolean readOnly;
     private final Label defaultsOverridden;
     private Button applyNextButton;
-    private VerticalLayout accessoryImageLayout;
+    private HorizontalLayout accessoryImageLayout;
 
     private ModuleDetailsWindow(Module module, Product product, boolean readOnly, int moduleIndex) {
 
@@ -96,50 +99,49 @@ public class ModuleDetailsWindow extends Window {
         this.readOnly = readOnly;
         this.moduleIndex = moduleIndex;
         initModule();
-        this.mgModules = proposalDataProvider.getMGModules(module.getExtCode(), module.getExtDefCode());
         this.binder.setItemDataSource(this.module);
 
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("75%");
-        setHeight("85%");
+        setHeight("87%");
         setClosable(false);
         setCaption("Edit Module Configuration for " + product.getTitle());
 
-        VerticalLayout verticalLayout=new VerticalLayout();
+        VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
 
-        VerticalLayout verticalLayout1=new VerticalLayout();
+        VerticalLayout verticalLayout1 = new VerticalLayout();
         verticalLayout.setSizeFull();
 
-        VerticalLayout verticalLayout2=new VerticalLayout();
+        VerticalLayout verticalLayout2 = new VerticalLayout();
         verticalLayout.setSizeFull();
 
-        HorizontalLayout horizontalLayoutupper=new HorizontalLayout();
+        HorizontalLayout horizontalLayoutupper = new HorizontalLayout();
         verticalLayout1.addComponent(horizontalLayoutupper);
         verticalLayout1.setSpacing(false);
         horizontalLayoutupper.setMargin(new MarginInfo(false, false, false, false));
         Responsive.makeResponsive(this);
         horizontalLayoutupper.setWidth("100%");
-        horizontalLayoutupper.setHeight("250px");
+        horizontalLayoutupper.setHeight("210px");
 
-        HorizontalLayout horizontalLayout1=new HorizontalLayout();
+        HorizontalLayout horizontalLayout1 = new HorizontalLayout();
         horizontalLayout1.setSizeFull();
 
-        Component componentUpper1=buildModuleComponent();
+        Component componentUpper1 = buildModuleComponent();
         horizontalLayout1.addComponent(componentUpper1);
         horizontalLayout1.setSpacing(true);
 
-        Component componentUpper2=buildModuleOptionsComponent();
+        Component componentUpper2 = buildModuleOptionsComponent();
         horizontalLayout1.addComponent(componentUpper2);
         horizontalLayout1.setSpacing(true);
 
         horizontalLayoutupper.addComponent(horizontalLayout1);
-        horizontalLayoutupper.setExpandRatio(horizontalLayout1,0.8f);
+        horizontalLayoutupper.setExpandRatio(horizontalLayout1, 0.8f);
 
-        Component componentUpper3=buildModuleImageComponent();
+        Component componentUpper3 = buildModuleImageComponent();
         horizontalLayoutupper.addComponent(componentUpper3);
-        horizontalLayoutupper.setExpandRatio(componentUpper3,0.2f);
+        horizontalLayoutupper.setExpandRatio(componentUpper3, 0.2f);
 
         defaultsOverridden = new Label("Note that the defaults have been overridden.");
         defaultsOverridden.setStyleName(LABEL_WARNING);
@@ -149,46 +151,44 @@ public class ModuleDetailsWindow extends Window {
         accessoryHeading.setStyleName("margin-left-10");
         verticalLayout1.addComponent(accessoryHeading);
 
-        verticalLayout.addComponent(defaultsOverridden);
-        verticalLayout.setComponentAlignment(defaultsOverridden, Alignment.MIDDLE_CENTER);
-
-        HorizontalLayout horizontalLayoutlower=new HorizontalLayout();
+        HorizontalLayout horizontalLayoutlower = new HorizontalLayout();
         verticalLayout1.addComponent(horizontalLayoutlower);
         horizontalLayoutlower.setSizeFull();
-        horizontalLayoutlower.setMargin(new MarginInfo(false, false, true, false));
+        horizontalLayoutlower.setMargin(new MarginInfo(false, true, false, true));
         Responsive.makeResponsive(this);
 
 
-        HorizontalLayout horizontalLayout2=new HorizontalLayout();
+        HorizontalLayout horizontalLayout2 = new HorizontalLayout();
         horizontalLayout2.setSizeUndefined();
-        horizontalLayout2.setHeight("400px");
+        horizontalLayout2.setHeight("150px");
 
-        Component componentLower1=buildAccPack1Component();
+        Component componentLower1 = buildAccPack1Component();
         horizontalLayout2.addComponent(componentLower1);
         horizontalLayout2.setSpacing(true);
 
-        Component componentLower2=buildAccPack2Component();
+        Component componentLower2 = buildAccPack2Component();
         horizontalLayout2.addComponent(componentLower2);
         horizontalLayout2.setSpacing(true);
 
-        Component componentLower3=buildAccPack3Component();
+        Component componentLower3 = buildAccPack3Component();
         horizontalLayout2.addComponent(componentLower3);
 
         horizontalLayoutlower.addComponent(horizontalLayout2);
-        horizontalLayoutlower.setExpandRatio(horizontalLayout2,0.75f);
 
-        Component componentLower4=buildAccessoryImagesComponent();
-        horizontalLayoutlower.addComponent(componentLower4);
-        horizontalLayoutlower.setExpandRatio(componentLower4,0.25f);
+
+
+        Component componentLower4 = buildAccessoryImagesComponent();
+        verticalLayout1.addComponent(componentLower4);
 
         verticalLayout.addComponent(verticalLayout1);
-        verticalLayout.setExpandRatio(verticalLayout1,0.9f);
+
+        verticalLayout.setExpandRatio(verticalLayout1, 0.9f);
 
         Component footerLayOut = buildFooter();
         verticalLayout2.addComponent(footerLayOut);
 
         verticalLayout.addComponent(verticalLayout2);
-        verticalLayout.setExpandRatio(verticalLayout2,0.1f);
+        verticalLayout.setExpandRatio(verticalLayout2, 0.1f);
 
         setContent(verticalLayout);
 
@@ -206,7 +206,6 @@ public class ModuleDetailsWindow extends Window {
             disableApply();
         }
     }
-
 
 
     private void updateValues() {
@@ -236,7 +235,25 @@ public class ModuleDetailsWindow extends Window {
             defaultsOverridden.setVisible(true);
         }
 
+        updateAccessoryPack(0, accessoryPack1, addons11, addons12, addons13);
+        updateAccessoryPack(1, accessoryPack2, addons21, addons22, addons23);
+        updateAccessoryPack(2, accessoryPack3, addons31, addons32, addons33);
+
+        if (StringUtils.isNotEmpty(module.getExpSides())) exposedSidesCombo.setValue(module.getExpSides());
+        if (StringUtils.isNotEmpty(module.getExpBottom())) exposedBottomCombo.setValue(module.getExpBottom());
+
         checkDefaultsOverridden();
+    }
+
+    private void updateAccessoryPack(int i, ComboBox accessoryPack, ComboBox addons1, ComboBox addons2, ComboBox addons3) {
+        if (module.getAccessoryPacks().size() > i) {
+            ModuleAccessoryPack moduleAccessoryPack = module.getAccessoryPacks().get(i);
+            accessoryPack.setValue(moduleAccessoryPack.getCode());
+            List<String> addons = moduleAccessoryPack.getAccessories();
+            if (addons.size() > 0) addons1.setValue(addons.get(0));
+            if (addons.size() > 1) addons2.setValue(addons.get(1));
+            if (addons.size() > 2) addons3.setValue(addons.get(2));
+        }
     }
 
     private void initModule() {
@@ -257,13 +274,10 @@ public class ModuleDetailsWindow extends Window {
         panel.setHeight("200px");
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
-        verticalLayout.setMargin(new MarginInfo(false,true,true,true));
-        Label accessoriesLabel = new Label("Module Image");
-        verticalLayout.addComponent(accessoriesLabel);
-        verticalLayout.setComponentAlignment(accessoriesLabel, Alignment.TOP_CENTER);
+        verticalLayout.setMargin(new MarginInfo(false, true, true, true));
         verticalLayout.setSpacing(false);
-        emptyModuleImage = new ThemeResource("img/empty-poster.png");
-        moduleImage = new Image("", emptyModuleImage);
+        //emptyModuleImage = new ThemeResource("img/empty-poster.png");
+        moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
         moduleImage.setCaption(null);
         moduleImage.setSizeFull();
         verticalLayout.addComponent(moduleImage);
@@ -311,133 +325,203 @@ public class ModuleDetailsWindow extends Window {
         FormLayout formLayout = new FormLayout();
         formLayout.setSizeFull();
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-        this.importedModule = (TextField) binder.buildAndBind("Module", Module.IMPORTED_MODULE_TEXT);
+        this.importedModule = (TextField) binder.buildAndBind("Module", Module.MG_MODULE_CODE);
         this.importedModule.setReadOnly(true);
         formLayout.addComponent(importedModule);
 
-        this.description = new TextField("Description");
+        this.description = (TextField) binder.buildAndBind("Description", Module.DESCRIPTION);
         this.description.setReadOnly(true);
         formLayout.addComponent(this.description);
 
-        this.dimensions = new TextField("Dimensions");
+        this.dimensions = (TextField) binder.buildAndBind("Dimensions", Module.DIMENSION);
+        this.dimensions.setReadOnly(true);
         formLayout.addComponent(this.dimensions);
 
         this.exposedSidesCombo = new ComboBox("Exposed Sides");
+        exposedSidesCombo.addItems("None", "Left", "Right", "Both");
+        binder.bind(exposedSidesCombo, Module.EXPOSED_SIDES);
         formLayout.addComponent(this.exposedSidesCombo);
+        exposedSidesCombo.setNullSelectionAllowed(false);
+        exposedSidesCombo.setValue(exposedSidesCombo.getItemIds().iterator().next());
+        exposedSidesCombo.addValueChangeListener(this::refreshPrice);
 
-        this.exposedBottomCombo =new ComboBox("Exposed Bottom");
+        this.exposedBottomCombo = new ComboBox("Exposed Bottom");
+        exposedBottomCombo.addItems("No", "Yes");
+        binder.bind(exposedBottomCombo, Module.EXPOSED_BOTTOM);
         formLayout.addComponent(this.exposedBottomCombo);
+        exposedBottomCombo.setNullSelectionAllowed(false);
+        exposedBottomCombo.setValue(exposedBottomCombo.getItemIds().iterator().next());
+        exposedBottomCombo.addValueChangeListener(this::refreshPrice);
 
         return formLayout;
     }
 
     private Component buildAccPack1Component() {
-        FormLayout formLayout=new FormLayout();
+        FormLayout formLayout = new FormLayout();
         formLayout.setSizeFull();
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.accessoryPack1 = getSimpleItemFilledCombo("Accessory Pack 1",ProposalDataProvider.ACCESSORY_LOOKUP,null, module.UNIT_TYPE);
-        binder.bind(finishTypeSelection, Module.UNIT_TYPE);
-        accessoryPack1.setWidth("150px");
+        accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
+        this.accessoryPack1 = getAccessoryPackCombo("Acc Pack 1", accessoryPackList, null);
         formLayout.addComponent(this.accessoryPack1);
+        accessoryPack1.addValueChangeListener(this::accessoryPack1Changed);
 
-        this.addons1 = new ComboBox("Addons 1");
-        addons1.setWidth("150px");
-        formLayout.addComponent(this.addons1);
-        this.addons2 = new ComboBox("Addons 2");
-        addons2.setWidth("150px");
-        formLayout.addComponent(this.addons2);
-        this.addons3 = new ComboBox("Addons 3");
-        addons3.setWidth("150px");
-        formLayout.addComponent(this.addons3);
+        this.addons11 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
+        formLayout.addComponent(this.addons11);
+        addons11.addValueChangeListener(this::refreshPrice);
+
+        this.addons12 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
+        formLayout.addComponent(this.addons12);
+        addons12.addValueChangeListener(this::refreshPrice);
+
+        this.addons13 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
+        formLayout.addComponent(this.addons13);
+        addons13.addValueChangeListener(this::refreshPrice);
 
         return formLayout;
+    }
+
+    private void accessoryPack1Changed(Property.ValueChangeEvent valueChangeEvent) {
+        accessoryPackChanged(accessoryPack1, addons11, addons12, addons13);
+        refreshPrice();
+    }
+
+    private void accessoryPackChanged(ComboBox accessoryPack, ComboBox addons1, ComboBox addons2, ComboBox addons3) {
+        String accessoryPackCode = (String) accessoryPack.getValue();
+        List<AccessoryAddon> accessoryAddons = proposalDataProvider.getAccessoryAddons(accessoryPackCode);
+        addons1.getContainerDataSource().removeAllItems();
+        ((BeanContainer<String, AccessoryAddon>) addons1.getContainerDataSource()).addAll(accessoryAddons);
+        addons2.getContainerDataSource().removeAllItems();
+        ((BeanContainer<String, AccessoryAddon>) addons2.getContainerDataSource()).addAll(accessoryAddons);
+        addons3.getContainerDataSource().removeAllItems();
+        ((BeanContainer<String, AccessoryAddon>) addons3.getContainerDataSource()).addAll(accessoryAddons);
+
+        refreshAccessoryImages();
     }
 
     private Component buildAccPack2Component() {
-        FormLayout formLayout=new FormLayout();
+        FormLayout formLayout = new FormLayout();
         formLayout.setSizeFull();
 
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.accessoryPack2 = new ComboBox("Accessory Pack 2");
-        accessoryPack2.setWidth("150px");
+        accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
+        this.accessoryPack2 = getAccessoryPackCombo("Acc Pack 2", accessoryPackList, null);
         formLayout.addComponent(this.accessoryPack2);
+        accessoryPack2.addValueChangeListener(this::accessoryPack2Changed);
 
-        this.addons1 = new ComboBox("Addons 1");
-        addons1.setWidth("150px");
-        formLayout.addComponent(this.addons1);
-        this.addons2 =new ComboBox("Addons 2");
-        addons2.setWidth("150px");
-        formLayout.addComponent(this.addons2);
-        this.addons3 =new ComboBox("Addons 3");
-        addons3.setWidth("150px");
-        formLayout.addComponent(this.addons3);
+        this.addons21 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
+        formLayout.addComponent(this.addons21);
+        addons21.addValueChangeListener(this::refreshPrice);
+
+        this.addons22 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
+        formLayout.addComponent(this.addons22);
+        addons22.addValueChangeListener(this::refreshPrice);
+
+        this.addons23 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
+        formLayout.addComponent(this.addons23);
+        addons23.addValueChangeListener(this::refreshPrice);
 
         return formLayout;
+    }
+
+    private void accessoryPack2Changed(Property.ValueChangeEvent valueChangeEvent) {
+        accessoryPackChanged(accessoryPack2, addons21, addons22, addons23);
+        refreshPrice();
     }
 
     private Component buildAccPack3Component() {
-        FormLayout formLayout=new FormLayout();
+        FormLayout formLayout = new FormLayout();
         formLayout.setSizeFull();
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.accessoryPack3 =new ComboBox("Accessory Pack 3");
-        accessoryPack3.setWidth("150px");
+        accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
+        this.accessoryPack3 = getAccessoryPackCombo("Acc Pack 3", accessoryPackList, null);
         formLayout.addComponent(this.accessoryPack3);
+        accessoryPack3.addValueChangeListener(this::accessoryPack3Changed);
 
-        this.addons1 = new ComboBox("Addons 1");
-        addons1.setWidth("150px");
-        formLayout.addComponent(this.addons1);
-        this.addons2 = new ComboBox("Addons 2");
-        addons2.setWidth("150px");
-        formLayout.addComponent(this.addons2);
-        this.addons3 =new ComboBox("Addons 3");
-        addons3.setWidth("150px");
-        formLayout.addComponent(this.addons3);
+        this.addons31 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
+        formLayout.addComponent(this.addons31);
+        addons31.addValueChangeListener(this::refreshPrice);
+
+        this.addons32 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
+        formLayout.addComponent(this.addons32);
+        addons32.addValueChangeListener(this::refreshPrice);
+
+        this.addons33 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
+        formLayout.addComponent(this.addons33);
+        addons33.addValueChangeListener(this::refreshPrice);
 
         return formLayout;
     }
 
+    private void accessoryPack3Changed(Property.ValueChangeEvent valueChangeEvent) {
+        accessoryPackChanged(accessoryPack3, addons31, addons32, addons33);
+        refreshPrice();
+    }
+
     private Component buildAccessoryImagesComponent() {
-        Panel panel = new Panel();
-        panel.setHeight("300px");
-        panel.setWidth("290px");
-        VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setSizeFull();
-        Label accessoriesLabel = new Label("Accessories");
-        accessoriesLabel.setStyleName(ValoTheme.LABEL_SMALL);
-        accessoriesLabel.setSizeUndefined();
-        accessoriesLabel.setHeight("22px");
-        verticalLayout.addComponent(accessoriesLabel);
-        verticalLayout.setComponentAlignment(accessoriesLabel, Alignment.MIDDLE_CENTER);
-        accessoryImageLayout = new VerticalLayout();
-        accessoryImageLayout.setSizeFull();
-        verticalLayout.addComponent(accessoryImageLayout);
-        verticalLayout.setExpandRatio(accessoryImageLayout, 1.0f);
-        panel.setContent(verticalLayout);
-        return panel;
+
+        Panel accImagePanel=new Panel();
+        accImagePanel.setSizeFull();
+        accImagePanel.setCaption("Accessory Images");
+        accessoryImageLayout = new HorizontalLayout();
+        accessoryImageLayout.setCaption("Accessory Images");
+        accessoryImageLayout.setMargin(new MarginInfo(false,true,false,true));
+        accessoryImageLayout.setStyleName("vLayoutScroll");
+        /*accessoryImageLayout.setHeight("150px");
+        accessoryImageLayout.setWidth("1000px");*/
+        accessoryImageLayout.setSizeUndefined();
+        accImagePanel.setContent(accessoryImageLayout);
+        return accImagePanel;
     }
 
 
-    private void refreshAccessories(MGModule mgModule) {
-        mgModule.setAccessories(proposalDataProvider.getModuleAccessories(mgModule.getCode()));
-
+    private void refreshAccessoryImages() {
         emptyAccessoryImages();
 
-        for (ModuleAccessory moduleAccessory : mgModule.getAccessories()) {
-            File sourceFile = new File(basePath + moduleAccessory.getImagePath());
-            if (sourceFile.exists())
-            {
-                Image img = new Image("", new FileResource(sourceFile));
-                img.setWidth("200px");
-                accessoryImageLayout.addComponent(img);
-                accessoryImageLayout.setComponentAlignment(img, Alignment.MIDDLE_CENTER);
-                Label c = new Label(moduleAccessory.getTitle() + " (" + moduleAccessory.getMake() + ")");
-                accessoryImageLayout.addComponent(c);
-                accessoryImageLayout.setComponentAlignment(c, Alignment.MIDDLE_CENTER);
-            }
+        String apCode1 = (String) accessoryPack1.getValue();
+        if (apCode1 != null) {
+            List<Accessory> accessories1 = getAccessories(apCode1, accessoryPack1);
+            populateAccessoryImages(accessories1);
         }
+        String apCode2 = (String) accessoryPack2.getValue();
+        if (apCode2 != null) {
+            List<Accessory> accessories2 = getAccessories(apCode2, accessoryPack2);
+            populateAccessoryImages(accessories2);
+        }
+        String apCode3 = (String) accessoryPack3.getValue();
+        if (apCode3 != null) {
+            List<Accessory> accessories3 = getAccessories(apCode3, accessoryPack3);
+            populateAccessoryImages(accessories3);
+        }
+    }
+
+    private void populateAccessoryImages(List<Accessory> accessories) {
+        for (Accessory accessory : accessories) {
+            File sourceFile = new File(basePath + accessory.getImagePath());
+            LOG.info("image path : " + sourceFile);
+            if (sourceFile.exists()) {
+                VerticalLayout verticalLayout=new VerticalLayout();
+                Image img = new Image("", new FileResource(sourceFile));
+                img.setWidth("100px");
+                img.setHeight("100px");
+                verticalLayout.addComponent(img);
+                verticalLayout.setComponentAlignment(img, Alignment.MIDDLE_LEFT);
+                Label c = new Label(accessory.getTitle());
+                c.setStyleName("labelFont");
+                c.setWidth("150px");
+                c.setHeight("40px");
+                verticalLayout.addComponent(c);
+                verticalLayout.setComponentAlignment(c, Alignment.MIDDLE_CENTER);
+                accessoryImageLayout.addComponent(verticalLayout);
+            }
+            accessoryImageLayout.setSpacing(true);
+        }
+    }
+
+    private List<Accessory> getAccessories(String apCode1, ComboBox accessoryPack) {
+        return ((BeanContainer<String, AccessoryPack>) accessoryPack.getContainerDataSource()).getItem(apCode1).getBean().getAccessories();
     }
 
     private void emptyAccessoryImages() {
@@ -450,7 +534,19 @@ public class ModuleDetailsWindow extends Window {
         moduleForPrice.setCarcassCode(removeDefaultPrefix((String) carcassMaterialSelection.getValue()));
         moduleForPrice.setFinishCode(removeDefaultPrefix((String) shutterFinishSelection.getValue()));
 
+
+        moduleForPrice.setMgCode(module.getMgCode());
         LOG.info("Asking for module price - " + moduleForPrice.toString());
+        moduleForPrice.setSeq(module.getSeq());
+        moduleForPrice.setExtCode(module.getExtCode());
+
+        List<ModuleAccessoryPack> accPacks = getModuleAccessoryPacks();
+
+        moduleForPrice.setAccessoryPacks(accPacks);
+
+        moduleForPrice.setExpSides((String) exposedSidesCombo.getValue());
+        moduleForPrice.setExpBottom((String) exposedBottomCombo.getValue());
+
         ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
         LOG.info("Got price - " + modulePrice.getTotalCost());
 
@@ -459,6 +555,44 @@ public class ModuleDetailsWindow extends Window {
         totalAmount.setReadOnly(true);
 
         checkDefaultsOverridden();
+
+    }
+
+    private List<ModuleAccessoryPack> getModuleAccessoryPacks() {
+        List<ModuleAccessoryPack> accPacks = new ArrayList<>();
+        ModuleAccessoryPack moduleAccessoryPack = this.getModuleAccessoryPack(this.accessoryPack1, this.addons11, this.addons12, this.addons13);
+        if (moduleAccessoryPack != null) accPacks.add(moduleAccessoryPack);
+
+        moduleAccessoryPack = this.getModuleAccessoryPack(this.accessoryPack2, this.addons21, this.addons22, this.addons23);
+        if (moduleAccessoryPack != null) accPacks.add(moduleAccessoryPack);
+
+        moduleAccessoryPack = this.getModuleAccessoryPack(this.accessoryPack3, this.addons31, this.addons32, this.addons33);
+        if (moduleAccessoryPack != null) accPacks.add(moduleAccessoryPack);
+        return accPacks;
+    }
+
+    private ModuleAccessoryPack getModuleAccessoryPack(ComboBox accPackCombo, ComboBox addon1Combo, ComboBox addons2Combo, ComboBox addons3Combo) {
+        String value = (String) accPackCombo.getValue();
+        LOG.debug(value);
+        if (StringUtils.isEmpty(value)) {
+            return null;
+        }
+        ModuleAccessoryPack accPack = new ModuleAccessoryPack();
+        accPack.setCode(value);
+
+        List<String> addons = new ArrayList<>();
+
+        value = (String) addon1Combo.getValue();
+        if (StringUtils.isNotEmpty(value)) addons.add(value);
+
+        value = (String) addons2Combo.getValue();
+        if (StringUtils.isNotEmpty(value)) addons.add(value);
+
+        value = (String) addons3Combo.getValue();
+        if (StringUtils.isNotEmpty(value)) addons.add(value);
+
+        accPack.setAccessories(addons);
+        return accPack;
 
     }
 
@@ -538,29 +672,9 @@ public class ModuleDetailsWindow extends Window {
         checkDefaultsOverridden();
     }
 
-    private void enableApply() {
-        applyButton.setEnabled(true);
-        applyNextButton.setEnabled(true);
-    }
-
     private void disableApply() {
         applyButton.setEnabled(false);
         applyNextButton.setEnabled(false);
-    }
-
-    private PropertyValueGenerator<String> getActionTextGenerator() {
-        return new PropertyValueGenerator<String>() {
-
-            @Override
-            public String getValue(Item item, Object o, Object o1) {
-                return "";
-            }
-
-            @Override
-            public Class<String> getType() {
-                return String.class;
-            }
-        };
     }
 
     private Component buildFooter() {
@@ -577,11 +691,11 @@ public class ModuleDetailsWindow extends Window {
         });
         closeBtn.focus();
         footer.addComponent(closeBtn);
-        footer.setSpacing(true);
 
         applyButton = new Button("Apply");
         applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         applyButton.addClickListener(getApplyListener(false));
+        applyButton.setWidth("10%");
         applyButton.focus();
         applyButton.setVisible(true);
 
@@ -592,10 +706,11 @@ public class ModuleDetailsWindow extends Window {
         applyNextButton.setVisible(!isLastModule());
 
 
-
         footer.addComponent(applyButton);
         footer.addComponent(applyNextButton);
-        footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
+        footer.setComponentAlignment(closeBtn, Alignment.MIDDLE_RIGHT);
+        footer.setComponentAlignment(applyButton, Alignment.MIDDLE_CENTER);
+        footer.setComponentAlignment(applyNextButton, Alignment.MIDDLE_LEFT);
 
         return footer;
     }
@@ -613,6 +728,7 @@ public class ModuleDetailsWindow extends Window {
             module.setCarcassCode(removeDefaultPrefix(module.getCarcassCode()));
             module.setFinishTypeCode(removeDefaultPrefix(module.getFinishTypeCode()));
             module.setFinishCode(removeDefaultPrefix(module.getFinishCode()));
+            module.setAccessoryPacks(getModuleAccessoryPacks());
             if (carcassMaterialSelection.isReadOnly()) {
                 module.setFixedCarcassCode((String) carcassMaterialSelection.getValue());
             }
@@ -639,6 +755,8 @@ public class ModuleDetailsWindow extends Window {
                 module.setFinish(getDefaultText(finishTitle));
             }
 
+
+
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
             close();
             ProposalEvent.ModuleUpdated event1 = new ProposalEvent.ModuleUpdated(module, loadNext, moduleIndex);
@@ -662,9 +780,11 @@ public class ModuleDetailsWindow extends Window {
         }
     }
 
+
     private String getCarcassCodeBasedOnType() {
         return module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name()) ? product.getWallCarcassCode() : product.getBaseCarcassCode();
     }
+
 
     private String removeDefault(String title) {
         int defaultIndex = title.indexOf(" (default)");
@@ -676,6 +796,7 @@ public class ModuleDetailsWindow extends Window {
         UI.getCurrent().addWindow(w);
         w.focus();
     }
+
 
     private ComboBox getFinishItemFilledCombo(String caption, List<Finish> list, Property.ValueChangeListener listener) {
 
@@ -711,6 +832,39 @@ public class ModuleDetailsWindow extends Window {
         return select;
     }
 
+    private ComboBox getAccessoryPackCombo(String caption, List<AccessoryPack> list, Property.ValueChangeListener listener) {
+
+        final BeanContainer<String, AccessoryPack> container =
+                new BeanContainer<>(AccessoryPack.class);
+        container.setBeanIdProperty(AccessoryPack.ACCESSORY_PACK_CODE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(true);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(AccessoryPack.ACCESSORY_PACK_TITLE);
+        if (listener != null) select.addValueChangeListener(listener);
+        return select;
+    }
+
+    private ComboBox getAccessoryAddonsCombo(String caption, List<AccessoryAddon> list, Property.ValueChangeListener listener) {
+        final BeanContainer<String, AccessoryAddon> container =
+                new BeanContainer<>(AccessoryAddon.class);
+        container.setBeanIdProperty(AccessoryAddon.ACCESSORY_ADDON_CODE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(true);
+        select.setWidth("250px");
+        select.setStyleName("designs-combo");
+        select.setContainerDataSource(container);
+        select.setItemIconPropertyId(AccessoryAddon.IMAGE_RESOURCE);
+        select.setItemCaptionPropertyId(AccessoryAddon.ACCESSORY_ADDON_TITLE);
+        if (listener != null) select.addValueChangeListener(listener);
+        return select;
+    }
+
     private ComboBox getColorsCombo(String caption, List<Color> list) {
 
         final BeanContainer<String, Color> container =
@@ -728,6 +882,7 @@ public class ModuleDetailsWindow extends Window {
         select.setFilteringMode(FilteringMode.CONTAINS);
         return select;
     }
+
 
     private ComboBox getSimpleItemFilledCombo(String caption, String dataType, Property.ValueChangeListener listener, String defaultCode) {
         List<LookupItem> list = new ArrayList<>(proposalDataProvider.getLookupItems(dataType));

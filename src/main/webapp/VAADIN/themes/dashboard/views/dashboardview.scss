@@ -360,4 +360,16 @@
   .margin-left-10 {
 	margin-left: 10px !important;
   }
+
+  .margin {
+	margin-left: 10px !important;
+	margin-right: 10px !important;
+  }
+  .vLayoutScroll > div {
+	overflow: auto !important;
+  }
+  .labelFont {
+	font-size: 11px
+  }
 }
+

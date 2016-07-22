@@ -73,7 +73,7 @@ public class ProposalHeader {
     private String createdBy;
     private Date updatedOn;
     private String updatedBy;
-    private String editFlag;
+    private String editFlag = EDIT.R.name();
 
     public int getId() {
         return id;

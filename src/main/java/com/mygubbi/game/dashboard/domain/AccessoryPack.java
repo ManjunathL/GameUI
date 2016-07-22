@@ -8,15 +8,18 @@ import java.util.List;
  */
 public class AccessoryPack {
 
-    private int code;
+    public static final String ACCESSORY_PACK_CODE = "code";
+    public static final String ACCESSORY_PACK_TITLE  = "title";
+
+    private String code;
     private String title;
     private List<Accessory> accessories=new ArrayList<>();
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(String code) {
         this.code = code;
     }
 

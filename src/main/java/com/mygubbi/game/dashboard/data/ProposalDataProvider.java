@@ -12,6 +12,8 @@ import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
@@ -33,6 +35,9 @@ public class ProposalDataProvider {
 
     private final DataProviderMode dataProviderMode;
     private final ObjectMapper mapper;
+
+    private static final Logger LOG = LogManager.getLogger(ProposalDataProvider.class);
+
 
     public static final String CATEGORY_LOOKUP = "category";
     public static final String ATTACHMENT_TYPE_LOOKUP = "attachmenttype";
@@ -404,6 +409,44 @@ public class ProposalDataProvider {
         }
     }
 
+
+    public List<AccessoryPack> getAccessoryPacks(String mgCode)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("module/accpacks", new HashMap<String, String>(){
+            {
+                put("mgCode", mgCode);
+            }
+        });
+        try {
+            AccessoryPack[] items = this.mapper.readValue(array.toString(), AccessoryPack[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<AccessoryAddon> getAccessoryAddons(String apCode)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("module/addonsforaccpack", new HashMap<String, String>(){
+            {
+                put("apCode", apCode);
+            }
+        });
+        try {
+            AccessoryAddon[] items = this.mapper.readValue(array.toString(), AccessoryAddon[].class);
+
+            ArrayList<AccessoryAddon> accessoryAddons = new ArrayList<>(Arrays.asList(items));
+            accessoryAddons.stream().forEach(AccessoryAddon::initImageResource);
+
+            return accessoryAddons;
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public List<Finish> getFinishes() {
         JSONArray array = dataProviderMode.getResourceArray("finishcodes", new HashMap<>());
         try {
@@ -416,13 +459,13 @@ public class ProposalDataProvider {
         }
     }
 
-    public Product mapAndUpdateProduct(Product product) {
+    public Product loadAndUpdateProduct(Product product) {
         try {
             product.setCreatedBy(getUserId());
             product.setUpdatedBy(getUserId());
             String productJson = this.mapper.writeValueAsString(product);
             JSONObject jsonObject = dataProviderMode.postResource(
-                    "product/mapandupdate", productJson);
+                    "product/loadandupdate", productJson);
 
             return this.mapper.readValue(jsonObject.toString(), Product.class);
         } catch (IOException e) {
@@ -467,24 +510,6 @@ public class ProposalDataProvider {
             }
         } catch (IOException | JSONException e) {
             throw new RuntimeException("Couldn't update product", e);
-        }
-    }
-
-    public List<MGModule> getMGModules(String extCode, String extDefCode) {
-        try {
-            JSONArray jsonArray = dataProviderMode.getResourceArray(
-                    "module/mgmodules", new HashMap<String, String>() {
-                        {
-                            put("extCode", extCode);
-                            if (extDefCode != null) put("extDefCode", extDefCode);
-                        }
-                    });
-
-            return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<MGModule>>() {
-            });
-
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't map modules", e);
         }
     }
 
@@ -538,6 +563,7 @@ public class ProposalDataProvider {
     public ModulePrice getModulePrice(Module module) {
         try {
             String moduleJson = this.mapper.writeValueAsString(module);
+            LOG.debug("Module Json : " + moduleJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "module/price", moduleJson);
             if (jsonObject.has("errors")) {
@@ -553,11 +579,7 @@ public class ProposalDataProvider {
     public List<ModuleAccessory> getModuleAccessories(String moduleCode) {
         try {
             JSONArray jsonArray = dataProviderMode.getResourceArray(
-                    "module/accessories", new HashMap<String, String>() {
-                        {
-                            put("mgCode", moduleCode);
-                        }
-                    });
+                    "module/accessories", new HashMap<String, String>());
 
             return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<ModuleAccessory>>() {
             });

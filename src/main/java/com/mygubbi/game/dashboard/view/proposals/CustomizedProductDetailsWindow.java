@@ -148,6 +148,7 @@ public class CustomizedProductDetailsWindow extends Window {
         vLayout.setExpandRatio(footerLayOut, 0.08f);
 
         handleState();
+        refreshPrice(null);
 
     }
 
@@ -243,8 +244,12 @@ public class CustomizedProductDetailsWindow extends Window {
         }
 
         if (totalModuleArea != 0) {
+            psftCost.setReadOnly(false);
             psftCost.setValue((totalCost / totalModuleArea) + "");
+            psftCost.setReadOnly(true);
+            psftCostWOAccessories.setReadOnly(false);
             psftCostWOAccessories.setValue((totalCostWOAccessories / totalModuleArea) + "");
+            psftCostWOAccessories.setReadOnly(true);
         }
 
     }
@@ -255,7 +260,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
-        Component component = ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
+        Component component = valueChangeEvent == null ? null : ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
 
         for (Module module : modules) {
 
@@ -320,21 +325,21 @@ public class CustomizedProductDetailsWindow extends Window {
         this.baseCarcassSelection = getSimpleItemFilledCombo("Base Carcass", ProposalDataProvider.CARCASS_LOOKUP, null);
         baseCarcassSelection.setRequired(true);
         binder.bind(baseCarcassSelection, BASE_CARCASS_CODE);
-        baseCarcassSelection.addValueChangeListener(this::refreshPrice);
         if (baseCarcassSelection.size() > 0) {
             String code = StringUtils.isNotEmpty(product.getBaseCarcassCode()) ? product.getBaseCarcassCode() : (String) baseCarcassSelection.getItemIds().iterator().next();
             baseCarcassSelection.setValue(code);
         }
+        baseCarcassSelection.addValueChangeListener(this::refreshPrice);
         formLayoutRight.addComponent(this.baseCarcassSelection);
 
         this.wallCarcassSelection = getSimpleItemFilledCombo("Wall Carcass", ProposalDataProvider.CARCASS_LOOKUP, null);
         wallCarcassSelection.setRequired(true);
         binder.bind(wallCarcassSelection, WALL_CARCASS_CODE);
-        wallCarcassSelection.addValueChangeListener(this::refreshPrice);
         if (wallCarcassSelection.size() > 0) {
             String code = StringUtils.isNotEmpty(product.getWallCarcassCode()) ? product.getWallCarcassCode() : (String) wallCarcassSelection.getItemIds().iterator().next();
             wallCarcassSelection.setValue(code);
         }
+        wallCarcassSelection.addValueChangeListener(this::refreshPrice);
         formLayoutRight.addComponent(this.wallCarcassSelection);
 
         this.finishTypeSelection = getSimpleItemFilledCombo("Finish Material", ProposalDataProvider.FINISH_TYPE_LOOKUP, null);
@@ -352,13 +357,13 @@ public class CustomizedProductDetailsWindow extends Window {
         this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
         shutterFinishSelection.setRequired(true);
         binder.bind(shutterFinishSelection, SHUTTER_FINISH_CODE);
-        shutterFinishSelection.addValueChangeListener(this::refreshPrice);
         this.shutterFinishSelection.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, Finish>) this.shutterFinishSelection.getContainerDataSource()).addAll(filteredShutterFinish);
         if (shutterFinishSelection.size() > 0) {
             String code = StringUtils.isNotEmpty(product.getFinishCode()) ? product.getFinishCode() : (String) shutterFinishSelection.getItemIds().iterator().next();
             shutterFinishSelection.setValue(code);
         }
+        shutterFinishSelection.addValueChangeListener(this::refreshPrice);
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
         formLayoutRight.addComponent(getQuoteUploadControl());
@@ -447,7 +452,7 @@ public class CustomizedProductDetailsWindow extends Window {
             String filename = event.getFilename();
             String quoteFilePath = getUploadBasePath() + "/" + filename;
             product.setQuoteFilePath(quoteFilePath);
-            Product productResult = proposalDataProvider.mapAndUpdateProduct(product);
+            Product productResult = proposalDataProvider.loadAndUpdateProduct(product);
             product.setId(productResult.getId());
             product.setModules(productResult.getModules());
             product.setType(TYPES.CUSTOMIZED.name());
@@ -459,16 +464,13 @@ public class CustomizedProductDetailsWindow extends Window {
             modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
             modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
-            updateTotalAmount();
+            refreshPrice(null);
 
             if (product.hasImportErrorStatus()) {
                 NotificationUtil.showNotification("Error in mapping module(s), please upload new sheet!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 disableSave();
-            } else if (product.accessorryPacksSelected()) {
-                enableSave();
-                NotificationUtil.showNotification("File uploaded successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             } else {
-                disableSave();
+                enableSave();
             }
             LOG.debug("Successfully uploaded - " + filename);
         });
@@ -526,7 +528,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setSizeFull();
         modulesGrid.setResponsive(true);
         modulesGrid.setColumnReorderingAllowed(true);
-        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.IMPORTED_MODULE_TEXT, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
+        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.MG_MODULE_CODE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
 
         modulesGrid.setCellStyleGenerator(cell -> {
             if (cell.getPropertyId().equals(Module.CARCASS_MATERIAL)

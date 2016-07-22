@@ -2,6 +2,7 @@ package com.mygubbi.game.dashboard.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by nitinpuri on 01-05-2016.
@@ -37,11 +38,15 @@ public class Module implements Cloneable {
     public static final String AMOUNT = "amount";
     public static final String IMPORT_STATUS = "importStatus";
     public static final String REMARKS = "remarks";
+    public static final String DESCRIPTION = "description";
+    public static final String DIMENSION = "dimension";
+    public static  final String EXPOSED_SIDES = "expSides";
+    public static  final String EXPOSED_BOTTOM = "expBottom";
+
 
     private int seq;
     private String unitType;
     private String extCode;
-    private String extDefCode;
     private String extText;
     private String mgCode;
     private String carcass;
@@ -57,10 +62,54 @@ public class Module implements Cloneable {
     private double amount;
     private String remarks;
     private String importStatus;
+    private String description;
+    private String dimension;
+    private String imagePath;
+    private String expSides;
+    private String expBottom;
     private double area;
     private double amountWOAccessories;
+    private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
 
-    private List<AccessoryPack> accessoryPacks=new ArrayList<>();
+    public String getExpSides() {
+        return expSides;
+    }
+
+    public void setExpSides(String expSides) {
+        this.expSides = expSides;
+    }
+
+    public String getExpBottom() {
+        return expBottom;
+    }
+
+    public void setExpBottom(String expBottom) {
+        this.expBottom = expBottom;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(String dimension) {
+        this.dimension = dimension;
+    }
 
     @Override
     public Object clone() {
@@ -133,14 +182,6 @@ public class Module implements Cloneable {
 
     public void setImportStatus(String importStatus) {
         this.importStatus = importStatus;
-    }
-
-    public String getExtDefCode() {
-        return extDefCode;
-    }
-
-    public void setExtDefCode(String extDefCode) {
-        this.extDefCode = extDefCode;
     }
 
     public String getCarcassCode() {
@@ -224,11 +265,11 @@ public class Module implements Cloneable {
     }
 
 
-    public List<AccessoryPack> getAccessoryPacks() {
+    public List<ModuleAccessoryPack> getAccessoryPacks() {
         return accessoryPacks;
     }
 
-    public void setAccessoryPacks(List<AccessoryPack> accessoryPacks) {
+    public void setAccessoryPacks(List<ModuleAccessoryPack> accessoryPacks) {
         this.accessoryPacks = accessoryPacks;
     }
 

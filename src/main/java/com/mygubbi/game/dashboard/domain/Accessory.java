@@ -1,23 +1,23 @@
 package com.mygubbi.game.dashboard.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.vaadin.server.FileResource;
+
+import java.io.File;
 
 /**
  * Created by test on 15-07-2016.
  */
 public class Accessory {
 
-    private int code;
+    private String code;
     private String title;
     private String imagePath;
-    private List<AccessoryAddon> accessoryAddons=new ArrayList<>();
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -37,11 +37,4 @@ public class Accessory {
         this.imagePath = imagePath;
     }
 
-    public List<AccessoryAddon> getAccessoryAddons() {
-        return accessoryAddons;
-    }
-
-    public void setAccessoryAddons(List<AccessoryAddon> accessoryAddons) {
-        this.accessoryAddons = accessoryAddons;
-    }
 }
