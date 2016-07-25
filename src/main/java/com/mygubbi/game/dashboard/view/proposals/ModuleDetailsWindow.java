@@ -104,7 +104,7 @@ public class ModuleDetailsWindow extends Window {
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("75%");
-        setHeight("87%");
+        setHeight("90%");
         setClosable(false);
         setCaption("Edit Module Configuration for " + product.getTitle());
 
@@ -505,7 +505,7 @@ public class ModuleDetailsWindow extends Window {
                 VerticalLayout verticalLayout=new VerticalLayout();
                 Image img = new Image("", new FileResource(sourceFile));
                 img.setWidth("100px");
-                img.setHeight("100px");
+                img.setHeight("90px");
                 verticalLayout.addComponent(img);
                 verticalLayout.setComponentAlignment(img, Alignment.MIDDLE_LEFT);
                 Label c = new Label(accessory.getTitle());
@@ -857,7 +857,7 @@ public class ModuleDetailsWindow extends Window {
         ComboBox select = new ComboBox(caption);
         select.setNullSelectionAllowed(true);
         select.setWidth("250px");
-        select.setStyleName("designs-combo");
+        select.setStyleName("designs-combo-addons");
         select.setContainerDataSource(container);
         select.setItemIconPropertyId(AccessoryAddon.IMAGE_RESOURCE);
         select.setItemCaptionPropertyId(AccessoryAddon.ACCESSORY_ADDON_TITLE);

@@ -46,6 +46,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.*;
+import static java.lang.StrictMath.round;
 
 @SuppressWarnings("serial")
 public class CustomizedProductDetailsWindow extends Window {
@@ -245,10 +246,10 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (totalModuleArea != 0) {
             psftCost.setReadOnly(false);
-            psftCost.setValue((totalCost / totalModuleArea) + "");
+            psftCost.setValue(round(totalCost / totalModuleArea) + "");
             psftCost.setReadOnly(true);
             psftCostWOAccessories.setReadOnly(false);
-            psftCostWOAccessories.setValue((totalCostWOAccessories / totalModuleArea) + "");
+            psftCostWOAccessories.setValue(round(totalCostWOAccessories / totalModuleArea) + "");
             psftCostWOAccessories.setReadOnly(true);
         }
 
@@ -299,7 +300,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     LOG.info("asking price for module - " + module.toString());
                     LOG.info("existing amount - " + module.getAmount());
                     ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
-                    double amount = modulePrice.getTotalCost();
+                    double amount = round(modulePrice.getTotalCost());
                     LOG.info("got new amount - " + amount);
                     //total += amount;
                     boundModules.get(boundModules.indexOf(module)).setAmount(amount);
