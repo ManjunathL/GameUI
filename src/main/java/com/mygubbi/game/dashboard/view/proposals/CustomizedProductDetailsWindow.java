@@ -79,8 +79,8 @@ public class CustomizedProductDetailsWindow extends Window {
     private BeanItemContainer<Module> moduleContainer;
     private Grid modulesGrid;
     private TextField totalAmount;
-    private TextField psftCost;
-    private TextField psftCostWOAccessories;
+    private TextField areaInSft;
+    private TextField costWithoutAccessories;
     private FileAttachmentComponent fileAttachmentComponent;
     private BeanItemContainer<AddonProduct> addonsContainer;
     private Grid addonsGrid;
@@ -209,48 +209,43 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutLeft.addComponent(this.shutterDesign);
 
-        psftCost = new TextField("<h2>Total Cost (psft):</h2>");
-        psftCost.setValue("0");
-        psftCost.setImmediate(true);
-        psftCost.setStyleName("amount-text");
-        psftCost.setReadOnly(true);
-        psftCost.setCaptionAsHtml(true);
+        areaInSft = new TextField("Area in sft : ");
+        areaInSft.setValue("0");
+        areaInSft.setImmediate(true);
+        areaInSft.setReadOnly(true);
         formLayoutLeft.setSpacing(true);
-        formLayoutLeft.addComponent(psftCost);
+        formLayoutLeft.addComponent(areaInSft);
 
-        psftCostWOAccessories = new TextField("<h2>Total Cost w/o Accessories (psft):</h2>");
-        psftCostWOAccessories.setValue("0");
-        psftCostWOAccessories.setImmediate(true);
-        psftCostWOAccessories.setStyleName("amount-text");
-        psftCostWOAccessories.setReadOnly(true);
-        psftCostWOAccessories.setCaptionAsHtml(true);
+        costWithoutAccessories = new TextField("Cost w/o Accessories : ");
+        costWithoutAccessories.setValue("0");
+        costWithoutAccessories.setImmediate(true);
+        costWithoutAccessories.setReadOnly(true);
         formLayoutLeft.setSpacing(true);
-        formLayoutLeft.addComponent(psftCostWOAccessories);
+        formLayoutLeft.addComponent(costWithoutAccessories);
 
         return formLayoutLeft;
     }
 
     private void updatePsftCosts() {
 
-        List<Module> modules = product.getModules();
+        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
-        double totalCost = 0;
         double totalCostWOAccessories = 0;
         double totalModuleArea = 0;
 
         for (Module module : modules) {
-            totalCost += module.getAmount();
             totalCostWOAccessories += module.getAmountWOAccessories();
             totalModuleArea += module.getArea();
         }
 
+        LOG.debug("totalCostWOAccessories:" + totalCostWOAccessories + " | totalModuleArea:" + totalModuleArea);
         if (totalModuleArea != 0) {
-            psftCost.setReadOnly(false);
-            psftCost.setValue(round(totalCost / totalModuleArea) + "");
-            psftCost.setReadOnly(true);
-            psftCostWOAccessories.setReadOnly(false);
-            psftCostWOAccessories.setValue(round(totalCostWOAccessories / totalModuleArea) + "");
-            psftCostWOAccessories.setReadOnly(true);
+            areaInSft.setReadOnly(false);
+            areaInSft.setValue(round(totalModuleArea) + " sft");
+            areaInSft.setReadOnly(true);
+            costWithoutAccessories.setReadOnly(false);
+            costWithoutAccessories.setValue(round(totalCostWOAccessories) + "");
+            costWithoutAccessories.setReadOnly(true);
         }
 
     }
@@ -301,11 +296,13 @@ public class CustomizedProductDetailsWindow extends Window {
                     LOG.info("existing amount - " + module.getAmount());
                     ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
                     double amount = round(modulePrice.getTotalCost());
+                    double areainsft = round(modulePrice.getModuleArea());
+                    double costwoaccessories = round(modulePrice.getWoodworkCost());
                     LOG.info("got new amount - " + amount);
                     //total += amount;
                     boundModules.get(boundModules.indexOf(module)).setAmount(amount);
-                    boundModules.get(boundModules.indexOf(module)).setAmountWOAccessories(modulePrice.getWoodworkCost());
-                    boundModules.get(boundModules.indexOf(module)).setArea(modulePrice.getModuleArea());
+                    boundModules.get(boundModules.indexOf(module)).setAmountWOAccessories(costwoaccessories);
+                    boundModules.get(boundModules.indexOf(module)).setArea(areainsft);
                     moduleContainer.getItem(module).getItemProperty(Module.AMOUNT).setValue(amount);
                 } else {
                     //total += module.getAmount();
@@ -737,6 +734,7 @@ public class CustomizedProductDetailsWindow extends Window {
                                     addonsContainer.addAll(addons);
                                     addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
                                     updateTotalAmount();
+                                    updatePsftCosts();
                                 }
                             });
                 }
@@ -909,9 +907,11 @@ public class CustomizedProductDetailsWindow extends Window {
     private void updateTotalAmount() {
         double amount = 0;
 
+
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
         for (Module module : modules) {
             amount += module.getAmount();
+
         }
 
         List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
@@ -935,7 +935,18 @@ public class CustomizedProductDetailsWindow extends Window {
         moduleContainer.addAll(modules);
         modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
         modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
+
+        String prevTotal = this.totalAmount.getValue();
         updateTotalAmount();
+        LOG.debug("Prev: " + prevTotal + " Now:" + this.totalAmount.getValue() + " inside moduleUpdated");
+
+        String prevArea = this.areaInSft.getValue();
+        String prevTotalwoacc = this.costWithoutAccessories.getValue();
+
+        updatePsftCosts();
+
+        LOG.debug("Prev: " + prevArea + " Now:" + this.areaInSft.getValue() + " inside moduleUpdated");
+        LOG.debug("Prev: " + prevTotalwoacc + " Now:" + this.costWithoutAccessories.getValue() + " inside moduleUpdated");
 
         if (event.isLoadNext()) {
             loadNextModule(event.getModuleIndex());

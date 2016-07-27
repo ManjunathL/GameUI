@@ -66,7 +66,6 @@ public class ModuleDetailsWindow extends Window {
     private ComboBox addons32;
     private ComboBox addons33;
 
-
     private ComboBox shutterFinishSelection;
     private ComboBox finishTypeSelection;
 
@@ -78,7 +77,6 @@ public class ModuleDetailsWindow extends Window {
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final BeanFieldGroup<Module> binder = new BeanFieldGroup<>(Module.class);
-
 
     private List<AccessoryAddon> accessoryAddonsList;
     private List<AccessoryPack> accessoryPackList;
@@ -92,6 +90,9 @@ public class ModuleDetailsWindow extends Window {
     private Button applyNextButton;
     private HorizontalLayout accessoryImageLayout;
 
+    private double calculatedArea = -1;
+    private double calculatedAmountWOAccessories = -1;
+
     private ModuleDetailsWindow(Module module, Product product, boolean readOnly, int moduleIndex) {
 
         this.product = product;
@@ -103,7 +104,7 @@ public class ModuleDetailsWindow extends Window {
 
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("75%");
+        setWidth("80%");
         setHeight("90%");
         setClosable(false);
         setCaption("Edit Module Configuration for " + product.getTitle());
@@ -530,32 +531,34 @@ public class ModuleDetailsWindow extends Window {
 
     private void refreshPrice() {
 
-        Module moduleForPrice = new Module();
-        moduleForPrice.setCarcassCode(removeDefaultPrefix((String) carcassMaterialSelection.getValue()));
-        moduleForPrice.setFinishCode(removeDefaultPrefix((String) shutterFinishSelection.getValue()));
-
-
-        moduleForPrice.setMgCode(module.getMgCode());
-        LOG.info("Asking for module price - " + moduleForPrice.toString());
-        moduleForPrice.setSeq(module.getSeq());
-        moduleForPrice.setExtCode(module.getExtCode());
-
-        List<ModuleAccessoryPack> accPacks = getModuleAccessoryPacks();
-
-        moduleForPrice.setAccessoryPacks(accPacks);
-
-        moduleForPrice.setExpSides((String) exposedSidesCombo.getValue());
-        moduleForPrice.setExpBottom((String) exposedBottomCombo.getValue());
-
-        ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
+        ModulePrice modulePrice = this.recalculatePriceForModule();
         LOG.info("Got price - " + modulePrice.getTotalCost());
 
         totalAmount.setReadOnly(false);
         totalAmount.setValue(modulePrice.getTotalCost() + "");
         totalAmount.setReadOnly(true);
 
-        checkDefaultsOverridden();
+        this.calculatedArea = modulePrice.getModuleArea();
+        this.calculatedAmountWOAccessories = modulePrice.getWoodworkCost();
 
+        checkDefaultsOverridden();
+    }
+
+    private ModulePrice recalculatePriceForModule() {
+        Module moduleForPrice = new Module();
+        moduleForPrice.setCarcassCode(removeDefaultPrefix((String) carcassMaterialSelection.getValue()));
+        moduleForPrice.setFinishCode(removeDefaultPrefix((String) shutterFinishSelection.getValue()));
+        moduleForPrice.setMgCode(module.getMgCode());
+        moduleForPrice.setSeq(module.getSeq());
+        moduleForPrice.setExtCode(module.getExtCode());
+
+        List<ModuleAccessoryPack> accPacks = getModuleAccessoryPacks();
+        moduleForPrice.setAccessoryPacks(accPacks);
+        moduleForPrice.setExpSides((String) exposedSidesCombo.getValue());
+        moduleForPrice.setExpBottom((String) exposedBottomCombo.getValue());
+
+        LOG.info("Asking for module price - " + moduleForPrice.toString());
+        return proposalDataProvider.getModulePrice(moduleForPrice);
     }
 
     private List<ModuleAccessoryPack> getModuleAccessoryPacks() {
@@ -755,7 +758,10 @@ public class ModuleDetailsWindow extends Window {
                 module.setFinish(getDefaultText(finishTitle));
             }
 
+            if (this.calculatedArea != -1) module.setArea(this.calculatedArea);
+            if (this.calculatedAmountWOAccessories != -1) module.setAmountWOAccessories(this.calculatedAmountWOAccessories);
 
+            LOG.debug("this.calculatedArea:" + this.calculatedArea + " | this.calculatedAmountWOAccessories:" + this.calculatedAmountWOAccessories);
 
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
             close();
@@ -841,7 +847,7 @@ public class ModuleDetailsWindow extends Window {
 
         ComboBox select = new ComboBox(caption);
         select.setNullSelectionAllowed(true);
-        select.setWidth("250px");
+        select.setWidth("280px");
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(AccessoryPack.ACCESSORY_PACK_TITLE);
         if (listener != null) select.addValueChangeListener(listener);
@@ -856,10 +862,10 @@ public class ModuleDetailsWindow extends Window {
 
         ComboBox select = new ComboBox(caption);
         select.setNullSelectionAllowed(true);
-        select.setWidth("250px");
-        select.setStyleName("designs-combo-addons");
+        select.setWidth("280px");
+//        select.setStyleName("designs-combo-addons");
         select.setContainerDataSource(container);
-        select.setItemIconPropertyId(AccessoryAddon.IMAGE_RESOURCE);
+//        select.setItemIconPropertyId(AccessoryAddon.IMAGE_RESOURCE);
         select.setItemCaptionPropertyId(AccessoryAddon.ACCESSORY_ADDON_TITLE);
         if (listener != null) select.addValueChangeListener(listener);
         return select;

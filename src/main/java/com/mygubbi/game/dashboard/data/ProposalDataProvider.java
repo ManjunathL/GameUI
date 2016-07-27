@@ -496,6 +496,20 @@ public class ProposalDataProvider {
 
     }
 
+    public String getSalesOrderExtract(ProductSelections productSelections) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productSelections);
+            JSONObject obj = dataProviderMode.postResource("proposal/downloadsalesorder", productSelectionsJson);
+            return obj.getString("salesorderFile");
+        } catch (JSONException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
+
+
     public boolean updateProduct(Product product) {
         try {
             product.setUpdatedBy(getUserId());

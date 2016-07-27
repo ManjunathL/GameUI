@@ -361,6 +361,23 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.setExpandRatio(left, 3);
 
         HorizontalLayout right = new HorizontalLayout();
+
+        Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        soExtractButton.setCaptionAsHtml(true);
+        soExtractButton.setIcon(FontAwesome.DOWNLOAD);
+        soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        soExtractButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        soExtractButton.addStyleName("margin-right-10");
+        soExtractButton.setWidth("120px");
+        soExtractButton.addClickListener(this::checkSingleProductSelection);
+
+        StreamResource soExtractResource = createSalesOrderResource();
+        FileDownloader soExtractDownloader = new FileDownloader(soExtractResource);
+        soExtractDownloader.extend(soExtractButton);
+        right.addComponent(soExtractButton);
+        right.setComponentAlignment(soExtractButton, Alignment.MIDDLE_RIGHT);
+
         Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         downloadButton.setCaptionAsHtml(true);
         downloadButton.setIcon(FontAwesome.DOWNLOAD);
@@ -600,6 +617,26 @@ public class CreateProposalsView extends Panel implements View {
         };
         return new StreamResource(source, "JobCard.xlsx");
     }
+
+    private StreamResource createSalesOrderResource() {
+        StreamResource.StreamSource source = () -> {
+
+            if (this.productSelections.getProductIds().size() == 1) {
+                String salesOrderFile = proposalDataProvider.getSalesOrderExtract(this.productSelections);
+                InputStream input = null;
+                try {
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(salesOrderFile)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return input;
+            } else {
+                return null;
+            }
+        };
+        return new StreamResource(source, "SalesOrder.xlsx");
+    }
+
 
     private void close(MenuBar.MenuItem selectedItem) {
 

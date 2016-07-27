@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.lang.StrictMath.round;
+
 /**
  * Created by nitinpuri on 01-05-2016.
  */
@@ -169,7 +171,7 @@ public class Module implements Cloneable {
     }
 
     public double getAmount() {
-        return amount;
+        return round(amount);
     }
 
     public void setAmount(double amount) {
