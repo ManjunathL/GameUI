@@ -20,10 +20,7 @@ import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.SelectionEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.StreamResource;
+import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -32,6 +29,9 @@ import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 
@@ -52,6 +52,9 @@ import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
  * Created by test on 31-03-2016.
  */
 public class CreateProposalsView extends Panel implements View {
+
+    private static final Logger LOG = LogManager.getLogger(CreateProposalsView.class);
+
 
 
     private final String NEW_TITLE = "New Proposal";
@@ -370,10 +373,9 @@ public class CreateProposalsView extends Panel implements View {
         soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
         soExtractButton.addStyleName("margin-right-10");
         soExtractButton.setWidth("120px");
-        soExtractButton.addClickListener(this::checkSingleProductSelection);
+        soExtractButton.addClickListener(this::doSalesOrderDownloadValidation);
 
-        StreamResource soExtractResource = createSalesOrderResource();
-        FileDownloader soExtractDownloader = new FileDownloader(soExtractResource);
+        FileDownloader soExtractDownloader = this.getSOExtractFileDownloader();
         soExtractDownloader.extend(soExtractButton);
         right.addComponent(soExtractButton);
         right.setComponentAlignment(soExtractButton, Alignment.MIDDLE_RIGHT);
@@ -455,9 +457,29 @@ public class CreateProposalsView extends Panel implements View {
         return horizontalLayout;
     }
 
+    private FileDownloader getSOExtractFileDownloader() {
+        StreamResource soExtractResource =  createSalesOrderResource();
+
+        FileDownloader downloader = new FileDownloader(soExtractResource) {
+            @Override
+            public boolean handleConnectorRequest(VaadinRequest request,
+                                                  VaadinResponse response, String path) throws IOException {
+                soExtractResource.setFilename(getSOFilename());
+                return super.handleConnectorRequest(request, response, path);
+            }
+        };
+        return downloader;
+    }
+
     private void checkSingleProductSelection(Button.ClickEvent clickEvent) {
         if (this.productSelections.getProductIds().size() != 1) {
             NotificationUtil.showNotification("Please select a single product to download its Job Card.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+        }
+    }
+
+    private void doSalesOrderDownloadValidation(Button.ClickEvent clickEvent) {
+        if (this.productSelections.getProductIds().size() != 1) {
+            NotificationUtil.showNotification("Please select a single product to download SO extract.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
         }
     }
 
@@ -620,8 +642,6 @@ public class CreateProposalsView extends Panel implements View {
 
     private StreamResource createSalesOrderResource() {
 
-        String filename = this.getSOFilename();
-
         StreamResource.StreamSource source = () -> {
 
             if (this.productSelections.getProductIds().size() == 1) {
@@ -637,7 +657,7 @@ public class CreateProposalsView extends Panel implements View {
                 return null;
             }
         };
-        return new StreamResource(source, filename);
+        return new StreamResource(source, "so-initial.xlsx");
     }
 
     private String getSOFilename()
@@ -654,6 +674,10 @@ public class CreateProposalsView extends Panel implements View {
                     break;
                 }
             }
+            String cname = this.proposalHeader.getCname();
+            String crmid = this.proposalHeader.getCrmId();
+            LOG.debug("name : " + cname +" | " + "crm id : " + " | " + crmid + "product title" + productTitle );
+
             return "SO-" + this.proposalHeader.getCname() + "-" + this.proposalHeader.getCrmId() + "-" + productTitle + ".xlsx";
         }
         return "SO.xlsx";

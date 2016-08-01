@@ -252,11 +252,11 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
         List<Module> modules = product.getModules();
-        //double total = 0;
 
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
         Component component = valueChangeEvent == null ? null : ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
+        this.noPricingErrors();
 
         for (Module module : modules) {
 
@@ -286,25 +286,33 @@ public class CustomizedProductDetailsWindow extends Window {
                 }
             }
 
-            if (StringUtils.isNotEmpty(module.getMgCode())) {
+            if (StringUtils.isNotEmpty(module.getMgCode()))
+            {
                 String unitType = module.getUnitType();
 
                 if ((unitType.toLowerCase().contains(Module.UnitTypes.base.name()) && component != wallCarcassSelection)
                         || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)) {
 
-                    LOG.info("asking price for module - " + module.toString());
-                    LOG.info("existing amount - " + module.getAmount());
-                    ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
-                    double amount = round(modulePrice.getTotalCost());
-                    double areainsft = round(modulePrice.getModuleArea());
-                    double costwoaccessories = round(modulePrice.getWoodworkCost());
-                    LOG.info("got new amount - " + amount);
-                    //total += amount;
+                    double amount = 0;
+                    double areainsft = 0;
+                    double costwoaccessories = 0;
+                    try {
+                        ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
+                        amount = round(modulePrice.getTotalCost());
+                        areainsft = round(modulePrice.getModuleArea());
+                        costwoaccessories = round(modulePrice.getWoodworkCost());
+                    } catch (Exception e)
+                    {
+                        this.showPricingErrors();
+                    }
+
                     boundModules.get(boundModules.indexOf(module)).setAmount(amount);
                     boundModules.get(boundModules.indexOf(module)).setAmountWOAccessories(costwoaccessories);
                     boundModules.get(boundModules.indexOf(module)).setArea(areainsft);
                     moduleContainer.getItem(module).getItemProperty(Module.AMOUNT).setValue(amount);
-                } else {
+                }
+                else
+                {
                     //total += module.getAmount();
                 }
             }
@@ -313,6 +321,17 @@ public class CustomizedProductDetailsWindow extends Window {
         updateTotalAmount();
         updatePsftCosts();
 
+    }
+
+    private void showPricingErrors()
+    {
+        disableSave();
+        NotificationUtil.showNotification("Some modules could not be priced!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+    }
+
+    private void noPricingErrors()
+    {
+        enableSave();
     }
 
     private FormLayout buildAddItemBasicFormRight() {
@@ -507,7 +526,7 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private void disableSave() {
-        saveBtn.setEnabled(false);
+        //saveBtn.setEnabled(false);
     }
 
     private String getUploadBasePath() {
@@ -561,13 +580,13 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             Module module = (Module) rendererClickEvent.getItemId();
             boolean unmappableModulePresent = isAnyModuleUnmappable();
-            //if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
-            if (!unmappableModulePresent) {
+            if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
+            //if (!unmappableModulePresent) {
                 boolean readOnly = isProposalReadonly();
                 int index = modulesGrid.getContainerDataSource().indexOfId(module);
                 ModuleDetailsWindow.open(module, createProductFromUI(), readOnly, index + 1);
             } else {
-                NotificationUtil.showNotification("Cannot proceed as there are unmapped module(s).", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Cannot proceed as this module is not setup.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
         }));
 
@@ -938,19 +957,30 @@ public class CustomizedProductDetailsWindow extends Window {
 
         String prevTotal = this.totalAmount.getValue();
         updateTotalAmount();
-        LOG.debug("Prev: " + prevTotal + " Now:" + this.totalAmount.getValue() + " inside moduleUpdated");
-
-        String prevArea = this.areaInSft.getValue();
-        String prevTotalwoacc = this.costWithoutAccessories.getValue();
 
         updatePsftCosts();
-
-        LOG.debug("Prev: " + prevArea + " Now:" + this.areaInSft.getValue() + " inside moduleUpdated");
-        LOG.debug("Prev: " + prevTotalwoacc + " Now:" + this.costWithoutAccessories.getValue() + " inside moduleUpdated");
 
         if (event.isLoadNext()) {
             loadNextModule(event.getModuleIndex());
         }
+
+        this.checkAndEnableSave();
+    }
+
+    private void checkAndEnableSave()
+    {
+        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+        for (Module module : modules)
+        {
+            double amount=module.getAmount();
+            LOG.debug("Amount module : " + amount);
+            if (module.getAmount() == 0)
+            {
+                this.disableSave();
+                return;
+            }
+        }
+        this.enableSave();
     }
 
     private void loadNextModule(int currentModuleIndex) {

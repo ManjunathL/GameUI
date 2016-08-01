@@ -14,6 +14,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
@@ -369,15 +370,15 @@ public class ModuleDetailsWindow extends Window {
 
         this.addons11 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
         formLayout.addComponent(this.addons11);
-        addons11.addValueChangeListener(this::refreshPrice);
+        addons11.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons12 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
         formLayout.addComponent(this.addons12);
-        addons12.addValueChangeListener(this::refreshPrice);
+        addons12.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons13 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
         formLayout.addComponent(this.addons13);
-        addons13.addValueChangeListener(this::refreshPrice);
+        addons13.addValueChangeListener(this::addImageAndrefreshPrice);
 
         return formLayout;
     }
@@ -413,15 +414,15 @@ public class ModuleDetailsWindow extends Window {
 
         this.addons21 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
         formLayout.addComponent(this.addons21);
-        addons21.addValueChangeListener(this::refreshPrice);
+        addons21.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons22 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
         formLayout.addComponent(this.addons22);
-        addons22.addValueChangeListener(this::refreshPrice);
+        addons22.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons23 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
         formLayout.addComponent(this.addons23);
-        addons23.addValueChangeListener(this::refreshPrice);
+        addons23.addValueChangeListener(this::addImageAndrefreshPrice);
 
         return formLayout;
     }
@@ -443,15 +444,15 @@ public class ModuleDetailsWindow extends Window {
 
         this.addons31 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
         formLayout.addComponent(this.addons31);
-        addons31.addValueChangeListener(this::refreshPrice);
+        addons31.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons32 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
         formLayout.addComponent(this.addons32);
-        addons32.addValueChangeListener(this::refreshPrice);
+        addons32.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons33 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
         formLayout.addComponent(this.addons33);
-        addons33.addValueChangeListener(this::refreshPrice);
+        addons33.addValueChangeListener(this::addImageAndrefreshPrice);
 
         return formLayout;
     }
@@ -481,44 +482,59 @@ public class ModuleDetailsWindow extends Window {
     private void refreshAccessoryImages() {
         emptyAccessoryImages();
 
-        String apCode1 = (String) accessoryPack1.getValue();
-        if (apCode1 != null) {
-            List<Accessory> accessories1 = getAccessories(apCode1, accessoryPack1);
-            populateAccessoryImages(accessories1);
-        }
-        String apCode2 = (String) accessoryPack2.getValue();
-        if (apCode2 != null) {
-            List<Accessory> accessories2 = getAccessories(apCode2, accessoryPack2);
-            populateAccessoryImages(accessories2);
-        }
-        String apCode3 = (String) accessoryPack3.getValue();
-        if (apCode3 != null) {
-            List<Accessory> accessories3 = getAccessories(apCode3, accessoryPack3);
-            populateAccessoryImages(accessories3);
+        this.validateAndAddAccessoryPackImages((String) accessoryPack1.getValue(), accessoryPack1);
+        this.validateAndAddAccessoryPackImages((String) accessoryPack2.getValue(), accessoryPack2);
+        this.validateAndAddAccessoryPackImages((String) accessoryPack3.getValue(), accessoryPack3);
+
+        this.addAddonImageToPanel(this.addons11);
+        this.addAddonImageToPanel(this.addons12);
+        this.addAddonImageToPanel(this.addons13);
+        this.addAddonImageToPanel(this.addons21);
+        this.addAddonImageToPanel(this.addons22);
+        this.addAddonImageToPanel(this.addons23);
+        this.addAddonImageToPanel(this.addons31);
+        this.addAddonImageToPanel(this.addons32);
+        this.addAddonImageToPanel(this.addons33);
+
+    }
+
+    private void addAddonImageToPanel(ComboBox addonCombo) {
+        Object selectedValue = addonCombo.getValue();
+        if (selectedValue != null)
+        {
+            AccessoryAddon addon = (AccessoryAddon) ((BeanItem) addonCombo.getItem(selectedValue)).getBean();
+            if (addon != null) this.addImageToAccessoryPanel(addon.getImagePath(), addon.getTitle());
         }
     }
 
-    private void populateAccessoryImages(List<Accessory> accessories) {
-        for (Accessory accessory : accessories) {
-            File sourceFile = new File(basePath + accessory.getImagePath());
-            LOG.info("image path : " + sourceFile);
-            if (sourceFile.exists()) {
-                VerticalLayout verticalLayout=new VerticalLayout();
-                Image img = new Image("", new FileResource(sourceFile));
-                img.setWidth("100px");
-                img.setHeight("90px");
-                verticalLayout.addComponent(img);
-                verticalLayout.setComponentAlignment(img, Alignment.MIDDLE_LEFT);
-                Label c = new Label(accessory.getTitle());
-                c.setStyleName("labelFont");
-                c.setWidth("150px");
-                c.setHeight("40px");
-                verticalLayout.addComponent(c);
-                verticalLayout.setComponentAlignment(c, Alignment.MIDDLE_CENTER);
-                accessoryImageLayout.addComponent(verticalLayout);
+    private void validateAndAddAccessoryPackImages(String apCode, ComboBox accessoryPackCombo) {
+        if (apCode != null)
+        {
+            for (Accessory accessory : this.getAccessories(apCode, accessoryPackCombo)) {
+                this.addImageToAccessoryPanel(accessory.getImagePath(), accessory.getTitle());
             }
-            accessoryImageLayout.setSpacing(true);
         }
+    }
+
+    private void addImageToAccessoryPanel(String imagePath, String title) {
+        File sourceFile = new File(basePath + imagePath);
+        LOG.info("image path : " + sourceFile);
+        if (sourceFile.exists()) {
+            VerticalLayout verticalLayout=new VerticalLayout();
+            Image img = new Image("", new FileResource(sourceFile));
+            img.setWidth("100px");
+            img.setHeight("90px");
+            verticalLayout.addComponent(img);
+            verticalLayout.setComponentAlignment(img, Alignment.MIDDLE_LEFT);
+            Label c = new Label(title);
+            c.setStyleName("labelFont");
+            c.setWidth("150px");
+            c.setHeight("40px");
+            verticalLayout.addComponent(c);
+            verticalLayout.setComponentAlignment(c, Alignment.MIDDLE_CENTER);
+            accessoryImageLayout.addComponent(verticalLayout);
+        }
+        accessoryImageLayout.setSpacing(true);
     }
 
     private List<Accessory> getAccessories(String apCode1, ComboBox accessoryPack) {
@@ -532,16 +548,33 @@ public class ModuleDetailsWindow extends Window {
     private void refreshPrice() {
 
         ModulePrice modulePrice = this.recalculatePriceForModule();
-        LOG.info("Got price - " + modulePrice.getTotalCost());
 
-        totalAmount.setReadOnly(false);
-        totalAmount.setValue(modulePrice.getTotalCost() + "");
-        totalAmount.setReadOnly(true);
-
-        this.calculatedArea = modulePrice.getModuleArea();
-        this.calculatedAmountWOAccessories = modulePrice.getWoodworkCost();
+        if (modulePrice != null)
+        {
+            totalAmount.setReadOnly(false);
+            totalAmount.setValue(modulePrice.getTotalCost() + "");
+            totalAmount.setReadOnly(true);
+            this.calculatedArea = modulePrice.getModuleArea();
+            this.calculatedAmountWOAccessories = modulePrice.getWoodworkCost();
+            this.noPricingErrors();
+        }
+        else
+        {
+            this.showPricingErrors();
+        }
 
         checkDefaultsOverridden();
+    }
+
+    private void showPricingErrors()
+    {
+        disableApply();
+        NotificationUtil.showNotification("Module pricing has errors!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+    }
+
+    private void noPricingErrors()
+    {
+        enableApply();
     }
 
     private ModulePrice recalculatePriceForModule() {
@@ -558,7 +591,14 @@ public class ModuleDetailsWindow extends Window {
         moduleForPrice.setExpBottom((String) exposedBottomCombo.getValue());
 
         LOG.info("Asking for module price - " + moduleForPrice.toString());
-        return proposalDataProvider.getModulePrice(moduleForPrice);
+        try
+        {
+            return proposalDataProvider.getModulePrice(moduleForPrice);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 
     private List<ModuleAccessoryPack> getModuleAccessoryPacks() {
@@ -611,6 +651,11 @@ public class ModuleDetailsWindow extends Window {
         }
 
         refreshPrice();
+    }
+
+    private void addImageAndrefreshPrice(Property.ValueChangeEvent valueChangeEvent) {
+        refreshPrice();
+        refreshAccessoryImages();
     }
 
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
@@ -676,8 +721,13 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void disableApply() {
-        applyButton.setEnabled(false);
-        applyNextButton.setEnabled(false);
+        //applyButton.setEnabled(false);
+        //applyNextButton.setEnabled(false);
+    }
+
+    private void enableApply() {
+        applyButton.setEnabled(true);
+        applyNextButton.setEnabled(true);
     }
 
     private Component buildFooter() {
