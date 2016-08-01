@@ -619,6 +619,9 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private StreamResource createSalesOrderResource() {
+
+        String filename = this.getSOFilename();
+
         StreamResource.StreamSource source = () -> {
 
             if (this.productSelections.getProductIds().size() == 1) {
@@ -634,7 +637,26 @@ public class CreateProposalsView extends Panel implements View {
                 return null;
             }
         };
-        return new StreamResource(source, "SalesOrder.xlsx");
+        return new StreamResource(source, filename);
+    }
+
+    private String getSOFilename()
+    {
+        if (this.productSelections.getProductIds().size() == 1)
+        {
+            int productId = this.productSelections.getProductIds().get(0);
+            String productTitle = "NA";
+            for (Product product : this.proposal.getProducts())
+            {
+                if (product.getId() == productId)
+                {
+                    productTitle = product.getTitle();
+                    break;
+                }
+            }
+            return "SO-" + this.proposalHeader.getCname() + "-" + this.proposalHeader.getCrmId() + "-" + productTitle + ".xlsx";
+        }
+        return "SO.xlsx";
     }
 
 
