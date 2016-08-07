@@ -30,13 +30,17 @@
       }
 
       .h3 {
-        margin: 0;
         float: right;
+        margin-left: 50px;
       }
     }
 
     .fields .v-icon {
       opacity: 0.3;
+    }
+
+    .margin-left-10 {
+     margin-left: 10px !important;
     }
 
     @include width-range($min: 0, $max: $v-unit-size * 14) {

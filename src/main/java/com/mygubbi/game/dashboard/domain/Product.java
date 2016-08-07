@@ -40,6 +40,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String MODULES = "modules";
     public static final String ADDONS = "addons";
     public static final String FILE_ATTACHMENT_LIST = "fileAttachmentList";
+    public static final String COST_WO_ACCESSORIES = "costWoAccessories";
 
     private int id;
     private int proposalId;
@@ -53,6 +54,46 @@ public class Product implements FileAttachmentsHolder {
     private String shutterDesignCode;
     private String catalogueName;
     private String catalogueId;
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", proposalId=" + proposalId +
+                ", title='" + title + '\'' +
+                ", seq=" + seq +
+                ", productCategory='" + productCategory + '\'' +
+                ", productCategoryCode='" + productCategoryCode + '\'' +
+                ", room='" + room + '\'' +
+                ", roomCode='" + roomCode + '\'' +
+                ", shutterDesign='" + shutterDesign + '\'' +
+                ", shutterDesignCode='" + shutterDesignCode + '\'' +
+                ", catalogueName='" + catalogueName + '\'' +
+                ", catalogueId='" + catalogueId + '\'' +
+                ", baseCarcass='" + baseCarcass + '\'' +
+                ", baseCarcassCode='" + baseCarcassCode + '\'' +
+                ", wallCarcass='" + wallCarcass + '\'' +
+                ", wallCarcassCode='" + wallCarcassCode + '\'' +
+                ", finishType='" + finishType + '\'' +
+                ", finishTypeCode='" + finishTypeCode + '\'' +
+                ", finish='" + finish + '\'' +
+                ", finishCode='" + finishCode + '\'' +
+                ", dimension='" + dimension + '\'' +
+                ", amount=" + amount +
+                ", quantity=" + quantity +
+                ", type='" + type + '\'' +
+                ", quoteFilePath='" + quoteFilePath + '\'' +
+                ", createdOn=" + createdOn +
+                ", createdBy='" + createdBy + '\'' +
+                ", updatedOn=" + updatedOn +
+                ", costWoAccessories=" + costWoAccessories +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", modules=" + modules +
+                ", addons=" + addons +
+                ", fileAttachmentList=" + fileAttachmentList +
+                '}';
+    }
+
     private String baseCarcass;
     private String baseCarcassCode;
     private String wallCarcass;
@@ -69,8 +110,17 @@ public class Product implements FileAttachmentsHolder {
     private Date createdOn;
     private String createdBy;
     private Date updatedOn;
+    private double costWoAccessories;
     private String updatedBy;
     private List<Module> modules = new ArrayList<>();
+
+    public double getCostWoAccessories() {
+        return costWoAccessories;
+    }
+
+    public void setCostWoAccessories(double costWoAccessories) {
+        this.costWoAccessories = costWoAccessories;
+    }
 
     private List<AddonProduct> addons = new ArrayList<>();
     private List<FileAttachment> fileAttachmentList = new ArrayList<>();

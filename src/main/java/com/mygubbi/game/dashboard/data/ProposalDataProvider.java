@@ -474,9 +474,9 @@ public class ProposalDataProvider {
 
     }
 
-    public String getProposalQuoteFile(ProductSelections productSelections) {
+    public String getProposalQuoteFile(ProductAndAddonSelection productAndAddonSelection) {
         try {
-            String productSelectionsJson = this.mapper.writeValueAsString(productSelections);
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
             JSONObject obj = dataProviderMode.postResource("proposal/downloadquote", productSelectionsJson);
             return obj.getString("quoteFile");
         } catch (JSONException | JsonProcessingException e) {
@@ -485,9 +485,9 @@ public class ProposalDataProvider {
 
     }
 
-    public String getJobCardFile(ProductSelections productSelections) {
+    public String getJobCardFile(ProductAndAddonSelection productAndAddonSelection) {
         try {
-            String productSelectionsJson = this.mapper.writeValueAsString(productSelections);
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
             JSONObject obj = dataProviderMode.postResource("proposal/downloadjobcard", productSelectionsJson);
             return obj.getString("jobcardFile");
         } catch (JSONException | JsonProcessingException e) {
@@ -496,9 +496,9 @@ public class ProposalDataProvider {
 
     }
 
-    public String getSalesOrderExtract(ProductSelections productSelections) {
+    public String getSalesOrderExtract(ProductAndAddonSelection productAndAddonSelection) {
         try {
-            String productSelectionsJson = this.mapper.writeValueAsString(productSelections);
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
             JSONObject obj = dataProviderMode.postResource("proposal/downloadsalesorder", productSelectionsJson);
             return obj.getString("salesorderFile");
         } catch (JSONException | JsonProcessingException e) {

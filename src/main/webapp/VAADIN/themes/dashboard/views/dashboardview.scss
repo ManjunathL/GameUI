@@ -278,7 +278,20 @@
 
   .amount-text {
     font-size: 22.4px !important;
+	margin-right: 25px !important;
+    font-weight: bold !important;
   }
+
+  .amount-text-label {
+		font-size: 22.4px !important;
+		margin-left: 20px ! important;
+  }
+
+
+  .amount-text-value {
+		font-size: 22.4px !important;
+  }
+
 
   .v-button-value-cell .v-cell-value {
     height: 24px;

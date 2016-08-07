@@ -29,7 +29,6 @@ import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -94,18 +93,19 @@ public class CreateProposalsView extends Panel implements View {
     private Button submitButton;
     private Label draftLabel;
     private ProposalHeader proposalHeader;
+    private ModulePrice modulePrice;
     private Proposal proposal;
     private Button saveButton;
     private BeanItemContainer productContainer;
-    private TextField grandTotal;
+    private Label grandTotal;
 
-    private ProductSelections productSelections;
+    private ProductAndAddonSelection productAndAddonSelection;
     private Button publishButton;
     private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
     private FileAttachmentComponent fileAttachmentComponent;
     private TextField discountPercentage;
-    private TextField discountTotal;
+    private Label discountTotal;
     private Button addonAddButton;
     private BeanItemContainer<AddonProduct> addonsContainer;
     private Grid addonsGrid;
@@ -139,8 +139,8 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal.setProposalHeader(proposalHeader);
         }
 
-        this.productSelections = new ProductSelections();
-        this.productSelections.setProposalId(this.proposalHeader.getId());
+        this.productAndAddonSelection = new ProductAndAddonSelection();
+        this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
 
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(proposalHeader);
@@ -152,8 +152,7 @@ public class CreateProposalsView extends Panel implements View {
 
         TabSheet tabs = new TabSheet();
         tabs.addTab(buildForm(), "Header");
-        tabs.addTab(buildProductDetails(), "Products");
-        tabs.addTab(buildAddons(), "Addons");
+        tabs.addTab(buildProductsAndAddonsPage(), "Products and Addons");
         fileAttachmentComponent = new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
                 attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
                 attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId()),
@@ -171,6 +170,14 @@ public class CreateProposalsView extends Panel implements View {
     private Component buildAddons() {
 
         VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+        verticalLayout.setMargin(new MarginInfo(false, true, true, true));
+
+        Label addonTitle = new Label("Addon Details");
+        addonTitle.setStyleName("amount-text");
+        addonTitle.addStyleName("margin-top-18");
+        verticalLayout.addComponent(addonTitle);
+
         addonAddButton = new Button("Add");
         addonAddButton.setIcon(FontAwesome.PLUS_CIRCLE);
         addonAddButton.setStyleName("add-addon-btn");
@@ -190,6 +197,8 @@ public class CreateProposalsView extends Panel implements View {
 
         addonsGrid = new Grid(genContainer);
         addonsGrid.setSizeFull();
+        addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        addonsGrid.addSelectionListener(this::updateTotal);
         addonsGrid.setColumnReorderingAllowed(true);
         addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.BRAND_CODE,
                 AddonProduct.TITLE, AddonProduct.CATALOGUE_CODE, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
@@ -388,7 +397,7 @@ public class CreateProposalsView extends Panel implements View {
         downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
         downloadButton.addStyleName("margin-right-10");
         downloadButton.setWidth("85px");
-        downloadButton.addClickListener(this::checkProductsAvailable);
+        downloadButton.addClickListener(this::checkProductsAndAddonsAvailable);
 
         StreamResource myResource = createQuoteResource();
         FileDownloader fileDownloader = new FileDownloader(myResource);
@@ -472,19 +481,19 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void checkSingleProductSelection(Button.ClickEvent clickEvent) {
-        if (this.productSelections.getProductIds().size() != 1) {
+        if (this.productAndAddonSelection.getProductIds().size() != 1) {
             NotificationUtil.showNotification("Please select a single product to download its Job Card.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
         }
     }
 
     private void doSalesOrderDownloadValidation(Button.ClickEvent clickEvent) {
-        if (this.productSelections.getProductIds().size() != 1) {
+        if (this.productAndAddonSelection.getProductIds().size() != 1) {
             NotificationUtil.showNotification("Please select a single product to download SO extract.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
         }
     }
 
-    private void checkProductsAvailable(Button.ClickEvent clickEvent) {
-        if (proposal.getProducts().isEmpty()) {
+    private void checkProductsAndAddonsAvailable(Button.ClickEvent clickEvent) {
+        if (proposal.getProducts().isEmpty() || proposal.getAddons().isEmpty()) {
             NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
         }
     }
@@ -606,7 +615,7 @@ public class CreateProposalsView extends Panel implements View {
     private StreamResource createQuoteResource() {
         StreamResource.StreamSource source = () -> {
             if (!proposal.getProducts().isEmpty()) {
-                String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productSelections);
+                String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productAndAddonSelection);
                 InputStream input = null;
                 try {
                     input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
@@ -624,8 +633,8 @@ public class CreateProposalsView extends Panel implements View {
     private StreamResource createJobcardResource() {
         StreamResource.StreamSource source = () -> {
 
-            if (this.productSelections.getProductIds().size() == 1) {
-                String jobcardFile = proposalDataProvider.getJobCardFile(this.productSelections);
+            if (this.productAndAddonSelection.getProductIds().size() == 1) {
+                String jobcardFile = proposalDataProvider.getJobCardFile(this.productAndAddonSelection);
                 InputStream input = null;
                 try {
                     input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
@@ -644,8 +653,8 @@ public class CreateProposalsView extends Panel implements View {
 
         StreamResource.StreamSource source = () -> {
 
-            if (this.productSelections.getProductIds().size() == 1) {
-                String salesOrderFile = proposalDataProvider.getSalesOrderExtract(this.productSelections);
+            if (this.productAndAddonSelection.getProductIds().size() == 1) {
+                String salesOrderFile = proposalDataProvider.getSalesOrderExtract(this.productAndAddonSelection);
                 InputStream input = null;
                 try {
                     input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(salesOrderFile)));
@@ -662,9 +671,9 @@ public class CreateProposalsView extends Panel implements View {
 
     private String getSOFilename()
     {
-        if (this.productSelections.getProductIds().size() == 1)
+        if (this.productAndAddonSelection.getProductIds().size() == 1)
         {
-            int productId = this.productSelections.getProductIds().get(0);
+            int productId = this.productAndAddonSelection.getProductIds().get(0);
             String productTitle = "NA";
             for (Product product : this.proposal.getProducts())
             {
@@ -1044,13 +1053,87 @@ public class CreateProposalsView extends Panel implements View {
         return formLayoutLeft;
     }
 
+    private Component buildProductsAndAddonsPage(){
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+
+        HorizontalLayout amountsLayout = getAmountLayout();
+
+        this.discountPercentage.addValueChangeListener(this::updateTotal);
+
+        verticalLayout.addComponent(amountsLayout);
+
+        Component componentProductDetails=buildProductDetails();
+        verticalLayout.addComponent(componentProductDetails);
+
+        Component componentAddonDetails = buildAddons();
+        verticalLayout.addComponent(componentAddonDetails);
+
+        return verticalLayout;
+    }
+
+    private HorizontalLayout getAmountLayout() {
+        HorizontalLayout amountsLayout = new HorizontalLayout();
+
+        Label totalWithoutDiscount = new Label("<b>Total Without Discount: </b>", ContentMode.HTML);
+        amountsLayout.addComponent(totalWithoutDiscount);
+        amountsLayout.setSpacing(true);
+        totalWithoutDiscount.setStyleName("amount-text-label");
+        totalWithoutDiscount.addStyleName("margin-top-18");
+
+        this.grandTotal=new Label("</b>",ContentMode.HTML);
+        this.grandTotal.setStyleName("amount-text");
+        this.grandTotal.addStyleName("margin-top-18");
+        this.grandTotal.setCaptionAsHtml(true);
+        this.grandTotal.setConverter(getAmountConverter());
+        this.grandTotal.setReadOnly(true);
+        amountsLayout.addComponent(grandTotal);
+        amountsLayout.setSpacing(true);
+
+        Label Discount = new Label("<b>Discount :</b>",ContentMode.HTML);
+        amountsLayout.addComponent(Discount);
+        amountsLayout.setSpacing(true);
+        Discount.setStyleName("amount-text-label");
+        Discount.addStyleName("margin-top-18");
+
+        this.discountPercentage = new TextField();
+        this.discountPercentage.setConverter(new StringToDoubleConverter());
+        this.discountPercentage.setStyleName("amount-text");
+        this.discountPercentage.addStyleName("margin-top-18");
+        this.discountPercentage.setCaptionAsHtml(true);
+        this.discountPercentage.setValue("0");
+        this.discountPercentage.setNullRepresentation("0");
+        amountsLayout.addComponent(discountPercentage);
+
+        Label totalAfterDiscount = new Label("<b>Total After Discount :</b>",ContentMode.HTML);
+        amountsLayout.addComponent(totalAfterDiscount);
+        amountsLayout.setSpacing(true);
+        totalAfterDiscount.setStyleName("amount-text-label");
+        totalAfterDiscount.addStyleName("margin-top-18");
+
+        this.discountTotal=new Label("</b>",ContentMode.HTML);
+        this.discountTotal.setStyleName("amount-text");
+        this.discountTotal.addStyleName("margin-top-18");
+        this.discountTotal.setCaptionAsHtml(true);
+        this.discountTotal.setConverter(getAmountConverter());
+        this.discountTotal.setReadOnly(true);
+        amountsLayout.addComponent(discountTotal);
+        amountsLayout.setSpacing(true);
+        return amountsLayout;
+    }
+
     private Component buildProductDetails() {
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
         verticalLayout.setSpacing(true);
-        verticalLayout.setMargin(new MarginInfo(true, true, true, true));
+        verticalLayout.setMargin(new MarginInfo(false, true, true, true));
         verticalLayout.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+
+        Label addonTitle = new Label("Product Details");
+        addonTitle.setStyleName("amount-text");
+        addonTitle.addStyleName("margin-top-18");
+        verticalLayout.addComponent(addonTitle);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
@@ -1070,8 +1153,6 @@ public class CreateProposalsView extends Panel implements View {
         addFromCatalogueButton.setIcon(FontAwesome.PLUS_CIRCLE);
         addFromCatalogueButton.addStyleName(ValoTheme.BUTTON_SMALL);
         horizontalLayout.addComponent(addFromCatalogueButton);
-
-        verticalLayout.addComponent(horizontalLayout);
 
         addKitchenOrWardrobeButton.addClickListener(
                 clickEvent -> {
@@ -1180,56 +1261,17 @@ public class CreateProposalsView extends Panel implements View {
             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
 
-        verticalLayout.addComponent(productsGrid);
+
 
         Label label = new Label("Select Products and click Download Quote/Job Card button to generate output for only the selected Products.");
         label.setStyleName("font-italics");
+
+        verticalLayout.addComponent(horizontalLayout);
+
+        verticalLayout.addComponent(productsGrid);
+
         verticalLayout.addComponent(label);
 
-        HorizontalLayout amountsLayout = new HorizontalLayout();
-
-        FormLayout discountForm = new FormLayout();
-        discountForm.setStyleName("grand-total-flayout");
-        this.discountPercentage = new TextField("<h2>Discount(%):</h2>");
-        this.discountPercentage.setConverter(new StringToDoubleConverter());
-        this.discountPercentage.setStyleName("amount-text");
-        this.discountPercentage.addStyleName("margin-top-18");
-        this.discountPercentage.setCaptionAsHtml(true);
-        this.discountPercentage.setValue("0");
-        this.discountPercentage.setNullRepresentation("0");
-        discountForm.addComponent(this.discountPercentage);
-        discountForm.setSizeUndefined();
-        amountsLayout.addComponent(discountForm);
-
-        FormLayout discountTotalForm = new FormLayout();
-        discountTotalForm.setStyleName("grand-total-flayout");
-        this.discountTotal = new TextField("<h2>&nbsp;&nbsp;&nbsp;Total after discount:</h2>");
-        this.discountTotal.setStyleName("amount-text");
-        this.discountTotal.addStyleName("margin-top-18");
-        this.discountTotal.setCaptionAsHtml(true);
-        this.discountTotal.setReadOnly(true);
-        this.discountTotal.setNullRepresentation("0");
-        this.discountTotal.setConverter(getAmountConverter());
-        discountTotalForm.addComponent(this.discountTotal);
-        discountTotalForm.setSizeUndefined();
-        amountsLayout.addComponent(discountTotalForm);
-
-        FormLayout totalForm = new FormLayout();
-        totalForm.setStyleName("grand-total-flayout");
-        this.grandTotal = new TextField("<h2>&nbsp;&nbsp;&nbsp;Total without discount:</h2>");
-        this.grandTotal.setStyleName("amount-text");
-        this.grandTotal.addStyleName("margin-top-18");
-        this.grandTotal.setCaptionAsHtml(true);
-        this.grandTotal.setNullRepresentation("0");
-        this.grandTotal.setConverter(getAmountConverter());
-        this.grandTotal.setReadOnly(true);
-        totalForm.addComponent(this.grandTotal);
-        totalForm.setSizeUndefined();
-        amountsLayout.addComponent(totalForm);
-
-        this.discountPercentage.addValueChangeListener(this::updateTotal);
-
-        verticalLayout.addComponent(amountsLayout);
 
         return verticalLayout;
     }
@@ -1257,41 +1299,85 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void updateTotal() {
-        Collection<?> objects = productsGrid.getSelectedRows();
+        Collection<?> productObjects = productsGrid.getSelectedRows();
+        Collection<?> addonObjects = addonsGrid.getSelectedRows();
         boolean anythingSelected = true;
-        this.productSelections.getProductIds().clear();
+        this.productAndAddonSelection.getProductIds().clear();
+        this.productAndAddonSelection.getAddonIds().clear();
 
-        if (objects.size() == 0) {
+        if (productObjects.size() == 0) {
             anythingSelected = false;
-            objects = this.productsGrid.getContainerDataSource().getItemIds();
+            productObjects = this.productsGrid.getContainerDataSource().getItemIds();
         }
 
-        double grandTotal = 0;
+        double productsTotal = 0;
 
-        for (Object object : objects) {
+        for (Object object : productObjects) {
             Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
-            grandTotal += amount;
+            productsTotal += amount;
             Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
 
             if (anythingSelected) {
-                this.productSelections.getProductIds().add(id);
+                this.productAndAddonSelection.getProductIds().add(id);
             }
         }
 
+        if (addonObjects.size() == 0) {
+            anythingSelected = false;
+            addonObjects = this.addonsGrid.getContainerDataSource().getItemIds();
+        }
+
+        double addonsTotal = 0;
+
+        for (Object object : addonObjects) {
+            Double amount = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT).getValue();
+            addonsTotal += amount;
+            Integer id = (Integer) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.ID).getValue();
+
+            if (anythingSelected) {
+                this.productAndAddonSelection.getAddonIds().add(id);
+            }
+        }
+
+        Double totalWoAccessories = 0.0;
+
+
+        List<Product> products = proposal.getProducts();
+        LOG.info("Product :" + products.toString());
+        for (Product product : products) {
+            totalWoAccessories += product.getCostWoAccessories();
+        }
+
+        Double totalAmount = addonsTotal + productsTotal;
+        Double costOfAccessories = productsTotal - totalWoAccessories;
+
         Double discountPercent = (Double) this.discountPercentage.getConvertedValue();
-        double discountAmount = grandTotal * discountPercent / 100.0;
-        Double totalAfterDiscount = grandTotal - discountAmount;
+        double discountAmount = totalWoAccessories * discountPercent / 100.0;
+        Double totalAfterDiscount = totalWoAccessories - discountAmount;
+        Double grandTotal = totalAfterDiscount + costOfAccessories;
 
-        this.discountTotal.setReadOnly(false);
-        this.discountTotal.setValue(totalAfterDiscount + "");
-        this.discountTotal.setReadOnly(true);
+        if (discountPercent == 0) {
+            this.discountTotal.setReadOnly(false);
+            this.discountTotal.setValue(totalAmount + "");
+            this.discountTotal.setReadOnly(true);
 
-        this.grandTotal.setReadOnly(false);
-        this.grandTotal.setValue(grandTotal + "");
-        this.grandTotal.setReadOnly(true);
+            this.grandTotal.setReadOnly(false);
+            this.grandTotal.setValue(totalAmount + "<b></b>");
+            this.grandTotal.setReadOnly(true);
+        }
+        else {
 
-        productSelections.setDiscountPercentage(discountPercent);
-        productSelections.setDiscountAmount(discountAmount);
+            this.discountTotal.setReadOnly(false);
+            this.discountTotal.setValue(grandTotal + "");
+            this.discountTotal.setReadOnly(true);
+
+            this.grandTotal.setReadOnly(false);
+            this.grandTotal.setValue(totalAmount + "");
+            this.grandTotal.setReadOnly(true);
+
+        }
+        productAndAddonSelection.setDiscountPercentage(discountPercent);
+        productAndAddonSelection.setDiscountAmount(discountAmount);
     }
 
     private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {

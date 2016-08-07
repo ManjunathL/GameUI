@@ -226,7 +226,7 @@ public class CustomizedProductDetailsWindow extends Window {
         return formLayoutLeft;
     }
 
-    private void updatePsftCosts() {
+    public void updatePsftCosts() {
 
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
@@ -237,7 +237,10 @@ public class CustomizedProductDetailsWindow extends Window {
             totalCostWOAccessories += module.getAmountWOAccessories();
             totalModuleArea += module.getArea();
         }
+        product.setCostWoAccessories(totalCostWOAccessories);
 
+        Double cwa=product.getCostWoAccessories();
+        LOG.debug("CWA :" + cwa);
         LOG.debug("totalCostWOAccessories:" + totalCostWOAccessories + " | totalModuleArea:" + totalModuleArea);
         if (totalModuleArea != 0) {
             areaInSft.setReadOnly(false);
@@ -838,6 +841,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
+                LOG.debug("cwa :" + product.getCostWoAccessories());
                 boolean success = proposalDataProvider.updateProduct(product);
 
                 if (success) {
