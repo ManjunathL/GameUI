@@ -173,10 +173,13 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.setSizeFull();
         verticalLayout.setMargin(new MarginInfo(false, true, true, true));
 
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeFull();
+
         Label addonTitle = new Label("Addon Details");
         addonTitle.setStyleName("amount-text");
         addonTitle.addStyleName("margin-top-18");
-        verticalLayout.addComponent(addonTitle);
+        horizontalLayout.addComponent(addonTitle);
 
         addonAddButton = new Button("Add");
         addonAddButton.setIcon(FontAwesome.PLUS_CIRCLE);
@@ -188,8 +191,10 @@ public class CreateProposalsView extends Panel implements View {
             AddonDetailsWindow.open(addonProduct, false, "Add Addon", true);
         });
 
-        verticalLayout.addComponent(addonAddButton);
-        verticalLayout.setComponentAlignment(addonAddButton, Alignment.MIDDLE_RIGHT);
+        horizontalLayout.addComponent(addonAddButton);
+        horizontalLayout.setComponentAlignment(addonAddButton, Alignment.MIDDLE_RIGHT);
+
+        verticalLayout.addComponent(horizontalLayout);
 
         addonsContainer = new BeanItemContainer<>(AddonProduct.class);
 
@@ -257,6 +262,11 @@ public class CreateProposalsView extends Panel implements View {
 
         verticalLayout.addComponent(addonsGrid);
         verticalLayout.setExpandRatio(addonsGrid, 1);
+
+        Label label = new Label("Select Addons and click Download Quote/Job Card button to generate output for only the selected Addons.");
+        label.setStyleName("font-italics");
+
+        verticalLayout.addComponent(label);
 
         List<AddonProduct> existingAddons = proposal.getAddons();
         int seq = 0;
@@ -355,6 +365,7 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.setSizeFull();
 
         HorizontalLayout left = new HorizontalLayout();
+        horizontalLayout.setMargin(new MarginInfo(false,false,false,true));
         String title = proposalHeader.getTitle();
         proposalTitleLabel = new Label(getFormattedTitle(title) + "&nbsp;", ContentMode.HTML);
         proposalTitleLabel.addStyleName(ValoTheme.LABEL_H2);
@@ -380,7 +391,7 @@ public class CreateProposalsView extends Panel implements View {
         soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
         soExtractButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        soExtractButton.addStyleName("margin-right-10");
+        soExtractButton.addStyleName("margin-right-10-for-headerlevelbutton");
         soExtractButton.setWidth("120px");
         soExtractButton.addClickListener(this::doSalesOrderDownloadValidation);
 
@@ -395,7 +406,7 @@ public class CreateProposalsView extends Panel implements View {
         downloadButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
         downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        downloadButton.addStyleName("margin-right-10");
+        downloadButton.addStyleName("margin-right-10-for-headerlevelbutton");
         downloadButton.setWidth("85px");
         downloadButton.addClickListener(this::checkProductsAndAddonsAvailable);
 
@@ -411,7 +422,7 @@ public class CreateProposalsView extends Panel implements View {
         jobcardButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
         jobcardButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        jobcardButton.addStyleName("margin-right-10");
+        jobcardButton.addStyleName("margin-right-10-for-headerlevelbutton");
         jobcardButton.setWidth("100px");
         jobcardButton.addClickListener(this::checkSingleProductSelection);
 
@@ -424,7 +435,7 @@ public class CreateProposalsView extends Panel implements View {
         submitButton = new Button("Submit");
         submitButton.setVisible(ProposalState.draft.name().equals(proposalHeader.getStatus()));
         submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        submitButton.addStyleName("margin-right-10");
+        submitButton.addStyleName("margin-right-10-for-headerlevelbutton");
         submitButton.addClickListener(this::submit);
         right.addComponent(submitButton);
         right.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
@@ -432,21 +443,21 @@ public class CreateProposalsView extends Panel implements View {
         publishButton = new Button("Publish");
         publishButton.setVisible(ProposalState.active.name().equals(proposalHeader.getStatus()));
         publishButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        publishButton.addStyleName("margin-right-10");
+        publishButton.addStyleName("margin-right-10-for-headerlevelbutton");
         publishButton.addClickListener(this::publish);
         right.addComponent(publishButton);
         right.setComponentAlignment(publishButton, Alignment.MIDDLE_RIGHT);
 
         saveButton = new Button("Save");
         saveButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        saveButton.addStyleName("margin-right-10");
+        saveButton.addStyleName("margin-right-10-for-headerlevelbutton");
         saveButton.addClickListener(this::save);
         right.addComponent(saveButton);
         right.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
 
         MenuBar menu = new MenuBar();
         menu.setStyleName(ValoTheme.MENUBAR_SMALL);
-        menu.addStyleName("margin-right-10");
+        menu.addStyleName("margin-right-10-for-headerlevelbutton");
 
         MenuBar.MenuItem moreMenuItem = menu.addItem("more", null);
         reviseMenuItem = moreMenuItem.addItem("Revise", this::revise);
@@ -1127,32 +1138,35 @@ public class CreateProposalsView extends Panel implements View {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
         verticalLayout.setSpacing(true);
-        verticalLayout.setMargin(new MarginInfo(false, true, true, true));
+        verticalLayout.setMargin(new MarginInfo(true, true, true, true));
         verticalLayout.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-
-        Label addonTitle = new Label("Product Details");
-        addonTitle.setStyleName("amount-text");
-        addonTitle.addStyleName("margin-top-18");
-        verticalLayout.addComponent(addonTitle);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
-        horizontalLayout.setSpacing(true);
-        horizontalLayout.setDefaultComponentAlignment(Alignment.TOP_RIGHT);
 
-        Label spacingLabel = new Label("&nbsp;", ContentMode.HTML);
-        horizontalLayout.addComponent(spacingLabel);
-        horizontalLayout.setExpandRatio(spacingLabel, 1.0f);
+        Label title = new Label("Products Details");
+        title.setStyleName("products-and-addons-label-text");
+        horizontalLayout.addComponent(title);
+        horizontalLayout.setComponentAlignment(title,Alignment.TOP_LEFT);
+
+        HorizontalLayout hLayoutInner = new HorizontalLayout();
 
         addKitchenOrWardrobeButton = new Button("Kitchen/Wardrobe");
         addKitchenOrWardrobeButton.setIcon(FontAwesome.PLUS_CIRCLE);
         addKitchenOrWardrobeButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        horizontalLayout.addComponent(addKitchenOrWardrobeButton);
+        hLayoutInner.addComponent(addKitchenOrWardrobeButton);
+        hLayoutInner.setComponentAlignment(addKitchenOrWardrobeButton,Alignment.TOP_RIGHT);
+
+        hLayoutInner.setSpacing(true);
 
         addFromCatalogueButton = new Button("From Catalogue");
         addFromCatalogueButton.setIcon(FontAwesome.PLUS_CIRCLE);
         addFromCatalogueButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        horizontalLayout.addComponent(addFromCatalogueButton);
+        hLayoutInner.addComponent(addFromCatalogueButton);
+        hLayoutInner.setComponentAlignment(addFromCatalogueButton,Alignment.TOP_RIGHT);
+
+        horizontalLayout.addComponent(hLayoutInner);
+        horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
 
         addKitchenOrWardrobeButton.addClickListener(
                 clickEvent -> {

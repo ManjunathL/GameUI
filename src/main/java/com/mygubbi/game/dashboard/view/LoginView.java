@@ -6,18 +6,10 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
@@ -26,11 +18,29 @@ public class LoginView extends VerticalLayout {
     public LoginView() {
         setSizeFull();
 
+        Component logo = buildTitle();
+        addComponent(logo);
+        setExpandRatio(logo, 0.4f);
+        setComponentAlignment(logo,Alignment.BOTTOM_CENTER);
+        setSpacing(true);
+
         Component loginForm = buildLoginForm();
         addComponent(loginForm);
-        setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
+        setExpandRatio(loginForm, 0.6f);
+        setComponentAlignment(loginForm, Alignment.TOP_CENTER);
 
+    }
 
+    private Component buildTitle() {
+        Label logo = new Label("&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<strong>GAME</strong>",
+                ContentMode.HTML);
+        ThemeResource mygubbi_logo = new ThemeResource("img/myGubbi_Logo.png");
+        logo.setIcon(mygubbi_logo);
+        //logo.setStyleName("logo-margin");
+        logo.setSizeUndefined();
+        HorizontalLayout logoWrapper = new HorizontalLayout(logo);
+        logoWrapper.setComponentAlignment(logo, Alignment.BOTTOM_CENTER);
+        return logoWrapper;
     }
 
     private Component buildLoginForm() {
@@ -87,11 +97,6 @@ public class LoginView extends VerticalLayout {
         welcome.addStyleName(ValoTheme.LABEL_COLORED);
         labels.addComponent(welcome);
 
-        Label title = new Label("MyGubbi GAME");
-        title.setSizeUndefined();
-        title.addStyleName(ValoTheme.LABEL_H3);
-        title.addStyleName(ValoTheme.LABEL_LIGHT);
-        labels.addComponent(title);
         return labels;
     }
 
