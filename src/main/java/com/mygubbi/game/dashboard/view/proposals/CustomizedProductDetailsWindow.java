@@ -303,7 +303,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     try {
                         ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
                         amount = round(modulePrice.getTotalCost());
-                        areainsft = round(modulePrice.getModuleArea());
+                        areainsft = modulePrice.getModuleArea();
                         costwoaccessories = round(modulePrice.getWoodworkCost());
                     } catch (Exception e)
                     {
