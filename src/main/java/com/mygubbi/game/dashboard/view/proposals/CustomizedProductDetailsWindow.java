@@ -295,7 +295,8 @@ public class CustomizedProductDetailsWindow extends Window {
                 String unitType = module.getUnitType();
 
                 if ((unitType.toLowerCase().contains(Module.UnitTypes.base.name()) && component != wallCarcassSelection)
-                        || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)) {
+                        || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)
+                        || (unitType.toLowerCase().contains(Module.UnitTypes.accessory.name()))) {
 
                     double amount = 0;
                     double areainsft = 0;

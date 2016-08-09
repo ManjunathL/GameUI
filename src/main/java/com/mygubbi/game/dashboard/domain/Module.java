@@ -20,7 +20,7 @@ public class Module implements Cloneable {
 
     public enum ImportStatusType {m, d, n}
 
-    public enum UnitTypes {base, wall}
+    public enum UnitTypes {base, wall, accessory}
 
     public static final String SEQ = "seq";
     public static final String UNIT_TYPE = "unitType";
