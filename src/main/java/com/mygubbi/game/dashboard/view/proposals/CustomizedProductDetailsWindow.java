@@ -236,6 +236,7 @@ public class CustomizedProductDetailsWindow extends Window {
         for (Module module : modules) {
             totalCostWOAccessories += module.getAmountWOAccessories();
             totalModuleArea += module.getArea();
+            LOG.debug("Total Module Area :" + totalModuleArea);
         }
         product.setCostWoAccessories(totalCostWOAccessories);
 
