@@ -264,7 +264,9 @@ public class CustomizedProductDetailsWindow extends Window {
 
         for (Module module : modules) {
 
-             if (component == baseCarcassSelection && module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name())) {
+             if (component == baseCarcassSelection &&
+                     (module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name())
+                             || module.getUnitType().toLowerCase().contains(Module.UnitTypes.accessory.name()))) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).getValue();
                 if (text.contains(Module.DEFAULT)) {
                     moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL_CODE).setValue(baseCarcassSelection.getValue());
