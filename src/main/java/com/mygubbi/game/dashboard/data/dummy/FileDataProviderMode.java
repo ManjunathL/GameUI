@@ -40,6 +40,11 @@ public class FileDataProviderMode implements DataProviderMode {
     }
 
     @Override
+    public JSONObject postResourceWithUrl(String urlFrag, String json) {
+        return getResource(formPath(urlFrag, null), null);
+    }
+
+    @Override
     public JSONArray postResourceGetMultiple(String urlFrag, String jsonParams) {
         return getResourceArray(formPath(urlFrag, null), null);
     }

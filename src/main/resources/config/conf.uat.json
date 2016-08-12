@@ -2,5 +2,7 @@
   "restUrl" : "http://localhost:1443/gapi",
   "imageBasePath" : "/mnt/game/images/",
   "catalogueImageBasePath": "https://res.cloudinary.com/mygubbi/image/upload/f_auto/c_fit,w_220/",
-  "dataProviderMode" : "com.mygubbi.game.dashboard.data.RestDataProviderMode"
+  "dataProviderMode" : "com.mygubbi.game.dashboard.data.RestDataProviderMode",
+  "crmUrl": "http://52.66.79.232/mygubbi_crm/service/v4_1/rest.php?method=__METHOD__&input_type=json&response_type=json&rest_data=",
+  "useCrmAuth": "false"
 }

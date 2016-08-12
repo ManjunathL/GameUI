@@ -17,5 +17,7 @@ public interface DataProviderMode {
 
     JSONObject postResource(String urlFrag, String json);
 
+    JSONObject postResourceWithUrl(String urlFrag, String json);
+
     JSONArray postResourceGetMultiple(String urlFrag, String jsonParams);
 }
