@@ -23,6 +23,7 @@ public class Module implements Cloneable {
     public enum UnitTypes {base, wall, accessory}
 
     public static final String SEQ = "seq";
+    public static final String MODULE_SEQUENCE = "moduleSequence";
     public static final String UNIT_TYPE = "unitType";
     public static final String IMPORTED_MODULE_CODE = "extCode";
     public static final String IMPORTED_MODULE_DEFAULT_CODE = "extDefCode";
@@ -47,6 +48,7 @@ public class Module implements Cloneable {
 
 
     private int seq;
+    private int moduleSequence;
     private String unitType;
     private String extCode;
     private String extText;
@@ -71,7 +73,62 @@ public class Module implements Cloneable {
     private String expBottom;
     private double area;
     private double amountWOAccessories;
+    private int width;
+    private int depth;
+    private int height;
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
+
+
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+            //Will never happen since we are implementing Cloneable
+        }
+    }
+
+    public void setCarcassCodeBasedOnUnitType(Product product) {
+        this.setCarcassCode(
+                this.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
+                        ? product.getWallCarcassCode()
+                        : product.getBaseCarcassCode());
+    }
+
+
+    public int getModuleSequence() {
+        return moduleSequence;
+    }
+
+    public void setModuleSequence(int moduleSequence) {
+        this.moduleSequence = moduleSequence;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
     public String getExpSides() {
         return expSides;
@@ -111,23 +168,6 @@ public class Module implements Cloneable {
 
     public void setDimension(String dimension) {
         this.dimension = dimension;
-    }
-
-    @Override
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new InternalError(e);
-            //Will never happen since we are implementing Cloneable
-        }
-    }
-
-    public void setCarcassCodeBasedOnUnitType(Product product) {
-        this.setCarcassCode(
-                this.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
-                        ? product.getWallCarcassCode()
-                        : product.getBaseCarcassCode());
     }
 
     public int getSeq() {
@@ -289,20 +329,13 @@ public class Module implements Cloneable {
 
         Module module = (Module) o;
 
-        if (getSeq() != module.getSeq())
-        {
-            return false;
-        }
-        return !(getUnitType() != null ? !getUnitType().equals(module.getUnitType()) : module.getUnitType() != null);
-
+       return this.moduleSequence == module.getModuleSequence();
     }
 
     @Override
     public int hashCode()
     {
-        int result = getSeq();
-        result = 31 * result + (getUnitType() != null ? getUnitType().hashCode() : 0);
-        return result;
+        return moduleSequence;
     }
 
     public String getFixedCarcassCode() {
