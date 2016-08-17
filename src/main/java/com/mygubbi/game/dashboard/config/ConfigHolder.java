@@ -64,17 +64,23 @@ public class ConfigHolder {
     private void initImageBasePath() {
         imageBasePath = getStringValue("imageBasePath", "");
         System.out.println("imageBasePath:" + imageBasePath);
-        if (!imageBasePath.endsWith("/"))
-        {
+        if (!imageBasePath.endsWith("/")) {
             imageBasePath = imageBasePath + "/";
             System.out.println("imageBasePath after adding /:" + imageBasePath);
         }
 
         catalogueImageBasePath = getStringValue("catalogueImageBasePath", "");
-        if (!catalogueImageBasePath.endsWith("/"))
-        {
+        if (!catalogueImageBasePath.endsWith("/")) {
             catalogueImageBasePath = catalogueImageBasePath + "/";
         }
+    }
+
+    public String getCRMUrl() {
+        return getStringValue("crmUrl", "");
+    }
+
+    public boolean useCRMAuth() {
+        return getBoolean("useCrmAuth", false);
     }
 
     public String getStringValue(String key, String defaultValue) {

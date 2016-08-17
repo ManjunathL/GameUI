@@ -11,6 +11,9 @@ public final class User {
     private String role;
     private String email;
     private String phone;
+    private String sessionId;
+    private String userId;
+    private String userName;
 
     public User() {
     }
@@ -52,5 +55,29 @@ public final class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 }

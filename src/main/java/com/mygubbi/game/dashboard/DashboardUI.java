@@ -91,18 +91,13 @@ public final class DashboardUI extends UI {
     @Subscribe
     public void userLoginRequested(final DashboardEvent.UserLoginRequestedEvent event) {
         try {
-            JSONObject userObject = getDataProvider().authUser(event.getUserName(), event.getPassword());
-            User user = getUser(userObject);
+            User user = getDataProvider().authUser(event.getUserName(), event.getPassword());
             VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
             updateContent();
         } catch (Exception e) {
             e.printStackTrace();
             NotificationUtil.showNotification("Invalid User or Password!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
-    }
-
-    private User getUser(JSONObject userObject) throws JSONException {
-        return new User(userObject.getString("email"), userObject.getString("role"), userObject.optString("phone", ""), userObject.getString("name"));
     }
 
     @Subscribe

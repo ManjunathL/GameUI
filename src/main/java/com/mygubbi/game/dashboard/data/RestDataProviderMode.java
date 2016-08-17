@@ -54,6 +54,18 @@ public class RestDataProviderMode implements DataProviderMode {
     }
 
     @Override
+    public JSONObject postResourceWithUrl(String url, String json) {
+
+        try {
+            return resty.json(url, content(json)).object();
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error querying - " + url, e);
+        }
+    }
+
+    @Override
     public JSONArray postResourceGetMultiple(String urlFrag, String jsonParams) {
 
         try {
