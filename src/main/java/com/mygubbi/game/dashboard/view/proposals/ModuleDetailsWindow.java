@@ -584,6 +584,10 @@ public class ModuleDetailsWindow extends Window {
         moduleForPrice.setMgCode(module.getMgCode());
         moduleForPrice.setSeq(module.getSeq());
         moduleForPrice.setExtCode(module.getExtCode());
+        moduleForPrice.setUnitType(module.getUnitType());
+        moduleForPrice.setWidth(module.getWidth());
+        moduleForPrice.setHeight(module.getHeight());
+        moduleForPrice.setDepth(module.getDepth());
 
         List<ModuleAccessoryPack> accPacks = getModuleAccessoryPacks();
         moduleForPrice.setAccessoryPacks(accPacks);
