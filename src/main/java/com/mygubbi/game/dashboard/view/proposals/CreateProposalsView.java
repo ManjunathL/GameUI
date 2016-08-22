@@ -38,6 +38,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -1366,30 +1368,24 @@ public class CreateProposalsView extends Panel implements View {
         Double costOfAccessories = productsTotal - totalWoAccessories;
 
         Double discountPercent = (Double) this.discountPercentage.getConvertedValue();
+
+        if (discountPercent== null)
+        {
+            discountPercent = 0.0;
+        }
+        LOG.info("Discount percent : " + discountPercent);
         double discountAmount = totalWoAccessories * discountPercent / 100.0;
-        Double totalAfterDiscount = totalWoAccessories - discountAmount;
-        Double grandTotal = totalAfterDiscount + costOfAccessories;
+        Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
+        Double grandTotal = this.round((totalAfterDiscount + costOfAccessories + addonsTotal), 0);
 
-        if (discountPercent == 0) {
-            this.discountTotal.setReadOnly(false);
-            this.discountTotal.setValue(totalAmount + "");
-            this.discountTotal.setReadOnly(true);
+        this.discountTotal.setReadOnly(false);
+        this.discountTotal.setValue(grandTotal + "");
+        this.discountTotal.setReadOnly(true);
 
-            this.grandTotal.setReadOnly(false);
-            this.grandTotal.setValue(totalAmount + "<b></b>");
-            this.grandTotal.setReadOnly(true);
-        }
-        else {
+        this.grandTotal.setReadOnly(false);
+        this.grandTotal.setValue(totalAmount + "");
+        this.grandTotal.setReadOnly(true);
 
-            this.discountTotal.setReadOnly(false);
-            this.discountTotal.setValue(grandTotal + "");
-            this.discountTotal.setReadOnly(true);
-
-            this.grandTotal.setReadOnly(false);
-            this.grandTotal.setValue(totalAmount + "");
-            this.grandTotal.setReadOnly(true);
-
-        }
         productAndAddonSelection.setDiscountPercentage(discountPercent);
         productAndAddonSelection.setDiscountAmount(discountAmount);
     }
@@ -1492,6 +1488,14 @@ public class CreateProposalsView extends Panel implements View {
         } else {
             proposalDataProvider.updateProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
         }
+    }
+
+    private double round(double value, int places)
+    {
+        if (places < 0) throw new IllegalArgumentException();
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 }

@@ -317,8 +317,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     boundModules.get(boundModules.indexOf(module)).setAmountWOAccessories(costwoaccessories);
                     boundModules.get(boundModules.indexOf(module)).setArea(areainsft);
                     moduleContainer.getItem(module).getItemProperty(Module.AMOUNT).setValue(amount);
-                }
-                else
+                } else
                 {
                     //total += module.getAmount();
                 }
@@ -580,20 +579,54 @@ public class CustomizedProductDetailsWindow extends Window {
         columns.get(idx++).setHeaderCaption("Amount");
         Grid.Column actionColumn = columns.get(idx++);
         actionColumn.setHeaderCaption("Actions");
-        actionColumn.setRenderer(new EditButtonValueRenderer(rendererClickEvent -> {
-            if (!binder.isValid()) {
-                NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                return;
+        actionColumn.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+            @Override
+            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                if (!binder.isValid()) {
+                    NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+                Module module = (Module) rendererClickEvent.getItemId();
+                boolean unmappableModulePresent = isAnyModuleUnmappable();
+                if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
+                    //if (!unmappableModulePresent) {
+                    boolean readOnly = isProposalReadonly();
+                    int index = modulesGrid.getContainerDataSource().indexOfId(module);
+                    ModuleDetailsWindow.open(module, createProductFromUI(), readOnly, index + 1);
+                } else {
+                    NotificationUtil.showNotification("Cannot proceed as this module is not setup.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                }
             }
-            Module module = (Module) rendererClickEvent.getItemId();
-            boolean unmappableModulePresent = isAnyModuleUnmappable();
-            if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
-            //if (!unmappableModulePresent) {
-                boolean readOnly = isProposalReadonly();
-                int index = modulesGrid.getContainerDataSource().indexOfId(module);
-                ModuleDetailsWindow.open(module, createProductFromUI(), readOnly, index + 1);
-            } else {
-                NotificationUtil.showNotification("Cannot proceed as this module is not setup.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+
+            @Override
+            public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                if (isProposalReadonly()) {
+                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                } else {
+                    ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Module?",
+                            "Yes", "No", dialog -> {
+                                if (dialog.isConfirmed()) {
+                                    Module module = (Module) rendererClickEvent.getItemId();
+                                    List<Module> modules = product.getModules();
+                                    modules.remove(module);
+                                    proposalDataProvider.loadAndUpdateProduct(product);
+
+
+                                    moduleContainer.removeAllItems();
+
+                                    int seq = module.getSeq();
+
+                                    for (Module mgModule : modules) {
+                                        if (mgModule.getSeq() > seq) {
+                                            mgModule.setSeq(mgModule.getSeq() - 1);
+                                        }
+                                    }
+
+                                    moduleContainer.addAll(modules);
+                                    modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
+                                }
+                            });
+                }
             }
         }));
 
@@ -968,8 +1001,16 @@ public class CustomizedProductDetailsWindow extends Window {
 
         updatePsftCosts();
 
+
+     //   event.getWindow().close();
+
+
         if (event.isLoadNext()) {
             loadNextModule(event.getModuleIndex());
+        }
+        else if (event.isLoadPrevious())
+        {
+            loadPreviousModule(event.getModuleIndex());
         }
 
         this.checkAndEnableSave();
@@ -994,6 +1035,12 @@ public class CustomizedProductDetailsWindow extends Window {
     private void loadNextModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex);
         ModuleDetailsWindow.open(module, createProductFromUI(), isProposalReadonly(), currentModuleIndex + 1);
+    }
+
+    private void loadPreviousModule(int currentModuleIndex) {
+        Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex-2);
+        int newModuleIndex = currentModuleIndex - 1;
+        ModuleDetailsWindow.open(module, createProductFromUI(), isProposalReadonly(), newModuleIndex);
     }
 
     @Subscribe

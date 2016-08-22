@@ -89,6 +89,7 @@ public class ModuleDetailsWindow extends Window {
     private boolean readOnly;
     private final Label defaultsOverridden;
     private Button applyNextButton;
+    private Button loadPreviousButton;
     private HorizontalLayout accessoryImageLayout;
 
     private double calculatedArea = -1;
@@ -732,6 +733,7 @@ public class ModuleDetailsWindow extends Window {
     private void enableApply() {
         applyButton.setEnabled(true);
         applyNextButton.setEnabled(true);
+        loadPreviousButton.setEnabled(true);
     }
 
     private Component buildFooter() {
@@ -751,28 +753,35 @@ public class ModuleDetailsWindow extends Window {
 
         applyButton = new Button("Apply");
         applyButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        applyButton.addClickListener(getApplyListener(false));
+        applyButton.addClickListener(getApplyListener(false,false));
         applyButton.setWidth("10%");
         applyButton.focus();
         applyButton.setVisible(true);
 
         applyNextButton = new Button("Apply & Load Next");
         applyNextButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        applyNextButton.addClickListener(getApplyListener(true));
+        applyNextButton.addClickListener(getApplyListener(true,true));
         applyNextButton.focus();
         applyNextButton.setVisible(!isLastModule());
 
+        loadPreviousButton = new Button("Previous");
+        loadPreviousButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        loadPreviousButton.addClickListener(getApplyListener(false,true));
+        loadPreviousButton.focus();
+        loadPreviousButton.setVisible(!isFirstModule());
 
+        footer.addComponent(loadPreviousButton);
         footer.addComponent(applyButton);
         footer.addComponent(applyNextButton);
-        footer.setComponentAlignment(closeBtn, Alignment.MIDDLE_RIGHT);
+        footer.setComponentAlignment(closeBtn, Alignment.MIDDLE_CENTER);
         footer.setComponentAlignment(applyButton, Alignment.MIDDLE_CENTER);
         footer.setComponentAlignment(applyNextButton, Alignment.MIDDLE_LEFT);
+        footer.setComponentAlignment(loadPreviousButton, Alignment.MIDDLE_RIGHT);
 
         return footer;
     }
 
-    private ClickListener getApplyListener(boolean loadNext) {
+    private ClickListener getApplyListener(boolean loadNext,boolean loadPrevious) {
         return event -> {
 
             try {
@@ -819,13 +828,17 @@ public class ModuleDetailsWindow extends Window {
 
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
             close();
-            ProposalEvent.ModuleUpdated event1 = new ProposalEvent.ModuleUpdated(module, loadNext, moduleIndex);
+            ProposalEvent.ModuleUpdated event1 = new ProposalEvent.ModuleUpdated(module, loadNext, loadPrevious, moduleIndex, this);
             DashboardEventBus.post(event1);
         };
     }
 
     private boolean isLastModule() {
         return moduleIndex == product.getModules().size();
+    }
+
+    private boolean isFirstModule() {
+        return moduleIndex == 1;
     }
 
     private String getDefaultText(String itemTitle) {

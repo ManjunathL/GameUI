@@ -4,6 +4,8 @@ import com.mygubbi.game.dashboard.domain.AddonProduct;
 import com.mygubbi.game.dashboard.domain.Module;
 import com.mygubbi.game.dashboard.domain.Product;
 import com.mygubbi.game.dashboard.domain.ProposalListViewItem;
+import com.mygubbi.game.dashboard.view.proposals.ModuleDetailsWindow;
+import com.vaadin.ui.Window;
 
 /**
  * Created by nitinpuri on 04-05-2016.
@@ -26,12 +28,21 @@ public abstract class ProposalEvent {
     public static class ModuleUpdated {
         private Module module;
         private boolean loadNext;
+        private boolean loadPrevious;
         private int moduleIndex;
+        private Window window;
 
-        public ModuleUpdated(Module module, boolean loadNext, int moduleIndex) {
+        public ModuleUpdated(Module module, boolean loadNext, boolean loadPrevious, int moduleIndex, Window window) {
             this.module = module;
             this.loadNext = loadNext;
+            this.loadPrevious = loadPrevious;
             this.moduleIndex = moduleIndex;
+            this.window = window;
+
+        }
+
+        public Window getWindow() {
+            return window;
         }
 
         public Module getModule() {
@@ -41,6 +52,8 @@ public abstract class ProposalEvent {
         public boolean isLoadNext() {
             return loadNext;
         }
+
+        public boolean isLoadPrevious() { return loadPrevious;}
 
         public int getModuleIndex() {
             return moduleIndex;
