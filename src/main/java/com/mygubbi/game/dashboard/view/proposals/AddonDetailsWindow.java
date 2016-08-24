@@ -217,7 +217,7 @@ public class AddonDetailsWindow extends Window {
 
     private void categoryChanged(Property.ValueChangeEvent valueChangeEvent) {
 
-        String prevCode = addonProduct.getProductTypeCode();
+        String prevCode = (String) productType.getValue();
 
         List<AddonProductType> list = proposalDataProvider.getAddonProductTypes(BLANK_ROOM_CODE, (String) this.category.getValue());
         this.productTypeBeanContainer.removeAllItems();
@@ -269,32 +269,32 @@ public class AddonDetailsWindow extends Window {
     }
 
     private void brandChanged(Property.ValueChangeEvent valueChangeEvent) {
-        String prevCode = addonProduct.getCatalogueCode();
+        String prevCode = (String) this.catalogueCode.getValue();
 
         List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.productType.getValue(), (String) this.brand.getValue());
         this.catalogueCodeBeanContainer.removeAllItems();
         this.catalogueCodeBeanContainer.addAll(list);
-
-        if (StringUtils.isNotEmpty(prevCode) && list.stream().anyMatch(addonProductItem -> addonProductItem.getCatalogueCode().equals(prevCode))) {
-            this.catalogueCode.setValue(prevCode);
-        } else {
-            this.catalogueCode.setValue(this.catalogueCode.getItemIds().iterator().next());
+        Object next = this.catalogueCode.getItemIds().iterator().next();
+        this.catalogueCode.setValue(next);
+        if (next.equals(prevCode)) {
+            this.catalogueCodeChanged(null);
         }
         checkApply();
     }
 
     private void productTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
-        String prevCode = addonProduct.getBrandCode();
+        String prevCode = (String) brand.getValue(); //addonProduct.getBrandCode();
 
         List<AddonBrand> list = proposalDataProvider.getAddonBrands((String) this.productType.getValue());
         this.brandBeanContainer.removeAllItems();
         this.brandBeanContainer.addAll(list);
+        Object next = this.brand.getItemIds().iterator().next();
+        this.brand.setValue(next);
 
-        if (StringUtils.isNotEmpty(prevCode) && list.stream().anyMatch(addonBrand -> addonBrand.getBrandCode().equals(prevCode))) {
-            this.brand.setValue(prevCode);
-        } else {
-            this.brand.setValue(this.brand.getItemIds().iterator().next());
+        if (next.equals(prevCode)) {
+            this.brandChanged(null);
         }
+
         checkApply();
     }
 

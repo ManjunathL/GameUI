@@ -589,6 +589,9 @@ public class ModuleDetailsWindow extends Window {
         moduleForPrice.setWidth(module.getWidth());
         moduleForPrice.setHeight(module.getHeight());
         moduleForPrice.setDepth(module.getDepth());
+        moduleForPrice.setColorCode(module.getColorCode());
+        moduleForPrice.setColorImagePath(module.getImagePath());
+        moduleForPrice.setColorName(module.getColorName());
 
         List<ModuleAccessoryPack> accPacks = getModuleAccessoryPacks();
         moduleForPrice.setAccessoryPacks(accPacks);
