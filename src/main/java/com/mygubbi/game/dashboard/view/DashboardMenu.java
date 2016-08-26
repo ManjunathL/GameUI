@@ -62,8 +62,9 @@ public final class DashboardMenu extends CustomComponent {
     }
 
     private Component buildTitle() {
-        Label logo = new Label("MyGubbi <strong>GAME</strong>",
+        Label logo = new Label("&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<strong>GAME</strong>",
                 ContentMode.HTML);
+        logo.setIcon(new ThemeResource("img/myGubbi_Logo.png"));
         logo.setSizeUndefined();
         HorizontalLayout logoWrapper = new HorizontalLayout(logo);
         logoWrapper.setComponentAlignment(logo, Alignment.MIDDLE_CENTER);
@@ -125,47 +126,14 @@ public final class DashboardMenu extends CustomComponent {
 
         for (final DashboardViewType view : DashboardViewType.values()) {
             Component menuItemComponent = new ValoMenuItemButton(view.getViewType());
+            //if role is admin, then only add Setup Master Data, else continue
+            String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
- /*           if (view == DashboardViewType.PROPOSALS) {
-                // Add drop target to reports button
-                DragAndDropWrapper reports = new DragAndDropWrapper(
-                        menuItemComponent);
-                reports.setSizeUndefined();
-                reports.setDragStartMode(DragStartMode.NONE);
-                reports.setDropHandler(new DropHandler() {
-
-                    @Override
-                    public void drop(final DragAndDropEvent event) {
-                        UI.getCurrent()
-                                .getNavigator()
-                                .navigateTo(
-                                        DashboardViewType.PROPOSALS.getViewName());
-                        Table table = (Table) event.getTransferable()
-                                .getSourceComponent();
-
-                    }
-
-                    @Override
-                    public AcceptCriterion getAcceptCriterion() {
-                        return AcceptItem.ALL;
-                    }
-
-                });
-                menuItemComponent = reports;
+            if (role.equals("others"))
+            {
+                menuItemsLayout.addComponent(menuItemComponent);
+                break;
             }
-
-            if (view == DashboardViewType.PROPOSALS) {
-                notificationsBadge = new Label();
-                notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
-                menuItemComponent = buildBadgeWrapper(menuItemComponent,
-                        notificationsBadge);
-            }
-            if (view == DashboardViewType.PROPOSALS) {
-                reportsBadge = new Label();
-                reportsBadge.setId(REPORTS_BADGE_ID);
-                menuItemComponent = buildBadgeWrapper(menuItemComponent,
-                        reportsBadge);
-            }*/
 
             menuItemsLayout.addComponent(menuItemComponent);
 
