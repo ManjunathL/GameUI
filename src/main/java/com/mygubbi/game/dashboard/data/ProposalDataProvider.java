@@ -535,8 +535,8 @@ public class ProposalDataProvider {
             JSONArray jsonArray = dataProviderMode.getResourceArray(
                     "module/modulesByCategory", new HashMap<String, String>() {
                         {
-                            put("productCategory", productCategory);
-                            put("moduleCategory", moduleCategory);
+                            put("productCategory", URLEncoder.encode(productCategory, "UTF-8"));
+                            put("moduleCategory", URLEncoder.encode(moduleCategory, "UTF-8"));
                         }
                     });
 
