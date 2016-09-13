@@ -48,7 +48,10 @@ public class ProposalDataProvider {
     public static final String CITY_LOOKUP = "city";
     private static final String ROLE_DESIGNER = "designer";
     private static final String ROLE_SALES = "sales";
+    public static final String MODULE_CATEGORY_LOOKUP = "modulecategory";
+    private static final String MODULE_SELECTION_LOOKUP = "module";
     public static final String ACCESSORY_LOOKUP="accessories";
+
 
     public ProposalDataProvider(DataProviderMode dataProviderMode) {
         this.dataProviderMode = dataProviderMode;
@@ -527,6 +530,24 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<MGModule> getModules(String productCategory,String moduleCategory) {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray(
+                    "module/modulesByCategory", new HashMap<String, String>() {
+                        {
+                            put("productCategory", productCategory);
+                            put("moduleCategory", moduleCategory);
+                        }
+                    });
+
+            return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<MGModule>>() {
+            });
+
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
+    }
+
     public List<ProductSuggest> getProductSuggestions(String inputTerm) {
         JSONArray array = dataProviderMode.getResourceArray("product_auto_complete", new HashMap<String, String>());
         try {
@@ -579,7 +600,7 @@ public class ProposalDataProvider {
             String moduleJson = this.mapper.writeValueAsString(module);
             LOG.debug("Module Json : " + moduleJson);
             JSONObject jsonObject = dataProviderMode.postResource(
-                    "module/price", moduleJson);
+                    "module/pricev2", moduleJson);
             if (jsonObject.has("errors")) {
                 throw new RuntimeException("Pricing has errors for this module, please contact GAME Admin.");
             }
