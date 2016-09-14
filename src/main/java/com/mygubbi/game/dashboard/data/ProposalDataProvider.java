@@ -517,6 +517,7 @@ public class ProposalDataProvider {
         try {
             product.setUpdatedBy(getUserId());
             String productJson = this.mapper.writeValueAsString(product);
+            LOG.debug("Product json:" + productJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/update", productJson);
             if (!jsonObject.has("error")) {
@@ -545,6 +546,22 @@ public class ProposalDataProvider {
 
         } catch (IOException e) {
             throw new RuntimeException("Couldn't map modules", e);
+        }
+    }
+
+    public List<Module> getModuleDetails(String moduleCode) {
+        JSONArray array = dataProviderMode.getResourceArray("module/moduledetails", new HashMap<String, String>() {
+            {
+                put("code", urlEncode(moduleCode));
+            }
+        });
+        try {
+            Module[] items = this.mapper.readValue(array.toString(), Module[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
         }
     }
 

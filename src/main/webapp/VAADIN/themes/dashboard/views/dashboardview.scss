@@ -277,10 +277,15 @@
   }
 
   .amount-text {
-    font-size: 22.4px !important;
+    font-size: 22.4px;
 	margin-right: 25px !important;
     font-weight: bold !important;
   }
+	.amount-text-customized-product-details {
+	font-size: 22.4px !important;
+	margin-right: 25px !important;
+	font-weight: bold !important;
+	}
 
   .products-and-addons-label-text {
     font-size: 22.4px !important;
@@ -289,7 +294,7 @@
   }
 
   .amount-text-label {
-		font-size: 22.4px !important;
+		font-size: 22.4px;
 		margin-left: 20px ! important;
   }
 
@@ -398,5 +403,67 @@
   .designs-combo-addons .v-filterselect-input {
 	margin-left: 60px !important;
   }
+	.v-label-undef-w-loginscreen {
+	padding-left: 50px;
+	}
+	.no-bottom-margin-normal [class*="margin-bottom"] > tbody > [class*="lastrow"] > td {
+	padding-bottom: 0px !important;
+	}
 }
 
+@media only screen and (max-width: 1024px) {
+
+	.no-bottom-margin [class*="margin-bottom"] > tbody > [class*="lastrow"] > td {
+		padding-bottom: 0px !important;
+	}
+
+	.v-slot-img-resp .v-captiontext {
+		font-size: 9px !important;
+	}
+	.v-slot-img-resp img {
+		height: 75px !important;
+	}
+	.module-window {
+		height: 95% !important;
+		width: 90% !important;
+	}
+	.v-label-amount-text-label{
+		font-size:14px;
+	}
+	.v-label-undef-w-loginscreen {
+	padding-left: 20px!important;
+	}
+	.v-icon-dashboardmenu-logo img.v-icon {
+	height: 32px !important;
+	}
+	.v-has-width-forLabel {
+	width: 83% !important;
+	}
+	.v-vertical-customized-product-details{
+	height: 130% !important;
+	}
+
+}
+
+	@media only screen and (max-width: 1370px) {
+
+		.no-bottom-margin [class*="margin-bottom"] > tbody > [class*="lastrow"] > td {
+		padding-bottom: 0px !important;
+		}
+
+		.v-slot-img-resp .v-captiontext {
+		font-size: 9px !important;
+		}
+
+		.v-slot-img-resp img {
+		height: 75px !important;
+		}
+
+		.v-label-amount-text-label{
+		font-size:20px !important;
+		}
+
+		.v-vertical-customized-product-details{
+		height: 130% !important;
+		}
+}

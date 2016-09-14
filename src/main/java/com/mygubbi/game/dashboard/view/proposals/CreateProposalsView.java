@@ -147,7 +147,8 @@ public class CreateProposalsView extends Panel implements View {
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(proposalHeader);
 
-        setSizeFull();
+        setWidth("100%");
+        setHeight("100%");
 
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.addComponent(buildHeader());
@@ -1091,12 +1092,15 @@ public class CreateProposalsView extends Panel implements View {
         Label totalWithoutDiscount = new Label("<b>Total Without Discount: </b>", ContentMode.HTML);
         amountsLayout.addComponent(totalWithoutDiscount);
         amountsLayout.setSpacing(true);
-        totalWithoutDiscount.setStyleName("amount-text-label");
+        totalWithoutDiscount.addStyleName("amount-text-label");
+        totalWithoutDiscount.addStyleName("v-label-amount-text-label");
         totalWithoutDiscount.addStyleName("margin-top-18");
 
+
         this.grandTotal=new Label("</b>",ContentMode.HTML);
-        this.grandTotal.setStyleName("amount-text");
+        this.grandTotal.addStyleName("amount-text");
         this.grandTotal.addStyleName("margin-top-18");
+        this.grandTotal.addStyleName("v-label-amount-text-label");
         this.grandTotal.setCaptionAsHtml(true);
         this.grandTotal.setConverter(getAmountConverter());
         this.grandTotal.setReadOnly(true);
@@ -1106,13 +1110,14 @@ public class CreateProposalsView extends Panel implements View {
         Label Discount = new Label("<b>Discount :</b>",ContentMode.HTML);
         amountsLayout.addComponent(Discount);
         amountsLayout.setSpacing(true);
-        Discount.setStyleName("amount-text-label");
+        Discount.addStyleName("amount-text-label");
         Discount.addStyleName("margin-top-18");
 
         this.discountPercentage = new TextField();
         this.discountPercentage.setConverter(new StringToDoubleConverter());
-        this.discountPercentage.setStyleName("amount-text");
+        this.discountPercentage.addStyleName("amount-text");
         this.discountPercentage.addStyleName("margin-top-18");
+        this.discountPercentage.addStyleName("v-label-amount-text-label");
         this.discountPercentage.setCaptionAsHtml(true);
         this.discountPercentage.setValue("0");
         this.discountPercentage.setNullRepresentation("0");
@@ -1121,12 +1126,13 @@ public class CreateProposalsView extends Panel implements View {
         Label totalAfterDiscount = new Label("<b>Total After Discount :</b>",ContentMode.HTML);
         amountsLayout.addComponent(totalAfterDiscount);
         amountsLayout.setSpacing(true);
-        totalAfterDiscount.setStyleName("amount-text-label");
+        totalAfterDiscount.addStyleName("amount-text-label");
         totalAfterDiscount.addStyleName("margin-top-18");
 
         this.discountTotal=new Label("</b>",ContentMode.HTML);
-        this.discountTotal.setStyleName("amount-text");
+        this.discountTotal.addStyleName("amount-text");
         this.discountTotal.addStyleName("margin-top-18");
+        this.discountTotal.addStyleName("v-label-amount-text-label");
         this.discountTotal.setCaptionAsHtml(true);
         this.discountTotal.setConverter(getAmountConverter());
         this.discountTotal.setReadOnly(true);
@@ -1145,6 +1151,7 @@ public class CreateProposalsView extends Panel implements View {
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
+        horizontalLayout.setStyleName("v-has-width-forLabel");
 
         Label title = new Label("Products Details");
         title.setStyleName("products-and-addons-label-text");

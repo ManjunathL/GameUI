@@ -17,6 +17,9 @@ public class MGModule {
     private int depth;
     private int height;
     private String imagePath;
+    private String moduleCategory;
+    private String productCategory;
+    private String moduleType;
     private List<ModuleAccessory> accessories = new ArrayList<>();
 
     public String getCode() {
@@ -85,5 +88,45 @@ public class MGModule {
 
     public void setCarcassCode(String carcassCode) {
         this.carcassCode = carcassCode;
+    }
+
+    public String getModuleCategory() {
+        return moduleCategory;
+    }
+
+    public void setModuleCategory(String moduleCategory) {
+        this.moduleCategory = moduleCategory;
+    }
+
+    public String getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public String getModuleType() {
+        return moduleType;
+    }
+
+    public void setModuleType(String moduleType) {
+        this.moduleType = moduleType;
+    }
+
+    @Override
+    public String toString() {
+        return "MGModule{" +
+                "code='" + code + '\'' +
+                ", carcassCode='" + carcassCode + '\'' +
+                ", description='" + description + '\'' +
+                ", width=" + width +
+                ", depth=" + depth +
+                ", height=" + height +
+                ", imagePath='" + imagePath + '\'' +
+                ", moduleCategory='" + moduleCategory + '\'' +
+                ", productCategory='" + productCategory + '\'' +
+                ", moduleType='" + moduleType + '\'' +
+                '}';
     }
 }

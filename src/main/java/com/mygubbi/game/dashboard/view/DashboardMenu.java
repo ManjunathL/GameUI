@@ -62,13 +62,16 @@ public final class DashboardMenu extends CustomComponent {
     }
 
     private Component buildTitle() {
-        Label logo = new Label("&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<strong>GAME</strong>",
+        Label logo = new Label("<strong>GAME</strong>",
                 ContentMode.HTML);
         logo.setIcon(new ThemeResource("img/myGubbi_Logo.png"));
+        logo.addStyleName("v-label-undef-w-loginscreen");
+        logo.addStyleName("v-icon-dashboardmenu-logo");
         logo.setSizeUndefined();
         HorizontalLayout logoWrapper = new HorizontalLayout(logo);
         logoWrapper.setComponentAlignment(logo, Alignment.MIDDLE_CENTER);
         logoWrapper.addStyleName("valo-menu-title");
+
         return logoWrapper;
     }
 

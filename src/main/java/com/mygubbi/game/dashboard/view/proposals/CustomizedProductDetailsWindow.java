@@ -36,7 +36,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 
 import java.io.File;
@@ -68,11 +67,13 @@ public class CustomizedProductDetailsWindow extends Window {
     private File uploadedQuoteFile;
     private TabSheet tabSheet;
 
+    private Button addModules;
     private Button closeBtn;
     private Button saveBtn;
     private Proposal proposal;
 
     private Product product;
+    private Module module;
     private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private List<Finish> shutterFinishMasterList;
@@ -107,6 +108,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setSizeFull();
+        vLayout.addStyleName("v-vertical-customized-product-details");
         vLayout.setMargin(new MarginInfo(true, true, true, true));
         setContent(vLayout);
         Responsive.makeResponsive(this);
@@ -236,13 +238,10 @@ public class CustomizedProductDetailsWindow extends Window {
         for (Module module : modules) {
             totalCostWOAccessories += module.getAmountWOAccessories();
             totalModuleArea += module.getArea();
-            LOG.debug("Total Module Area :" + totalModuleArea);
         }
         product.setCostWoAccessories(totalCostWOAccessories);
 
         Double cwa=product.getCostWoAccessories();
-        LOG.debug("CWA :" + cwa);
-        LOG.debug("totalCostWOAccessories:" + totalCostWOAccessories + " | totalModuleArea:" + totalModuleArea);
         if (totalModuleArea != 0) {
             areaInSft.setReadOnly(false);
             areaInSft.setValue(round(totalModuleArea) + " sft");
@@ -251,7 +250,6 @@ public class CustomizedProductDetailsWindow extends Window {
             costWithoutAccessories.setValue(round(totalCostWOAccessories) + "");
             costWithoutAccessories.setReadOnly(true);
         }
-
     }
 
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
@@ -389,12 +387,50 @@ public class CustomizedProductDetailsWindow extends Window {
         shutterFinishSelection.addValueChangeListener(this::refreshPrice);
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
-        formLayoutRight.addComponent(getQuoteUploadControl());
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setWidth("100%");
+        horizontalLayout.setHeight("100%");
+        horizontalLayout.addComponent(getQuoteUploadControl());
+
+        this.addModules = new Button("Add Modules");
+        addModules.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                if (!commitValues()) return;
+                Module module = new Module();
+                boolean readOnly = isProposalReadonly();
+                product.setType(TYPES.CUSTOMIZED.name());
+                module.setModuleType("C");
+                module.setProductCategory(product.getProductCategoryCode());
+                module.setModuleSource("button");
+                module.setExposedLeft(false);
+                module.setExposedRight(false);
+                module.setExposedBack(false);
+                module.setExposedBottom(false);
+                module.setExposedTop(false);
+                module.setExposedAll(false);
+                module.setUnitType("Non-Standard");
+                module.setCarcass(getDefaultText(
+                        (module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
+                                ? getSelectedItemText(wallCarcassSelection)
+                                : getSelectedItemText(baseCarcassSelection))));
+                module.setFinishType(getDefaultText(getSelectedItemText(finishTypeSelection)));
+                module.setFinish(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
+                module.setCarcassCodeBasedOnUnitType(product);
+                module.setFinishTypeCode(product.getFinishTypeCode());
+                module.setFinishCode(product.getFinishCode());
+                ModuleDetailsWindow.open(module,product,readOnly,0);
+            }
+        });
+
+        horizontalLayout.addComponent(addModules);
+
+        formLayoutRight.addComponent(horizontalLayout);
 
         totalAmount = new TextField("<h2>Total Amount:</h2>");
         totalAmount.setValue("0");
         totalAmount.setImmediate(true);
-        totalAmount.setStyleName("amount-text");
+        totalAmount.addStyleName("amount-text-customized-product-details");
         binder.bind(totalAmount, AMOUNT);
         totalAmount.setReadOnly(true);
         totalAmount.setCaptionAsHtml(true);
@@ -440,12 +476,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.quoteUploadCtrl = new Upload("Import Quotation Sheet", (filename, mimeType) -> {
             LOG.debug("Received upload - " + filename);
 
-            try {
-                binder.commit();
-            } catch (FieldGroup.CommitException e) {
-                NotificationUtil.showNotification("Please fill all mandatory fields before upload!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                return null;
-            }
+            if (!commitValues()) return null;
 
             if (StringUtils.isEmpty(filename)) {
                 NotificationUtil.showNotification("Please specify the file.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -500,6 +531,16 @@ public class CustomizedProductDetailsWindow extends Window {
         return quoteUploadCtrl;
     }
 
+    private boolean commitValues() {
+        try {
+            binder.commit();
+        } catch (FieldGroup.CommitException e) {
+            NotificationUtil.showNotification("Please fill all mandatory fields before upload!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return false;
+        }
+        return true;
+    }
+
     private void initModules(Product product) {
         for (Module module : product.getModules()) {
 
@@ -512,6 +553,7 @@ public class CustomizedProductDetailsWindow extends Window {
             module.setCarcassCodeBasedOnUnitType(product);
             module.setFinishTypeCode(product.getFinishTypeCode());
             module.setFinishCode(product.getFinishCode());
+
         }
     }
 
@@ -533,6 +575,20 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void disableSave() {
         //saveBtn.setEnabled(false);
+    }
+
+    public void checkAndEnableSave()
+    {
+        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+        for (Module module : modules)
+        {
+            if (module.getAmount() == 0)
+            {
+                this.disableSave();
+                return;
+            }
+        }
+        this.enableSave();
     }
 
     private String getUploadBasePath() {
@@ -582,6 +638,7 @@ public class CustomizedProductDetailsWindow extends Window {
         actionColumn.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+
                 if (!binder.isValid()) {
                     NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -609,9 +666,6 @@ public class CustomizedProductDetailsWindow extends Window {
                                     Module module = (Module) rendererClickEvent.getItemId();
                                     List<Module> modules = product.getModules();
                                     modules.remove(module);
-                                    proposalDataProvider.loadAndUpdateProduct(product);
-
-
                                     moduleContainer.removeAllItems();
 
                                     int seq = module.getSeq();
@@ -624,6 +678,9 @@ public class CustomizedProductDetailsWindow extends Window {
 
                                     moduleContainer.addAll(modules);
                                     modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
+                                    updateTotalAmount();
+                                    updatePsftCosts();
+                                    checkAndEnableSave();
                                 }
                             });
                 }
@@ -989,21 +1046,27 @@ public class CustomizedProductDetailsWindow extends Window {
     public void moduleUpdated(final ProposalEvent.ModuleUpdated event) {
 
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
-        modules.remove(event.getModule());
-        modules.add(event.getModule());
+
+        //todo: Set seq and module seq for newly created modules
+        Module module = event.getModule();
+        if (module.getSeq() == 0)
+        {
+            module.setSeq(this.getNextUnitSequence(modules, module.getUnitType()));
+            module.setModuleSequence(this.getNextModuleSequence(modules));
+        }
+        else
+        {
+            modules.remove(module);
+        }
+        modules.add(module);
         moduleContainer.removeAllItems();
         moduleContainer.addAll(modules);
         modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
         modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
-
-        String prevTotal = this.totalAmount.getValue();
         updateTotalAmount();
-
         updatePsftCosts();
 
-
      //   event.getWindow().close();
-
 
         if (event.isLoadNext()) {
             loadNextModule(event.getModuleIndex());
@@ -1016,21 +1079,58 @@ public class CustomizedProductDetailsWindow extends Window {
         this.checkAndEnableSave();
     }
 
-    private void checkAndEnableSave()
-    {
-        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+    private int getNextModuleSequence(List<Module> modules) {
+        int seq = 0;
         for (Module module : modules)
         {
-            double amount=module.getAmount();
-            LOG.debug("Amount module : " + amount);
-            if (module.getAmount() == 0)
+            if (seq < module.getModuleSequence())
             {
-                this.disableSave();
-                return;
+                seq = module.getSeq();
             }
         }
-        this.enableSave();
+        return seq + 1;
     }
+
+    private int getNextUnitSequence(List<Module> modules, String unitType) {
+        int seq = 0;
+        for (Module module : modules)
+        {
+            if (module.getUnitType().equals(unitType) && seq < module.getSeq())
+            {
+                seq = module.getSeq();
+            }
+        }
+        return seq + 1;
+    }
+
+/*
+    @Subscribe
+    public void moduleCreated(final ProposalEvent.ModuleUpdated event) {
+
+        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+        modules.remove(event.getModule());
+        modules.add(event.getModule());
+        moduleContainer.removeAllItems();
+        moduleContainer.addAll(modules);
+        modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
+        modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
+        updateTotalAmount();
+
+        updatePsftCosts();
+
+        if (event.isLoadNext()) {
+            loadNextModule(event.getModuleIndex());
+        }
+        else if (event.isLoadPrevious())
+        {
+            loadPreviousModule(event.getModuleIndex());
+        }
+
+        this.checkAndEnableSave();
+    }
+*/
+
+
 
     private void loadNextModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex);

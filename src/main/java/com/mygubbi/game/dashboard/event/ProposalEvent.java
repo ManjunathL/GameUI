@@ -60,6 +60,43 @@ public abstract class ProposalEvent {
         }
     }
 
+    public static class ModuleCreated {
+        private Module module;
+        private boolean loadNext;
+        private boolean loadPrevious;
+        private int moduleIndex;
+        private Window window;
+
+        public ModuleCreated(Module module, boolean loadNext, boolean loadPrevious, int moduleIndex, Window window) {
+            this.module = module;
+            this.loadNext = loadNext;
+            this.loadPrevious = loadPrevious;
+            this.moduleIndex = moduleIndex;
+            this.window = window;
+
+        }
+
+        public Window getWindow() {
+            return window;
+        }
+
+        public Module getModule() {
+            return module;
+        }
+
+        public boolean isLoadNext() {
+            return loadNext;
+        }
+
+        public boolean isLoadPrevious() { return loadPrevious;}
+
+        public int getModuleIndex() {
+            return moduleIndex;
+        }
+    }
+
+
+
     public static class ProductCreatedOrUpdatedEvent {
         private Product product;
         public ProductCreatedOrUpdatedEvent(Product product) {

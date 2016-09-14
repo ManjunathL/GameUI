@@ -2,7 +2,6 @@ package com.mygubbi.game.dashboard.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static java.lang.StrictMath.round;
 
@@ -18,9 +17,13 @@ public class Module implements Cloneable {
 
     public static final String DEFAULT = "default";
 
+
     public enum ImportStatusType {m, d, n}
 
     public enum UnitTypes {base, wall, accessory}
+
+    public enum ModuleSource {file, button}
+
 
     public static final String SEQ = "seq";
     public static final String MODULE_SEQUENCE = "moduleSequence";
@@ -43,8 +46,20 @@ public class Module implements Cloneable {
     public static final String REMARKS = "remarks";
     public static final String DESCRIPTION = "description";
     public static final String DIMENSION = "dimension";
+    public static  final String EXPOSED_LEFT = "exposedLeft";
+    public static  final String EXPOSED_RIGHT = "exposedRight";
+    public static  final String EXPOSED_TOP = "exposedTop";
+    public static  final String EXPOSED_BACK = "exposedBack";
+    public static  final String EXPOSED_BOTTOM = "exposedBottom";
+    public static  final String EXP_BOTTOM = "expBottom";
     public static  final String EXPOSED_SIDES = "expSides";
-    public static  final String EXPOSED_BOTTOM = "expBottom";
+    public static  final String EXPOSED_ALL = "exposedAll";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
+    public static final String DEPTH = "depth";
+    public static final String MODULE_TYPE = "moduleType";
+    public static final String MODULE_CATEGORY = "moduleCategory";
+    public static final String PRODUCT_CATEGORY = "productCategory";
 
 
     private int seq;
@@ -69,21 +84,132 @@ public class Module implements Cloneable {
     private String description;
     private String dimension;
     private String imagePath;
-    private String expSides;
-    private String expBottom;
+    private boolean exposedRight;
+    private boolean exposedLeft;
+    private boolean exposedTop;
+    private boolean exposedBottom;
+    private boolean exposedBack;
+    private boolean exposedAll;
     private double area;
     private double amountWOAccessories;
     private int width;
     private int depth;
     private int height;
+    private String moduleCategory;
+    private String moduleType;
+    private String productCategory;
+    private String moduleSource;
+    private String expSides;
+    private String expBottom;
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
 
+    public String getExpSides() {
+        return expSides;
+    }
 
+    public void setExpSides(String expSides) {
+        this.expSides = expSides;
+    }
+
+    public String getExpBottom() {
+        return expBottom;
+    }
+
+    public void setExpBottom(String expBottom) {
+        this.expBottom = expBottom;
+    }
+
+
+
+
+    public Boolean getExposedRight() {
+        return exposedRight;
+    }
+
+    public void setExposedRight(Boolean exposedRight) {
+        this.exposedRight = exposedRight;
+    }
+
+    public Boolean getExposedLeft() {
+        return exposedLeft;
+    }
+
+    public void setExposedLeft(Boolean exposedLeft) {
+        this.exposedLeft = exposedLeft;
+    }
+
+    public Boolean getExposedTop() {
+        return exposedTop;
+    }
+
+    public void setExposedTop(Boolean exposedTop) {
+        this.exposedTop = exposedTop;
+    }
+
+    public Boolean getExposedBottom() {
+        return exposedBottom;
+    }
+
+    public void setExposedBottom(Boolean exposedBottom) {
+        this.exposedBottom = exposedBottom;
+    }
+
+    public Boolean getExposedBack() {
+        return exposedBack;
+    }
+
+    public void setExposedBack(Boolean exposedBack) {
+        this.exposedBack = exposedBack;
+    }
+
+    public Boolean getExposedAll() {
+        return exposedAll;
+    }
+
+    public void setExposedAll(Boolean exposedAll) {
+        this.exposedAll = exposedAll;
+    }
+
+    public String getModuleSource() {
+        return moduleSource;
+    }
+
+    public void setModuleSource(String moduleSource) {
+        this.moduleSource = moduleSource;
+    }
+
+    public String getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public String getModuleCategory() {
+        return moduleCategory;
+    }
+
+    public void setModuleCategory(String moduleCategory) {
+        this.moduleCategory = moduleCategory;
+    }
+
+    public String getModuleType() {
+        return moduleType;
+    }
+
+    public void setModuleType(String moduleType) {
+        this.moduleType = moduleType;
+    }
 
     @Override
-    public Object clone() {
+    public Module clone() {
         try {
-            return super.clone();
+            Module clone = (Module) super.clone();
+            List<ModuleAccessoryPack> clonedPacks = new ArrayList<>();
+            clonedPacks.addAll(this.getAccessoryPacks());
+            clone.setAccessoryPacks(clonedPacks);
+            return clone;
         } catch (CloneNotSupportedException e) {
             throw new InternalError(e);
             //Will never happen since we are implementing Cloneable
@@ -128,22 +254,6 @@ public class Module implements Cloneable {
 
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    public String getExpSides() {
-        return expSides;
-    }
-
-    public void setExpSides(String expSides) {
-        this.expSides = expSides;
-    }
-
-    public String getExpBottom() {
-        return expBottom;
-    }
-
-    public void setExpBottom(String expBottom) {
-        this.expBottom = expBottom;
     }
 
     public String getImagePath() {
@@ -364,6 +474,58 @@ public class Module implements Cloneable {
 
     @Override
     public String toString() {
-        return "mgCode - " + this.getMgCode() + ", carcassCode - " + this.getCarcassCode() + ", finishCode - " + this.getFinishCode();
+        return "Module{" +
+                "seq=" + seq +
+                ", moduleSequence=" + moduleSequence +
+                ", unitType='" + unitType + '\'' +
+                ", extCode='" + extCode + '\'' +
+                ", extText='" + extText + '\'' +
+                ", mgCode='" + mgCode + '\'' +
+                ", carcass='" + carcass + '\'' +
+                ", carcassCode='" + carcassCode + '\'' +
+                ", fixedCarcassCode='" + fixedCarcassCode + '\'' +
+                ", finishType='" + finishType + '\'' +
+                ", finishTypeCode='" + finishTypeCode + '\'' +
+                ", finish='" + finish + '\'' +
+                ", finishCode='" + finishCode + '\'' +
+                ", colorCode='" + colorCode + '\'' +
+                ", colorName='" + colorName + '\'' +
+                ", colorImagePath='" + colorImagePath + '\'' +
+                ", amount=" + amount +
+                ", remarks='" + remarks + '\'' +
+                ", importStatus='" + importStatus + '\'' +
+                ", description='" + description + '\'' +
+                ", dimension='" + dimension + '\'' +
+                ", imagePath='" + imagePath + '\'' +
+                ", exposedRight=" + exposedRight +
+                ", exposedLeft=" + exposedLeft +
+                ", exposedTop=" + exposedTop +
+                ", exposedBottom=" + exposedBottom +
+                ", exposedBack=" + exposedBack +
+                ", exposedAll=" + exposedAll +
+                ", area=" + area +
+                ", amountWOAccessories=" + amountWOAccessories +
+                ", width=" + width +
+                ", depth=" + depth +
+                ", height=" + height +
+                ", moduleCategory='" + moduleCategory + '\'' +
+                ", moduleType='" + moduleType + '\'' +
+                ", productCategory='" + productCategory + '\'' +
+                ", moduleSource='" + moduleSource + '\'' +
+                ", expSides='" + expSides + '\'' +
+                ", expBottom='" + expBottom + '\'' +
+                ", accessoryPacks=" + accessoryPacks +
+                '}';
+    }
+
+    public static void main(String[] args)
+    {
+        //Test cloning
+
+        Module origin = new Module();
+        origin.setMgCode("MG1");
+
+        Module clone = (Module) origin.clone();
+        System.out.println("Original:" + origin.getMgCode() + " | Cloned:" + clone.getMgCode());
     }
 }
