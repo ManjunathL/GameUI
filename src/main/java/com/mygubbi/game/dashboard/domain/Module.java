@@ -53,7 +53,7 @@ public class Module implements Cloneable {
     public static  final String EXPOSED_BOTTOM = "exposedBottom";
     public static  final String EXP_BOTTOM = "expBottom";
     public static  final String EXPOSED_SIDES = "expSides";
-    public static  final String EXPOSED_ALL = "exposedAll";
+    public static  final String EXPOSED_OPEN = "exposedOpen";
     public static final String WIDTH = "width";
     public static final String HEIGHT = "height";
     public static final String DEPTH = "depth";
@@ -89,7 +89,7 @@ public class Module implements Cloneable {
     private boolean exposedTop;
     private boolean exposedBottom;
     private boolean exposedBack;
-    private boolean exposedAll;
+    private boolean exposedOpen;
     private double area;
     private double amountWOAccessories;
     private int width;
@@ -162,12 +162,12 @@ public class Module implements Cloneable {
         this.exposedBack = exposedBack;
     }
 
-    public Boolean getExposedAll() {
-        return exposedAll;
+    public Boolean getExposedOpen() {
+        return exposedOpen;
     }
 
-    public void setExposedAll(Boolean exposedAll) {
-        this.exposedAll = exposedAll;
+    public void setExposedOpen(Boolean exposedOpen) {
+        this.exposedOpen = exposedOpen;
     }
 
     public String getModuleSource() {
@@ -502,7 +502,7 @@ public class Module implements Cloneable {
                 ", exposedTop=" + exposedTop +
                 ", exposedBottom=" + exposedBottom +
                 ", exposedBack=" + exposedBack +
-                ", exposedAll=" + exposedAll +
+                ", exposedOpen=" + exposedOpen +
                 ", area=" + area +
                 ", amountWOAccessories=" + amountWOAccessories +
                 ", width=" + width +

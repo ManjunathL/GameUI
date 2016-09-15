@@ -14,7 +14,6 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
@@ -47,7 +46,6 @@ public class ModuleDetailsWindow extends Window {
     private TextField importedModule;
     private TextField moduleCategoryText;
     private TextField description;
-    private TextField dimensions;
     private TextField width;
     private TextField depth;
     private TextField height;
@@ -83,7 +81,7 @@ public class ModuleDetailsWindow extends Window {
     private CheckBox exposedBottom;
     private CheckBox exposedTop;
     private CheckBox exposedBack;
-    private CheckBox exposedAll;
+    private CheckBox exposedOpen;
     private Image moduleImage;
     private ThemeResource emptyModuleImage;
     private Button applyNextButton;
@@ -222,6 +220,7 @@ public class ModuleDetailsWindow extends Window {
         handleState();
 
         this.dontCalculatePriceNow = false;
+
         this.refreshPrice();
     }
 
@@ -273,7 +272,7 @@ public class ModuleDetailsWindow extends Window {
         if (!module.getExposedTop().equals(false)) exposedTop.setValue(module.getExposedTop());
         if (module.getExposedBottom().equals(false)) exposedBottom.setValue(module.getExposedBottom());
         if (!module.getExposedBack().equals(false)) exposedBack.setValue(module.getExposedBack());
-        if (!module.getExposedAll().equals(false)) exposedAll.setValue(module.getExposedAll());
+        if (!module.getExposedOpen().equals(false)) exposedOpen.setValue(module.getExposedOpen());
 
         checkDefaultsOverridden();
     }
@@ -322,8 +321,6 @@ public class ModuleDetailsWindow extends Window {
                 module.setFinishCode(product.getFinishCode());
             }
         }
-
-
     }
 
     private void addListenersToDimensionTextBoxes() {
@@ -345,7 +342,10 @@ public class ModuleDetailsWindow extends Window {
             refreshPrice();
         });
 
-
+        this.description.addValueChangeListener(valueChangeEvent -> {
+            String code = (String) valueChangeEvent.getProperty().getValue();
+            description.setValue(code);
+        });
     }
 
     private Component buildModuleImageComponent() {
@@ -425,6 +425,7 @@ public class ModuleDetailsWindow extends Window {
         else if (module.getModuleSource().equals("button")) {
             this.moduleCategory = getSimpleItemFilledCombo("Module Category", ProposalDataProvider.MODULE_CATEGORY_LOOKUP, null);
             binder.bind(moduleCategory, Module.MODULE_CATEGORY);
+            moduleCategory.setFilteringMode(FilteringMode.CONTAINS);
             formLayout.addComponent(this.moduleCategory);
             moduleCategory.addValueChangeListener(valueChangeEvent -> {
                 String code = (String) valueChangeEvent.getProperty().getValue();
@@ -451,6 +452,7 @@ public class ModuleDetailsWindow extends Window {
             mgModules = proposalDataProvider.getModules(module.getProductCategory(),module.getModuleCategory());
             moduleSelection = getModulesCombo("Module",mgModules, null);
             binder.bind(moduleSelection, Module.MG_MODULE_CODE);
+            moduleSelection.setFilteringMode(FilteringMode.CONTAINS);
             formLayout.addComponent(this.moduleSelection);
             this.moduleSelection.addValueChangeListener(valueChangeEvent -> {
                 moduleSelectionChangedEvent(valueChangeEvent);
@@ -496,6 +498,8 @@ public class ModuleDetailsWindow extends Window {
         MGModule mgModule = ((BeanContainer<String, MGModule>) this.moduleSelection.getContainerDataSource()).getItem(code).getBean();
         //((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code);
 
+        LOG.debug("MG module - " + mgModule.toString());
+
         module.setMgCode(mgModule.getCode());
         module.setHeight(mgModule.getHeight());
         module.setDepth(mgModule.getDepth());
@@ -529,8 +533,7 @@ public class ModuleDetailsWindow extends Window {
         this.depth.setValue(String.valueOf(module.getDepth()));
 
         this.description.setReadOnly(false);
-        this.description.setValue(module.getDescription());
-        this.description.setReadOnly(true);
+        this.description.setValue(module.getDescription().substring(0, 16) + "..");
 
         module.setImportStatus(Module.ImportStatusType.m.name());
         module.setUnitType(module.getModuleCategory());
@@ -548,12 +551,14 @@ public class ModuleDetailsWindow extends Window {
             this.height.setReadOnly(true);
             this.width.setReadOnly(true);
             this.depth.setReadOnly(true);
+            this.description.setReadOnly(true);
         }
         else
         {
             this.height.setReadOnly(false);
             this.width.setReadOnly(false);
             this.depth.setReadOnly(false);
+            this.description.setReadOnly(false);
             isDimensionsEmpty();
         }
     }
@@ -614,10 +619,10 @@ public class ModuleDetailsWindow extends Window {
         binder.bind(exposedBack,Module.EXPOSED_BACK);
         this.exposedBack.addValueChangeListener(this::refreshPrice);
 
-        this.exposedAll = new CheckBox("All");
-        hLayoutExposedPanels.addComponent(exposedAll);
-        binder.bind(exposedAll,Module.EXPOSED_ALL);
-        this.exposedAll.addValueChangeListener(this::refreshPrice);
+        this.exposedOpen = new CheckBox("Open");
+        hLayoutExposedPanels.addComponent(exposedOpen);
+        binder.bind(exposedOpen,Module.EXPOSED_OPEN);
+        this.exposedOpen.addValueChangeListener(this::refreshPrice);
 
         return hLayoutExposedPanels;
     }
@@ -628,17 +633,6 @@ public class ModuleDetailsWindow extends Window {
         horizontalLayoutDimensions.setMargin(new MarginInfo(false,true,false,true));
         horizontalLayoutDimensions.setCaption("Dimensions");
         horizontalLayoutDimensions.setSpacing(false);
-
-        FormLayout formLayoutHeight = new FormLayout();
-        formLayoutHeight.setSizeFull();
-        formLayoutHeight.setMargin(new MarginInfo(false,false,false,false));
-        this.height = new TextField();
-        this.height.setCaption("Height");
-        this.height.setWidth("60px");
-        this.height.addStyleName(Runo.TEXTFIELD_SMALL);
-        binder.bind(this.height, Module.HEIGHT);
-        formLayoutHeight.addComponent(height);
-        horizontalLayoutDimensions.addComponent(formLayoutHeight);
 
         FormLayout formLayoutWidth = new FormLayout();
         formLayoutWidth.setSizeFull();
@@ -661,6 +655,17 @@ public class ModuleDetailsWindow extends Window {
         binder.bind(this.depth,Module.DEPTH);
         formLayoutDepth.addComponent(depth);
         horizontalLayoutDimensions.addComponent(formLayoutDepth);
+
+        FormLayout formLayoutHeight = new FormLayout();
+        formLayoutHeight.setSizeFull();
+        formLayoutHeight.setMargin(new MarginInfo(false,false,false,false));
+        this.height = new TextField();
+        this.height.setCaption("Height");
+        this.height.setWidth("60px");
+        this.height.addStyleName(Runo.TEXTFIELD_SMALL);
+        binder.bind(this.height, Module.HEIGHT);
+        formLayoutHeight.addComponent(height);
+        horizontalLayoutDimensions.addComponent(formLayoutHeight);
 
         return horizontalLayoutDimensions;
     }
@@ -859,6 +864,10 @@ public class ModuleDetailsWindow extends Window {
 
         if (this.dontCalculatePriceNow) return;
 
+        if (StringUtils.isEmpty(this.module.getMgCode())) return;
+
+        if (StringUtils.isEmpty(this.module.getModuleCategory())) return;
+
         isDimensionsEmpty();
         ModulePrice modulePrice = this.recalculatePriceForModule();
 
@@ -893,10 +902,7 @@ public class ModuleDetailsWindow extends Window {
     private ModulePrice recalculatePriceForModule() {
         this.module.setCarcassCode(removeDefaultPrefix((String) carcassMaterialSelection.getValue()));
         this.module.setFinishCode(removeDefaultPrefix((String) shutterFinishSelection.getValue()));
-        this.module.setMgCode(module.getMgCode());
-        this.module.setSeq(module.getSeq());
-        this.module.setExtCode(module.getExtCode());
-        this.module.setUnitType(module.getUnitType());
+
 
         int integerValueHeight = getIntegerValue(this.height.getValue());
         this.module.setHeight(integerValueHeight);
@@ -914,7 +920,7 @@ public class ModuleDetailsWindow extends Window {
         this.module.setExposedTop(exposedTop.getValue());
         this.module.setExposedBottom(exposedBottom.getValue());
         this.module.setExposedBack(exposedBack.getValue());
-        this.module.setExposedAll(exposedAll.getValue());
+        this.module.setExposedOpen(exposedOpen.getValue());
 
         if (this.module.getHeight() == 0 || this.module.getDepth() == 0 || this.module.getWidth() == 0)
         {

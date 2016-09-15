@@ -408,7 +408,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 module.setExposedBack(false);
                 module.setExposedBottom(false);
                 module.setExposedTop(false);
-                module.setExposedAll(false);
+                module.setExposedOpen(false);
                 module.setUnitType("Non-Standard");
                 module.setCarcass(getDefaultText(
                         (module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
@@ -1045,9 +1045,9 @@ public class CustomizedProductDetailsWindow extends Window {
     @Subscribe
     public void moduleUpdated(final ProposalEvent.ModuleUpdated event) {
 
-        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+//        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
-        //todo: Set seq and module seq for newly created modules
+        List<Module> modules = this.product.getModules();
         Module module = event.getModule();
         if (module.getSeq() == 0)
         {
@@ -1066,8 +1066,6 @@ public class CustomizedProductDetailsWindow extends Window {
         updateTotalAmount();
         updatePsftCosts();
 
-     //   event.getWindow().close();
-
         if (event.isLoadNext()) {
             loadNextModule(event.getModuleIndex());
         }
@@ -1085,7 +1083,7 @@ public class CustomizedProductDetailsWindow extends Window {
         {
             if (seq < module.getModuleSequence())
             {
-                seq = module.getSeq();
+                seq = module.getModuleSequence();
             }
         }
         return seq + 1;
@@ -1102,35 +1100,6 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         return seq + 1;
     }
-
-/*
-    @Subscribe
-    public void moduleCreated(final ProposalEvent.ModuleUpdated event) {
-
-        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
-        modules.remove(event.getModule());
-        modules.add(event.getModule());
-        moduleContainer.removeAllItems();
-        moduleContainer.addAll(modules);
-        modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
-        modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
-        updateTotalAmount();
-
-        updatePsftCosts();
-
-        if (event.isLoadNext()) {
-            loadNextModule(event.getModuleIndex());
-        }
-        else if (event.isLoadPrevious())
-        {
-            loadPreviousModule(event.getModuleIndex());
-        }
-
-        this.checkAndEnableSave();
-    }
-*/
-
-
 
     private void loadNextModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex);
