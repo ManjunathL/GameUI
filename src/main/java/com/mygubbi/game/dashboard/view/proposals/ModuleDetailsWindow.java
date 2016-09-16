@@ -505,6 +505,15 @@ public class ModuleDetailsWindow extends Window {
         module.setDepth(mgModule.getDepth());
         module.setWidth(mgModule.getWidth());
 
+        if (module.getModuleType().equals("S")) {
+            module.setImagePath(mgModule.getImagePath());
+            moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));        }
+        else if (module.getModuleType().equals("C"))
+        {
+            module.setImagePath("image.jpg");
+            moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
+        }
+
         module.setDescription(mgModule.getDescription());
         module.setModuleType(mgModule.getModuleType());
         module.setModuleCategory(mgModule.getModuleCategory());
