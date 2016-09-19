@@ -649,6 +649,8 @@ public class CustomizedProductDetailsWindow extends Window {
                     //if (!unmappableModulePresent) {
                     boolean readOnly = isProposalReadonly();
                     int index = modulesGrid.getContainerDataSource().indexOfId(module);
+                    module.setModuleType("S");
+                    module.setModuleSource("file");
                     ModuleDetailsWindow.open(module, createProductFromUI(), readOnly, index + 1);
                 } else {
                     NotificationUtil.showNotification("Cannot proceed as this module is not setup.", NotificationUtil.STYLE_BAR_ERROR_SMALL);

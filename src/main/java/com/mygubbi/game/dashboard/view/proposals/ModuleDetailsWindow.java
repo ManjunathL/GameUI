@@ -214,7 +214,7 @@ public class ModuleDetailsWindow extends Window {
         verticalLayout.setExpandRatio(verticalLayout2, 0.1f);
 
         setContent(verticalLayout);
-        this.addListenersToDimensionTextBoxes();
+        this.addListenerstoDimensionCheckBoxes();
         this.allowDimensionChangesForModule();
         updateValues();
         handleState();
@@ -323,7 +323,7 @@ public class ModuleDetailsWindow extends Window {
         }
     }
 
-    private void addListenersToDimensionTextBoxes() {
+    private void addListenerstoDimensionCheckBoxes() {
         this.height.addValueChangeListener(valueChangeEvent -> {
             String code = (String) valueChangeEvent.getProperty().getValue();
             this.height.setValue(code);
@@ -342,10 +342,12 @@ public class ModuleDetailsWindow extends Window {
             refreshPrice();
         });
 
-        this.description.addValueChangeListener(valueChangeEvent -> {
-            String code = (String) valueChangeEvent.getProperty().getValue();
-            description.setValue(code);
-        });
+        if (module.getModuleType().equals("C")) {
+            this.description.addValueChangeListener(valueChangeEvent -> {
+                String code = (String) valueChangeEvent.getProperty().getValue();
+                description.setValue(code);
+            });
+        }
     }
 
     private Component buildModuleImageComponent() {
@@ -505,18 +507,20 @@ public class ModuleDetailsWindow extends Window {
         module.setDepth(mgModule.getDepth());
         module.setWidth(mgModule.getWidth());
 
+        module.setModuleType(mgModule.getModuleType());
+        module.setModuleCategory(mgModule.getModuleCategory());
+
         if (module.getModuleType().equals("S")) {
             module.setImagePath(mgModule.getImagePath());
-            moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));        }
+            moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
+            module.setDescription(mgModule.getDescription());
+        }
         else if (module.getModuleType().equals("C"))
         {
             module.setImagePath("image.jpg");
             moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
         }
 
-        module.setDescription(mgModule.getDescription());
-        module.setModuleType(mgModule.getModuleType());
-        module.setModuleCategory(mgModule.getModuleCategory());
 
 /*
         Integer updated_height = (Integer) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("height").getValue();
@@ -542,7 +546,7 @@ public class ModuleDetailsWindow extends Window {
         this.depth.setValue(String.valueOf(module.getDepth()));
 
         this.description.setReadOnly(false);
-        this.description.setValue(module.getDescription().substring(0, 16) + "..");
+        this.description.setValue(module.getDescription());
 
         module.setImportStatus(Module.ImportStatusType.m.name());
         module.setUnitType(module.getModuleCategory());
@@ -1255,13 +1259,13 @@ public class ModuleDetailsWindow extends Window {
 
         final BeanContainer<String, LookupItem> container =
                 new BeanContainer<>(LookupItem.class);
-        container.setBeanIdProperty("code");
+        container.setBeanIdProperty(LookupItem.CODE);
         container.addAll(list);
 
         ComboBox select = new ComboBox(caption);
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId("title");
+        select.setItemCaptionPropertyId(LookupItem.TITLE);
         if (listener != null) select.addValueChangeListener(listener);
         if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
