@@ -400,7 +400,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 Module module = new Module();
                 boolean readOnly = isProposalReadonly();
                 product.setType(TYPES.CUSTOMIZED.name());
-                module.setModuleType("C");
+                module.setModuleType("N");
                 module.setProductCategory(product.getProductCategoryCode());
                 module.setModuleSource("button");
                 module.setExposedLeft(false);

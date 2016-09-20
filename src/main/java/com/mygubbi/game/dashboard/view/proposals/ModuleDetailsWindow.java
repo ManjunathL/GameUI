@@ -342,7 +342,7 @@ public class ModuleDetailsWindow extends Window {
             refreshPrice();
         });
 
-        if (module.getModuleType().equals("C")) {
+        if (module.getModuleType().equals("N")) {
             this.description.addValueChangeListener(valueChangeEvent -> {
                 String code = (String) valueChangeEvent.getProperty().getValue();
                 description.setValue(code);
@@ -515,7 +515,7 @@ public class ModuleDetailsWindow extends Window {
             moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
             module.setDescription(mgModule.getDescription());
         }
-        else if (module.getModuleType().equals("C"))
+        else if (module.getModuleType().equals("N"))
         {
             module.setImagePath("image.jpg");
             moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
