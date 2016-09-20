@@ -1311,8 +1311,9 @@ public class ModuleDetailsWindow extends Window {
         ComboBox select = new ComboBox(caption);
         select.setNullSelectionAllowed(true);
         select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId(ModuleCategory.CODE);
-        if (listener != null) select.addValueChangeListener(listener);
+        select.setItemCaptionPropertyId(MGModule.CONCAT);
+
+            if (listener != null) select.addValueChangeListener(listener);
         return select;
     }
 

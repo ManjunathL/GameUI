@@ -514,6 +514,8 @@ public class CustomizedProductDetailsWindow extends Window {
             initModules(product);
             moduleContainer.removeAllItems();
             moduleContainer.addAll(product.getModules());
+            module.setModuleType("S");
+            module.setModuleSource("file");
             modulesGrid.clearSortOrder();
             modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
             modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
@@ -649,8 +651,6 @@ public class CustomizedProductDetailsWindow extends Window {
                     //if (!unmappableModulePresent) {
                     boolean readOnly = isProposalReadonly();
                     int index = modulesGrid.getContainerDataSource().indexOfId(module);
-                    module.setModuleType("S");
-                    module.setModuleSource("file");
                     ModuleDetailsWindow.open(module, createProductFromUI(), readOnly, index + 1);
                 } else {
                     NotificationUtil.showNotification("Cannot proceed as this module is not setup.", NotificationUtil.STYLE_BAR_ERROR_SMALL);

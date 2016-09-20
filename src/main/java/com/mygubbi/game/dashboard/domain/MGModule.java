@@ -2,6 +2,7 @@ package com.mygubbi.game.dashboard.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.lang.StrictMath.round;
 
@@ -10,7 +11,13 @@ import static java.lang.StrictMath.round;
  */
 public class MGModule {
     public static final String CODE = "code";
+    public static final String TITLE = "title";
+    public static final String CONCAT = "concat";
+    public static final String MODULE_TYPE = "moduleType";
+    public static final String MODULE_CATEGORY = "moduleCategory";
+
     private String code;
+    private String title;
     private String carcassCode;
     private String description;
     private int width;
@@ -20,7 +27,24 @@ public class MGModule {
     private String moduleCategory;
     private String productCategory;
     private String moduleType;
+    private String concat;
     private List<ModuleAccessory> accessories = new ArrayList<>();
+
+    public String getConcat() {
+        return description+"-"+code;
+    }
+
+    public void setConcat(String concat) {
+        this.concat = concat;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public String getCode() {
         return code;
