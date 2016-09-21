@@ -364,6 +364,7 @@ public class ModuleDetailsWindow extends Window {
         moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
         moduleImage.setCaption(null);
         moduleImage.setSizeFull();
+        moduleImage.setImmediate(true);
         verticalLayout.addComponent(moduleImage);
         panel.setContent(verticalLayout);
         return panel;
@@ -438,11 +439,11 @@ public class ModuleDetailsWindow extends Window {
                 module.setModuleCategory(title);
                 LOG.debug("After combo box updated:" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
 
-                mgModules = proposalDataProvider.getModules(module.getProductCategory(),module.getModuleCategory());
-                if (this.moduleSelection != null)
-                {
+                mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
+                if (this.moduleSelection != null) {
                     this.moduleSelection.getContainerDataSource().removeAllItems();
                     ((BeanContainer<String, MGModule>) this.moduleSelection.getContainerDataSource()).addAll(mgModules);
+                    moduleSelection.setValue(moduleSelection.getItemIds().iterator().next());
                 }
             });
 
@@ -454,8 +455,8 @@ public class ModuleDetailsWindow extends Window {
 
             LOG.debug("product category :" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
 
-            mgModules = proposalDataProvider.getModules(module.getProductCategory(),module.getModuleCategory());
-            moduleSelection = getModulesCombo("Module",mgModules, null);
+            mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
+            moduleSelection = getModulesCombo("Module", mgModules, null);
             binder.bind(moduleSelection, Module.MG_MODULE_CODE);
             moduleSelection.setFilteringMode(FilteringMode.CONTAINS);
             moduleSelection.setNullSelectionAllowed(false);
@@ -516,12 +517,11 @@ public class ModuleDetailsWindow extends Window {
 
         if (module.getModuleType().equals("S")) {
             module.setImagePath(mgModule.getImagePath());
-            moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
             module.setDescription(mgModule.getDescription());
         } else if (module.getModuleType().equals("N")) {
             module.setImagePath("image.jpg");
-            moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
         }
+        moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
 
 
 /*

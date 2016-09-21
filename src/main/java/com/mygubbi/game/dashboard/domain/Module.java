@@ -83,7 +83,7 @@ public class Module implements Cloneable {
     private String importStatus;
     private String description="";
     private String dimension;
-    private String imagePath;
+    private String imagePath = "image.jpg";
     private boolean exposedRight;
     private boolean exposedLeft;
     private boolean exposedTop;
