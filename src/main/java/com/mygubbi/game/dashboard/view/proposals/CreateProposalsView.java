@@ -721,7 +721,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private void save(Button.ClickEvent clickEvent) {
         if (StringUtils.isEmpty(proposalHeader.getTitle())) {
-            proposalHeader.setTitle("New Proposal");
+            proposalHeader.setTitle(NEW_TITLE);
         }
         try {
             binder.commit();

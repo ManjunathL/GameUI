@@ -310,6 +310,7 @@ public class ModuleDetailsWindow extends Window {
             module.setExposedLeft(false);
             module.setExposedRight(true);
         }
+
         if (module.getModuleType().equals("S")) {
             if (module.getCarcass().contains(Module.DEFAULT)) {
                 module.setCarcassCodeBasedOnUnitType(product);
@@ -345,6 +346,7 @@ public class ModuleDetailsWindow extends Window {
         if (module.getModuleType().equals("N")) {
             this.description.addValueChangeListener(valueChangeEvent -> {
                 String code = (String) valueChangeEvent.getProperty().getValue();
+                if (code == null) code = "";
                 description.setValue(code);
             });
         }
@@ -428,6 +430,7 @@ public class ModuleDetailsWindow extends Window {
             this.moduleCategory = getSimpleItemFilledCombo("Module Category", ProposalDataProvider.MODULE_CATEGORY_LOOKUP, null);
             binder.bind(moduleCategory, Module.MODULE_CATEGORY);
             moduleCategory.setFilteringMode(FilteringMode.CONTAINS);
+            moduleCategory.setNullSelectionAllowed(false);
             formLayout.addComponent(this.moduleCategory);
             moduleCategory.addValueChangeListener(valueChangeEvent -> {
                 String code = (String) valueChangeEvent.getProperty().getValue();
@@ -455,6 +458,7 @@ public class ModuleDetailsWindow extends Window {
             moduleSelection = getModulesCombo("Module",mgModules, null);
             binder.bind(moduleSelection, Module.MG_MODULE_CODE);
             moduleSelection.setFilteringMode(FilteringMode.CONTAINS);
+            moduleSelection.setNullSelectionAllowed(false);
             formLayout.addComponent(this.moduleSelection);
             this.moduleSelection.addValueChangeListener(valueChangeEvent -> {
                 moduleSelectionChangedEvent(valueChangeEvent);
@@ -514,9 +518,7 @@ public class ModuleDetailsWindow extends Window {
             module.setImagePath(mgModule.getImagePath());
             moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
             module.setDescription(mgModule.getDescription());
-        }
-        else if (module.getModuleType().equals("N"))
-        {
+        } else if (module.getModuleType().equals("N")) {
             module.setImagePath("image.jpg");
             moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
         }
@@ -546,8 +548,14 @@ public class ModuleDetailsWindow extends Window {
         this.depth.setValue(String.valueOf(module.getDepth()));
 
         this.description.setReadOnly(false);
-        this.description.setValue(module.getDescription());
-
+        String description = module.getDescription();
+        if (description == null) {
+            this.description.setValue("");
+        }
+        else
+        {
+            this.description.setValue(description);
+        }
         module.setImportStatus(Module.ImportStatusType.m.name());
         module.setUnitType(module.getModuleCategory());
 
@@ -893,8 +901,13 @@ public class ModuleDetailsWindow extends Window {
             this.calculatedAmountWOAccessories = modulePrice.getWoodworkCost();
             this.noPricingErrors();
         }
-        else if (module.getModuleSource().equals("file"))
+        else
         {
+            totalAmount.setReadOnly(false);
+            totalAmount.setValue("0");
+            totalAmount.setReadOnly(true);
+            this.calculatedArea = 0;
+            this.calculatedAmountWOAccessories = 0;
             this.showPricingErrors();
         }
 
@@ -904,7 +917,7 @@ public class ModuleDetailsWindow extends Window {
     private void showPricingErrors()
     {
         disableApply();
-        NotificationUtil.showNotification("Module pricing has errors!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        //NotificationUtil.showNotification("Module pricing has errors!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
     }
 
     private void noPricingErrors()

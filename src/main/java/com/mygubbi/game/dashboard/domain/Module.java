@@ -81,7 +81,7 @@ public class Module implements Cloneable {
     private double amount;
     private String remarks;
     private String importStatus;
-    private String description;
+    private String description="";
     private String dimension;
     private String imagePath;
     private boolean exposedRight;
