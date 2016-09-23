@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("serial")
 public class ModuleDetailsWindow extends Window {
@@ -221,6 +222,8 @@ public class ModuleDetailsWindow extends Window {
 
         this.dontCalculatePriceNow = false;
 
+        LOG.debug("Hi");
+
         this.refreshPrice();
     }
 
@@ -311,16 +314,17 @@ public class ModuleDetailsWindow extends Window {
             module.setExposedRight(true);
         }
 
-        if (module.getModuleType().equals("S")) {
-            if (module.getCarcass().contains(Module.DEFAULT)) {
-                module.setCarcassCodeBasedOnUnitType(product);
-            }
-            if (module.getFinishType().contains(Module.DEFAULT)) {
-                module.setFinishTypeCode(product.getFinishTypeCode());
-            }
-            if (module.getFinish().contains(Module.DEFAULT)) {
-                module.setFinishCode(product.getFinishCode());
-            }
+        if (module.getModuleType() == null)
+            module.setModuleType("S");
+
+        if (module.getCarcass().contains(Module.DEFAULT)) {
+            module.setCarcassCodeBasedOnUnitType(product);
+        }
+        if (module.getFinishType().contains(Module.DEFAULT)) {
+            module.setFinishTypeCode(product.getFinishTypeCode());
+        }
+        if (module.getFinish().contains(Module.DEFAULT)) {
+            module.setFinishCode(product.getFinishCode());
         }
     }
 
@@ -420,14 +424,9 @@ public class ModuleDetailsWindow extends Window {
         formLayout.addStyleName("no-bottom-margin-normal");
 
 
-        if (module.getModuleSource().equals("file")) {
 
-            this.importedModule = (TextField) binder.buildAndBind("Module", Module.MG_MODULE_CODE);
-            this.importedModule.setReadOnly(true);
-            formLayout.addComponent(importedModule);
-        }
 
-        else if (module.getModuleSource().equals("button")) {
+       if (Objects.equals("button", module.getModuleSource())) {
             this.moduleCategory = getSimpleItemFilledCombo("Module Category", ProposalDataProvider.MODULE_CATEGORY_LOOKUP, null);
             binder.bind(moduleCategory, Module.MODULE_CATEGORY);
             moduleCategory.setFilteringMode(FilteringMode.CONTAINS);
@@ -465,6 +464,12 @@ public class ModuleDetailsWindow extends Window {
                 moduleSelectionChangedEvent(valueChangeEvent);
             });
         }
+        else {
+
+           this.importedModule = (TextField) binder.buildAndBind("Module", Module.MG_MODULE_CODE);
+           this.importedModule.setReadOnly(true);
+           formLayout.addComponent(importedModule);
+       }
 
         verticalLayoutModule.addComponent(formLayout);
         verticalLayoutModule.setExpandRatio(formLayout,0.35f);
@@ -514,6 +519,8 @@ public class ModuleDetailsWindow extends Window {
 
         module.setModuleType(mgModule.getModuleType());
         module.setModuleCategory(mgModule.getModuleCategory());
+
+
 
         if (module.getModuleType().equals("S")) {
             module.setImagePath(mgModule.getImagePath());
@@ -883,13 +890,17 @@ public class ModuleDetailsWindow extends Window {
 
     private void refreshPrice() {
 
+
         if (this.dontCalculatePriceNow) return;
 
         if (StringUtils.isEmpty(this.module.getMgCode())) return;
 
-        if (StringUtils.isEmpty(this.module.getModuleCategory())) return;
+//        if (StringUtils.isEmpty(this.module.getModuleCategory())) return;
+//        LOG.debug("refreshPrice3");
 
         isDimensionsEmpty();
+
+        LOG.debug("Hello");
         ModulePrice modulePrice = this.recalculatePriceForModule();
 
         if (modulePrice != null)
