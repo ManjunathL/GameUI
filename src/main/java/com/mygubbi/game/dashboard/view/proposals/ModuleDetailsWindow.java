@@ -222,8 +222,6 @@ public class ModuleDetailsWindow extends Window {
 
         this.dontCalculatePriceNow = false;
 
-        LOG.debug("Hi");
-
         this.refreshPrice();
     }
 
@@ -896,11 +894,11 @@ public class ModuleDetailsWindow extends Window {
         if (StringUtils.isEmpty(this.module.getMgCode())) return;
 
 //        if (StringUtils.isEmpty(this.module.getModuleCategory())) return;
-//        LOG.debug("refreshPrice3");
+
 
         isDimensionsEmpty();
 
-        LOG.debug("Hello");
+
         ModulePrice modulePrice = this.recalculatePriceForModule();
 
         if (modulePrice != null)
