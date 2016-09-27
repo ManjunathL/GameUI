@@ -517,6 +517,10 @@ public class Module implements Cloneable {
                 ", accessoryPacks=" + accessoryPacks +
                 '}';
     }
+    public void clearAcessorryPacks() {
+        this.accessoryPacks.clear();
+
+    }
 
     public static void main(String[] args)
     {
