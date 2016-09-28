@@ -515,6 +515,7 @@ public class ModuleDetailsWindow extends Window {
         module.setDepth(mgModule.getDepth());
         module.setWidth(mgModule.getWidth());
         module.clearAcessorryPacks();
+        this.emptyAccessoryImages();
 
 
         module.setModuleType(mgModule.getModuleType());
