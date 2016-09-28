@@ -470,7 +470,7 @@ public class CreateProposalsView extends Panel implements View {
         cancelMenuItem = moreMenuItem.addItem("Cancel", this::cancel);
         String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
-        if (!role.equals("designer"))
+        if (role.equals("admin"))
         {
             deleteMenuItem = moreMenuItem.addItem("Delete", this::deleteProposal);
         }
