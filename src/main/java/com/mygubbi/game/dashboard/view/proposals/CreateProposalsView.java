@@ -43,6 +43,7 @@ import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
@@ -467,7 +468,12 @@ public class CreateProposalsView extends Panel implements View {
         reviseMenuItem.setVisible(ProposalState.active.name().equals(proposalHeader.getStatus()));
 
         cancelMenuItem = moreMenuItem.addItem("Cancel", this::cancel);
-        deleteMenuItem = moreMenuItem.addItem("Delete", this::deleteProposal);
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
+        if (!role.equals("designer"))
+        {
+            deleteMenuItem = moreMenuItem.addItem("Delete", this::deleteProposal);
+        }
         moreMenuItem.addItem("Close", this::close);
 
         right.addComponent(menu);
