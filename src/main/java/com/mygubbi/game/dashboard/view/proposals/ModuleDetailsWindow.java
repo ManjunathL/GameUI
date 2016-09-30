@@ -515,6 +515,7 @@ public class ModuleDetailsWindow extends Window {
         module.setDepth(mgModule.getDepth());
         module.setWidth(mgModule.getWidth());
         module.clearAcessorryPacks();
+        this.removeAddons();
         this.emptyAccessoryImages();
 
 
@@ -572,6 +573,18 @@ public class ModuleDetailsWindow extends Window {
         this.dontCalculatePriceNow = false;
         refreshPrice();
         refreshAccPacks();
+    }
+
+    private void removeAddons() {
+        addons11.getContainerDataSource().removeAllItems();
+        addons12.getContainerDataSource().removeAllItems();
+        addons13.getContainerDataSource().removeAllItems();
+        addons21.getContainerDataSource().removeAllItems();
+        addons22.getContainerDataSource().removeAllItems();
+        addons23.getContainerDataSource().removeAllItems();
+        addons31.getContainerDataSource().removeAllItems();
+        addons32.getContainerDataSource().removeAllItems();
+        addons33.getContainerDataSource().removeAllItems();
     }
 
     private void allowDimensionChangesForModule() {
