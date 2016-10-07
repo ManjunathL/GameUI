@@ -18,6 +18,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
@@ -721,18 +722,22 @@ public class ModuleDetailsWindow extends Window {
         accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
         this.accessoryPack1 = getAccessoryPackCombo("Acc Pack 1", accessoryPackList, null);
         formLayout.addComponent(this.accessoryPack1);
+        accessoryPack1.setFilteringMode(FilteringMode.CONTAINS);
         accessoryPack1.addValueChangeListener(this::accessoryPack1Changed);
 
         this.addons11 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
         formLayout.addComponent(this.addons11);
+        addons11.setFilteringMode(FilteringMode.CONTAINS);
         addons11.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons12 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
         formLayout.addComponent(this.addons12);
+        addons12.setFilteringMode(FilteringMode.CONTAINS);
         addons12.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons13 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
         formLayout.addComponent(this.addons13);
+        addons13.setFilteringMode(FilteringMode.CONTAINS);
         addons13.addValueChangeListener(this::addImageAndrefreshPrice);
 
         return formLayout;
@@ -767,18 +772,22 @@ public class ModuleDetailsWindow extends Window {
         accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
         this.accessoryPack2 = getAccessoryPackCombo("Acc Pack 2", accessoryPackList, null);
         formLayout.addComponent(this.accessoryPack2);
+        accessoryPack2.setFilteringMode(FilteringMode.CONTAINS);
         accessoryPack2.addValueChangeListener(this::accessoryPack2Changed);
 
         this.addons21 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
         formLayout.addComponent(this.addons21);
+        addons21.setFilteringMode(FilteringMode.CONTAINS);
         addons21.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons22 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
         formLayout.addComponent(this.addons22);
+        addons22.setFilteringMode(FilteringMode.CONTAINS);
         addons22.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons23 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
         formLayout.addComponent(this.addons23);
+        addons23.setFilteringMode(FilteringMode.CONTAINS);
         addons23.addValueChangeListener(this::addImageAndrefreshPrice);
 
         return formLayout;
@@ -798,18 +807,22 @@ public class ModuleDetailsWindow extends Window {
         accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
         this.accessoryPack3 = getAccessoryPackCombo("Acc Pack 3", accessoryPackList, null);
         formLayout.addComponent(this.accessoryPack3);
+        accessoryPack3.setFilteringMode(FilteringMode.CONTAINS);
         accessoryPack3.addValueChangeListener(this::accessoryPack3Changed);
 
         this.addons31 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
         formLayout.addComponent(this.addons31);
+        addons31.setFilteringMode(FilteringMode.CONTAINS);
         addons31.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons32 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
         formLayout.addComponent(this.addons32);
+        addons32.setFilteringMode(FilteringMode.CONTAINS);
         addons32.addValueChangeListener(this::addImageAndrefreshPrice);
 
         this.addons33 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
         formLayout.addComponent(this.addons33);
+        addons33.setFilteringMode(FilteringMode.CONTAINS);
         addons33.addValueChangeListener(this::addImageAndrefreshPrice);
 
         return formLayout;
@@ -833,6 +846,8 @@ public class ModuleDetailsWindow extends Window {
         accImagePanel.setContent(accessoryImageLayout);
         return accImagePanel;
     }
+
+    String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
 
     private void refreshAccessoryImages() {
