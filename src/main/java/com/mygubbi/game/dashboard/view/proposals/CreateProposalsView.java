@@ -18,7 +18,6 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.*;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.SelectionEvent;
-import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
@@ -34,24 +33,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.usermodel.*;
-import java.util.Iterator;
 
-
-
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
 import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
-import static java.lang.System.identityHashCode;
-import static java.lang.System.in;
 
 
 /**
@@ -60,8 +55,6 @@ import static java.lang.System.in;
 public class CreateProposalsView extends Panel implements View {
 
     private static final Logger LOG = LogManager.getLogger(CreateProposalsView.class);
-
-
 
     private final String NEW_TITLE = "New Proposal";
     private final String NEW_VERSION = "1.0";
@@ -119,41 +112,13 @@ public class CreateProposalsView extends Panel implements View {
     private MenuBar.MenuItem deleteMenuItem;
     private MenuBar.MenuItem cancelMenuItem;
     private MenuBar.MenuItem reviseMenuItem;
-    int pid;
-    String parameters;
 
-   // Navigator navigator;
     public CreateProposalsView() {
-
-
     }
-
-
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        UI.getCurrent().getNavigator().addViewChangeListener(new ViewChangeListener() {
-            @Override
-            public boolean beforeViewChange(ViewChangeEvent viewChangeEvent) {
-                try
-                {
-                    binder.commit();
-                }
-                catch (FieldGroup.CommitException e)
-                {
-                    NotificationUtil.showNotification("Validation Error, please fill all mandatory fields! and click save button", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return false;
-                }
-                return true;
-            }
-
-            @Override
-            public void afterViewChange(ViewChangeEvent viewChangeEvent) {
-               // NotificationUtil.showNotification("After View Change", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-            }
-        });
-        //beforeViewChange(event);
-        parameters = event.getParameters();
+        String parameters = event.getParameters();
         if (StringUtils.isNotEmpty(parameters)) {
             int proposalId = Integer.parseInt(parameters);
             this.proposalHeader = proposalDataProvider.getProposalHeader(proposalId);
@@ -164,19 +129,12 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal.setAddons(proposalDataProvider.getProposalAddons(proposalId));
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name()); //todo: this has to be removed once server side is fixed
-        }
-        else
-        {
+        } else {
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setTitle(NEW_TITLE);
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name());
             proposalHeader.setStatus(ProposalState.draft.name());
-            List<ProposalHeader> id=proposalDataProvider.getProposalId();
-            for(ProposalHeader val: id) {
-                 pid=val.getId();
-                System.out.println("id=" + val.getId());
-            }
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(proposalHeader);
         }
@@ -764,37 +722,25 @@ public class CreateProposalsView extends Panel implements View {
                 });
     }
 
-    private void save(Button.ClickEvent clickEvent)
-    {
-        if (StringUtils.isEmpty(parameters))
-        {
-            ProposalHeader proposalHeader1 = proposalDataProvider.getProposalHeader(pid);
-            proposalHeader.setId(pid);
+    private void save(Button.ClickEvent clickEvent) {
+        if (StringUtils.isEmpty(proposalHeader.getTitle())) {
+            proposalHeader.setTitle(NEW_TITLE);
+        }
+        try {
+            binder.commit();
+        } catch (FieldGroup.CommitException e) {
+            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
         }
 
-        if (StringUtils.isEmpty(proposalHeader.getTitle()))
-        {
-                proposalHeader.setTitle(NEW_TITLE);
-        }
-            try
-            {
-                binder.commit();
-            }
-            catch (FieldGroup.CommitException e) {
-                NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                return;
-            }
+        boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
-            boolean success = proposalDataProvider.saveProposal(proposalHeader);
-
-        if (success)
-        {
+        if (success) {
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-        }
-        else
-        {
+        } else {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
+
     }
 
     private void submit(Button.ClickEvent clickEvent) {

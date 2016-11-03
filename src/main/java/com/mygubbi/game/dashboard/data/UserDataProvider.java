@@ -3,6 +3,8 @@ package com.mygubbi.game.dashboard.data;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.domain.JsonPojo.Role;
 import com.mygubbi.game.dashboard.domain.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
@@ -19,6 +21,8 @@ import java.util.List;
  * Created by nitinpuri on 11-04-2016.
  */
 public class UserDataProvider {
+
+    private static final Logger LOG = LogManager.getLogger(UserDataProvider.class);
 
     private DataProviderMode dataProviderMode;
     private static final String CRM_METHOD_STUB = "__METHOD__";
@@ -184,6 +188,7 @@ public class UserDataProvider {
 
         try {
             JSONObject result = dataProviderMode.postResourceWithUrl(baseCRMUrl + URLEncoder.encode(urlJsonParam), JsonUtil.getJson(new HashMap<>()));
+            LOG.debug("Result :" + result.toString());
             boolean isValid = result.has("id");
 
             if (isValid) {

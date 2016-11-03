@@ -1,0 +1,34 @@
+[
+  {
+    "table" : "Accessory Hardware Master",
+    "description" : "This table briefs about the type and  name of the accessory, corresponding catalogue code and its price."
+  },
+  {
+    "table" : "Addon Master",
+    "description" : "This table briefs about the appliances which includes code, name, brand code, product type, catalogue code and its price."
+  },
+  {
+    "table" : "Carcass Master",
+    "description" : "This table briefs about carcass material, its code, dimensions, and its area."
+  },
+  {
+    "table" : "Code Master",
+    "description" : "This table briefs about all categories involved in complete UAT and corresponding code for each."
+  },
+  {
+    "table" : "Color Master",
+    "description" : "This table briefs about all the colors which includes color code, name and image."
+  },
+  {
+    "table" : "Finish Master",
+    "description" : "This table briefs about the info about the finish materials, its cost code, material code, title, color group."
+  },
+  {
+    "table" : "Module Master",
+    "description" : "This table briefs about the module which includes name of the module, image, code and its dimension."
+  },
+  {
+    "table" : "Shutter Master",
+    "description" : "This table briefs about shutter unit, its code, title, dimensions, and quantity."
+  }
+]

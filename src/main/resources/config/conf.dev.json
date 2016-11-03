@@ -7,6 +7,6 @@
   "catalogueImageBasePath": "https://res.cloudinary.com/mygubbi/image/upload/f_auto/c_fit,w_220/",
   "dataProviderMode_ignored": "com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode",
   "dataProviderMode": "com.mygubbi.game.dashboard.data.RestDataProviderMode",
-  "crmUrl": "http://52.66.107.178/mygubbi_crm/service/v4_1/rest.php?method=__METHOD__&input_type=json&response_type=json&rest_data=",
+  "crmUrl": "http://52.66.176.254/mygubbi_crm/service/v4_1/rest.php?method=__METHOD__&input_type=json&response_type=json&rest_data=",
   "useCrmAuth": "false"
 }
