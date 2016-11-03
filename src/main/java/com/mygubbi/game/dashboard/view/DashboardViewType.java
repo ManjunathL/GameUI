@@ -3,7 +3,7 @@ package com.mygubbi.game.dashboard.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mygubbi.game.dashboard.view.catalog.CatalogView;
+import com.mygubbi.game.dashboard.view.Catalog.*;
 import com.mygubbi.game.dashboard.view.proposals.CreateProposalsView;
 import com.mygubbi.game.dashboard.view.proposals.ProposalsView;
 import com.vaadin.navigator.View;
@@ -18,9 +18,9 @@ public enum DashboardViewType {
         add(new ViewType("JSON", CatalogView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
     }}));
 
-    private final ViewType viewType;
+    public final ViewType viewType;
 
-    private DashboardViewType(final ViewType viewType) {
+    DashboardViewType(final ViewType viewType) {
         this.viewType = viewType;
     }
 
@@ -32,6 +32,7 @@ public enum DashboardViewType {
         DashboardViewType result = null;
         for (DashboardViewType viewType : values()) {
             if (viewType.getViewType().getViewName().equals(viewName)) {
+
                 result = viewType;
                 break;
             }
@@ -44,9 +45,10 @@ public enum DashboardViewType {
         private final Class<? extends View> viewClass;
         private final Resource icon;
         private final boolean stateful;
-        private List<ViewType> subViewTypes;
+        public List<ViewType> subViewTypes;
 
-        private ViewType(final String viewName,
+
+        public ViewType(final String viewName,
                          final Class<? extends View> viewClass, final Resource icon,
                          final boolean stateful, final List<ViewType> subViewTypes) {
             this.viewName = viewName;
@@ -76,5 +78,4 @@ public enum DashboardViewType {
             return subViewTypes;
         }
     }
-
 }

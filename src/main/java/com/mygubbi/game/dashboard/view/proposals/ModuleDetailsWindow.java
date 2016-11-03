@@ -1324,7 +1324,7 @@ public class ModuleDetailsWindow extends Window {
         return select;
     }
 
-    private ComboBox getModuleCategoryCombo(String caption, List<ModuleCategory> list, Property.ValueChangeListener listener) {
+    /*private ComboBox getModuleCategoryCombo(String caption, List<ModuleCategory> list, Property.ValueChangeListener listener) {
 
         final BeanContainer<String, ModuleCategory> container =
                 new BeanContainer<>(ModuleCategory.class);
@@ -1337,7 +1337,7 @@ public class ModuleDetailsWindow extends Window {
         select.setItemCaptionPropertyId(ModuleCategory.NAME);
         if (listener != null) select.addValueChangeListener(listener);
         return select;
-    }
+    }*/
 
     private ComboBox getModulesCombo(String caption, List<MGModule> list, Property.ValueChangeListener listener) {
 
