@@ -18,6 +18,10 @@
 		</init-param>
 	</servlet>
 
+	<session-config>
+		<session-timeout>120</session-timeout>
+	</session-config>
+
 	<servlet-mapping>
 		<servlet-name>GameDashboard</servlet-name>
 		<url-pattern>/*</url-pattern>
