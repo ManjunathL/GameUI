@@ -498,6 +498,16 @@ public class ProposalDataProvider {
         }
     }
 
+    public String getProposalQuoteFilePdf(ProductAndAddonSelection productAndAddonSelection) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
+            JSONObject obj = dataProviderMode.postResource("proposal/downloadquotePdf", productSelectionsJson);
+            return obj.getString("PDFFile");
+        } catch (JSONException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getJobCardFile(ProductAndAddonSelection productAndAddonSelection) {
         try {
             String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
