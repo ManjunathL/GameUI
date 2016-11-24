@@ -467,3 +467,16 @@
 		height: 130% !important;
 		}
 }
+
+
+@media only screen and (max-width: 1366px)
+{
+    .v-grid v-widget v-has-width tab
+    {
+        height:200px
+    }
+    .v-grid v-widget v-grid-v-grid v-grid-v-widget v-has-width v-grid-v-has-width tab v-grid-tab style
+    {
+        height:100px
+    }
+}

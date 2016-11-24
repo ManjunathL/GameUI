@@ -59,7 +59,7 @@ public class ProposalDataProvider {
         this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    private List<ProposalHeader> getProposalHeaders(JSONArray proposalHeaders) {
+    public List<ProposalHeader> getProposalHeaders(JSONArray proposalHeaders) {
         List<ProposalHeader> proposalHeaderList = new ArrayList<>();
         for (int i = 0; i < proposalHeaders.length(); i++) {
             try {
@@ -73,6 +73,12 @@ public class ProposalDataProvider {
         return proposalHeaderList;
 
     }
+    public List<ProposalHeader> getProposalId()
+    {
+        JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/id", new HashMap<>());
+        return getProposalHeaders(proposalHeaders);
+    }
+
 
     public List<ProposalHeader> getProposalHeaders() {
         JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/list", new HashMap<String, String>() {
@@ -98,7 +104,8 @@ public class ProposalDataProvider {
                 put("id", proposalId + "");
             }
         });
-        try {
+        try
+        {
             return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);
@@ -111,10 +118,12 @@ public class ProposalDataProvider {
                 put("proposalId", proposalId + "");
             }
         });
-        try {
+        try
+        {
             Product[] items = this.mapper.readValue(jsonArray.toString(), Product[].class);
             return new ArrayList<>(Arrays.asList(items));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
@@ -170,6 +179,7 @@ public class ProposalDataProvider {
     public ProposalHeader createProposal() {
 
         try {
+
             JSONObject jsonObject = dataProviderMode.postResource("proposal/create", "{\"title\": \"New Proposal\", \"createdBy\": \"" + getUserId() + "\"}");
             return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
         } catch (IOException e) {
@@ -177,7 +187,7 @@ public class ProposalDataProvider {
         }
     }
 
-    private String getUserId() {
+    public String getUserId() {
         return ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
     }
 
@@ -233,7 +243,8 @@ public class ProposalDataProvider {
 
     public List<FinishTypeColor> getFinishTypeColors() {
         JSONArray array = dataProviderMode.getResourceArray("colorlookup", new HashMap<>());
-        try {
+        try
+        {
             FinishTypeColor[] items = this.mapper.readValue(array.toString(), FinishTypeColor[].class);
             return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
@@ -485,7 +496,16 @@ public class ProposalDataProvider {
         } catch (JSONException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public String getProposalQuoteFilePdf(ProductAndAddonSelection productAndAddonSelection) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
+            JSONObject obj = dataProviderMode.postResource("proposal/downloadquotePdf", productSelectionsJson);
+            return obj.getString("PDFFile");
+        } catch (JSONException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getJobCardFile(ProductAndAddonSelection productAndAddonSelection) {

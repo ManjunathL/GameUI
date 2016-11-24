@@ -1,22 +1,22 @@
 package com.mygubbi.game.dashboard.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.mygubbi.game.dashboard.view.catalog.CatalogView;
 import com.mygubbi.game.dashboard.view.proposals.CreateProposalsView;
 import com.mygubbi.game.dashboard.view.proposals.ProposalsView;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum DashboardViewType {
     PROPOSALS(new ViewType("Proposals", ProposalsView.class, FontAwesome.ANCHOR, false, new ArrayList<ViewType>() {{
         add(new ViewType("New Proposal", CreateProposalsView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
-    }})),
-    CATALOG(new ViewType("Catalog", CatalogView.class, FontAwesome.BAR_CHART_O, false, new ArrayList<ViewType>() {{
-        add(new ViewType("JSON", CatalogView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
     }}));
+//    CATALOG(new ViewType("Catalog", CatalogView.class, FontAwesome.BAR_CHART_O, false, new ArrayList<ViewType>() {{
+//        add(new ViewType("JSON", CatalogView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
+//    }})),
+
 
     private final ViewType viewType;
 

@@ -43,7 +43,6 @@ import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
@@ -56,8 +55,6 @@ import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
 public class CreateProposalsView extends Panel implements View {
 
     private static final Logger LOG = LogManager.getLogger(CreateProposalsView.class);
-
-
 
     private final String NEW_TITLE = "New Proposal";
     private final String NEW_VERSION = "1.0";
@@ -404,6 +401,22 @@ public class CreateProposalsView extends Panel implements View {
         right.addComponent(soExtractButton);
         right.setComponentAlignment(soExtractButton, Alignment.MIDDLE_RIGHT);
 
+        Button quotePdf = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        quotePdf.setCaptionAsHtml(true);
+        quotePdf.setIcon(FontAwesome.DOWNLOAD);
+        quotePdf.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        quotePdf.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        quotePdf.addStyleName(ValoTheme.BUTTON_SMALL);
+        quotePdf.addStyleName("margin-right-10-for-headerlevelbutton");
+        quotePdf.setWidth("120px");
+        quotePdf.addClickListener(this::checkProductsAndAddonsAvailable);
+
+        StreamResource quotePdfresource = createQuoteResourcePdf();
+        FileDownloader fileDownloaderPdf = new FileDownloader(quotePdfresource);
+        fileDownloaderPdf.extend(quotePdf);
+        right.addComponent(quotePdf);
+        right.setComponentAlignment(quotePdf, Alignment.MIDDLE_RIGHT);
+
         Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         downloadButton.setCaptionAsHtml(true);
         downloadButton.setIcon(FontAwesome.DOWNLOAD);
@@ -484,6 +497,24 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_RIGHT);
 
         return horizontalLayout;
+    }
+
+    private StreamResource createQuoteResourcePdf() {
+        StreamResource.StreamSource source = () -> {
+            if (!proposal.getProducts().isEmpty()) {
+                String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
+                InputStream input = null;
+                try {
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return input;
+            } else {
+                return null;
+            }
+        };
+        return new StreamResource(source, "Quotation.pdf");
     }
 
     private FileDownloader getSOExtractFileDownloader() {
