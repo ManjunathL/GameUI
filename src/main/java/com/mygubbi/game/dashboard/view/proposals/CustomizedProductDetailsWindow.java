@@ -13,6 +13,8 @@ import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
+import com.vaadin.client.connectors.SingleSelectionModelConnector;
+import com.vaadin.client.widget.grid.RendererCellReference;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -23,24 +25,31 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.event.SelectionEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.*;
+import com.vaadin.client.connectors.ButtonRendererConnector;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -261,8 +270,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.noPricingErrors();
 
         for (Module module : modules) {
-
-             if (component == baseCarcassSelection &&
+            if (component == baseCarcassSelection &&
                      (module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name())
                              || module.getUnitType().toLowerCase().contains(Module.UnitTypes.accessory.name()))) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).getValue();
@@ -607,7 +615,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setSizeFull();
         modulesGrid.setResponsive(true);
         modulesGrid.setColumnReorderingAllowed(true);
-        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.SEQ, Module.UNIT_TYPE, Module.MG_MODULE_CODE, Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
+        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.UNIT_TYPE, Module.MG_MODULE_CODE,Module.REMARKS ,Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action","copy");
 
         modulesGrid.setCellStyleGenerator(cell -> {
             if (cell.getPropertyId().equals(Module.CARCASS_MATERIAL)
@@ -624,10 +632,10 @@ public class CustomizedProductDetailsWindow extends Window {
         Grid.Column statusColumn = columns.get(idx++);
         statusColumn.setHeaderCaption("");
         statusColumn.setRenderer(new HtmlRenderer(), getResourceConverter());
-
-        columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Unit Type");
         columns.get(idx++).setHeaderCaption("Module");
+        Grid.Column remarksColumn = columns.get(idx++);
+        remarksColumn.setHeaderCaption("Remarks");
         columns.get(idx++).setHeaderCaption("Carcass Material");
         columns.get(idx++).setHeaderCaption("Finish Material");
         columns.get(idx++).setHeaderCaption("Shutter Finish");
@@ -635,6 +643,74 @@ public class CustomizedProductDetailsWindow extends Window {
         columns.get(idx++).setHeaderCaption("Amount");
         Grid.Column actionColumn = columns.get(idx++);
         actionColumn.setHeaderCaption("Actions");
+        Grid.Column copyColumn = columns.get(idx++);
+        copyColumn.setHeaderCaption("Copy");
+
+        copyColumn.setRenderer(new ButtonRenderer(new ButtonRenderer.RendererClickListener() {
+            @Override
+            public void click(ClickableRenderer.RendererClickEvent event) {
+               NotificationUtil.showNotification("Copying!!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+               Object id = event.getItemId();
+                List<Module> copy = product.getModules();
+                int length = (copy.size()) + 1;
+                Module m = (Module) id;
+                Module copyModule = new Module();
+                copyModule.setModuleSequence(length);
+                copyModule.setUnitType(m.getUnitType());
+                copyModule.setExtCode(m.getExtCode());
+                copyModule.setExtText(m.getExtText());
+                copyModule.setMgCode(m.getMgCode());
+                copyModule.setCarcass(m.getCarcass());
+                copyModule.setCarcassCode(m.getCarcassCode());
+                copyModule.setFixedCarcassCode(m.getFixedCarcassCode());
+                copyModule.setFinishType(m.getFinishType());
+                copyModule.setFinishTypeCode(m.getFinishTypeCode());
+                copyModule.setFinish(m.getFinish());
+                copyModule.setFinishCode(m.getFinishCode());
+                copyModule.setColorCode(m.getColorCode());
+                copyModule.setColorName(m.getColorName());
+                copyModule.setColorImagePath(m.getColorImagePath());
+                copyModule.setAmount(m.getAmount());
+                copyModule.setRemarks(m.getRemarks());
+                copyModule.setImportStatus(m.getImportStatus());
+                copyModule.setDescription(m.getDescription());
+                copyModule.setDimension(m.getDimension());
+                copyModule.setImagePath(m.getImagePath());
+                copyModule.setExposedRight(m.getExposedRight());
+                copyModule.setExposedLeft(m.getExposedLeft());
+                copyModule.setExposedTop(m.getExposedTop());
+                copyModule.setExposedBottom(m.getExposedBottom());
+                copyModule.setExposedBack(m.getExposedBack());
+                copyModule.setExposedOpen(m.getExposedOpen());
+                copyModule.setArea(m.getArea());
+                copyModule.setAmountWOAccessories(m.getAmountWOAccessories());
+                copyModule.setWidth(m.getWidth());
+                copyModule.setDepth(m.getDepth());
+                copyModule.setHeight(m.getHeight());
+                copyModule.setModuleCategory(m.getModuleCategory());
+                copyModule.setModuleType(m.getModuleType());
+                copyModule.setProductCategory(m.getProductCategory());
+                copyModule.setModuleSource(m.getModuleSource());
+                copyModule.setExpSides(m.getExpSides());
+                copyModule.setExpBottom(m.getExpBottom());
+                copyModule.setAccessoryPackDefault(m.getAccessoryPackDefault());
+                copyModule.setAccessoryPacks(m.getAccessoryPacks());
+
+                copy.add(copyModule);
+
+                moduleContainer.addAll(copy);
+                modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
+
+                //modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
+                updateTotalAmount();
+                updatePsftCosts();
+                checkAndEnableSave();
+            }
+
+
+
+        }));
+
         actionColumn.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
@@ -692,7 +768,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (!product.getModules().isEmpty()) {
             moduleContainer.addAll(product.getModules());
-            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
+            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING)/*.then(Module.SEQ, SortDirection.ASCENDING)*/);
         }
 
         return modulesGrid;
@@ -709,7 +785,17 @@ public class CustomizedProductDetailsWindow extends Window {
     private GeneratedPropertyContainer createGeneratedModulePropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(moduleContainer);
         genContainer.addGeneratedProperty("action", getEmptyActionTextGenerator());
-        //genContainer.addGeneratedProperty("colorName", getColorNameGenerator());
+        genContainer.addGeneratedProperty("copy", new PropertyValueGenerator<String>() {
+            @Override
+            public String getValue(Item item,Object itemId,Object propertyId)
+            {return "copy";
+            }
+
+            @Override
+            public Class<String> getType() {
+            return String.class;
+            }
+        });
         return genContainer;
     }
 

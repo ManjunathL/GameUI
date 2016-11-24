@@ -51,6 +51,7 @@ public class ModuleDetailsWindow extends Window {
     private TextField width;
     private TextField depth;
     private TextField height;
+    private TextField remarks;
 
     private ComboBox moduleCategory;
     private ComboBox moduleSelection;
@@ -479,6 +480,10 @@ public class ModuleDetailsWindow extends Window {
 
         verticalLayoutModule.setSpacing(true);
 
+        HorizontalLayout horizontalLayoutRemarks = getRemarksPanel();
+        verticalLayoutModule.addComponent(horizontalLayoutRemarks);
+        verticalLayoutModule.setExpandRatio(horizontalLayoutRemarks,0.325f);
+
         HorizontalLayout hLayoutExposedPanels = getExposedPanelsLayout();
         verticalLayoutModule.addComponent(hLayoutExposedPanels);
         verticalLayoutModule.setExpandRatio(hLayoutExposedPanels,0.325f);
@@ -522,12 +527,11 @@ public class ModuleDetailsWindow extends Window {
 
         module.setModuleType(mgModule.getModuleType());
         module.setModuleCategory(mgModule.getModuleCategory());
-
-
-
+        module.setAccessoryPackDefault(mgModule.getAccessoryPackDefault());
         if (module.getModuleType().equals("S")) {
             module.setImagePath(mgModule.getImagePath());
             module.setDescription(mgModule.getDescription());
+            module.setRemarks(mgModule.getDescription());
         } else if (module.getModuleType().equals("N")) {
             module.setImagePath("image.jpg");
         }
@@ -566,6 +570,10 @@ public class ModuleDetailsWindow extends Window {
         {
             this.description.setValue(description);
         }
+
+        this.remarks.setReadOnly(false);
+        this.remarks.setValue(description);
+
         module.setImportStatus(Module.ImportStatusType.m.name());
         module.setUnitType(module.getModuleCategory());
 
@@ -712,7 +720,26 @@ public class ModuleDetailsWindow extends Window {
 
         return horizontalLayoutDimensions;
     }
+    private HorizontalLayout getRemarksPanel(){
 
+        HorizontalLayout horizontalLayoutRemarks = new HorizontalLayout();
+        horizontalLayoutRemarks.setSizeFull();
+        horizontalLayoutRemarks.setMargin(new MarginInfo(false,true,false,false));
+        horizontalLayoutRemarks.setSpacing(false);
+
+        FormLayout formLayoutRemarks = new FormLayout();
+        formLayoutRemarks.setSizeFull();
+        formLayoutRemarks.setMargin(new MarginInfo(false,false,false,false));
+        this.remarks = new TextField();
+        this.remarks.setCaption("Remarks");
+        formLayoutRemarks.setWidth("100%");
+        formLayoutRemarks.setHeight("50%");
+        formLayoutRemarks.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        binder.bind(this.remarks, Module.REMARKS);
+        formLayoutRemarks.addComponent(remarks);
+        horizontalLayoutRemarks.addComponent(formLayoutRemarks);
+        return horizontalLayoutRemarks;
+    }
     private Component buildAccPack1Component() {
         FormLayout formLayout = new FormLayout();
         formLayout.addStyleName("no-exposedBottom-margin");
@@ -1172,13 +1199,11 @@ public class ModuleDetailsWindow extends Window {
         applyButton.setWidth("10%");
         applyButton.focus();
         applyButton.setVisible(true);
-
         applyNextButton = new Button("Apply & Load Next");
         applyNextButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         applyNextButton.addClickListener(getApplyListener(true,true));
         applyNextButton.focus();
         applyNextButton.setVisible(!isLastModule());
-
         loadPreviousButton = new Button("Previous");
         loadPreviousButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         loadPreviousButton.addClickListener(getApplyListener(false,true));
@@ -1196,14 +1221,54 @@ public class ModuleDetailsWindow extends Window {
         return footer;
     }
 
-    private ClickListener getApplyListener(boolean loadNext,boolean loadPrevious) {
+    private ClickListener   getApplyListener(boolean loadNext,boolean loadPrevious) {
         return event -> {
+            if (module. getAccessoryPackDefault().equals("Yes")) {
+                if (module.getAccessoryPacks().size() == 0) {
+                    NotificationUtil.showNotification("Please select accessories", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+            }
+
+                String accPack1 = ((String) accessoryPack1.getValue());
+            String addon11 = ((String) addons11.getValue());
+
+            if (("AP-GENERIC").equals(accPack1)) {
+
+                if (StringUtils.isEmpty(addon11))
+                {    NotificationUtil.showNotification("Please select atleast one addons", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+            }
+            String accPack2 = ((String) accessoryPack2.getValue());
+            String addon21 = ((String) addons21.getValue());
+
+            if (("AP-GENERIC").equals(accPack2)) {
+
+                if (StringUtils.isEmpty(addon21))
+                {    NotificationUtil.showNotification("Please select atleast one addons", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+            }
+            String accPack3 = ((String) accessoryPack3.getValue());
+            String addon31 = ((String) addons31.getValue());
+
+            if (("AP-GENERIC").equals(accPack3)) {
+
+                if (StringUtils.isEmpty(addon31))
+                {    NotificationUtil.showNotification("Please select atleast one addons", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+            }
 
             try {
                 binder.commit();
             } catch (FieldGroup.CommitException e) {
                 e.printStackTrace();
                 NotificationUtil.showNotification("Problem while applying changes. Please contact GAME Admin", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }catch(Exception e)
+            {
+                e.printStackTrace();
             }
 
             module.setCarcassCode(removeDefaultPrefix(module.getCarcassCode()));
@@ -1335,21 +1400,6 @@ public class ModuleDetailsWindow extends Window {
         select.setNullSelectionAllowed(true);
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(AccessoryPack.ACCESSORY_PACK_TITLE);
-        if (listener != null) select.addValueChangeListener(listener);
-        return select;
-    }
-
-    private ComboBox getModuleCategoryCombo(String caption, List<ModuleCategory> list, Property.ValueChangeListener listener) {
-
-        final BeanContainer<String, ModuleCategory> container =
-                new BeanContainer<>(ModuleCategory.class);
-        container.setBeanIdProperty(ModuleCategory.CODE);
-        container.addAll(list);
-
-        ComboBox select = new ComboBox(caption);
-        select.setNullSelectionAllowed(true);
-        select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId(ModuleCategory.NAME);
         if (listener != null) select.addValueChangeListener(listener);
         return select;
     }

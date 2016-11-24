@@ -15,6 +15,7 @@ public class MGModule {
     public static final String CONCAT = "concat";
     public static final String MODULE_TYPE = "moduleType";
     public static final String MODULE_CATEGORY = "moduleCategory";
+    public static final String ACCESSORYPACKDEFAULT = "accessoryPackDefault";
 
     private String code;
     private String title;
@@ -27,6 +28,7 @@ public class MGModule {
     private String moduleCategory;
     private String productCategory;
     private String moduleType;
+    private String accessoryPackDefault;
     private String concat;
     private List<ModuleAccessory> accessories = new ArrayList<>();
 
@@ -138,6 +140,13 @@ public class MGModule {
         this.moduleType = moduleType;
     }
 
+    public String getAccessoryPackDefault() {
+        return accessoryPackDefault;
+    }
+    public void setAccessoryPackDefault(String accessoryPackDefault)
+    {
+        this.accessoryPackDefault=accessoryPackDefault;
+    }
     @Override
     public String toString() {
         return "MGModule{" +

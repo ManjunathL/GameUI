@@ -60,6 +60,7 @@ public class Module implements Cloneable {
     public static final String MODULE_TYPE = "moduleType";
     public static final String MODULE_CATEGORY = "moduleCategory";
     public static final String PRODUCT_CATEGORY = "productCategory";
+    public static final String ACCESSORYPACKDEFAULT = "accessoryPackDefault";
 
 
     private int seq;
@@ -101,6 +102,7 @@ public class Module implements Cloneable {
     private String moduleSource;
     private String expSides;
     private String expBottom;
+    private String accessoryPackDefault;
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
 
     public String getExpSides() {
@@ -202,6 +204,13 @@ public class Module implements Cloneable {
         this.moduleType = moduleType;
     }
 
+    public String getAccessoryPackDefault() {
+        return accessoryPackDefault;
+    }
+    public void setAccessoryPackDefault(String accessoryPackDefault)
+    {
+        this.accessoryPackDefault=accessoryPackDefault;
+    }
     @Override
     public Module clone() {
         try {
