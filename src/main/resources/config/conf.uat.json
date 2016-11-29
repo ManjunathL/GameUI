@@ -1,5 +1,5 @@
 {
-  "restUrl" : "https://localhost:1443/gapi",
+  "restUrl" : "http://localhost:1443/gapi",
   "imageBasePath" : "/mnt/game/images/",
   "templates_folder" : "c:/Users/Public/game_files",
   "price_files_folder" : "c:/Users/Public/game_files/price_files",
