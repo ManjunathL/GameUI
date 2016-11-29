@@ -502,7 +502,7 @@ public class ProposalDataProvider {
         try {
             String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
             JSONObject obj = dataProviderMode.postResource("proposal/downloadquotePdf", productSelectionsJson);
-            return obj.getString("PDFFile");
+            return obj.getString("quoteFile");
         } catch (JSONException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }

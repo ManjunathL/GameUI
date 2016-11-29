@@ -1223,7 +1223,7 @@ public class ModuleDetailsWindow extends Window {
 
     private ClickListener   getApplyListener(boolean loadNext,boolean loadPrevious) {
         return event -> {
-            if (module. getAccessoryPackDefault().equals("Yes")) {
+            if (("Yes").equals(module.getAccessoryPackDefault())) {
                 if (module.getAccessoryPacks().size() == 0) {
                     NotificationUtil.showNotification("Please select accessories", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
