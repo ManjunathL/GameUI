@@ -106,19 +106,49 @@ public class CreateProposalsView extends Panel implements View {
     private FileAttachmentComponent fileAttachmentComponent;
     private TextField discountPercentage;
     private Label discountTotal;
+    private TextField discountAmount;
     private Button addonAddButton;
     private BeanItemContainer<AddonProduct> addonsContainer;
     private Grid addonsGrid;
     private MenuBar.MenuItem deleteMenuItem;
     private MenuBar.MenuItem cancelMenuItem;
     private MenuBar.MenuItem reviseMenuItem;
+    int pid;
+    String parameters;
 
+
+   // Navigator navigator;
     public CreateProposalsView() {
+
+
     }
+
+
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        String parameters = event.getParameters();
+        UI.getCurrent().getNavigator().addViewChangeListener(new ViewChangeListener() {
+            @Override
+            public boolean beforeViewChange(ViewChangeEvent viewChangeEvent) {
+                try
+                {
+                    binder.commit();
+                }
+                catch (FieldGroup.CommitException e)
+                {
+                    NotificationUtil.showNotification("Validation Error, please fill all mandatory fields! and click save button", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public void afterViewChange(ViewChangeEvent viewChangeEvent) {
+               // NotificationUtil.showNotification("After View Change", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+            }
+        });
+        //beforeViewChange(event);
+        parameters = event.getParameters();
         if (StringUtils.isNotEmpty(parameters)) {
             int proposalId = Integer.parseInt(parameters);
             this.proposalHeader = proposalDataProvider.getProposalHeader(proposalId);
@@ -129,12 +159,19 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal.setAddons(proposalDataProvider.getProposalAddons(proposalId));
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name()); //todo: this has to be removed once server side is fixed
-        } else {
+        }
+        else
+        {
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setTitle(NEW_TITLE);
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name());
             proposalHeader.setStatus(ProposalState.draft.name());
+            List<ProposalHeader> id=proposalDataProvider.getProposalId();
+            for(ProposalHeader val: id) {
+                 pid=val.getId();
+                System.out.println("id=" + val.getId());
+            }
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(proposalHeader);
         }
@@ -756,22 +793,35 @@ public class CreateProposalsView extends Panel implements View {
                 });
     }
 
-    private void save(Button.ClickEvent clickEvent) {
-        if (StringUtils.isEmpty(proposalHeader.getTitle())) {
+    private void save(Button.ClickEvent clickEvent)
+    {
+        if (StringUtils.isEmpty(parameters))
+        {
+            ProposalHeader proposalHeader1 = proposalDataProvider.getProposalHeader(pid);
+            proposalHeader.setId(pid);
+        }
+
+        if (StringUtils.isEmpty(proposalHeader.getTitle()))
+        {
             proposalHeader.setTitle(NEW_TITLE);
         }
-        try {
+            try
+            {
             binder.commit();
-        } catch (FieldGroup.CommitException e) {
+            }
+            catch (FieldGroup.CommitException e) {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
 
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
-        if (success) {
+        if (success)
+        {
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-        } else {
+        }
+        else
+        {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
 
@@ -1111,6 +1161,7 @@ public class CreateProposalsView extends Panel implements View {
         HorizontalLayout amountsLayout = getAmountLayout();
 
         this.discountPercentage.addValueChangeListener(this::updateTotal);
+        this.discountAmount.addValueChangeListener(this::updateTotal1);
 
         verticalLayout.addComponent(amountsLayout);
 
@@ -1144,7 +1195,7 @@ public class CreateProposalsView extends Panel implements View {
         amountsLayout.addComponent(grandTotal);
         amountsLayout.setSpacing(true);
 
-        Label Discount = new Label("<b>Discount :</b>",ContentMode.HTML);
+        Label Discount = new Label("<b>%Discount :</b>",ContentMode.HTML);
         amountsLayout.addComponent(Discount);
         amountsLayout.setSpacing(true);
         Discount.addStyleName("amount-text-label");
@@ -1159,6 +1210,23 @@ public class CreateProposalsView extends Panel implements View {
         this.discountPercentage.setValue("0");
         this.discountPercentage.setNullRepresentation("0");
         amountsLayout.addComponent(discountPercentage);
+
+        Label DiscountAmount = new Label("<b>Discount Amount :</b>",ContentMode.HTML);
+        amountsLayout.addComponent(DiscountAmount);
+        amountsLayout.setSpacing(true);
+        DiscountAmount.addStyleName("amount-text-label");
+        DiscountAmount.addStyleName("margin-top-18");
+
+        this.discountAmount=new TextField();
+        this.discountAmount.setConverter(new StringToDoubleConverter());
+        this.discountAmount.addStyleName("amount-text");
+        this.discountAmount.addStyleName("margin-top-18");
+        this.discountAmount.addStyleName("v-label-amount-text-label");
+        this.discountAmount.setCaptionAsHtml(true);
+        this.discountAmount.setValue("0");
+        this.discountAmount.setNullRepresentation("0");
+        amountsLayout.addComponent(discountAmount);
+
 
         Label totalAfterDiscount = new Label("<b>Total After Discount :</b>",ContentMode.HTML);
         amountsLayout.addComponent(totalAfterDiscount);
@@ -1352,6 +1420,84 @@ public class CreateProposalsView extends Panel implements View {
 
     private void updateTotal(SelectionEvent selectionEvent) {
         updateTotal();
+    }
+
+
+    private void updateTotal1(Property.ValueChangeEvent valueChangeEvent)
+    {
+        //this.amountcheck.setEnabled(true);
+        //LOG.info(this.optionGroup.getValue());
+        //String value=optionGroup.getValue().toString();
+        Double amount1;
+        //discountAmount.setValue("0");
+        Collection<?> productObjects = productsGrid.getSelectedRows();
+        Collection<?> addonObjects = addonsGrid.getSelectedRows();
+        boolean anythingSelected = true;
+        this.productAndAddonSelection.getProductIds().clear();
+        this.productAndAddonSelection.getAddonIds().clear();
+
+        if (productObjects.size() == 0) {
+            anythingSelected = false;
+            productObjects = this.productsGrid.getContainerDataSource().getItemIds();
+        }
+
+        double productsTotal = 0;
+
+        for (Object object : productObjects) {
+            Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
+            productsTotal += amount;
+            Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
+
+            if (anythingSelected) {
+                this.productAndAddonSelection.getProductIds().add(id);
+            }
+        }
+
+        if (addonObjects.size() == 0) {
+            anythingSelected = false;
+            addonObjects = this.addonsGrid.getContainerDataSource().getItemIds();
+        }
+
+        double addonsTotal = 0;
+        for (Object object : addonObjects) {
+            Double amount = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT).getValue();
+            addonsTotal += amount;
+            Integer id = (Integer) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.ID).getValue();
+
+            if (anythingSelected) {
+                this.productAndAddonSelection.getAddonIds().add(id);
+            }
+        }
+        Double totalWoAccessories = 0.0;
+        List<Product> products = proposal.getProducts();
+        LOG.info("Product :" + products.toString());
+        for (Product product : products) {
+            totalWoAccessories += product.getCostWoAccessories();
+        }
+        Double totalAmount = addonsTotal + productsTotal;
+        Double costOfAccessories = productsTotal - totalWoAccessories;
+        double disamount,discountPer;
+
+        amount1 = (Double) this.discountAmount.getConvertedValue();
+        LOG.info(amount1);
+        disamount=amount1;
+            //this.discountAmount.setValue(String.valueOf(round(amount1,2)));
+        discountPer=(amount1/totalAmount)*100;
+        this.discountPercentage.setValue(String.valueOf(round(discountPer,2)));
+
+        Double totalAfterDiscount = this.round((totalWoAccessories - disamount), 0);
+        Double grandTotal = this.round((totalAfterDiscount + costOfAccessories + addonsTotal), 0);
+
+        this.discountTotal.setReadOnly(false);
+        this.discountTotal.setValue(grandTotal + "");
+        this.discountTotal.setReadOnly(true);
+
+        this.grandTotal.setReadOnly(false);
+        this.grandTotal.setValue(totalAmount + "");
+        this.grandTotal.setReadOnly(true);
+
+        productAndAddonSelection.setDiscountPercentage(discountPer);
+        productAndAddonSelection.setDiscountAmount(disamount);
     }
 
     private void updateTotal(Property.ValueChangeEvent valueChangeEvent) {
