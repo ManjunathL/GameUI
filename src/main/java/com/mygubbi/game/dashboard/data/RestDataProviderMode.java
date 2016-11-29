@@ -32,8 +32,6 @@ public class RestDataProviderMode implements DataProviderMode {
     @Override
     public JSONArray getResourceArray(String urlFrag, Map<String, String> params) {
         try {
-            System.out.println("----- GET ------");
-            System.out.println(getBaseURL() + "/" + urlFrag + "?" + queryParams(params));
             return resty.json(getBaseURL() + "/" + urlFrag + "?" + queryParams(params)).array();
         } catch (IOException | JSONException e) {
             e.printStackTrace();

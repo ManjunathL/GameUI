@@ -29,6 +29,7 @@ import com.vaadin.data.validator.RegexpValidator;
 import com.vaadin.event.SelectionEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -368,6 +369,9 @@ public class CustomizedProductDetailsWindow extends Window {
             String code = StringUtils.isNotEmpty(product.getWallCarcassCode()) ? product.getWallCarcassCode() : (String) wallCarcassSelection.getItemIds().iterator().next();
             wallCarcassSelection.setValue(code);
         }
+
+
+
         wallCarcassSelection.addValueChangeListener(this::refreshPrice);
         formLayoutRight.addComponent(this.wallCarcassSelection);
 
@@ -615,7 +619,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setSizeFull();
         modulesGrid.setResponsive(true);
         modulesGrid.setColumnReorderingAllowed(true);
-        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.UNIT_TYPE, Module.MG_MODULE_CODE,Module.REMARKS ,Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action","copy");
+        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.UNIT_TYPE, Module.MG_MODULE_CODE,Module.REMARKS ,Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
 
         modulesGrid.setCellStyleGenerator(cell -> {
             if (cell.getPropertyId().equals(Module.CARCASS_MATERIAL)
@@ -643,17 +647,21 @@ public class CustomizedProductDetailsWindow extends Window {
         columns.get(idx++).setHeaderCaption("Amount");
         Grid.Column actionColumn = columns.get(idx++);
         actionColumn.setHeaderCaption("Actions");
-        Grid.Column copyColumn = columns.get(idx++);
-        copyColumn.setHeaderCaption("Copy");
 
-        copyColumn.setRenderer(new ButtonRenderer(new ButtonRenderer.RendererClickListener() {
+
+        actionColumn.setRenderer(new ViewEditDeleteButtonValueRenderer(new ViewEditDeleteButtonValueRenderer.ViewEditDeleteButtonClickListener() {
+
             @Override
-            public void click(ClickableRenderer.RendererClickEvent event) {
-               NotificationUtil.showNotification("Copying!!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-               Object id = event.getItemId();
+            public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+               //addStyleName("copy-button");
+                if (!binder.isValid()) {
+                    NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+
+                Module m = (Module) rendererClickEvent.getItemId();
                 List<Module> copy = product.getModules();
                 int length = (copy.size()) + 1;
-                Module m = (Module) id;
                 Module copyModule = new Module();
                 copyModule.setModuleSequence(length);
                 copyModule.setUnitType(m.getUnitType());
@@ -701,17 +709,13 @@ public class CustomizedProductDetailsWindow extends Window {
                 moduleContainer.addAll(copy);
                 modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
 
-                //modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
+                modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
                 updateTotalAmount();
                 updatePsftCosts();
                 checkAndEnableSave();
             }
 
 
-
-        }));
-
-        actionColumn.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
@@ -768,7 +772,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (!product.getModules().isEmpty()) {
             moduleContainer.addAll(product.getModules());
-            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING)/*.then(Module.SEQ, SortDirection.ASCENDING)*/);
+            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING));
         }
 
         return modulesGrid;
@@ -785,20 +789,9 @@ public class CustomizedProductDetailsWindow extends Window {
     private GeneratedPropertyContainer createGeneratedModulePropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(moduleContainer);
         genContainer.addGeneratedProperty("action", getEmptyActionTextGenerator());
-        genContainer.addGeneratedProperty("copy", new PropertyValueGenerator<String>() {
-            @Override
-            public String getValue(Item item,Object itemId,Object propertyId)
-            {return "copy";
-            }
 
-            @Override
-            public Class<String> getType() {
-            return String.class;
-            }
-        });
-        return genContainer;
+                return genContainer;
     }
-
     private Product createProductFromUI() {
         Product product = new Product();
         product.setFinishTypeCode((String) this.finishTypeSelection.getValue());
@@ -973,10 +966,12 @@ public class CustomizedProductDetailsWindow extends Window {
         deleteNotRequired = modulesInitiallyMapped && !this.modulesCopy.isEmpty();
 
         if (deleteNotRequired) {
+
             caption = CLOSE;
         } else {
             caption = DELETE;
         }
+
 
         closeBtn = new Button(caption);
         closeBtn.addClickListener((Button.ClickListener) clickEvent -> {
@@ -1135,7 +1130,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         List<Module> modules = this.product.getModules();
         Module module = event.getModule();
-        if (module.getSeq() == 0)
+        if (module.getModuleSequence() == 0)
         {
             module.setSeq(this.getNextUnitSequence(modules, module.getUnitType()));
             module.setModuleSequence(this.getNextModuleSequence(modules));

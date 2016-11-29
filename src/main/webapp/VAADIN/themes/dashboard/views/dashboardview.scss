@@ -411,6 +411,9 @@
 	}
 }
 
+  .copy-button .v-button-value-cell .v-button-bar button.v-view span:before {
+	content:  "\f0c5";
+}
 @media only screen and (max-width: 1024px) {
 
 	.no-bottom-margin [class*="margin-bottom"] > tbody > [class*="lastrow"] > td {
