@@ -1189,15 +1189,15 @@ public class CreateProposalsView extends Panel implements View {
         amountsLayout.addComponent(grandTotal);
         amountsLayout.setSpacing(true);
 
-        Label Discount = new Label("<b>Discount :</b>",ContentMode.HTML);
+        Label Discount = new Label("<b>Discount % :</b>",ContentMode.HTML);
         amountsLayout.addComponent(Discount);
         amountsLayout.setSpacing(true);
-        Discount.addStyleName("amount-text-label");
+        Discount.addStyleName("inputlabel");
         Discount.addStyleName("margin-top-18");
 
         this.discountPercentage = new TextField();
         this.discountPercentage.setConverter(new StringToDoubleConverter());
-        this.discountPercentage.addStyleName("amount-text");
+        this.discountPercentage.addStyleName("inputTextbox");
         this.discountPercentage.addStyleName("margin-top-18");
         this.discountPercentage.addStyleName("v-label-amount-text-label");
         this.discountPercentage.setCaptionAsHtml(true);
@@ -1208,12 +1208,12 @@ public class CreateProposalsView extends Panel implements View {
         Label DiscountAmount = new Label("<b>Discount Amount :</b>",ContentMode.HTML);
         amountsLayout.addComponent(DiscountAmount);
         amountsLayout.setSpacing(true);
-        DiscountAmount.addStyleName("amount-text-label");
+        DiscountAmount.addStyleName("inputlabel");
         DiscountAmount.addStyleName("margin-top-18");
 
         this.discountAmount=new TextField();
         this.discountAmount.setConverter(new StringToDoubleConverter());
-        this.discountAmount.addStyleName("amount-text");
+        this.discountAmount.addStyleName("inputTextbox");
         this.discountAmount.addStyleName("margin-top-18");
         this.discountAmount.addStyleName("v-label-amount-text-label");
         this.discountAmount.setCaptionAsHtml(true);
@@ -1494,35 +1494,59 @@ public class CreateProposalsView extends Panel implements View {
 
         Double discountPercent=0.0,discountAmount=0.0;
         LOG.info("Status:" +status);
+
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
-        if (discountPercent== null)
-        {
-            discountPercent = 0.0;
-        }
-            discountAmount = totalWoAccessories * discountPercent / 100.0;
-            this.discountAmount.setValue(String.valueOf(round(discountAmount,2)));
+            if(discountPercent<=30) {
+                if (discountPercent == null) {
+                    discountPercent = 0.0;
+                }
+                discountAmount = totalWoAccessories * discountPercent / 100.0;
+                this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
+            }
+            else
+            {
+                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
         }
         else if("DA".equals(status))
         {
             discountAmount = (Double) this.discountAmount.getConvertedValue();
             discountPercent=(discountAmount/totalWoAccessories)*100;
-            this.discountPercentage.setValue(String.valueOf(round(discountPercent,2)));
+            if(discountPercent<=30) {
+                this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
+            }
+            else
+            {
+                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
         }
 
-        LOG.info("Discount percent : " + discountPercent);
-        LOG.info("Discount amount: " + discountAmount);
 
         Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
-        Double grandTotal = this.round((totalAfterDiscount + costOfAccessories + addonsTotal), 0);
+        LOG.info(totalAfterDiscount+costOfAccessories+addonsTotal);
+
+        Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal;
+        Double rem=grandTotal%10;
+
+        if(rem<5)
+        {
+            grandTotal=grandTotal-rem;
+        }
+        else
+        {
+            grandTotal=grandTotal+(10-rem);
+        }
 
         this.discountTotal.setReadOnly(false);
-        this.discountTotal.setValue(grandTotal + "");
+        this.discountTotal.setValue(grandTotal.intValue() + "");
         this.discountTotal.setReadOnly(true);
 
         this.grandTotal.setReadOnly(false);
-        this.grandTotal.setValue(totalAmount + "");
+        this.grandTotal.setValue(totalAmount.intValue() + "");
         this.grandTotal.setReadOnly(true);
 
         productAndAddonSelection.setDiscountPercentage(discountPercent);
