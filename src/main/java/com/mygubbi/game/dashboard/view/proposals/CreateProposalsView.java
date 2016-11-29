@@ -17,6 +17,7 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.*;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.event.SelectionEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -58,6 +59,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private final String NEW_TITLE = "New Proposal";
     private final String NEW_VERSION = "1.0";
+    private String status=null;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
     private Field<?> proposalTitleField;
@@ -105,8 +107,8 @@ public class CreateProposalsView extends Panel implements View {
     private Button addFromCatalogueButton;
     private FileAttachmentComponent fileAttachmentComponent;
     private TextField discountPercentage;
-    private Label discountTotal;
     private TextField discountAmount;
+    private Label discountTotal;
     private Button addonAddButton;
     private BeanItemContainer<AddonProduct> addonsContainer;
     private Grid addonsGrid;
@@ -116,14 +118,8 @@ public class CreateProposalsView extends Panel implements View {
     int pid;
     String parameters;
 
-
-   // Navigator navigator;
     public CreateProposalsView() {
-
-
     }
-
-
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
@@ -159,9 +155,7 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal.setAddons(proposalDataProvider.getProposalAddons(proposalId));
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name()); //todo: this has to be removed once server side is fixed
-        }
-        else
-        {
+        } else {
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setTitle(NEW_TITLE);
             proposalHeader.setVersion(NEW_VERSION);
@@ -805,23 +799,18 @@ public class CreateProposalsView extends Panel implements View {
         {
             proposalHeader.setTitle(NEW_TITLE);
         }
-            try
-            {
+        try {
             binder.commit();
-            }
-            catch (FieldGroup.CommitException e) {
+        } catch (FieldGroup.CommitException e) {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
 
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
-        if (success)
-        {
+        if (success) {
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-        }
-        else
-        {
+        } else {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
 
@@ -1160,8 +1149,13 @@ public class CreateProposalsView extends Panel implements View {
 
         HorizontalLayout amountsLayout = getAmountLayout();
 
-        this.discountPercentage.addValueChangeListener(this::updateTotal);
-        this.discountAmount.addValueChangeListener(this::updateTotal1);
+        this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
+        this.discountAmount.addFocusListener(this::onFocusToDiscountAmount);
+
+        this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
+        this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
+
+
 
         verticalLayout.addComponent(amountsLayout);
 
@@ -1195,7 +1189,7 @@ public class CreateProposalsView extends Panel implements View {
         amountsLayout.addComponent(grandTotal);
         amountsLayout.setSpacing(true);
 
-        Label Discount = new Label("<b>%Discount :</b>",ContentMode.HTML);
+        Label Discount = new Label("<b>Discount :</b>",ContentMode.HTML);
         amountsLayout.addComponent(Discount);
         amountsLayout.setSpacing(true);
         Discount.addStyleName("amount-text-label");
@@ -1226,7 +1220,6 @@ public class CreateProposalsView extends Panel implements View {
         this.discountAmount.setValue("0");
         this.discountAmount.setNullRepresentation("0");
         amountsLayout.addComponent(discountAmount);
-
 
         Label totalAfterDiscount = new Label("<b>Total After Discount :</b>",ContentMode.HTML);
         amountsLayout.addComponent(totalAfterDiscount);
@@ -1422,88 +1415,30 @@ public class CreateProposalsView extends Panel implements View {
         updateTotal();
     }
 
-
-    private void updateTotal1(Property.ValueChangeEvent valueChangeEvent)
+    private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
+        if("DA".equals(status))
     {
-        //this.amountcheck.setEnabled(true);
-        //LOG.info(this.optionGroup.getValue());
-        //String value=optionGroup.getValue().toString();
-        Double amount1;
-        //discountAmount.setValue("0");
-        Collection<?> productObjects = productsGrid.getSelectedRows();
-        Collection<?> addonObjects = addonsGrid.getSelectedRows();
-        boolean anythingSelected = true;
-        this.productAndAddonSelection.getProductIds().clear();
-        this.productAndAddonSelection.getAddonIds().clear();
-
-        if (productObjects.size() == 0) {
-            anythingSelected = false;
-            productObjects = this.productsGrid.getContainerDataSource().getItemIds();
-        }
-
-        double productsTotal = 0;
-
-        for (Object object : productObjects) {
-            Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
-            productsTotal += amount;
-            Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
-
-            if (anythingSelected) {
-                this.productAndAddonSelection.getProductIds().add(id);
-            }
-        }
-
-        if (addonObjects.size() == 0) {
-            anythingSelected = false;
-            addonObjects = this.addonsGrid.getContainerDataSource().getItemIds();
-        }
-
-        double addonsTotal = 0;
-        for (Object object : addonObjects) {
-            Double amount = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT).getValue();
-            addonsTotal += amount;
-            Integer id = (Integer) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.ID).getValue();
-
-            if (anythingSelected) {
-                this.productAndAddonSelection.getAddonIds().add(id);
-            }
-        }
-        Double totalWoAccessories = 0.0;
-        List<Product> products = proposal.getProducts();
-        LOG.info("Product :" + products.toString());
-        for (Product product : products) {
-            totalWoAccessories += product.getCostWoAccessories();
-        }
-        Double totalAmount = addonsTotal + productsTotal;
-        Double costOfAccessories = productsTotal - totalWoAccessories;
-        double disamount,discountPer;
-
-        amount1 = (Double) this.discountAmount.getConvertedValue();
-        LOG.info(amount1);
-        disamount=amount1;
-            //this.discountAmount.setValue(String.valueOf(round(amount1,2)));
-        discountPer=(amount1/totalAmount)*100;
-        this.discountPercentage.setValue(String.valueOf(round(discountPer,2)));
-
-        Double totalAfterDiscount = this.round((totalWoAccessories - disamount), 0);
-        Double grandTotal = this.round((totalAfterDiscount + costOfAccessories + addonsTotal), 0);
-
-        this.discountTotal.setReadOnly(false);
-        this.discountTotal.setValue(grandTotal + "");
-        this.discountTotal.setReadOnly(true);
-
-        this.grandTotal.setReadOnly(false);
-        this.grandTotal.setValue(totalAmount + "");
-        this.grandTotal.setReadOnly(true);
-
-        productAndAddonSelection.setDiscountPercentage(discountPer);
-        productAndAddonSelection.setDiscountAmount(disamount);
-    }
-
-    private void updateTotal(Property.ValueChangeEvent valueChangeEvent) {
         updateTotal();
     }
+    }
 
+    private void onDiscountPercentageValueChange(Property.ValueChangeEvent valueChangeEvent) {
+        if("DP".equals(status))
+        {
+            updateTotal();
+        }
+    }
+
+    private void onFocusToDiscountPercentage(FieldEvents.FocusEvent event)
+    {
+        LOG.info("DP focused");
+        status="DP";
+    }
+    private void onFocusToDiscountAmount(FieldEvents.FocusEvent event)
+    {
+        LOG.info("DA focused");
+        status="DA";
+    }
     private void updateTotal() {
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
@@ -1557,14 +1492,28 @@ public class CreateProposalsView extends Panel implements View {
         Double totalAmount = addonsTotal + productsTotal;
         Double costOfAccessories = productsTotal - totalWoAccessories;
 
-        Double discountPercent = (Double) this.discountPercentage.getConvertedValue();
-
+        Double discountPercent=0.0,discountAmount=0.0;
+        LOG.info("Status:" +status);
+        if("DP".equals(status))
+        {
+            discountPercent = (Double) this.discountPercentage.getConvertedValue();
         if (discountPercent== null)
         {
             discountPercent = 0.0;
         }
+            discountAmount = totalWoAccessories * discountPercent / 100.0;
+            this.discountAmount.setValue(String.valueOf(round(discountAmount,2)));
+        }
+        else if("DA".equals(status))
+        {
+            discountAmount = (Double) this.discountAmount.getConvertedValue();
+            discountPercent=(discountAmount/totalWoAccessories)*100;
+            this.discountPercentage.setValue(String.valueOf(round(discountPercent,2)));
+        }
+
         LOG.info("Discount percent : " + discountPercent);
-        double discountAmount = totalWoAccessories * discountPercent / 100.0;
+        LOG.info("Discount amount: " + discountAmount);
+
         Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
         Double grandTotal = this.round((totalAfterDiscount + costOfAccessories + addonsTotal), 0);
 
