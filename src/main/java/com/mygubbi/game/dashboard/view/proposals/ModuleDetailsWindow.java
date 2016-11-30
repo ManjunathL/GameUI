@@ -537,22 +537,6 @@ public class ModuleDetailsWindow extends Window {
         }
         moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
 
-
-/*
-        Integer updated_height = (Integer) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("height").getValue();
-        module.setHeight(updated_height);
-        Integer updated_width = (Integer) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("width").getValue();
-        module.setWidth(updated_width);
-        Integer updated_depth = (Integer) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("depth").getValue();
-        module.setDepth(updated_depth);
-        String updated_description = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("description").getValue();
-        module.setDescription(updated_description);
-        String updated_moduleType = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("moduleType").getValue();
-        module.setModuleType(updated_moduleType);
-        String updated_moduleCategory = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("moduleCategory").getValue();
-        module.setModuleCategory(updated_moduleCategory);
-*/
-
         this.height.setReadOnly(false);
         this.width.setReadOnly(false);
         this.depth.setReadOnly(false);
