@@ -1207,6 +1207,13 @@ public class ModuleDetailsWindow extends Window {
 
     private ClickListener   getApplyListener(boolean loadNext,boolean loadPrevious) {
         return event -> {
+
+            if (module.getMgCode()== null)
+            {
+                NotificationUtil.showNotification("Please select module before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+
             if (("Yes").equals(module.getAccessoryPackDefault())) {
                 if (module.getAccessoryPacks().size() == 0) {
                     NotificationUtil.showNotification("Please select accessories", NotificationUtil.STYLE_BAR_ERROR_SMALL);
