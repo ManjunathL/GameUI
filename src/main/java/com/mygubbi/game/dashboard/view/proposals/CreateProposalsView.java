@@ -111,7 +111,9 @@ public class CreateProposalsView extends Panel implements View {
     private Label discountTotal;
     private Button addonAddButton;
     private BeanItemContainer<AddonProduct> addonsContainer;
+    private BeanItemContainer<Versioning> versionContainer;
     private Grid addonsGrid;
+    private Grid versionsGrid;
     private MenuBar.MenuItem deleteMenuItem;
     private MenuBar.MenuItem cancelMenuItem;
     private MenuBar.MenuItem reviseMenuItem;
@@ -184,6 +186,7 @@ public class CreateProposalsView extends Panel implements View {
 
         TabSheet tabs = new TabSheet();
         tabs.addTab(buildForm(), "Header");
+        tabs.addTab(buildVersionsGrid(), "Versioning");
         tabs.addTab(buildProductsAndAddonsPage(), "Products and Addons");
         fileAttachmentComponent = new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
                 attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
@@ -192,11 +195,38 @@ public class CreateProposalsView extends Panel implements View {
         );
         tabs.addTab(fileAttachmentComponent, "Attachments");
 
+
         vLayout.addComponent(tabs);
         setContent(vLayout);
         Responsive.makeResponsive(tabs);
         updateTotal();
         handleState();
+    }
+
+    private Component buildVersionsGrid() {
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+        verticalLayout.setMargin(new MarginInfo(true, true, true, true));
+
+        Label title = new Label("Version Details");
+        title.setStyleName("products-and-addons-label-text");
+        verticalLayout.addComponent(title);
+        verticalLayout.setComponentAlignment(title,Alignment.TOP_LEFT);
+
+        verticalLayout.setSpacing(true);
+
+        versionContainer = new BeanItemContainer<>(Versioning.class);
+
+        GeneratedPropertyContainer genContainer = createGeneratedVersionPropertyContainer();
+
+        versionsGrid = new Grid(genContainer);
+        versionsGrid.setSizeFull();
+        versionsGrid.setColumns(Versioning.VERSION, Versioning.TITLE, Versioning.FINAL_AMOUNT, Versioning.STATUS, Versioning.DATE,
+                Versioning.REMARKS,"actions","CNC");
+
+        verticalLayout.addComponent(versionsGrid);
+
+        return verticalLayout;
     }
 
     private Component buildAddons() {
@@ -319,6 +349,13 @@ public class CreateProposalsView extends Panel implements View {
     private GeneratedPropertyContainer createGeneratedAddonsPropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(addonsContainer);
         genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
+        return genContainer;
+    }
+
+    private GeneratedPropertyContainer createGeneratedVersionPropertyContainer() {
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(versionContainer);
+        genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
+        genContainer.addGeneratedProperty("CNC", getEmptyActionTextGenerator());
         return genContainer;
     }
 
@@ -575,8 +612,11 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void checkProductsAndAddonsAvailable(Button.ClickEvent clickEvent) {
-        if (proposal.getProducts().isEmpty() || proposal.getAddons().isEmpty()) {
+        if (proposal.getProducts().isEmpty() ) {
             NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+        }
+        if (proposal.getAddons().isEmpty()) {
+            NotificationUtil.showNotification("No Addons found.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
     }
 

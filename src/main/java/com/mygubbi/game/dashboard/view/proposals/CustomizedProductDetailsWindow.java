@@ -13,8 +13,6 @@ import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
-import com.vaadin.client.connectors.SingleSelectionModelConnector;
-import com.vaadin.client.widget.grid.RendererCellReference;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -25,32 +23,25 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.data.validator.RegexpValidator;
-import com.vaadin.event.SelectionEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.renderers.ButtonRenderer;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
-import org.vaadin.gridutil.renderer.*;
-import com.vaadin.client.connectors.ButtonRendererConnector;
+import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -527,7 +518,6 @@ public class CustomizedProductDetailsWindow extends Window {
             moduleContainer.removeAllItems();
             moduleContainer.addAll(product.getModules());
             modulesGrid.clearSortOrder();
-            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
             modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
             refreshPrice(null);
@@ -1126,36 +1116,38 @@ public class CustomizedProductDetailsWindow extends Window {
     @Subscribe
     public void moduleUpdated(final ProposalEvent.ModuleUpdated event) {
 
-//        List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+        try {
+            List<Module> modules = this.product.getModules();
+            Module module = event.getModule();
+            if (module.getModuleSequence() == 0)
+            {
+                module.setSeq(this.getNextUnitSequence(modules, module.getUnitType()));
+                module.setModuleSequence(this.getNextModuleSequence(modules));
+            }
+            else
+            {
+                modules.remove(module);
+            }
+            modules.add(module);
+            moduleContainer.removeAllItems();
+            moduleContainer.addAll(modules);
+            modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
+            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
+            updateTotalAmount();
+            updatePsftCosts();
 
-        List<Module> modules = this.product.getModules();
-        Module module = event.getModule();
-        if (module.getModuleSequence() == 0)
-        {
-            module.setSeq(this.getNextUnitSequence(modules, module.getUnitType()));
-            module.setModuleSequence(this.getNextModuleSequence(modules));
-        }
-        else
-        {
-            modules.remove(module);
-        }
-        modules.add(module);
-        moduleContainer.removeAllItems();
-        moduleContainer.addAll(modules);
-        modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
-        modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
-        updateTotalAmount();
-        updatePsftCosts();
+            if (event.isLoadNext()) {
+                loadNextModule(event.getModuleIndex());
+            }
+            else if (event.isLoadPrevious())
+            {
+                loadPreviousModule(event.getModuleIndex());
+            }
 
-        if (event.isLoadNext()) {
-            loadNextModule(event.getModuleIndex());
+            this.checkAndEnableSave();
+        } catch (Exception e) {
+            LOG.debug(e.getMessage());
         }
-        else if (event.isLoadPrevious())
-        {
-            loadPreviousModule(event.getModuleIndex());
-        }
-
-        this.checkAndEnableSave();
     }
 
     private int getNextModuleSequence(List<Module> modules) {
