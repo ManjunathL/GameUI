@@ -3,7 +3,6 @@ package com.mygubbi.game.dashboard.domain;
 import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,6 +14,8 @@ public final class Proposal implements FileAttachmentsHolder{
     private List<Product> products = new ArrayList<>();
     private List<FileAttachment> fileAttachments = new ArrayList<>();
     private List<AddonProduct> addons = new ArrayList<>();
+    private List<ProposalVersion> versions = new ArrayList<>();
+
 
     public ProposalHeader getProposalHeader() {
         return proposalHeader;
@@ -47,5 +48,13 @@ public final class Proposal implements FileAttachmentsHolder{
 
     public void setAddons(List<AddonProduct> addons) {
         this.addons = addons;
+    }
+
+    public List<ProposalVersion> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(List<ProposalVersion> versions) {
+        this.versions = versions;
     }
 }

@@ -129,6 +129,41 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<ProposalVersion> getProposalVersions(int proposalId) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/versions", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId + "");
+            }
+        });
+        try
+        {
+            ProposalVersion[] items = this.mapper.readValue(jsonArray.toString(), ProposalVersion[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<AddonProduct> getProposalAddons(int id) {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/addon.list", new HashMap<String, String>() {
+            {
+                put("proposalId", id + "");
+            }
+        });
+        try {
+            AddonProduct[] items = this.mapper.readValue(array.toString(), AddonProduct[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
+
+
     //give modules and addons
     public Product getProposalProductDetails(int productId) {
 
@@ -182,6 +217,16 @@ public class ProposalDataProvider {
 
             JSONObject jsonObject = dataProviderMode.postResource("proposal/create", "{\"title\": \"New Proposal\", \"createdBy\": \"" + getUserId() + "\"}");
             return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't create proposal", e);
+        }
+    }
+
+    public ProposalVersion createDraft(int pid,String title) {
+        try {
+
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/createdraft",  "{\"proposalId\": " + pid + "," + "\"title\" : " + "\"" + title + "\"" + "}");
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);
         }
@@ -758,21 +803,7 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<AddonProduct> getProposalAddons(int id) {
-        JSONArray array = dataProviderMode.getResourceArray("proposal/addon.list", new HashMap<String, String>() {
-            {
-                put("proposalId", id + "");
-            }
-        });
-        try {
-            AddonProduct[] items = this.mapper.readValue(array.toString(), AddonProduct[].class);
-            return new ArrayList<>(Arrays.asList(items));
-        } catch (Exception e) {
-            e.printStackTrace();
-            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            return new ArrayList<>();
-        }
-    }
+
 
     public boolean removeProposalAddon(int addonId) {
         String faJson = "{\"id\": " + addonId + "}";

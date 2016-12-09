@@ -58,6 +58,7 @@ public class CreateProposalsView extends Panel implements View {
     private static final Logger LOG = LogManager.getLogger(CreateProposalsView.class);
 
     private final String NEW_TITLE = "New Proposal";
+    private final String NEW_DRAFT_TITLE = "Draft created for ";
     private final String NEW_VERSION = "1.0";
     private String status=null;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
@@ -95,7 +96,7 @@ public class CreateProposalsView extends Panel implements View {
     private Button submitButton;
     private Label draftLabel;
     private ProposalHeader proposalHeader;
-    private ModulePrice modulePrice;
+    private ProposalVersion proposalVersion;
     private Proposal proposal;
     private Button saveButton;
     private BeanItemContainer productContainer;
@@ -111,9 +112,13 @@ public class CreateProposalsView extends Panel implements View {
     private Label discountTotal;
     private Button addonAddButton;
     private BeanItemContainer<AddonProduct> addonsContainer;
-    private BeanItemContainer<Versioning> versionContainer;
+    private BeanItemContainer<ProposalVersion> versionContainerPreSales;
+    private BeanItemContainer<ProposalVersion> versionContainerPostSales;
+    private BeanItemContainer<ProposalVersion> versionContainerProduction;
     private Grid addonsGrid;
-    private Grid versionsGrid;
+    private Grid versionsGridPreSales;
+    private Grid versionsGridPostSales;
+    private Grid versionsGridProduction;
     private MenuBar.MenuItem deleteMenuItem;
     private MenuBar.MenuItem cancelMenuItem;
     private MenuBar.MenuItem reviseMenuItem;
@@ -147,6 +152,7 @@ public class CreateProposalsView extends Panel implements View {
         });
         //beforeViewChange(event);
         parameters = event.getParameters();
+        LOG.debug("Parameters :" + parameters);
         if (StringUtils.isNotEmpty(parameters)) {
             int proposalId = Integer.parseInt(parameters);
             this.proposalHeader = proposalDataProvider.getProposalHeader(proposalId);
@@ -166,10 +172,31 @@ public class CreateProposalsView extends Panel implements View {
             List<ProposalHeader> id=proposalDataProvider.getProposalId();
             for(ProposalHeader val: id) {
                  pid=val.getId();
-                System.out.println("id=" + val.getId());
             }
+            LOG.debug("ID :" + id);
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(proposalHeader);
+
+            proposalVersion = proposalDataProvider.createDraft(pid,NEW_DRAFT_TITLE + pid);
+            List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(pid);
+            this.proposal.setVersions(proposalVersionList);
+            versionContainerPreSales = new BeanItemContainer<>(ProposalVersion.class);
+
+            GeneratedPropertyContainer genContainerPreSales = createGeneratedVersionPropertyContainerPreSales();
+
+            versionsGridPreSales = new Grid(genContainerPreSales);
+            versionsGridPreSales.setSizeFull();
+            versionsGridPreSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
+                    ProposalVersion.REMARKS,"Copy","actions","CNC");
+
+            versionContainerPreSales.addAll(proposalVersionList);
+            versionsGridPreSales.setContainerDataSource(createGeneratedVersionPropertyContainerPreSales());
+            versionsGridPreSales.getSelectionModel().reset();
+
+            List<Grid.Column> columns = versionsGridPreSales.getColumns();
+
+
+
         }
 
         this.productAndAddonSelection = new ProductAndAddonSelection();
@@ -186,7 +213,7 @@ public class CreateProposalsView extends Panel implements View {
 
         TabSheet tabs = new TabSheet();
         tabs.addTab(buildForm(), "Header");
-        tabs.addTab(buildVersionsGrid(), "Versioning");
+        tabs.addTab(buildVersionsGrids(), "ProposalVersion");
         tabs.addTab(buildProductsAndAddonsPage(), "Products and Addons");
         fileAttachmentComponent = new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
                 attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
@@ -203,7 +230,7 @@ public class CreateProposalsView extends Panel implements View {
         handleState();
     }
 
-    private Component buildVersionsGrid() {
+    private Component buildVersionsGrids() {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
         verticalLayout.setMargin(new MarginInfo(true, true, true, true));
@@ -213,18 +240,55 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.addComponent(title);
         verticalLayout.setComponentAlignment(title,Alignment.TOP_LEFT);
 
+        Label titlePreSales = new Label("Pre Sales");
+        titlePreSales.addStyleName(ValoTheme.LABEL_H2);
+        titlePreSales.addStyleName(ValoTheme.LABEL_BOLD);
+        verticalLayout.addComponent(titlePreSales);
+        verticalLayout.setComponentAlignment(titlePreSales,Alignment.TOP_LEFT);
+
         verticalLayout.setSpacing(true);
 
-        versionContainer = new BeanItemContainer<>(Versioning.class);
+        verticalLayout.addComponent(versionsGridPreSales);
 
-        GeneratedPropertyContainer genContainer = createGeneratedVersionPropertyContainer();
+        verticalLayout.setSpacing(true);
 
-        versionsGrid = new Grid(genContainer);
-        versionsGrid.setSizeFull();
-        versionsGrid.setColumns(Versioning.VERSION, Versioning.TITLE, Versioning.FINAL_AMOUNT, Versioning.STATUS, Versioning.DATE,
-                Versioning.REMARKS,"actions","CNC");
+        Label titlePostSales = new Label("Post Sales");
+        titlePostSales.addStyleName(ValoTheme.LABEL_H2);
+        titlePostSales.addStyleName(ValoTheme.LABEL_BOLD);
+        verticalLayout.addComponent(titlePostSales);
+        verticalLayout.setComponentAlignment(titlePostSales,Alignment.TOP_LEFT);
 
-        verticalLayout.addComponent(versionsGrid);
+        verticalLayout.setSpacing(true);
+        versionContainerPostSales = new BeanItemContainer<>(ProposalVersion.class);
+        GeneratedPropertyContainer genContainerPostSales = createGeneratedVersionPropertyContainerPostSales();
+
+
+        versionsGridPostSales = new Grid(genContainerPostSales);
+        versionsGridPostSales.setSizeFull();
+        versionsGridPostSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
+                ProposalVersion.REMARKS,"actions","CNC");
+
+        verticalLayout.addComponent(versionsGridPostSales);
+
+        verticalLayout.setSpacing(true);
+
+        Label titleProduction = new Label("Production");
+        titleProduction.addStyleName(ValoTheme.LABEL_H2);
+        titleProduction.addStyleName(ValoTheme.LABEL_BOLD);
+        verticalLayout.addComponent(titleProduction);
+        verticalLayout.setComponentAlignment(titleProduction,Alignment.TOP_LEFT);
+
+        verticalLayout.setSpacing(true);
+
+        versionContainerProduction = new BeanItemContainer<>(ProposalVersion.class);
+        GeneratedPropertyContainer genContainerProduction = createGeneratedVersionPropertyContainerProduction();
+
+        versionsGridProduction = new Grid(genContainerProduction);
+        versionsGridProduction.setSizeFull();
+        versionsGridProduction.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
+                ProposalVersion.REMARKS,"actions","CNC");
+
+        verticalLayout.addComponent(versionsGridProduction);
 
         return verticalLayout;
     }
@@ -352,8 +416,23 @@ public class CreateProposalsView extends Panel implements View {
         return genContainer;
     }
 
-    private GeneratedPropertyContainer createGeneratedVersionPropertyContainer() {
-        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(versionContainer);
+    private GeneratedPropertyContainer createGeneratedVersionPropertyContainerPreSales() {
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(versionContainerPreSales);
+        genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
+        genContainer.addGeneratedProperty("CNC", getEmptyActionTextGenerator());
+        genContainer.addGeneratedProperty("Copy", getEmptyActionTextGenerator());
+        return genContainer;
+    }
+
+    private GeneratedPropertyContainer createGeneratedVersionPropertyContainerPostSales() {
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(versionContainerPostSales);
+        genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
+        genContainer.addGeneratedProperty("CNC", getEmptyActionTextGenerator());
+        return genContainer;
+    }
+
+    private GeneratedPropertyContainer createGeneratedVersionPropertyContainerProduction() {
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(versionContainerProduction);
         genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
         genContainer.addGeneratedProperty("CNC", getEmptyActionTextGenerator());
         return genContainer;
@@ -1533,7 +1612,6 @@ public class CreateProposalsView extends Panel implements View {
         Double costOfAccessories = productsTotal - totalWoAccessories;
 
         Double discountPercent=0.0,discountAmount=0.0;
-        LOG.info("Status:" +status);
 
         if("DP".equals(status))
         {

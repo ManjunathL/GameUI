@@ -1,11 +1,14 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.Date;
+
 /**
  * Created by Chirag on 06-12-2016.
  */
-public class Versioning implements Cloneable {
+public class ProposalVersion implements Cloneable {
 
     public static final String VERSION = "version";
+    public static final String PROPOSAL_ID = "proposalId";
     public static final String TITLE = "title";
     public static final String FINAL_AMOUNT = "finalAmount";
     public static final String STATUS = "status";
@@ -13,11 +16,23 @@ public class Versioning implements Cloneable {
     public static final String REMARKS = "remarks";
 
     private double version;
+    private int proposalId;
     private String title;
     private String finalAmount;
     private String status;
-    private String date;
+    private Date date;
     private String remarks;
+
+
+    @Override
+    public Object clone()  {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError(e);
+            //Will never happen since we are implementing Cloneable
+        }
+    }
 
     public double getVersion() {
         return version;
@@ -25,6 +40,14 @@ public class Versioning implements Cloneable {
 
     public void setVersion(double version) {
         this.version = version;
+    }
+
+    public int getProposalId() {
+        return proposalId;
+    }
+
+    public void setProposalId(int proposalId) {
+        this.proposalId = proposalId;
     }
 
     public String getTitle() {
@@ -51,11 +74,11 @@ public class Versioning implements Cloneable {
         this.status = status;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 

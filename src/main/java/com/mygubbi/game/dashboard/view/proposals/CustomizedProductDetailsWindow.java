@@ -1247,6 +1247,7 @@ public class CustomizedProductDetailsWindow extends Window {
         fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
         saveBtn.setEnabled(false);
         fileAttachmentComponent.setReadOnly(true);
+        addModules.setEnabled(false);
     }
 
 }
