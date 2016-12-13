@@ -34,6 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -348,7 +349,12 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Amount");
         Grid.Column actionColumn = columns.get(idx++);
         actionColumn.setHeaderCaption("Actions");
-        actionColumn.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+        actionColumn.setRenderer(new ViewEditDeleteButtonValueRenderer(new ViewEditDeleteButtonValueRenderer.ViewEditDeleteButtonClickListener() {
+            @Override
+            public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+
+            }
+
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
@@ -1433,7 +1439,71 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Category");
         columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Type");
-        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new ViewEditDeleteButtonValueRenderer(new ViewEditDeleteButtonValueRenderer.ViewEditDeleteButtonClickListener() {
+            @Override
+            public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                Product p = (Product) rendererClickEvent.getItemId();
+
+                List<Product> copy = proposal.getProducts();
+                int length = (copy.size()) + 1;
+                System.out.println("original"+ p);
+
+                Product proposalProductDetails = proposalDataProvider.getProposalProductDetails(p.getId());
+                List<Module> modulesFromOldProduct = proposalProductDetails.getModules();
+                LOG.debug("modules"+modulesFromOldProduct);
+                Product copyProduct = new Product();
+                copyProduct.setType(Product.TYPES.CUSTOMIZED.name());
+                copyProduct.setSeq(length + 1);
+                copyProduct.setProposalId(proposalHeader.getId());
+                copyProduct.setTitle(p.getTitle());
+                copyProduct.setProductCategory(p.getProductCategory());
+                copyProduct.setProductCategoryCode(p.getProductCategoryCode());
+                copyProduct.setRoom(p.getRoom());
+                copyProduct.setRoomCode(p.getRoomCode());
+                copyProduct.setShutterDesign(p.getShutterDesign());
+                copyProduct.setShutterDesignCode(p.getShutterDesignCode());
+                copyProduct.setCatalogueName(p.getCatalogueName());
+                copyProduct.setCatalogueId(p.getCatalogueId());
+                copyProduct.setBaseCarcass(p.getBaseCarcass());
+                copyProduct.setBaseCarcassCode(p.getBaseCarcassCode());
+                copyProduct.setWallCarcass(p.getWallCarcass());
+                copyProduct.setWallCarcassCode(p.getWallCarcassCode());
+                copyProduct.setFinishType(p.getFinishType());
+                copyProduct.setFinishTypeCode(p.getFinishTypeCode());
+                copyProduct.setFinish(p.getFinish());
+                copyProduct.setFinishCode(p.getFinishCode());
+                copyProduct.setDimension(p.getDimension());
+                copyProduct.setAmount(p.getAmount());
+                copyProduct.setQuantity(p.getQuantity());
+                copyProduct.setType(p.getType());
+                copyProduct.setQuoteFilePath(p.getQuoteFilePath());
+                copyProduct.setCreatedBy(p.getCreatedBy());
+                copyProduct.setCostWoAccessories(p.getCostWoAccessories());
+
+                copyProduct.setModules(modulesFromOldProduct);
+                LOG.debug("copied"+ copyProduct);
+
+                List <Module> list = p.getModules();
+                for(int i=0;i<list.size();i++)
+                {
+                    LOG.debug("copy products"+list);
+                }
+                copyProduct.setAddons(p.getAddons());
+                //proposalDataProvider.updateProduct(copyProduct);
+                System.out.println("copy:"+copyProduct);
+                copy.add(copyProduct);
+                productContainer.removeAllItems();
+                productContainer.addAll(copy);
+                LOG.debug("container size"+productContainer.size());
+                productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+               // productsGrid.getSelectionModel().reset();
+               // proposalDataProvider.updateProduct(copyProduct);
+               // DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(copy));
+                proposalDataProvider.loadAndUpdateProduct(copyProduct);
+                updateTotal();
+
+            }
+
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
