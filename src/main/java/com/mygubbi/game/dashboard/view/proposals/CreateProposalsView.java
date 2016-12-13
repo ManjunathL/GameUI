@@ -33,7 +33,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
 import java.io.ByteArrayInputStream;
@@ -155,13 +154,13 @@ public class CreateProposalsView extends Panel implements View {
         parameters = event.getParameters();
         LOG.debug("Parameters :" + parameters);
         if (StringUtils.isNotEmpty(parameters)) {
-            int proposalId = Integer.parseInt(parameters);
-            this.proposalHeader = proposalDataProvider.getProposalHeader(proposalId);
+            pid = Integer.parseInt(parameters);
+            this.proposalHeader = proposalDataProvider.getProposalHeader(pid);
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(this.proposalHeader);
-            this.proposal.setProducts(proposalDataProvider.getProposalProducts(proposalId));
-            this.proposal.setFileAttachments(proposalDataProvider.getProposalDocuments(proposalId));
-            this.proposal.setAddons(proposalDataProvider.getProposalAddons(proposalId));
+            this.proposal.setProducts(proposalDataProvider.getProposalProducts(pid));
+            this.proposal.setFileAttachments(proposalDataProvider.getProposalDocuments(pid));
+            this.proposal.setAddons(proposalDataProvider.getProposalAddons(pid));
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name()); //todo: this has to be removed once server side is fixed
         } else {
@@ -174,31 +173,32 @@ public class CreateProposalsView extends Panel implements View {
             for(ProposalHeader val: id) {
                  pid=val.getId();
             }
-            LOG.debug("ID :" + id);
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(proposalHeader);
-
-            proposalVersion = proposalDataProvider.createDraft(pid,NEW_DRAFT_TITLE + pid);
-            List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(pid);
-            this.proposal.setVersions(proposalVersionList);
-            versionContainerPreSales = new BeanItemContainer<>(ProposalVersion.class);
-
-            GeneratedPropertyContainer genContainerPreSales = createGeneratedVersionPropertyContainerPreSales();
-
-            versionsGridPreSales = new Grid(genContainerPreSales);
-            versionsGridPreSales.setSizeFull();
-            versionsGridPreSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
-                    ProposalVersion.REMARKS,"Copy","actions","CNC");
-
-            versionContainerPreSales.addAll(proposalVersionList);
-            versionsGridPreSales.setContainerDataSource(createGeneratedVersionPropertyContainerPreSales());
-            versionsGridPreSales.getSelectionModel().reset();
-
-            List<Grid.Column> columns = versionsGridPreSales.getColumns();
-
-
+            proposalVersion = proposalDataProvider.createDraft(pid, NEW_DRAFT_TITLE + pid);
 
         }
+
+        versionContainerPreSales = new BeanItemContainer<>(ProposalVersion.class);
+
+        List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(pid);
+        this.proposal.setVersions(proposalVersionList);
+
+        LOG.debug("Proposal Version List :" + proposalVersionList.size());
+
+        versionsGridPreSales = new Grid(versionContainerPreSales);
+        versionsGridPreSales.setSizeFull();
+        versionsGridPreSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
+                ProposalVersion.REMARKS);
+
+
+        versionContainerPreSales.addAll(proposalVersionList);
+        versionsGridPreSales.setContainerDataSource(createGeneratedVersionPropertyContainerPreSales());
+        versionsGridPreSales.getSelectionModel().reset();
+
+
+        LOG.debug("Proposal Version List :" + proposalVersionList.size());
+
 
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
