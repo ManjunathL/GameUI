@@ -287,11 +287,18 @@
 .inputlabel{
     margin-top:25px !important;
     margin-right: 0px !important;
+    margin-bottom:20px !important;
     font-weight: bold !important;
     font-size: 12px !important;
 }
+.discountstyle{
+    margin-right:10px !important;
+    margin-left:10px !important
+    margin-top: 15px !important;
+}
 .inputTextbox{
     margin-right: 0px !important;
+    margin-bottom: 15px !important;
     width: 110px !important;
     font-weight: bold !important;
 }
@@ -309,7 +316,7 @@
 
   .amount-text-label {
 		font-size: 18px;
-		margin-left: 20px ! important;
+	    margin-left: 20px ! important;
 		margin-top: 25px !important;
   }
 

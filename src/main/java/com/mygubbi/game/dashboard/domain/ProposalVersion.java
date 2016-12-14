@@ -23,7 +23,6 @@ public class ProposalVersion implements Cloneable {
     private Date date;
     private String remarks;
 
-
     @Override
     public Object clone()  {
         try {

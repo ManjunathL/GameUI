@@ -61,12 +61,13 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Grid(container);
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
-        grid.setColumns(ProposalHeader.CRM_ID, ProposalHeader.QUOTE_NO, ProposalHeader.TITLE, ProposalHeader.STATUS,
+        grid.setColumns(ProposalHeader.ID,ProposalHeader.CRM_ID, ProposalHeader.QUOTE_NO, ProposalHeader.TITLE, ProposalHeader.STATUS,
                 ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.CREATED_ON,
                 ProposalHeader.CREATED_BY);
 
         List<Grid.Column> columns = grid.getColumns();
         int idx = 0;
+        columns.get(idx++).setHeaderCaption("Proposal #");
         columns.get(idx++).setHeaderCaption("CRM #");
         columns.get(idx++).setHeaderCaption("Quotation #");
         columns.get(idx++).setHeaderCaption("Title");
@@ -76,12 +77,11 @@ public final class ProposalsView extends TabSheet implements View {
         columns.get(idx++).setHeaderCaption("Create Date");
         columns.get(idx++).setHeaderCaption("Created By");
         grid.sort("createdOn", SortDirection.DESCENDING);
-
-
         GridCellFilter filter = new GridCellFilter(grid);
 
         filter.setTextFilter(ProposalHeader.TITLE, true, false);
         filter.setTextFilter(ProposalHeader.CRM_ID, true, true);
+        filter.setTextFilter(ProposalHeader.ID,true,true);
         filter.setTextFilter(ProposalHeader.QUOTE_NO, true, true);
         filter.setTextFilter(ProposalHeader.STATUS, true, true);
         filter.setTextFilter(ProposalHeader.CREATED_BY, true, true);
