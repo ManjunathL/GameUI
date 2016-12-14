@@ -164,14 +164,8 @@ public class CreateProposalsView extends Panel implements View {
                // NotificationUtil.showNotification("After View Change", NotificationUtil.STYLE_BAR_WARNING_SMALL);
             }
         });
-        //beforeViewChange(event);
         parameters = event.getParameters();
         if (StringUtils.isNotEmpty(parameters)) {
-            pid = Integer.parseInt(parameters);
-            this.proposalHeader = proposalDataProvider.getProposalHeader(pid);
-        if (StringUtils.isNotEmpty(parameters))
-        {
-
             pid = Integer.parseInt(parameters);
             this.proposalHeader = proposalDataProvider.getProposalHeader(pid);
             String createdOn=proposalHeader.getCreatedOn().toString();
@@ -191,7 +185,7 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeader.setStatus(ProposalState.draft.name());
             List<ProposalHeader> id=proposalDataProvider.getProposalId();
             for(ProposalHeader val: id) {
-                 pid=val.getId();
+                pid=val.getId();
             }
 
             String date=new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -200,14 +194,10 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(proposalHeader);
             proposalVersion = proposalDataProvider.createDraft(pid, NEW_DRAFT_TITLE + pid);
-        }
-
-
-            proposalVersion = proposalDataProvider.createDraft(pid, NEW_DRAFT_TITLE + pid);
 
         }
 
-
+       // quotationField.setValue(String.valueOf(pid));
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
 
@@ -264,25 +254,17 @@ public class CreateProposalsView extends Panel implements View {
 
         LOG.debug("Proposal Version List :" + proposalVersionList.size());
 
-        versionsGridPreSales = new Grid(versionContainerPreSales);
+        GeneratedPropertyContainer genContainer = createGeneratedVersionPropertyContainerPreSales();
+        versionsGridPreSales = new Grid(genContainer);
         versionsGridPreSales.setSizeFull();
         versionsGridPreSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
-                ProposalVersion.REMARKS);
+                ProposalVersion.REMARKS,"actions");
 
 
         versionContainerPreSales.addAll(proposalVersionList);
         versionsGridPreSales.setContainerDataSource(createGeneratedVersionPropertyContainerPreSales());
         versionsGridPreSales.getSelectionModel().reset();
 
-
-        List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(pid);
-        this.proposal.setVersions(proposalVersionList);
-
-        GeneratedPropertyContainer genContainer = createGeneratedVersionPropertyContainerPreSales();
-        versionsGridPreSales = new Grid(genContainer);
-        versionsGridPreSales.setSizeFull();
-        versionsGridPreSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
-                ProposalVersion.REMARKS,"actions");
 
         List<Grid.Column> columns = versionsGridPreSales.getColumns();
         int idx = 0;
@@ -321,48 +303,6 @@ public class CreateProposalsView extends Panel implements View {
         versionsGridPreSales.getSelectionModel().reset();
         verticalLayout.addComponent(versionsGridPreSales);
         verticalLayout.setSpacing(true);
-
-        Label titlePostSales = new Label("Post Sales");
-        titlePostSales.addStyleName(ValoTheme.LABEL_H2);
-        titlePostSales.addStyleName(ValoTheme.LABEL_BOLD);
-        verticalLayout.addComponent(titlePostSales);
-        verticalLayout.setComponentAlignment(titlePostSales,Alignment.TOP_LEFT);
-
-        verticalLayout.setSpacing(true);
-
-
-
-        versionContainerPostSales = new BeanItemContainer<>(ProposalVersion.class);
-        GeneratedPropertyContainer genContainerPostSales = createGeneratedVersionPropertyContainerPostSales();
-
-
-        versionsGridPostSales = new Grid(genContainerPostSales);
-        versionsGridPostSales.setSizeFull();
-        versionsGridPostSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
-                ProposalVersion.REMARKS,"actions","CNC");
-
-        verticalLayout.addComponent(versionsGridPostSales);
-
-        verticalLayout.setSpacing(true);
-
-        Label titleProduction = new Label("Production");
-        titleProduction.addStyleName(ValoTheme.LABEL_H2);
-        titleProduction.addStyleName(ValoTheme.LABEL_BOLD);
-        verticalLayout.addComponent(titleProduction);
-        verticalLayout.setComponentAlignment(titleProduction,Alignment.TOP_LEFT);
-
-        verticalLayout.setSpacing(true);
-
-        versionContainerProduction = new BeanItemContainer<>(ProposalVersion.class);
-        GeneratedPropertyContainer genContainerProduction = createGeneratedVersionPropertyContainerProduction();
-
-        versionsGridProduction = new Grid(genContainerProduction);
-        versionsGridProduction.setSizeFull();
-        versionsGridProduction.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
-                ProposalVersion.REMARKS,"actions","CNC");
-
-        verticalLayout.addComponent(versionsGridProduction);
-
         return verticalLayout;
     }
 
