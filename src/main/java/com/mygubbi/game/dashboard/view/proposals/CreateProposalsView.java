@@ -152,7 +152,6 @@ public class CreateProposalsView extends Panel implements View {
         });
         //beforeViewChange(event);
         parameters = event.getParameters();
-        LOG.debug("Parameters :" + parameters);
         if (StringUtils.isNotEmpty(parameters)) {
             pid = Integer.parseInt(parameters);
             this.proposalHeader = proposalDataProvider.getProposalHeader(pid);
@@ -178,26 +177,6 @@ public class CreateProposalsView extends Panel implements View {
             proposalVersion = proposalDataProvider.createDraft(pid, NEW_DRAFT_TITLE + pid);
 
         }
-
-        versionContainerPreSales = new BeanItemContainer<>(ProposalVersion.class);
-
-        List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(pid);
-        this.proposal.setVersions(proposalVersionList);
-
-        LOG.debug("Proposal Version List :" + proposalVersionList.size());
-
-        versionsGridPreSales = new Grid(versionContainerPreSales);
-        versionsGridPreSales.setSizeFull();
-        versionsGridPreSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
-                ProposalVersion.REMARKS);
-
-
-        versionContainerPreSales.addAll(proposalVersionList);
-        versionsGridPreSales.setContainerDataSource(createGeneratedVersionPropertyContainerPreSales());
-        versionsGridPreSales.getSelectionModel().reset();
-
-
-        LOG.debug("Proposal Version List :" + proposalVersionList.size());
 
 
         this.productAndAddonSelection = new ProductAndAddonSelection();
@@ -249,6 +228,24 @@ public class CreateProposalsView extends Panel implements View {
 
         verticalLayout.setSpacing(true);
 
+        versionContainerPreSales = new BeanItemContainer<>(ProposalVersion.class);
+
+        List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(pid);
+        this.proposal.setVersions(proposalVersionList);
+
+        LOG.debug("Proposal Version List :" + proposalVersionList.size());
+
+        versionsGridPreSales = new Grid(versionContainerPreSales);
+        versionsGridPreSales.setSizeFull();
+        versionsGridPreSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
+                ProposalVersion.REMARKS);
+
+
+        versionContainerPreSales.addAll(proposalVersionList);
+        versionsGridPreSales.setContainerDataSource(createGeneratedVersionPropertyContainerPreSales());
+        versionsGridPreSales.getSelectionModel().reset();
+
+
         verticalLayout.addComponent(versionsGridPreSales);
 
         verticalLayout.setSpacing(true);
@@ -260,6 +257,9 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.setComponentAlignment(titlePostSales,Alignment.TOP_LEFT);
 
         verticalLayout.setSpacing(true);
+
+
+
         versionContainerPostSales = new BeanItemContainer<>(ProposalVersion.class);
         GeneratedPropertyContainer genContainerPostSales = createGeneratedVersionPropertyContainerPostSales();
 
@@ -1673,7 +1673,6 @@ public class CreateProposalsView extends Panel implements View {
 
 
         List<Product> products = proposal.getProducts();
-        LOG.info("Product :" + products.toString());
         for (Product product : products) {
             totalWoAccessories += product.getCostWoAccessories();
         }
@@ -1715,8 +1714,6 @@ public class CreateProposalsView extends Panel implements View {
 
 
         Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
-        LOG.info(totalAfterDiscount+costOfAccessories+addonsTotal);
-
         Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal;
         Double rem=grandTotal%10;
 
