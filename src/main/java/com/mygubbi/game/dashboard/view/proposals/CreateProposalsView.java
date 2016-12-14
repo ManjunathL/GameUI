@@ -40,6 +40,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.DeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -138,9 +139,7 @@ public class CreateProposalsView extends Panel implements View {
     String Pstatus;
     String parameters;
 
-    public CreateProposalsView()
-    {
-
+    public CreateProposalsView() {
     }
 
     @Override
@@ -167,6 +166,9 @@ public class CreateProposalsView extends Panel implements View {
         });
         //beforeViewChange(event);
         parameters = event.getParameters();
+        if (StringUtils.isNotEmpty(parameters)) {
+            pid = Integer.parseInt(parameters);
+            this.proposalHeader = proposalDataProvider.getProposalHeader(pid);
         if (StringUtils.isNotEmpty(parameters))
         {
 
@@ -181,10 +183,7 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal.setAddons(proposalDataProvider.getProposalAddons(pid));
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name()); //todo: this has to be removed once server side is fixed
-        }
-        else
-        {
-
+        } else {
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setTitle(NEW_TITLE);
             proposalHeader.setVersion(NEW_VERSION);
@@ -204,9 +203,14 @@ public class CreateProposalsView extends Panel implements View {
         }
 
 
+            proposalVersion = proposalDataProvider.createDraft(pid, NEW_DRAFT_TITLE + pid);
+
+        }
+
 
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
+
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(proposalHeader);
 
@@ -227,6 +231,7 @@ public class CreateProposalsView extends Panel implements View {
         );
         tabs.addTab(fileAttachmentComponent, "Attachments");
 
+
         vLayout.addComponent(tabs);
         setContent(vLayout);
         Responsive.makeResponsive(tabs);
@@ -234,13 +239,10 @@ public class CreateProposalsView extends Panel implements View {
         handleState();
     }
 
-    private Component buildVersionsGrids()
-    {
-
+    private Component buildVersionsGrids() {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
         verticalLayout.setMargin(new MarginInfo(true, true, true, true));
-
 
         Label title = new Label("Version Details");
         title.setStyleName("products-and-addons-label-text");
@@ -254,7 +256,24 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.setComponentAlignment(titlePreSales,Alignment.TOP_LEFT);
 
         verticalLayout.setSpacing(true);
+
         versionContainerPreSales = new BeanItemContainer<>(ProposalVersion.class);
+
+        List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(pid);
+        this.proposal.setVersions(proposalVersionList);
+
+        LOG.debug("Proposal Version List :" + proposalVersionList.size());
+
+        versionsGridPreSales = new Grid(versionContainerPreSales);
+        versionsGridPreSales.setSizeFull();
+        versionsGridPreSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
+                ProposalVersion.REMARKS);
+
+
+        versionContainerPreSales.addAll(proposalVersionList);
+        versionsGridPreSales.setContainerDataSource(createGeneratedVersionPropertyContainerPreSales());
+        versionsGridPreSales.getSelectionModel().reset();
+
 
         List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(pid);
         this.proposal.setVersions(proposalVersionList);
@@ -310,6 +329,39 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.setComponentAlignment(titlePostSales,Alignment.TOP_LEFT);
 
         verticalLayout.setSpacing(true);
+
+
+
+        versionContainerPostSales = new BeanItemContainer<>(ProposalVersion.class);
+        GeneratedPropertyContainer genContainerPostSales = createGeneratedVersionPropertyContainerPostSales();
+
+
+        versionsGridPostSales = new Grid(genContainerPostSales);
+        versionsGridPostSales.setSizeFull();
+        versionsGridPostSales.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
+                ProposalVersion.REMARKS,"actions","CNC");
+
+        verticalLayout.addComponent(versionsGridPostSales);
+
+        verticalLayout.setSpacing(true);
+
+        Label titleProduction = new Label("Production");
+        titleProduction.addStyleName(ValoTheme.LABEL_H2);
+        titleProduction.addStyleName(ValoTheme.LABEL_BOLD);
+        verticalLayout.addComponent(titleProduction);
+        verticalLayout.setComponentAlignment(titleProduction,Alignment.TOP_LEFT);
+
+        verticalLayout.setSpacing(true);
+
+        versionContainerProduction = new BeanItemContainer<>(ProposalVersion.class);
+        GeneratedPropertyContainer genContainerProduction = createGeneratedVersionPropertyContainerProduction();
+
+        versionsGridProduction = new Grid(genContainerProduction);
+        versionsGridProduction.setSizeFull();
+        versionsGridProduction.setColumns(ProposalVersion.VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
+                ProposalVersion.REMARKS,"actions","CNC");
+
+        verticalLayout.addComponent(versionsGridProduction);
 
         return verticalLayout;
     }
@@ -367,7 +419,12 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Amount");
         Grid.Column actionColumn = columns.get(idx++);
         actionColumn.setHeaderCaption("Actions");
-        actionColumn.setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+        actionColumn.setRenderer(new ViewEditDeleteButtonValueRenderer(new ViewEditDeleteButtonValueRenderer.ViewEditDeleteButtonClickListener() {
+            @Override
+            public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+
+            }
+
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
@@ -917,29 +974,22 @@ public class CreateProposalsView extends Panel implements View {
     {
         if (StringUtils.isEmpty(parameters))
         {
-
             ProposalHeader proposalHeader1 = proposalDataProvider.getProposalHeader(pid);
             proposalHeader.setId(pid);
         }
 
         if (StringUtils.isEmpty(proposalHeader.getTitle()))
         {
-
             proposalHeader.setTitle(NEW_TITLE);
         }
-        try
-        {
+        try {
             binder.commit();
-        }
-        catch (FieldGroup.CommitException e)
-        {
+        } catch (FieldGroup.CommitException e) {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
 
-
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
-
 
         if (success) {
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
@@ -1414,6 +1464,8 @@ public class CreateProposalsView extends Panel implements View {
         this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
         this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
 
+
+
         verticalLayout.addComponent(amountsLayout);
 
         Component componentProductDetails=buildProductDetails();
@@ -1421,18 +1473,20 @@ public class CreateProposalsView extends Panel implements View {
 
         Component componentAddonDetails = buildAddons();
         verticalLayout.addComponent(componentAddonDetails);
+
         return verticalLayout;
     }
 
     private HorizontalLayout getAmountLayout() {
-
         HorizontalLayout amountsLayout = new HorizontalLayout();
+
         Label totalWithoutDiscount = new Label("<b>Total Without Discount: </b>", ContentMode.HTML);
         amountsLayout.addComponent(totalWithoutDiscount);
         amountsLayout.setSpacing(true);
         totalWithoutDiscount.addStyleName("amount-text-label");
         totalWithoutDiscount.addStyleName("v-label-amount-text-label");
         totalWithoutDiscount.addStyleName("margin-top-18");
+
 
         this.grandTotal=new Label("</b>",ContentMode.HTML);
         this.grandTotal.addStyleName("amount-text");
@@ -1569,7 +1623,71 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Category");
         columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Type");
-        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new ViewEditDeleteButtonValueRenderer(new ViewEditDeleteButtonValueRenderer.ViewEditDeleteButtonClickListener() {
+            @Override
+            public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                Product p = (Product) rendererClickEvent.getItemId();
+
+                List<Product> copy = proposal.getProducts();
+                int length = (copy.size()) + 1;
+                System.out.println("original"+ p);
+
+                Product proposalProductDetails = proposalDataProvider.getProposalProductDetails(p.getId());
+                List<Module> modulesFromOldProduct = proposalProductDetails.getModules();
+                LOG.debug("modules"+modulesFromOldProduct);
+                Product copyProduct = new Product();
+                copyProduct.setType(Product.TYPES.CUSTOMIZED.name());
+                copyProduct.setSeq(length + 1);
+                copyProduct.setProposalId(proposalHeader.getId());
+                copyProduct.setTitle(p.getTitle());
+                copyProduct.setProductCategory(p.getProductCategory());
+                copyProduct.setProductCategoryCode(p.getProductCategoryCode());
+                copyProduct.setRoom(p.getRoom());
+                copyProduct.setRoomCode(p.getRoomCode());
+                copyProduct.setShutterDesign(p.getShutterDesign());
+                copyProduct.setShutterDesignCode(p.getShutterDesignCode());
+                copyProduct.setCatalogueName(p.getCatalogueName());
+                copyProduct.setCatalogueId(p.getCatalogueId());
+                copyProduct.setBaseCarcass(p.getBaseCarcass());
+                copyProduct.setBaseCarcassCode(p.getBaseCarcassCode());
+                copyProduct.setWallCarcass(p.getWallCarcass());
+                copyProduct.setWallCarcassCode(p.getWallCarcassCode());
+                copyProduct.setFinishType(p.getFinishType());
+                copyProduct.setFinishTypeCode(p.getFinishTypeCode());
+                copyProduct.setFinish(p.getFinish());
+                copyProduct.setFinishCode(p.getFinishCode());
+                copyProduct.setDimension(p.getDimension());
+                copyProduct.setAmount(p.getAmount());
+                copyProduct.setQuantity(p.getQuantity());
+                copyProduct.setType(p.getType());
+                copyProduct.setQuoteFilePath(p.getQuoteFilePath());
+                copyProduct.setCreatedBy(p.getCreatedBy());
+                copyProduct.setCostWoAccessories(p.getCostWoAccessories());
+
+                copyProduct.setModules(modulesFromOldProduct);
+                LOG.debug("copied"+ copyProduct);
+
+                List <Module> list = p.getModules();
+                for(int i=0;i<list.size();i++)
+                {
+                    LOG.debug("copy products"+list);
+                }
+                copyProduct.setAddons(p.getAddons());
+                //proposalDataProvider.updateProduct(copyProduct);
+                System.out.println("copy:"+copyProduct);
+                copy.add(copyProduct);
+                productContainer.removeAllItems();
+                productContainer.addAll(copy);
+                LOG.debug("container size"+productContainer.size());
+                productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+               // productsGrid.getSelectionModel().reset();
+               // proposalDataProvider.updateProduct(copyProduct);
+               // DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(copy));
+                proposalDataProvider.loadAndUpdateProduct(copyProduct);
+                updateTotal();
+
+            }
+
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
@@ -1586,6 +1704,7 @@ public class CreateProposalsView extends Panel implements View {
                         List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
                         product.setFileAttachmentList(productAttachments);
                     }
+
                     CustomizedProductDetailsWindow.open(proposal, product);
                 } else {
                     CatalogueProduct catalogueProduct = new CatalogueProduct();
@@ -1636,6 +1755,8 @@ public class CreateProposalsView extends Panel implements View {
             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
 
+
+
         Label label = new Label("Select Products and click Download Quote/Job Card button to generate output for only the selected Products.");
         label.setStyleName("font-italics");
 
@@ -1644,6 +1765,8 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.addComponent(productsGrid);
 
         verticalLayout.addComponent(label);
+
+
         return verticalLayout;
     }
 
@@ -1734,7 +1857,6 @@ public class CreateProposalsView extends Panel implements View {
 
 
         List<Product> products = proposal.getProducts();
-        LOG.info("Product :" + products.toString());
         for (Product product : products) {
             totalWoAccessories += product.getCostWoAccessories();
         }
@@ -1776,8 +1898,6 @@ public class CreateProposalsView extends Panel implements View {
 
 
         Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
-        LOG.info(totalAfterDiscount+costOfAccessories+addonsTotal);
-
         Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal;
         Double rem=grandTotal%10;
 
