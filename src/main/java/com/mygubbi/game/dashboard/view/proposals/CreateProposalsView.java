@@ -1574,7 +1574,7 @@ public class CreateProposalsView extends Panel implements View {
 
                 Product proposalProductDetails = proposalDataProvider.getProposalProductDetails(p.getId());
                 List<Module> modulesFromOldProduct = proposalProductDetails.getModules();
-                LOG.debug("modules"+modulesFromOldProduct);
+                LOG.debug("modules:"+modulesFromOldProduct);
                 Product copyProduct = new Product();
                 copyProduct.setType(Product.TYPES.CUSTOMIZED.name());
                 copyProduct.setSeq(length + 1);
@@ -1605,25 +1605,16 @@ public class CreateProposalsView extends Panel implements View {
                 copyProduct.setCostWoAccessories(p.getCostWoAccessories());
 
                 copyProduct.setModules(modulesFromOldProduct);
-                LOG.debug("copied"+ copyProduct);
-
+                LOG.debug("COPIED@"+ copyProduct);
                 List <Module> list = p.getModules();
-                for(int i=0;i<list.size();i++)
-                {
-                    LOG.debug("copy products"+list);
-                }
+
                 copyProduct.setAddons(p.getAddons());
-                //proposalDataProvider.updateProduct(copyProduct);
                 System.out.println("copy:"+copyProduct);
                 copy.add(copyProduct);
                 productContainer.removeAllItems();
                 productContainer.addAll(copy);
                 LOG.debug("container size"+productContainer.size());
                 productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
-               // productsGrid.getSelectionModel().reset();
-               // proposalDataProvider.updateProduct(copyProduct);
-               // DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(copy));
-                proposalDataProvider.loadAndUpdateProduct(copyProduct);
                 updateTotal();
 
             }
