@@ -14,6 +14,7 @@ public class ProposalVersion implements Cloneable {
     public static final String STATUS = "status";
     public static final String DATE = "date";
     public static final String REMARKS = "remarks";
+    public static final String FROM_VERSION = "fromVersion";
 
     private double version;
     private int proposalId;
@@ -22,6 +23,7 @@ public class ProposalVersion implements Cloneable {
     private String status;
     private Date date;
     private String remarks;
+    private double fromVersion;
 
     @Override
     public Object clone()  {
@@ -87,5 +89,13 @@ public class ProposalVersion implements Cloneable {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public double getFromVersion() {
+        return fromVersion;
+    }
+
+    public void setFromVersion(double fromVersion) {
+        this.fromVersion = fromVersion;
     }
 }

@@ -1,7 +1,6 @@
 package com.mygubbi.game.dashboard.domain;
 
 import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,6 +14,7 @@ public class Product implements FileAttachmentsHolder {
     public enum TYPES {CUSTOMIZED, CATALOGUE;};
 
     public static final String PROPOSAL_ID = "proposalId";
+    public static final String FROM_VERSION = "fromVersion";
     public static final String ID = "id";
     public static final String SEQ = "seq";
     public static final String TITLE = "title";
@@ -44,6 +44,7 @@ public class Product implements FileAttachmentsHolder {
 
     private int id;
     private int proposalId;
+    private double fromVersion;
     private String title;
     private int seq;
     private String productCategory;
@@ -60,6 +61,7 @@ public class Product implements FileAttachmentsHolder {
         return "Product{" +
                 "id=" + id +
                 ", proposalId=" + proposalId +
+                ", fromVersion=" + fromVersion +
                 ", title='" + title + '\'' +
                 ", seq=" + seq +
                 ", productCategory='" + productCategory + '\'' +
@@ -144,6 +146,14 @@ public class Product implements FileAttachmentsHolder {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public double getFromVersion() {
+        return fromVersion;
+    }
+
+    public void setFromVersion(double fromVersion) {
+        this.fromVersion = fromVersion;
     }
 
     public int getSeq() {

@@ -12,6 +12,7 @@ public class AddonProduct implements Cloneable {
 
     public static final String SEQ = "seq";
     public static final String ID = "id";
+    public static final String FROM_VERSION = "fromVersion";
     public static final String CODE = "code";
     public static final String TITLE = "title";
     public static final String AMOUNT = "amount";
@@ -30,6 +31,7 @@ public class AddonProduct implements Cloneable {
     private int seq;
     private int id;
     private int proposalId;
+    private double fromVersion;
     private String code;
     private String catalogueCode;
     private String title;
@@ -88,6 +90,14 @@ public class AddonProduct implements Cloneable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public double getFromVersion() {
+        return fromVersion;
+    }
+
+    public void setFromVersion(double fromVersion) {
+        this.fromVersion = fromVersion;
     }
 
     public int getSeq() {
