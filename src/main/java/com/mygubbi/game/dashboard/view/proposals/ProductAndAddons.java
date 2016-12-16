@@ -21,8 +21,6 @@ import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.SelectionEvent;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
@@ -49,7 +47,7 @@ import java.util.stream.Collectors;
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
 
 /**
- * Created by user on 12-Dec-16.
+ * Created by shruthi on 12-Dec-16.
  */
 public class ProductAndAddons extends Window
 {
@@ -84,22 +82,19 @@ public class ProductAndAddons extends Window
     private Button saveButton;
     private BeanItemContainer productContainer;
     private Label grandTotal;
+    private TextField remarksText;
 
     private String status=null;
-    int pid;
-    String Pstatus;
-    String parameters;
-    private final String NEW_TITLE = "New Proposal";
+    Double vid;
     private static Set<ProductAndAddons> previousInstances = new HashSet<>();
 
-    public static   void open(ProposalHeader proposalHeader,Proposal proposal, ProductAndAddonSelection productAndAddonSelection)
+    public static   void open(ProposalHeader proposalHeader,Proposal proposal,Double vid)
     {
-
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        ProductAndAddons w = new ProductAndAddons(proposalHeader,proposal,productAndAddonSelection);
+        ProductAndAddons w = new ProductAndAddons(proposalHeader,proposal,vid);
         try
         {
-            previousInstances.forEach(DashboardEventBus::unregister);
+           previousInstances.forEach(DashboardEventBus::unregister);
         }
         catch (Exception e) {
             //ignore
@@ -111,58 +106,30 @@ public class ProductAndAddons extends Window
 
     }
 
-    ProductAndAddons(ProposalHeader proposalHeader,Proposal proposal,ProductAndAddonSelection productAndAddonSelection)
+    ProductAndAddons(ProposalHeader proposalHeader,Proposal proposal,Double vid)
     {
         this.proposalHeader=proposalHeader;
         this.proposal=proposal;
-        this.productAndAddonSelection=productAndAddonSelection;
+        this.vid=vid;
+
+        LOG.info("pid" +proposalHeader.getId()+ "Vid" +vid);
+        this.proposal.setProducts(proposalDataProvider.getVersionProducts(proposalHeader.getId(),vid));
+        this.productAndAddonSelection = new ProductAndAddonSelection();
+        this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
+
+        setModal(true);
+        setSizeFull();
+        setResizable(false);
+        setClosable(false);
 
         DashboardEventBus.register(this);
         setModal(true);
         setSizeUndefined();
-        //setSizeFull();
         setResizable(false);
         setClosable(false);
 
-        /*VerticalLayout vLayout = new VerticalLayout();
-        vLayout.setSizeFull();
-        vLayout.addStyleName("v-vertical-customized-product-details");
-        vLayout.setMargin(new MarginInfo(true, true, true, true));
-        //vLayout.addComponent(buildProductsAndAddonsPage());
-        setContent(vLayout);
-         Responsive.makeResponsive(this);
-
-        HorizontalLayout horizontalLayout0 = new HorizontalLayout();
-        horizontalLayout0.setSizeFull();
-        //horizontalLayout0.addComponent(buildProductsAndAddonsPage());
-
-        Component componentactionbutton=buildActionButtons();
-        vLayout.addComponent(componentactionbutton);
-        vLayout.setExpandRatio(componentactionbutton,0.2f);
-
-        Component amountsLayout = getAmountLayout();
-        this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
-        this.discountAmount.addFocusListener(this::onFocusToDiscountAmount);
-        this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
-        this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
-        vLayout.addComponent(amountsLayout);
-        vLayout.setExpandRatio(amountsLayout,0.3f);
-
-        Component componentProductDetails=buildProductDetails();
-        vLayout.addComponent(componentProductDetails);
-        vLayout.setExpandRatio(componentProductDetails,0.3f);
-
-        Component componentAddonDetails = buildAddons();
-        vLayout.addComponent(componentAddonDetails);
-        vLayout.setExpandRatio(componentAddonDetails,0.3f);
-
-        vLayout.addComponent(horizontalLayout0);
-        horizontalLayout0.setHeightUndefined();
-        vLayout.setExpandRatio(horizontalLayout0, 0.35f);*/
-
         LOG.info("Product Layout");
         VerticalLayout verticalLayout = new VerticalLayout();
-        //verticalLayout.setSizeFull();
         verticalLayout.setSizeUndefined();
 
         verticalLayout.setSpacing(true);
@@ -170,7 +137,6 @@ public class ProductAndAddons extends Window
 
         Component componentactionbutton=buildActionButtons();
         verticalLayout.addComponent(componentactionbutton);
-        //verticalLayout.setExpandRatio(componentactionbutton,0.2f);
 
         Component amountsLayout = getAmountLayout();
         this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
@@ -178,20 +144,17 @@ public class ProductAndAddons extends Window
         this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
         this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
         verticalLayout.addComponent(amountsLayout);
-        //verticalLayout.setExpandRatio(amountsLayout,0.3f);
-
 
         Component componentProductDetails=buildProductDetails();
         verticalLayout.addComponent(componentProductDetails);
-        ///verticalLayout.setExpandRatio(componentProductDetails,0.3f);
 
         Component componentAddonDetails = buildAddons();
         verticalLayout.addComponent(componentAddonDetails);
 
-        updateTotal();
-        //verticalLayout.setExpandRatio(componentAddonDetails,0.3f);
+        /*Component componentRemarksDetails=buildRemarks();
+        verticalLayout.addComponent(componentRemarksDetails);*/
 
-        //return verticalLayout;
+        updateTotal();
     }
 
     private Component buildProductsAndAddonsPage()
@@ -227,13 +190,29 @@ public class ProductAndAddons extends Window
 
         return verticalLayout;
     }
+
+    private Component buildRemarks()
+    {
+        HorizontalLayout remarksLayout = new HorizontalLayout();
+        remarksLayout.setMargin(new MarginInfo(true,true,true,true));
+
+        Label remarksLabel = new Label("<b> Remarks </b>", ContentMode.HTML);
+        remarksLayout.addComponent(remarksLabel);
+        remarksLayout.setSpacing(true);
+        remarksLabel.addStyleName("amount-text-label");
+        remarksLabel.addStyleName("v-label-amount-text-label");
+        remarksLabel.addStyleName("margin-top-18");
+
+        this.remarksText = new TextField();
+        remarksLayout.addComponent(remarksText);
+
+        return remarksLayout;
+    }
     private Component buildActionButtons()
     {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
-        //setSizeUndefined();
 
-       //HorizontalLayout left = new HorizontalLayout();
         horizontalLayout.setMargin(new MarginInfo(true,true,true,true));
         HorizontalLayout right = new HorizontalLayout();
 
@@ -344,14 +323,13 @@ public class ProductAndAddons extends Window
         right.setComponentAlignment(menu, Alignment.MIDDLE_RIGHT);
 
         horizontalLayout.addComponent(right);
-       //horizontalLayout.setExpandRatio(right, 7);
         horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_RIGHT);
 
         return horizontalLayout;
-
     }
 
-    private Component getAmountLayout() {
+    private Component getAmountLayout()
+    {
         HorizontalLayout amountsLayout = new HorizontalLayout();
         amountsLayout.setMargin(new MarginInfo(true,true,true,true));
 
@@ -453,7 +431,6 @@ public class ProductAndAddons extends Window
             Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
             productsTotal += amount;
             Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
-
             if (anythingSelected) {
                 this.productAndAddonSelection.getProductIds().add(id);
             }
@@ -518,7 +495,6 @@ public class ProductAndAddons extends Window
             }
         }
 
-
         Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
         LOG.info(totalAfterDiscount+costOfAccessories+addonsTotal);
 
@@ -546,10 +522,6 @@ public class ProductAndAddons extends Window
         productAndAddonSelection.setDiscountPercentage(discountPercent);
         productAndAddonSelection.setDiscountAmount(discountAmount);
     }
-
-
-
-
 
     private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
         if("DA".equals(status))
@@ -607,6 +579,8 @@ public class ProductAndAddons extends Window
                     newProduct.setType(Product.TYPES.CUSTOMIZED.name());
                     newProduct.setSeq(this.proposal.getProducts().size() + 1);
                     newProduct.setProposalId(this.proposalHeader.getId());
+                    LOG.info("Vid in value" +vid);
+                    newProduct.setFromVersion(this.vid);
                     CustomizedProductDetailsWindow.open(ProductAndAddons.this.proposal, newProduct);
                 }
         );
@@ -622,6 +596,7 @@ public class ProductAndAddons extends Window
         );
 
         productContainer = new BeanItemContainer<>(Product.class);
+
         GeneratedPropertyContainer genContainer = createGeneratedProductPropertyContainer();
 
         productsGrid = new Grid(genContainer);
@@ -629,11 +604,12 @@ public class ProductAndAddons extends Window
         productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
-        productsGrid.setColumns(Product.SEQ, Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
+        productsGrid.setColumns(Product.FROM_VERSION,Product.SEQ, Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
 
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
 
+        columns.get(idx++).setHeaderCaption("Version #");
         columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Room");
         columns.get(idx++).setHeaderCaption("Title");
@@ -663,7 +639,6 @@ public class ProductAndAddons extends Window
                     catalogueProduct.populateFromProduct(product);
                     CatalogItemDetailsWindow.open(proposal, catalogueProduct);
                 }
-
             }
 
             @Override
@@ -706,9 +681,6 @@ public class ProductAndAddons extends Window
             productContainer.addAll(proposal.getProducts());
             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
-
-
-
         Label label = new Label("Select Products and click Download Quote/Job Card button to generate output for only the selected Products.");
         label.setStyleName("font-italics");
 
@@ -717,6 +689,7 @@ public class ProductAndAddons extends Window
         verticalLayout.addComponent(productsGrid);
 
         verticalLayout.addComponent(label);
+
         return verticalLayout;
     }
 
@@ -728,7 +701,6 @@ public class ProductAndAddons extends Window
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
-        //horizontalLayout.setMargin(new MarginInfo(true, true, true, true));
 
         Label addonTitle = new Label("Addon Details");
         addonTitle.setStyleName("amount-text");
@@ -815,7 +787,6 @@ public class ProductAndAddons extends Window
         }));
 
         verticalLayout.addComponent(addonsGrid);
-        //verticalLayout.setExpandRatio(addonsGrid, 1);
 
         Label label = new Label("Select Addons and click Download Quote/Job Card button to generate output for only the selected Addons.");
         label.setStyleName("font-italics");
@@ -1102,21 +1073,6 @@ public class ProductAndAddons extends Window
 
     private void save(Button.ClickEvent clickEvent)
     {
-        LOG.info("save button clicked");
-        /*if (StringUtils.isEmpty(parameters))
-        {
-            ProposalHeader proposalHeader1 = proposalDataProvider.getProposalHeader(pid);
-            LOG.info("parameter value" +parameters);
-            proposalHeader.setId(pid);
-        }
-
-        if (StringUtils.isEmpty(proposalHeader.getTitle()))
-        {
-            LOG.info("title" +proposalHeader.getTitle());
-            proposalHeader.setTitle(NEW_TITLE);
-        }*/
-
-        LOG.info("Cname" +proposalHeader.getCname());
         try
         {
             binder.commit();
@@ -1128,13 +1084,13 @@ public class ProductAndAddons extends Window
         }
 
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
-        LOG.info("Success Value" +success);
         if (success) {
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+            close();
+
         } else {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
-
     }
 
     private boolean isProposalReadonly() {
@@ -1194,8 +1150,8 @@ public class ProductAndAddons extends Window
                 "Yes", "No", dialog -> {
                     if (!dialog.isCanceled()) {
                         DashboardEventBus.unregister(this);
-                        UI.getCurrent().getNavigator()
-                                .navigateTo(DashboardViewType.PROPOSALS.name());
+                        close();
+                        //UI.getCurrent().getNavigator().navigateTo(DashboardViewType.PROPOSALS.name());
                     }
                 });
     }
@@ -1312,10 +1268,4 @@ public class ProductAndAddons extends Window
         salesPerson.setReadOnly(readOnly);
         designPerson.setReadOnly(readOnly);*/
     }
-
-    /*
-    @Override
-    public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
-
-    }*/
 }

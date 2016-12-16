@@ -13,7 +13,6 @@ import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.*;
@@ -26,7 +25,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.calendar.CalendarClientRpc;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ClickableRenderer;
@@ -35,10 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jetty.util.log.Log;
 import org.vaadin.dialogs.ConfirmDialog;
-import org.vaadin.gridutil.renderer.DeleteButtonValueRenderer;
-import org.vaadin.gridutil.renderer.EditButtonValueRenderer;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
@@ -48,12 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
@@ -76,7 +67,6 @@ public class CreateProposalsView extends Panel implements View {
 
     private Field<?> proposalTitleField;
     private Field<?> crmId;
-    private Field<?> pId;
     private Field<?> proposalVersionField;
     private Field<?> quotationField;
 
@@ -108,7 +98,6 @@ public class CreateProposalsView extends Panel implements View {
     private Button submitButton;
     private Label draftLabel;
     private ProposalHeader proposalHeader;
-    private ModulePrice modulePrice;
     private ProposalVersion proposalVersion;
     private Proposal proposal;
     private Button saveButton;
@@ -130,13 +119,10 @@ public class CreateProposalsView extends Panel implements View {
     private BeanItemContainer<ProposalVersion> versionContainerProduction;
     private Grid addonsGrid;
     private Grid versionsGridPreSales;
-    private Grid versionsGridPostSales;
-    private Grid versionsGridProduction;
     private MenuBar.MenuItem deleteMenuItem;
     private MenuBar.MenuItem cancelMenuItem;
     private MenuBar.MenuItem reviseMenuItem;
     int pid;
-    String Pstatus;
     String parameters;
 
     public CreateProposalsView() {
@@ -161,20 +147,16 @@ public class CreateProposalsView extends Panel implements View {
 
             @Override
             public void afterViewChange(ViewChangeEvent viewChangeEvent) {
-               // NotificationUtil.showNotification("After View Change", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+
             }
         });
         parameters = event.getParameters();
         if (StringUtils.isNotEmpty(parameters)) {
             pid = Integer.parseInt(parameters);
             this.proposalHeader = proposalDataProvider.getProposalHeader(pid);
-            String createdOn=proposalHeader.getCreatedOn().toString();
-
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(this.proposalHeader);
-            this.proposal.setProducts(proposalDataProvider.getProposalProducts(pid));
             this.proposal.setFileAttachments(proposalDataProvider.getProposalDocuments(pid));
-            this.proposal.setAddons(proposalDataProvider.getProposalAddons(pid));
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name()); //todo: this has to be removed once server side is fixed
         } else {
@@ -196,11 +178,6 @@ public class CreateProposalsView extends Panel implements View {
             proposalVersion = proposalDataProvider.createDraft(pid, NEW_DRAFT_TITLE + pid);
 
         }
-
-       // quotationField.setValue(String.valueOf(pid));
-        this.productAndAddonSelection = new ProductAndAddonSelection();
-        this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
-
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(proposalHeader);
 
@@ -221,11 +198,9 @@ public class CreateProposalsView extends Panel implements View {
         );
         tabs.addTab(fileAttachmentComponent, "Attachments");
 
-
         vLayout.addComponent(tabs);
         setContent(vLayout);
         Responsive.makeResponsive(tabs);
-        updateTotal();
         handleState();
     }
 
@@ -275,11 +250,14 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Date");
         columns.get(idx++).setHeaderCaption("Remarks");
         columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent)
             {
+
                 try
                 {
+
                     binder.commit();
                 }
                 catch (FieldGroup.CommitException e)
@@ -287,8 +265,10 @@ public class CreateProposalsView extends Panel implements View {
                     NotificationUtil.showNotification("Validation Error, please fill all mandatory fields in header tab", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
-                ProductAndAddons.open(proposalHeader,proposal,productAndAddonSelection);
-                //CustomizedProductDetailsWindow.open(CreateProposalsView.this.proposal, newProduct);
+                ProposalVersion proposalVersion = (ProposalVersion) rendererClickEvent.getItemId();
+                LOG.debug("Latest version new :" + proposalVersion.getVersion());
+                Double vid=proposalVersion.getVersion();
+                ProductAndAddons.open(proposalHeader,proposal,vid);
             }
 
             @Override
@@ -296,9 +276,7 @@ public class CreateProposalsView extends Panel implements View {
 
             }
         }));
-
         versionContainerPreSales.addAll(proposalVersionList);
-
         versionsGridPreSales.setContainerDataSource(createGeneratedVersionPropertyContainerPreSales());
         versionsGridPreSales.getSelectionModel().reset();
         verticalLayout.addComponent(versionsGridPreSales);
@@ -536,112 +514,12 @@ public class CreateProposalsView extends Panel implements View {
 
         HorizontalLayout right = new HorizontalLayout();
 
-        /*Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        soExtractButton.setCaptionAsHtml(true);
-        soExtractButton.setIcon(FontAwesome.DOWNLOAD);
-        soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        soExtractButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        soExtractButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        soExtractButton.setWidth("120px");
-        soExtractButton.addClickListener(this::doSalesOrderDownloadValidation);
-
-        FileDownloader soExtractDownloader = this.getSOExtractFileDownloader();
-        soExtractDownloader.extend(soExtractButton);
-        right.addComponent(soExtractButton);
-        right.setComponentAlignment(soExtractButton, Alignment.MIDDLE_RIGHT);
-
-        Button quotePdf = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        quotePdf.setCaptionAsHtml(true);
-        quotePdf.setIcon(FontAwesome.DOWNLOAD);
-        quotePdf.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        quotePdf.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        quotePdf.addStyleName(ValoTheme.BUTTON_SMALL);
-        quotePdf.addStyleName("margin-right-10-for-headerlevelbutton");
-        quotePdf.setWidth("120px");
-        quotePdf.addClickListener(this::checkProductsAndAddonsAvailable);
-
-        StreamResource quotePdfresource = createQuoteResourcePdf();
-        FileDownloader fileDownloaderPdf = new FileDownloader(quotePdfresource);
-        fileDownloaderPdf.extend(quotePdf);
-        right.addComponent(quotePdf);
-        right.setComponentAlignment(quotePdf, Alignment.MIDDLE_RIGHT);
-
-        Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        downloadButton.setCaptionAsHtml(true);
-        downloadButton.setIcon(FontAwesome.DOWNLOAD);
-        downloadButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        downloadButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        downloadButton.setWidth("85px");
-        downloadButton.addClickListener(this::checkProductsAndAddonsAvailable);
-
-        StreamResource myResource = createQuoteResource();
-        FileDownloader fileDownloader = new FileDownloader(myResource);
-        fileDownloader.extend(downloadButton);
-        right.addComponent(downloadButton);
-        right.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
-
-        Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        jobcardButton.setCaptionAsHtml(true);
-        jobcardButton.setIcon(FontAwesome.DOWNLOAD);
-        jobcardButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        jobcardButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        jobcardButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        jobcardButton.setWidth("100px");
-        jobcardButton.addClickListener(this::checkSingleProductSelection);
-
-        StreamResource jobcardResource = createJobcardResource();
-        FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
-        jobcardDownloader.extend(jobcardButton);
-        right.addComponent(jobcardButton);
-        right.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);
-
-        submitButton = new Button("Submit");
-        submitButton.setVisible(ProposalState.draft.name().equals(proposalHeader.getStatus()));
-        submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        submitButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        submitButton.addClickListener(this::submit);
-        right.addComponent(submitButton);
-        right.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
-
-        publishButton = new Button("Publish");
-        publishButton.setVisible(ProposalState.active.name().equals(proposalHeader.getStatus()));
-        publishButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        publishButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        publishButton.addClickListener(this::publish);
-        right.addComponent(publishButton);
-        right.setComponentAlignment(publishButton, Alignment.MIDDLE_RIGHT);*/
-
         saveButton = new Button("Save");
         saveButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         saveButton.addStyleName("margin-right-10-for-headerlevelbutton");
         saveButton.addClickListener(this::save);
         right.addComponent(saveButton);
         right.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
-
-        /*MenuBar menu = new MenuBar();
-        menu.setStyleName(ValoTheme.MENUBAR_SMALL);
-        menu.addStyleName("margin-right-10-for-headerlevelbutton");
-
-        MenuBar.MenuItem moreMenuItem = menu.addItem("more", null);
-        reviseMenuItem = moreMenuItem.addItem("Revise", this::revise);
-        reviseMenuItem.setVisible(ProposalState.active.name().equals(proposalHeader.getStatus()));
-
-        cancelMenuItem = moreMenuItem.addItem("Cancel", this::cancel);
-        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-
-        if (role.equals("admin"))
-        {
-            deleteMenuItem = moreMenuItem.addItem("Delete", this::deleteProposal);
-        }
-        moreMenuItem.addItem("Close", this::close);
-
-        right.addComponent(menu);
-        right.setComponentAlignment(menu, Alignment.MIDDLE_RIGHT);
-        */
 
         horizontalLayout.addComponent(right);
         horizontalLayout.setExpandRatio(right, 7);
@@ -1404,8 +1282,6 @@ public class CreateProposalsView extends Panel implements View {
         this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
         this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
 
-
-
         verticalLayout.addComponent(amountsLayout);
 
         Component componentProductDetails=buildProductDetails();
@@ -1960,6 +1836,5 @@ public class CreateProposalsView extends Panel implements View {
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
-
 }
 

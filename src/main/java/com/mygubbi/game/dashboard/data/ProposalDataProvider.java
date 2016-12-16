@@ -129,6 +129,24 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<Product> getVersionProducts(int proposalId,Double Vid) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("product/versionlist", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId + "");
+                put("fromVersion" ,Vid + "");
+            }
+        });
+        try
+        {
+            Product[] items = this.mapper.readValue(jsonArray.toString(), Product[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     public List<ProposalVersion> getProposalVersions(int proposalId) {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/versions", new HashMap<String, String>() {
             {
