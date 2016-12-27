@@ -96,6 +96,7 @@ public class ModuleDetailsWindow extends Window {
     private TextField totalAmount;
 
     private Module module;
+    private ProposalVersion proposalVersion;
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final BeanFieldGroup<Module> binder = new BeanFieldGroup<>(Module.class);
@@ -111,12 +112,13 @@ public class ModuleDetailsWindow extends Window {
     private double calculatedAmountWOAccessories = -1;
     private boolean dontCalculatePriceNow = true;
 
-    private ModuleDetailsWindow(Module module, Product product, boolean readOnly, int moduleIndex) {
+    private ModuleDetailsWindow(Module module, Product product, boolean readOnly, int moduleIndex, ProposalVersion proposalVersion) {
         this.dontCalculatePriceNow = true;
 
         this.product = product;
         this.module = module;
         this.readOnly = readOnly;
+        this.proposalVersion = proposalVersion;
         this.moduleIndex = moduleIndex;
         initModule();
         this.binder.setItemDataSource(this.module);
@@ -236,6 +238,56 @@ public class ModuleDetailsWindow extends Window {
             shutterFinishSelection.setReadOnly(true);
             disableApply();
         }
+
+            {
+                ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getStatus());
+                switch (proposalStage) {
+                    case draft:
+                        break;
+                    case published:
+                        setComponentsReadOnly();
+                        break;
+                    case confirmed:
+                        setComponentsReadOnly();
+                        break;
+                    case locked:
+                        setComponentsReadOnly();
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown State");
+                }
+            }
+        }
+
+    private void setComponentsReadOnly() {
+        moduleCategory.setReadOnly(true);
+        moduleSelection.setReadOnly(true);
+        height.setReadOnly(true);
+        width.setReadOnly(true);
+        depth.setReadOnly(true);
+        carcassMaterialSelection.setReadOnly(true);
+        remarks.setReadOnly(true);
+        finishTypeSelection.setReadOnly(true);
+        shutterFinishSelection.setReadOnly(true);
+        colorCombo.setReadOnly(true);
+        description.setReadOnly(true);
+        exposedBack.setReadOnly(true);
+        exposedBottom.setReadOnly(true);
+        exposedLeft.setReadOnly(true);
+        exposedRight.setReadOnly(true);
+        exposedTop.setReadOnly(true);
+        accessoryPack1.setReadOnly(true);
+        accessoryPack2.setReadOnly(true);
+        accessoryPack3.setReadOnly(true);
+        addons11.setReadOnly(true);
+        addons12.setReadOnly(true);
+        addons13.setReadOnly(true);
+        addons21.setReadOnly(true);
+        addons22.setReadOnly(true);
+        addons23.setReadOnly(true);
+        addons31.setReadOnly(true);
+        addons32.setReadOnly(true);
+        addons33.setReadOnly(true);
     }
 
 
@@ -1340,9 +1392,9 @@ public class ModuleDetailsWindow extends Window {
         return defaultIndex == -1 ? title : title.substring(0, defaultIndex);
     }
 
-    public static void open(Module module, Product product, boolean readOnly, int moduleIndex) {
+    public static void open(Module module, Product product, boolean readOnly, int moduleIndex, ProposalVersion proposalVersion) {
         Module clonedModule = module.clone();
-        Window w = new ModuleDetailsWindow(clonedModule, product, readOnly, moduleIndex);
+        Window w = new ModuleDetailsWindow(clonedModule, product, readOnly, moduleIndex, proposalVersion);
         UI.getCurrent().addWindow(w);
         w.focus();
     }

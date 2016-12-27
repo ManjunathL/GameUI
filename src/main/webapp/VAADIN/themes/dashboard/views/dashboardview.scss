@@ -281,7 +281,7 @@
     font-size: 18px;
     margin-top: 25px !important;
 	margin-right: 0px !important;
-	width: 110px !important;
+
     font-weight: bold !important;
   }
 .inputlabel{
@@ -313,13 +313,27 @@
 	margin-right: 25px !important;
     font-weight: bold !important;
   }
-
+  .products-and-addons-heading-text{
+    margin-left: 500px !important;
+    margin-top: 20px !important;
+  }
   .amount-text-label {
+   		font-size: 16px;
+   	    margin-left: 0px ! important;
+   		margin-top: 30px !important;
+     }
+
+    .amount-text-label2 {
+       		font-size: 16px;
+       	    margin-left: 0px ! important;
+       		margin-top: 25px !important;
+         }
+
+   .amount-text-label1 {
 		font-size: 18px;
-	    margin-left: 20px ! important;
+   	    margin-left: 0px ! important;
 		margin-top: 25px !important;
   }
-
 
   .amount-text-value {
 		font-size: 22.4px !important;
@@ -407,6 +421,10 @@
 	margin-left: 10px !important;
   }
 
+  .margin-top-for-headerlevelbutton{
+  margin-top: 25px !important;
+  }
+
   .margin-10-for-vLayout {
     margin-left: 10px !important;
     margin-right: 10px !important;
@@ -453,8 +471,12 @@
 		width: 90% !important;
 	}
 	.v-label-amount-text-label{
-		font-size:14px;
+		font-size:16px;
 	}
+	.v-label-amount-text-label1{
+    		font-size:16px;
+    	}
+
 	.v-label-undef-w-loginscreen {
 	padding-left: 20px!important;
 	}

@@ -1,10 +1,6 @@
 package com.mygubbi.game.dashboard.event;
 
-import com.mygubbi.game.dashboard.domain.AddonProduct;
-import com.mygubbi.game.dashboard.domain.Module;
-import com.mygubbi.game.dashboard.domain.Product;
-import com.mygubbi.game.dashboard.domain.ProposalListViewItem;
-import com.mygubbi.game.dashboard.view.proposals.ModuleDetailsWindow;
+import com.mygubbi.game.dashboard.domain.*;
 import com.vaadin.ui.Window;
 
 /**
@@ -105,6 +101,19 @@ public abstract class ProposalEvent {
 
         public Product getProduct() {
             return product;
+        }
+    }
+
+    public static class VersionCreated {
+        private ProposalVersion proposalVersion;
+        public VersionCreated(ProposalVersion proposalVersion) {
+            this.proposalVersion = proposalVersion;
+        }
+
+
+
+        public ProposalVersion getProposalVersion() {
+            return proposalVersion;
         }
     }
 

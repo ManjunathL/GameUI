@@ -8,7 +8,6 @@ import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.domain.JsonPojo.ShutterDesign;
 import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
-import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
@@ -91,10 +90,12 @@ public class CustomizedProductDetailsWindow extends Window {
     private boolean deleteNotRequired;
     private Button addonAddButton;
     private static Set<CustomizedProductDetailsWindow> previousInstances = new HashSet<>();
+    private ProposalVersion proposalVersion;
 
-    public CustomizedProductDetailsWindow(Proposal proposal, Product product) {
+    public CustomizedProductDetailsWindow(Proposal proposal, Product product, ProposalVersion proposalVersion) {
         this.proposal = proposal;
         this.product = product;
+        this.proposalVersion = proposalVersion;
 
         this.cloneModules();
         this.cloneAddons();
@@ -422,7 +423,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 module.setCarcassCodeBasedOnUnitType(product);
                 module.setFinishTypeCode(product.getFinishTypeCode());
                 module.setFinishCode(product.getFinishCode());
-                ModuleDetailsWindow.open(module,product,readOnly,0);
+                ModuleDetailsWindow.open(module,product,readOnly,0,proposalVersion);
             }
         });
 
@@ -649,6 +650,12 @@ public class CustomizedProductDetailsWindow extends Window {
                     return;
                 }
 
+                if (("published").equals(proposalVersion.getStatus()) || ("confirmed").equals(proposalVersion.getStatus()) || ("locked").equals(proposalVersion.getStatus()))
+                {
+                    Notification.show("Cannot copy on published, confirmed amd locked versions");
+                    return;
+                }
+
                 Module m = (Module) rendererClickEvent.getItemId();
                 List<Module> copy = product.getModules();
                 int length = (copy.size()) + 1;
@@ -719,7 +726,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     //if (!unmappableModulePresent) {
                     boolean readOnly = isProposalReadonly();
                     int index = modulesGrid.getContainerDataSource().indexOfId(module);
-                    ModuleDetailsWindow.open(module, createProductFromUI(), readOnly, index + 1);
+                    ModuleDetailsWindow.open(module, createProductFromUI(), readOnly, index + 1,proposalVersion);
                 } else {
                     NotificationUtil.showNotification("Cannot proceed as this module is not setup.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
@@ -727,6 +734,12 @@ public class CustomizedProductDetailsWindow extends Window {
 
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+
+                if (("published").equals(proposalVersion.getStatus()) || ("confirmed").equals(proposalVersion.getStatus()) || ("locked").equals(proposalVersion.getStatus()))
+                {
+                    Notification.show("Cannot delete modules on published, confirmed amd locked versions");
+                    return;
+                }
                 if (isProposalReadonly()) {
                     NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
                 } else {
@@ -968,7 +981,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
             if (isProposalReadonly()) {
                 DashboardEventBus.unregister(this);
-                closeWindow();
+                close();
             } else {
                 ConfirmDialog.show(UI.getCurrent(), "",
                         deleteNotRequired ?
@@ -986,7 +999,7 @@ public class CustomizedProductDetailsWindow extends Window {
                                     this.product.setAddons(this.addonsCopy);
                                 }
                                 DashboardEventBus.unregister(this);
-                                closeWindow();
+                                close();
                             }
                         });
             }
@@ -1032,7 +1045,10 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     public static void closeWindow() {
+/*
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
+*/
+        closeWindow();
     }
 
     private ComboBox getFinishItemFilledCombo(String caption, List<Finish> list, Property.ValueChangeListener listener) {
@@ -1176,13 +1192,13 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void loadNextModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex);
-        ModuleDetailsWindow.open(module, createProductFromUI(), isProposalReadonly(), currentModuleIndex + 1);
+        ModuleDetailsWindow.open(module, createProductFromUI(), isProposalReadonly(), currentModuleIndex + 1,proposalVersion);
     }
 
     private void loadPreviousModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex-2);
         int newModuleIndex = currentModuleIndex - 1;
-        ModuleDetailsWindow.open(module, createProductFromUI(), isProposalReadonly(), newModuleIndex);
+        ModuleDetailsWindow.open(module, createProductFromUI(), isProposalReadonly(), newModuleIndex,proposalVersion);
     }
 
     @Subscribe
@@ -1197,16 +1213,9 @@ public class CustomizedProductDetailsWindow extends Window {
         updateTotalAmount();
     }
 
-    public static void open(Proposal proposal, Product product) {
-        DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        CustomizedProductDetailsWindow w = new CustomizedProductDetailsWindow(proposal, product);
-        try {
-            previousInstances.forEach(DashboardEventBus::unregister);
-        } catch (Exception e) {
-            //ignore
-        }
-        previousInstances.clear();
-        previousInstances.add(w);
+    public static void open(Proposal proposal, Product product, ProposalVersion proposalVersion) {
+        CustomizedProductDetailsWindow w = new CustomizedProductDetailsWindow(proposal, product, proposalVersion);
+
         UI.getCurrent().addWindow(w);
         w.focus();
 
@@ -1217,13 +1226,17 @@ public class CustomizedProductDetailsWindow extends Window {
         if (proposal.getProposalHeader().isReadonly()) {
             setComponentsReadonly();
         } else {
-            ProposalHeader.ProposalState proposalState = ProposalHeader.ProposalState.valueOf(proposal.getProposalHeader().getStatus());
-            switch (proposalState) {
+            ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getStatus());
+            switch (proposalStage) {
                 case draft:
                     break;
-                case active:
-                case cancelled:
                 case published:
+                    setComponentsReadonly();
+                    break;
+                case confirmed:
+                    setComponentsReadonly();
+                    break;
+                case locked:
                     setComponentsReadonly();
                     break;
                 default:

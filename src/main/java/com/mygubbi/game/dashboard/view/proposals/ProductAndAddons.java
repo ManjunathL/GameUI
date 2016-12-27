@@ -1,5 +1,6 @@
 package com.mygubbi.game.dashboard.view.proposals;
 
+import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
@@ -7,7 +8,6 @@ import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
-import com.mygubbi.game.dashboard.view.DashboardViewType;
 import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Item;
@@ -19,6 +19,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.SelectionEvent;
 import com.vaadin.server.*;
@@ -34,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -41,7 +43,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
@@ -56,7 +60,6 @@ public class ProductAndAddons extends Window
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
     private ProductAndAddonSelection productAndAddonSelection;
-    private Button publishButton;
     private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
     private FileAttachmentComponent fileAttachmentComponent;
@@ -66,77 +69,77 @@ public class ProductAndAddons extends Window
     private Button addonAddButton;
     private BeanItemContainer<AddonProduct> addonsContainer;
     private Grid addonsGrid;
-    private MenuBar.MenuItem deleteMenuItem;
-    private MenuBar.MenuItem cancelMenuItem;
-    private MenuBar.MenuItem reviseMenuItem;
 
     private Grid productsGrid;
-    private Label proposalTitleLabel;
     private final BeanFieldGroup<ProposalHeader> binder = new BeanFieldGroup<>(ProposalHeader.class);
     private Button submitButton;
-    private Label draftLabel;
     private ProposalHeader proposalHeader;
-    private ModulePrice modulePrice;
     private ProposalVersion proposalVersion;
     private Proposal proposal;
     private Button saveButton;
-    private BeanItemContainer productContainer;
+    private Button closeButton;
+    private BeanItemContainer<Product> productContainer;
     private Label grandTotal;
     private TextField remarksText;
+    private TextField vTitle;
+    private Label versionNum;
+    private Label versionStatus;
 
     private String status=null;
-    Double vid;
-    private static Set<ProductAndAddons> previousInstances = new HashSet<>();
+    Float vid;
+    private Button confirmButton;
+    private Button designSignOffButton;
+    private Button productionSignOffButton;
 
-    public static   void open(ProposalHeader proposalHeader,Proposal proposal,Double vid)
+    public static void open(ProposalHeader proposalHeader, Proposal proposal, float vid, ProposalVersion proposalVersion )
     {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        ProductAndAddons w = new ProductAndAddons(proposalHeader,proposal,vid);
-        try
-        {
-           previousInstances.forEach(DashboardEventBus::unregister);
-        }
-        catch (Exception e) {
-            //ignore
-        }
-        previousInstances.clear();
-        previousInstances.add(w);
+        ProductAndAddons w = new ProductAndAddons(proposalHeader,proposal,vid,proposalVersion);
         UI.getCurrent().addWindow(w);
         w.focus();
 
     }
 
-    ProductAndAddons(ProposalHeader proposalHeader,Proposal proposal,Double vid)
+    public ProductAndAddons(ProposalHeader proposalHeader, Proposal proposal, float vid, ProposalVersion proposalVersion)
     {
         this.proposalHeader=proposalHeader;
         this.proposal=proposal;
+        this.proposalVersion=proposalVersion;
         this.vid=vid;
 
-        LOG.info("pid" +proposalHeader.getId()+ "Vid" +vid);
         this.proposal.setProducts(proposalDataProvider.getVersionProducts(proposalHeader.getId(),vid));
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
 
+        DashboardEventBus.register(this);
         setModal(true);
         setSizeFull();
         setResizable(false);
         setClosable(false);
 
-        DashboardEventBus.register(this);
-        setModal(true);
-        setSizeUndefined();
-        setResizable(false);
-        setClosable(false);
 
-        LOG.info("Product Layout");
         VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setSizeUndefined();
+       // verticalLayout.setSizeUndefined();
+
+        setSizeFull();
 
         verticalLayout.setSpacing(true);
         setContent(verticalLayout);
 
-        Component componentactionbutton=buildActionButtons();
-        verticalLayout.addComponent(componentactionbutton);
+        Component componentHeading=buildHeading();
+        verticalLayout.addComponent(componentHeading);
+
+        Component componentversionDetails=getVersionHeadingLayout();
+        verticalLayout.addComponent(componentversionDetails);
+
+        Component componentRemarksDetails=buildRemarks();
+        verticalLayout.addComponent(componentRemarksDetails);
+
+        Component componentProductDetails=buildProductDetails();
+        verticalLayout.addComponent(componentProductDetails);
+
+        Component componentAddonDetails = buildAddons();
+        verticalLayout.addComponent(componentAddonDetails);
 
         Component amountsLayout = getAmountLayout();
         this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
@@ -145,78 +148,158 @@ public class ProductAndAddons extends Window
         this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
         verticalLayout.addComponent(amountsLayout);
 
-        Component componentProductDetails=buildProductDetails();
-        verticalLayout.addComponent(componentProductDetails);
-
-        Component componentAddonDetails = buildAddons();
-        verticalLayout.addComponent(componentAddonDetails);
-
-        /*Component componentRemarksDetails=buildRemarks();
-        verticalLayout.addComponent(componentRemarksDetails);*/
+        Component componentactionbutton=buildActionButtons();
+        verticalLayout.addComponent(componentactionbutton);
 
         updateTotal();
+        handleState();
     }
 
-    private Component buildProductsAndAddonsPage()
+
+    private Component getVersionHeadingLayout()
     {
-        LOG.info("Product Layout");
-        VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setSizeFull();
-        verticalLayout.setSpacing(true);
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setMargin(new MarginInfo(false,true,false,true));
+        horizontalLayout.setSizeFull();
+        horizontalLayout.setStyleName("v-has-width-forLabel");
 
-        Component componentactionbutton=buildActionButtons();
-        verticalLayout.addComponent(componentactionbutton);
-        verticalLayout.setExpandRatio(componentactionbutton,0.2f);
+        Label title = new Label("Version Details");
+        title.setStyleName("products-and-addons-label-text");
+        horizontalLayout.addComponent(title);
+        horizontalLayout.setComponentAlignment(title,Alignment.TOP_LEFT);
 
-        Component amountsLayout = getAmountLayout();
+        return horizontalLayout;
+    }
 
-        this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
-        this.discountAmount.addFocusListener(this::onFocusToDiscountAmount);
+    private Component buildHeading()
+    {
+        HorizontalLayout formLayoutLeft = new HorizontalLayout();
+        formLayoutLeft.setSizeFull();
+        formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
-        this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
+        Label customerDetailsLabel = new Label("Product And Addons");
+        customerDetailsLabel.addStyleName(ValoTheme.LABEL_HUGE);
+        customerDetailsLabel.addStyleName(ValoTheme.LABEL_COLORED);
+        customerDetailsLabel.addStyleName("products-and-addons-heading-text");
+        formLayoutLeft.addComponent(customerDetailsLabel);
 
-        verticalLayout.addComponent(amountsLayout);
-        verticalLayout.setExpandRatio(amountsLayout,0.3f);
+        Component headingbutton=buildHeadingButtons();
+        formLayoutLeft.addComponent(headingbutton);
 
+        formLayoutLeft.setComponentAlignment(headingbutton,Alignment.TOP_LEFT);
+        return formLayoutLeft;
 
-        Component componentProductDetails=buildProductDetails();
-        verticalLayout.addComponent(componentProductDetails);
-        verticalLayout.setExpandRatio(componentProductDetails,0.3f);
+    }
+    private Component buildHeadingButtons()
+    {
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setMargin(new MarginInfo(false,true,false,true));
+        horizontalLayout.setSizeFull();
 
-        Component componentAddonDetails = buildAddons();
-        verticalLayout.addComponent(componentAddonDetails);
-        verticalLayout.setExpandRatio(componentAddonDetails,0.3f);
+        HorizontalLayout right = new HorizontalLayout();
 
+        Button quotePdf = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        quotePdf.setCaptionAsHtml(true);
+        quotePdf.setIcon(FontAwesome.DOWNLOAD);
+        quotePdf.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        quotePdf.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        quotePdf.addStyleName(ValoTheme.BUTTON_SMALL);
+        quotePdf.addStyleName("margin-top-for-headerlevelbutton");
+        quotePdf.addStyleName("margin-right-10-for-headerlevelbutton");
+        quotePdf.setWidth("120px");
+        quotePdf.addClickListener(this::checkProductsAndAddonsAvailable);
+
+        StreamResource quotePdfresource = createQuoteResourcePdf();
+        FileDownloader fileDownloaderPdf = new FileDownloader(quotePdfresource);
+        fileDownloaderPdf.extend(quotePdf);
+        right.addComponent(quotePdf);
+        right.setComponentAlignment(quotePdf, Alignment.MIDDLE_RIGHT);
+
+        Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        downloadButton.setCaptionAsHtml(true);
+        downloadButton.setIcon(FontAwesome.DOWNLOAD);
+        downloadButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        downloadButton.addStyleName("margin-top-for-headerlevelbutton");
+        downloadButton.addStyleName("margin-right-10-for-headerlevelbutton");
+        downloadButton.setWidth("85px");
+        downloadButton.addClickListener(this::checkProductsAndAddonsAvailable);
+
+        StreamResource myResource = createQuoteResource();
+        FileDownloader fileDownloader = new FileDownloader(myResource);
+        fileDownloader.extend(downloadButton);
+        right.addComponent(downloadButton);
+        right.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
+
+        horizontalLayout.addComponent(right);
+        horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_RIGHT);
+
+        return horizontalLayout;
+    }
+    private Component buildRemarks()
+    {
+        FormLayout verticalLayout=new FormLayout();
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+        HorizontalLayout horizontalLayout1 = new HorizontalLayout();
+        horizontalLayout1.setSizeFull();
+
+        horizontalLayout1.addComponent(buildMainFormLayoutLeft());
+        horizontalLayout1.addComponent(buildMainFormLayoutRight());
+        verticalLayout.addComponent(horizontalLayout1);
         return verticalLayout;
     }
 
-    private Component buildRemarks()
-    {
-        HorizontalLayout remarksLayout = new HorizontalLayout();
-        remarksLayout.setMargin(new MarginInfo(true,true,true,true));
+    private FormLayout buildMainFormLayoutLeft() {
 
-        Label remarksLabel = new Label("<b> Remarks </b>", ContentMode.HTML);
-        remarksLayout.addComponent(remarksLabel);
-        remarksLayout.setSpacing(true);
-        remarksLabel.addStyleName("amount-text-label");
-        remarksLabel.addStyleName("v-label-amount-text-label");
-        remarksLabel.addStyleName("margin-top-18");
+        FormLayout formLayoutLeft = new FormLayout();
+        formLayoutLeft.setSizeFull();
+        formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        this.remarksText = new TextField();
-        remarksLayout.addComponent(remarksText);
+        TextField tvnum=new TextField("Version #");
+        tvnum.setValue(String.valueOf(proposalVersion.getVersion()));
+        formLayoutLeft.addComponent(tvnum);
+        tvnum.setReadOnly(true);
 
-        return remarksLayout;
+        TextField tstatus=new TextField("Status");
+        tstatus.setValue(proposalVersion.getStatus());
+        formLayoutLeft.addComponent(tstatus);
+        tstatus.setReadOnly(true);
+
+        return formLayoutLeft;
     }
+
+    private FormLayout buildMainFormLayoutRight() {
+
+        FormLayout formLayoutRight = new FormLayout();
+        formLayoutRight.setSizeFull();
+        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        TextField ttitle=new TextField("Title");
+        formLayoutRight.addComponent(ttitle);
+        ttitle.setValue(proposalVersion.getTitle());
+
+        this.remarksText = new TextField("Remarks");
+        remarksText.setWidth("100%");
+        remarksText.addValidator(new StringLengthValidator("Must be 200 characters long",0,200,false));
+        remarksText.setImmediate(true);
+        remarksText.setValue(proposalVersion.getRemarks());
+        formLayoutRight.addComponent(remarksText);
+        return formLayoutRight;
+                }
+
     private Component buildActionButtons()
     {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setMargin(new MarginInfo(true,true,true,true));
         horizontalLayout.setSizeFull();
 
-        horizontalLayout.setMargin(new MarginInfo(true,true,true,true));
         HorizontalLayout right = new HorizontalLayout();
 
-        Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        /*Component component=getVersionLayout();
+        right.addComponent(component);*/
+
+        /*Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         soExtractButton.setCaptionAsHtml(true);
         soExtractButton.setIcon(FontAwesome.DOWNLOAD);
         soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
@@ -277,9 +360,9 @@ public class ProductAndAddons extends Window
         FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
         jobcardDownloader.extend(jobcardButton);
         right.addComponent(jobcardButton);
-        right.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);
+        right.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);*/
 
-        submitButton = new Button("Submit");
+        submitButton = new Button("Publish");
         submitButton.setVisible(ProposalHeader.ProposalState.draft.name().equals(proposalHeader.getStatus()));
         submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
         submitButton.addStyleName("margin-right-10-for-headerlevelbutton");
@@ -287,13 +370,29 @@ public class ProductAndAddons extends Window
         right.addComponent(submitButton);
         right.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
 
-        publishButton = new Button("Publish");
-        publishButton.setVisible(ProposalHeader.ProposalState.active.name().equals(proposalHeader.getStatus()));
-        publishButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        publishButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        publishButton.addClickListener(this::publish);
-        right.addComponent(publishButton);
-        right.setComponentAlignment(publishButton, Alignment.MIDDLE_RIGHT);
+        confirmButton = new Button("Confirm");
+        confirmButton.setVisible(ProposalHeader.ProposalState.draft.name().equals(proposalHeader.getStatus()));
+        confirmButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        confirmButton.addStyleName("margin-right-10-for-headerlevelbutton");
+        confirmButton.addClickListener(this::confirm);
+        right.addComponent(confirmButton);
+        right.setComponentAlignment(confirmButton, Alignment.MIDDLE_RIGHT);
+
+        designSignOffButton = new Button("Design Sign off");
+        designSignOffButton.setVisible(ProposalHeader.ProposalState.draft.name().equals(proposalHeader.getStatus()));
+        designSignOffButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        designSignOffButton.addStyleName("margin-right-10-for-headerlevelbutton");
+        designSignOffButton.addClickListener(this::confirm);
+        right.addComponent(designSignOffButton);
+        right.setComponentAlignment(designSignOffButton, Alignment.MIDDLE_RIGHT);
+
+        productionSignOffButton = new Button("Production Sign off");
+        productionSignOffButton.setVisible(ProposalHeader.ProposalState.draft.name().equals(proposalHeader.getStatus()));
+        productionSignOffButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        productionSignOffButton.addStyleName("margin-right-10-for-headerlevelbutton");
+        productionSignOffButton.addClickListener(this::confirm);
+        right.addComponent(productionSignOffButton);
+        right.setComponentAlignment(productionSignOffButton, Alignment.MIDDLE_RIGHT);
 
         saveButton = new Button("Save");
         saveButton.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -302,103 +401,176 @@ public class ProductAndAddons extends Window
         right.addComponent(saveButton);
         right.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
 
-        MenuBar menu = new MenuBar();
-        menu.setStyleName(ValoTheme.MENUBAR_SMALL);
-        menu.addStyleName("margin-right-10-for-headerlevelbutton");
-
-        MenuBar.MenuItem moreMenuItem = menu.addItem("more", null);
-        reviseMenuItem = moreMenuItem.addItem("Revise", this::revise);
-        reviseMenuItem.setVisible(ProposalHeader.ProposalState.active.name().equals(proposalHeader.getStatus()));
-
-        cancelMenuItem = moreMenuItem.addItem("Cancel", this::cancel);
-        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-
-        if (role.equals("admin"))
-        {
-            deleteMenuItem = moreMenuItem.addItem("Delete", this::deleteProposal);
-        }
-        moreMenuItem.addItem("Close", this::close);
-
-        right.addComponent(menu);
-        right.setComponentAlignment(menu, Alignment.MIDDLE_RIGHT);
+        closeButton = new Button("Close");
+        closeButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        closeButton.addStyleName("margin-right-10-for-headerlevelbutton");
+        closeButton.addClickListener(this::close);
+        right.addComponent(closeButton);
+        right.setComponentAlignment(closeButton, Alignment.MIDDLE_RIGHT);
 
         horizontalLayout.addComponent(right);
-        horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_RIGHT);
+        horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_CENTER);
 
         return horizontalLayout;
     }
 
-    private Component getAmountLayout()
+
+    private Component getVersionLayout()
     {
+        HorizontalLayout hlayout=new HorizontalLayout();
+        hlayout.setSizeFull();
+        hlayout.setMargin(new MarginInfo(true,true,true,true));
+
+        Panel amountsPanel=new Panel("Version Details");
+        amountsPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
+        amountsPanel.setSizeFull();
+
         HorizontalLayout amountsLayout = new HorizontalLayout();
+        setSizeFull();
+
         amountsLayout.setMargin(new MarginInfo(true,true,true,true));
 
-        Label totalWithoutDiscount = new Label("<b>Total Without Discount: </b>", ContentMode.HTML);
-        amountsLayout.addComponent(totalWithoutDiscount);
+        Label vnum = new Label("<b>Version #: </b>", ContentMode.HTML);
+        amountsLayout.addComponent(vnum);
         amountsLayout.setSpacing(true);
-        totalWithoutDiscount.addStyleName("amount-text-label");
-        totalWithoutDiscount.addStyleName("v-label-amount-text-label");
-        totalWithoutDiscount.addStyleName("margin-top-18");
+        vnum.addStyleName("amount-text-label");
+        vnum.addStyleName("v-label-amount-text-label");
+        vnum.addStyleName("margin-top-18");
 
-        this.grandTotal=new Label("</b>",ContentMode.HTML);
-        this.grandTotal.addStyleName("amount-text");
-        this.grandTotal.addStyleName("margin-top-18");
-        this.grandTotal.addStyleName("v-label-amount-text-label");
-        this.grandTotal.setCaptionAsHtml(true);
+        this.versionNum=new Label("</b>",ContentMode.HTML);
+        this.versionNum.addStyleName("amount-text");
+        this.versionNum.addStyleName("margin-top-18");
+        this.versionNum.addStyleName("v-label-amount-text-label");
+        this.versionNum.setReadOnly(true);
+        this.versionNum.setValue(vid.toString());
+        amountsLayout.addComponent(versionNum);
+        amountsLayout.setSpacing(true);
+
+        Label vstatus = new Label("<b>Status: </b>",ContentMode.HTML);
+        amountsLayout.addComponent(vstatus);
+        //amountsLayout.setSpacing(true);
+        vstatus.addStyleName("amount-text-label");
+        vstatus.addStyleName("v-label-amount-text-label");
+        vstatus.addStyleName("margin-top-18");
+
+        this.versionStatus= new Label("</b>",ContentMode.HTML);
+        versionStatus.addStyleName("amount-text-label");
+        versionStatus.addStyleName("v-label-amount-text-label");
+        versionStatus.addStyleName("margin-top-18");
+        versionStatus.setReadOnly(true);
+        versionStatus.setValue(proposalVersion.getStatus());
+        amountsLayout.addComponent(versionStatus);
+        amountsLayout.setSpacing(true);
+
+        Label vtitle = new Label("<b>Title :</b>",ContentMode.HTML);
+        amountsLayout.addComponent(vtitle);
+        amountsLayout.setSpacing(true);
+        vtitle.addStyleName("amount-text-label");
+        vtitle.addStyleName("v-label-amount-text-label");
+        vtitle.addStyleName("margin-top-18");
+
+        this.vTitle = new TextField();
+        this.vTitle.setWidth("100%");
+        //this.vTitle.addStyleName("inputTextbox");
+        this.vTitle.addStyleName("margin-top-18");
+        this.vTitle.addStyleName("v-label-amount-text-label");
+        //this.vTitle.setCaptionAsHtml(true);
+        this.vTitle.setValue(proposalVersion.getTitle());
+        amountsLayout.addComponent(vTitle);
+
+        amountsPanel.setContent(amountsLayout);
+        hlayout.addComponent(amountsPanel);
+
+        return hlayout;
+    }
+
+
+    private Component getAmountLayout()
+    {
+        VerticalLayout verticalLayout =new VerticalLayout();
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+
+        HorizontalLayout vlayout  = new HorizontalLayout();
+        FormLayout left = new FormLayout();
+
+        Label totalWithoutDiscount = new Label("Total Without Discount:");
+        left.addComponent(totalWithoutDiscount);
+        totalWithoutDiscount.addStyleName("amount-text-label1");
+        totalWithoutDiscount.addStyleName("v-label-amount-text-label1");
+        totalWithoutDiscount.addStyleName("margin-top-18");
+        vlayout.addComponent(left);
+
+        FormLayout left1 = new FormLayout();
+        this.grandTotal=new Label();
         this.grandTotal.setConverter(getAmountConverter());
         this.grandTotal.setReadOnly(true);
-        amountsLayout.addComponent(grandTotal);
-        amountsLayout.setSpacing(true);
+        left1.addComponent(grandTotal);
+        this.grandTotal.setConverter(getAmountConverter());
+        this.grandTotal.setReadOnly(true);
+        grandTotal.addStyleName("amount-text-label");
+        grandTotal.addStyleName("v-label-amount-text-label");
+        grandTotal.addStyleName("margin-top-18");
+        vlayout.addComponent(left1);
 
-        Label Discount = new Label("<b>Discount % :</b>",ContentMode.HTML);
-        amountsLayout.addComponent(Discount);
-        amountsLayout.setSpacing(true);
-        Discount.addStyleName("inputlabel");
+        FormLayout left2 = new FormLayout();
+        Label Discount = new Label("Discount % :");
+        Discount.addStyleName("amount-text-label1");
+        Discount.addStyleName("v-label-amount-text-label1");
         Discount.addStyleName("margin-top-18");
+        left2.addComponent(Discount);
+        vlayout.addComponent(left2);
 
+        FormLayout left3 = new FormLayout();
         this.discountPercentage = new TextField();
+        discountPercentage.addStyleName("amount-text-label2");
+        discountPercentage.addStyleName("v-label-amount-text-label");
+        discountPercentage.addStyleName("margin-top-18");
         this.discountPercentage.setConverter(new StringToDoubleConverter());
-        this.discountPercentage.addStyleName("inputTextbox");
-        this.discountPercentage.addStyleName("margin-top-18");
-        this.discountPercentage.addStyleName("v-label-amount-text-label");
-        this.discountPercentage.setCaptionAsHtml(true);
         this.discountPercentage.setValue("0");
         this.discountPercentage.setNullRepresentation("0");
-        amountsLayout.addComponent(discountPercentage);
 
-        Label DiscountAmount = new Label("<b>Discount Amount :</b>",ContentMode.HTML);
-        amountsLayout.addComponent(DiscountAmount);
-        amountsLayout.setSpacing(true);
-        DiscountAmount.addStyleName("inputlabel");
+        left3.addComponent(discountPercentage);
+        vlayout.addComponent(left3);
+
+        FormLayout left4 = new FormLayout();
+        Label DiscountAmount = new Label("Discount Amount :");
+        left4.addComponent(DiscountAmount);
+        DiscountAmount.addStyleName("amount-text-label1");
+        DiscountAmount.addStyleName("v-label-amount-text-label1");
         DiscountAmount.addStyleName("margin-top-18");
+        vlayout.addComponent(left4);
 
+        FormLayout left5 = new FormLayout();
         this.discountAmount=new TextField();
         this.discountAmount.setConverter(new StringToDoubleConverter());
-        this.discountAmount.addStyleName("inputTextbox");
-        this.discountAmount.addStyleName("margin-top-18");
-        this.discountAmount.addStyleName("v-label-amount-text-label");
-        this.discountAmount.setCaptionAsHtml(true);
         this.discountAmount.setValue("0");
         this.discountAmount.setNullRepresentation("0");
-        amountsLayout.addComponent(discountAmount);
+        left5.addComponent(discountAmount);
+        discountAmount.addStyleName("amount-text-label1");
+        discountAmount.addStyleName("v-label-amount-text-label");
+        discountAmount.addStyleName("margin-top-18");
+        vlayout.addComponent(left5);
 
-        Label totalAfterDiscount = new Label("<b>Total After Discount :</b>",ContentMode.HTML);
-        amountsLayout.addComponent(totalAfterDiscount);
-        amountsLayout.setSpacing(true);
-        totalAfterDiscount.addStyleName("amount-text-label");
+        FormLayout left6 = new FormLayout();
+        Label totalAfterDiscount = new Label("Total After Discount :");
+        left6.addComponent(totalAfterDiscount);
+        totalAfterDiscount.addStyleName("amount-text-label1");
+        totalAfterDiscount.addStyleName("v-label-amount-text-label1");
         totalAfterDiscount.addStyleName("margin-top-18");
+        vlayout.addComponent(left6);
 
-        this.discountTotal=new Label("</b>",ContentMode.HTML);
-        this.discountTotal.addStyleName("amount-text");
-        this.discountTotal.addStyleName("margin-top-18");
-        this.discountTotal.addStyleName("v-label-amount-text-label");
-        this.discountTotal.setCaptionAsHtml(true);
+        FormLayout left7 = new FormLayout();
+        this.discountTotal=new Label();
         this.discountTotal.setConverter(getAmountConverter());
         this.discountTotal.setReadOnly(true);
-        amountsLayout.addComponent(discountTotal);
-        amountsLayout.setSpacing(true);
+        left7.addComponent(discountTotal);
+        discountTotal.addStyleName("amount-text-label");
+        discountTotal.addStyleName("v-label-amount-text-label");
+        discountTotal.addStyleName("margin-top-18");
+        vlayout.addComponent(left7);
 
-        return amountsLayout;
+        verticalLayout.addComponent(vlayout);
+        return verticalLayout;
     }
 
     private void onFocusToDiscountPercentage(FieldEvents.FocusEvent event)
@@ -413,7 +585,6 @@ public class ProductAndAddons extends Window
     }
     private void updateTotal()
     {
-        LOG.info("update total");
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
         boolean anythingSelected = true;
@@ -455,7 +626,6 @@ public class ProductAndAddons extends Window
 
         Double totalWoAccessories = 0.0;
         List<Product> products = proposal.getProducts();
-        LOG.info("Product :" + products.toString());
         for (Product product : products) {
             totalWoAccessories += product.getCostWoAccessories();
         }
@@ -499,7 +669,6 @@ public class ProductAndAddons extends Window
         LOG.info(totalAfterDiscount+costOfAccessories+addonsTotal);
 
         Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal;
-        LOG.info("totaL" +grandTotal);
         Double rem=grandTotal%10;
 
         if(rem<5)
@@ -581,7 +750,7 @@ public class ProductAndAddons extends Window
                     newProduct.setProposalId(this.proposalHeader.getId());
                     LOG.info("Vid in value" +vid);
                     newProduct.setFromVersion(this.vid);
-                    CustomizedProductDetailsWindow.open(ProductAndAddons.this.proposal, newProduct);
+                    CustomizedProductDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion);
                 }
         );
 
@@ -600,23 +769,89 @@ public class ProductAndAddons extends Window
         GeneratedPropertyContainer genContainer = createGeneratedProductPropertyContainer();
 
         productsGrid = new Grid(genContainer);
-        productsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
-        productsGrid.setColumns(Product.FROM_VERSION,Product.SEQ, Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
+        productsGrid.setColumns(Product.SEQ, Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
 
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
 
-        columns.get(idx++).setHeaderCaption("Version #");
         columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Room");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Category");
         columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Type");
-        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new EditDeleteButtonValueRenderer(new EditDeleteButtonValueRenderer.EditDeleteButtonClickListener() {
+        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new ViewEditDeleteButtonValueRenderer(new ViewEditDeleteButtonValueRenderer.ViewEditDeleteButtonClickListener() {
+            @Override
+            public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+
+                if (("published").equals(proposalVersion.getStatus()) || ("confirmed").equals(proposalVersion.getStatus()) || ("locked").equals(proposalVersion.getStatus()))
+                {
+                    Notification.show("Cannot copy on published, confirmed amd locked versions");
+                    return;
+                }
+                Product p = (Product) rendererClickEvent.getItemId();
+                LOG.debug("Product container before :" + productContainer.size());
+
+                productContainer.removeAllItems();
+
+                List<Product> copy = proposal.getProducts();
+                int length = (copy.size()) + 1;
+                System.out.println("original"+ p);
+
+                Product proposalProductDetails = proposalDataProvider.getProposalProductDetails(p.getId(),p.getFromVersion());
+                List<Module> modulesFromOldProduct = proposalProductDetails.getModules();
+                LOG.debug("modules:"+modulesFromOldProduct);
+                Product copyProduct = new Product();
+                copyProduct.setType(Product.TYPES.CUSTOMIZED.name());
+                copyProduct.setSeq(length);
+                copyProduct.setProposalId(proposalHeader.getId());
+                copyProduct.setFromVersion(p.getFromVersion());
+                copyProduct.setTitle(p.getTitle());
+                copyProduct.setProductCategory(p.getProductCategory());
+                copyProduct.setProductCategoryCode(p.getProductCategoryCode());
+                copyProduct.setRoom(p.getRoom());
+                copyProduct.setRoomCode(p.getRoomCode());
+                copyProduct.setShutterDesign(p.getShutterDesign());
+                copyProduct.setShutterDesignCode(p.getShutterDesignCode());
+                copyProduct.setCatalogueName(p.getCatalogueName());
+                copyProduct.setCatalogueId(p.getCatalogueId());
+                copyProduct.setBaseCarcass(p.getBaseCarcass());
+                copyProduct.setBaseCarcassCode(p.getBaseCarcassCode());
+                copyProduct.setWallCarcass(p.getWallCarcass());
+                copyProduct.setWallCarcassCode(p.getWallCarcassCode());
+                copyProduct.setFinishType(p.getFinishType());
+                copyProduct.setFinishTypeCode(p.getFinishTypeCode());
+                copyProduct.setFinish(p.getFinish());
+                copyProduct.setFinishCode(p.getFinishCode());
+                copyProduct.setDimension(p.getDimension());
+                copyProduct.setAmount(p.getAmount());
+                copyProduct.setQuantity(p.getQuantity());
+                copyProduct.setType(p.getType());
+                copyProduct.setQuoteFilePath(p.getQuoteFilePath());
+                copyProduct.setCreatedBy(p.getCreatedBy());
+                copyProduct.setCostWoAccessories(p.getCostWoAccessories());
+
+                copyProduct.setModules(modulesFromOldProduct);
+                LOG.debug("COPIED@"+ copyProduct);
+
+                copyProduct.setAddons(p.getAddons());
+
+                proposalDataProvider.updateProduct(copyProduct);
+//                copy.add(copyProduct);
+
+                List<Product> proposalProductUpdated = proposalDataProvider.getVersionProducts(proposalHeader.getId(),p.getFromVersion());
+
+                for (Product updatedProduct : proposalProductUpdated)
+                {
+                    productContainer.addItem(updatedProduct);
+                }
+                productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+                updateTotal();
+
+            }
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
@@ -624,7 +859,7 @@ public class ProductAndAddons extends Window
 
                 if (product.getType().equals(Product.TYPES.CUSTOMIZED.name())) {
                     if (product.getModules().isEmpty()) {
-                        Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId());
+                        Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId(),product.getFromVersion());
                         product.setModules(productDetails.getModules());
                         product.setAddons(productDetails.getAddons());
                     }
@@ -633,7 +868,7 @@ public class ProductAndAddons extends Window
                         List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
                         product.setFileAttachmentList(productAttachments);
                     }
-                    CustomizedProductDetailsWindow.open(proposal, product);
+                    CustomizedProductDetailsWindow.open(proposal, product, proposalVersion);
                 } else {
                     CatalogueProduct catalogueProduct = new CatalogueProduct();
                     catalogueProduct.populateFromProduct(product);
@@ -643,6 +878,12 @@ public class ProductAndAddons extends Window
 
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+
+                if (("published").equals(proposalVersion.getStatus()) || ("confirmed").equals(proposalVersion.getStatus()) || ("locked").equals(proposalVersion.getStatus()))
+                {
+                    Notification.show("Cannot delete products on published, confirmed amd locked versions");
+                    return;
+                }
 
                 if (isProposalReadonly()) {
                     NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
@@ -658,17 +899,24 @@ public class ProductAndAddons extends Window
                                     int seq = product.getSeq();
                                     productContainer.removeAllItems();
 
+                                    proposalDataProvider.deleteProduct(product.getId());
+
                                     for (Product product1 : proposal.getProducts()) {
                                         if (product1.getSeq() > seq) {
                                             product1.setSeq(product1.getSeq() - 1);
-                                            proposalDataProvider.updateProduct(product1);
+                                            proposalDataProvider.updateProductSequence(product1.getSeq(),product1.getId());
                                         }
                                     }
-                                    productContainer.addAll(proposal.getProducts());
+                                    List<Product> productsUpdated = proposalDataProvider.getVersionProducts(proposalHeader.getId(),proposalVersion.getVersion());
+                                    for (Product updatedProduct : productsUpdated)
+                                    {
+                                        LOG.debug("products updated to string :" + productsUpdated.toString());
+                                        productContainer.addItem(updatedProduct);
+                                        LOG.debug(productContainer.size());
+                                    }
                                     productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
                                     productsGrid.getSelectionModel().reset();
                                     updateTotal();
-                                    proposalDataProvider.deleteProduct(product.getId());
                                     NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                                 }
                             });
@@ -687,8 +935,6 @@ public class ProductAndAddons extends Window
         verticalLayout.addComponent(horizontalLayout);
 
         verticalLayout.addComponent(productsGrid);
-
-        verticalLayout.addComponent(label);
 
         return verticalLayout;
     }
@@ -728,8 +974,8 @@ public class ProductAndAddons extends Window
 
         addonsGrid = new Grid(genContainer);
         addonsGrid.setSizeFull();
-        addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-        addonsGrid.addSelectionListener(this::updateTotal);
+        /*addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        addonsGrid.addSelectionListener(this::updateTotal);*/
         addonsGrid.setColumnReorderingAllowed(true);
         addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.BRAND_CODE,
                 AddonProduct.TITLE, AddonProduct.CATALOGUE_CODE, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
@@ -957,15 +1203,17 @@ public class ProductAndAddons extends Window
         };
         return new StreamResource(source, "JobCard.xlsx");
     }
+
+
     private void submit(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
-            proposalHeader.setStatus(ProposalHeader.ProposalState.active.name());
+            proposalVersion.setStatus(ProposalVersion.ProposalStage.published.name());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
                 for (Product product : proposal.getProducts()) {
-                    Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId());
+                    Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId(),product.getFromVersion());
                     mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (!populatedProduct.getModules().isEmpty());
                     if (!mapped) {
                         break;
@@ -976,18 +1224,17 @@ public class ProductAndAddons extends Window
                     NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 } else {
 
-                    success = proposalDataProvider.submitProposal(proposalHeader.getId());
+                    success = proposalDataProvider.publishVersion(proposalVersion.getVersion(),proposalHeader.getId());
                     if (success) {
-                        reviseMenuItem.setVisible(true);
-                        publishButton.setVisible(true);
-                        submitButton.setVisible(false);
-                        deleteMenuItem.setVisible(false);
                         saveButton.setVisible(false);
-                        draftLabel.setValue("[ " + ProposalHeader.ProposalState.active.name() + " ]");
-                        NotificationUtil.showNotification("Submitted successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                        addKitchenOrWardrobeButton.setVisible(false);
+                        addFromCatalogueButton.setVisible(false);
+                        addonAddButton.setVisible(false);
+                        /*versionStatus.setValue("published");*/
+                        NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                         handleState();
                     } else {
-                        NotificationUtil.showNotification("Couldn't Activate Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        NotificationUtil.showNotification("Couldn't Publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     }
                 }
             } else {
@@ -996,7 +1243,77 @@ public class ProductAndAddons extends Window
         } catch (FieldGroup.CommitException e) {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
+        proposalDataProvider.updateVersion(proposalVersion.getTitle(), remarksText.getValue(), discountTotal.getValue(), proposalVersion.getStatus(), proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion());
+        DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+        DashboardEventBus.unregister(this);
+        close();
     }
+
+    private void confirm(Button.ClickEvent clickEvent) {
+        try {
+            binder.commit();
+            proposalVersion.setStatus(ProposalVersion.ProposalStage.confirmed.name());
+
+            boolean success = proposalDataProvider.saveProposal(proposalHeader);
+            if (success) {
+                boolean mapped = true;
+                for (Product product : proposal.getProducts()) {
+                    Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId(),product.getFromVersion());
+                    mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (!populatedProduct.getModules().isEmpty());
+                    if (!mapped) {
+                        break;
+                    }
+                }
+
+                if (!mapped) {
+                    NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                } else {
+                    String versionNew = String.valueOf(proposalVersion.getVersion());
+                    if (versionNew.startsWith("0."))
+                    {
+                        proposalVersion.setFromVersion(proposalVersion.getVersion());
+                        proposalVersion.setToVersion(proposalVersion.getVersion());
+                        proposalVersion.setVersion((float) 1.1);
+                        proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.locked.name());
+                        success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
+                    }
+                    else if (versionNew.startsWith("1."))
+                    {
+                        proposalVersion.setFromVersion(proposalVersion.getVersion());
+                        proposalVersion.setToVersion(proposalVersion.getVersion());
+                        proposalVersion.setVersion((float) 2.1);
+                        proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
+                        proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.locked.name());
+                        success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
+                    }
+                    else if (versionNew.startsWith("2."))
+                    {
+                        proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
+                        proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.locked.name());
+                        success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
+                    }
+
+                    proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+                    if (success) {
+                        saveButton.setVisible(false);
+                        NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                        handleState();
+                    } else {
+                        NotificationUtil.showNotification("Couldn't Publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    }
+                }
+            } else {
+                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }
+        } catch (FieldGroup.CommitException e) {
+            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        }
+
+        ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
+        DashboardEventBus.post(event1);
+        close();
+    }
+
 
     private void updateTotal(SelectionEvent selectionEvent) {
         updateTotal();
@@ -1014,82 +1331,21 @@ public class ProductAndAddons extends Window
         genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
         return genContainer;
     }
-    private void publish(Button.ClickEvent clickEvent) {
-        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to publish this Proposal?",
-                "Yes", "No", dialog -> {
-                    if (!dialog.isCanceled()) {
-                        try {
-                            binder.commit();
-                            proposalHeader.setStatus(ProposalHeader.ProposalState.published.name());
-                            boolean success = proposalDataProvider.saveProposal(proposalHeader);
-                            if (success) {
-                                success = proposalDataProvider.publishProposal(proposalHeader.getId());
-                                if (success) {
-                                    reviseMenuItem.setVisible(false);
-                                    submitButton.setVisible(false);
-                                    publishButton.setVisible(false);
-                                    deleteMenuItem.setVisible(false);
-                                    saveButton.setVisible(false);
-                                    draftLabel.setValue("[ " + ProposalHeader.ProposalState.published.name() + " ]");
-                                    handleState();
-                                } else {
-                                    NotificationUtil.showNotification("Couldn't publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                                }
-                            } else {
-                                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                            }
-                        } catch (FieldGroup.CommitException e) {
-                            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        }
-                    }
-                });
-    }
 
-    private void revise(MenuBar.MenuItem selectedItem) {
-        try {
-            binder.commit();
-            proposalHeader.setStatus(ProposalHeader.ProposalState.draft.name());
-            boolean success = proposalDataProvider.saveProposal(proposalHeader);
-            if (success) {
-                success = proposalDataProvider.reviseProposal(proposalHeader.getId());
-                if (success) {
-                    reviseMenuItem.setVisible(false);
-                    publishButton.setVisible(false);
-                    submitButton.setVisible(true);
-                    saveButton.setVisible(true);
-                    deleteMenuItem.setVisible(true);
-                    draftLabel.setValue("[ " + ProposalHeader.ProposalState.draft.name() + " ]");
-                    handleState();
-                } else {
-                    NotificationUtil.showNotification("Couldn't revise Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                }
-            } else {
-                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            }
-        } catch (FieldGroup.CommitException e) {
-            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-        }
-    }
 
     private void save(Button.ClickEvent clickEvent)
     {
-        try
-        {
-            binder.commit();
-        }
-        catch (FieldGroup.CommitException e)
-        {
-            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            return;
-        }
 
-        boolean success = proposalDataProvider.saveProposal(proposalHeader);
-        if (success) {
+        try {
+            proposalVersion = proposalDataProvider.updateVersion(proposalVersion.getTitle(), remarksText.getValue(), discountTotal.getValue(), proposalVersion.getStatus(), proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion());
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             close();
-
-        } else {
+        }
+        catch (Exception e)
+        {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            LOG.info("Exception :" + e.toString());
         }
     }
 
@@ -1097,61 +1353,15 @@ public class ProductAndAddons extends Window
         return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name());
     }
 
-    private void cancel(MenuBar.MenuItem selectedItem) {
-        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to cancel this Proposal?",
+    private void close(Button.ClickEvent clickEvent) {
+
+        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this screen?",
                 "Yes", "No", dialog -> {
                     if (!dialog.isCanceled()) {
-                        try {
-                            binder.commit();
-                            proposalHeader.setStatus(ProposalHeader.ProposalState.cancelled.name());
-                            boolean success = proposalDataProvider.saveProposal(proposalHeader);
-                            if (success) {
-                                success = proposalDataProvider.cancelProposal(proposalHeader.getId());
-                                if (success) {
-                                    reviseMenuItem.setVisible(false);
-                                    submitButton.setVisible(false);
-                                    publishButton.setVisible(false);
-                                    deleteMenuItem.setVisible(false);
-                                    saveButton.setVisible(false);
-                                    cancelMenuItem.setVisible(false);
-                                    draftLabel.setValue("[ " + ProposalHeader.ProposalState.cancelled.name() + " ]");
-                                    handleState();
-                                } else {
-                                    NotificationUtil.showNotification("Couldn't cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                                }
-                            } else {
-                                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                            }
-                        } catch (FieldGroup.CommitException e) {
-                            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        }
-                    }
-                });
-    }
 
-    private void deleteProposal(MenuBar.MenuItem selectedItem) {
-
-        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to delete this Proposal?",
-                "Yes", "No", dialog -> {
-                    if (!dialog.isCanceled()) {
-                        proposalDataProvider.deleteProposal(proposalHeader.getId());
-                        DashboardEventBus.post(new ProposalEvent.ProposalUpdated());
-                    }
-                    DashboardEventBus.unregister(this);
-                    UI.getCurrent().getNavigator()
-                            .navigateTo(DashboardViewType.PROPOSALS.name());
-                });
-
-    }
-
-    private void close(MenuBar.MenuItem selectedItem) {
-
-        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this Proposal? Unsaved data will be lost.",
-                "Yes", "No", dialog -> {
-                    if (!dialog.isCanceled()) {
                         DashboardEventBus.unregister(this);
                         close();
-                        //UI.getCurrent().getNavigator().navigateTo(DashboardViewType.PROPOSALS.name());
+
                     }
                 });
     }
@@ -1160,20 +1370,83 @@ public class ProductAndAddons extends Window
         if (proposalHeader.isReadonly()) {
             setComponentsReadonly();
         } else {
-            ProposalHeader.ProposalState proposalState = ProposalHeader.ProposalState.valueOf(proposalHeader.getStatus());
-            switch (proposalState) {
+            ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getStatus());
+            LOG.debug("Status :" + proposalStage);
+            switch (proposalStage) {
                 case draft:
+                    submitButton.setVisible(true);
                     addKitchenOrWardrobeButton.setEnabled(true);
                     addFromCatalogueButton.setEnabled(true);
-                    fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
-                    setHeaderFieldsReadOnly(false);
-                    fileAttachmentComponent.setReadOnly(false);
+                    designSignOffButton.setVisible(false);
+                    productionSignOffButton.setVisible(false);
                     addonAddButton.setEnabled(true);
+                    confirmButton.setVisible(false);
                     break;
-                case active:
-                case cancelled:
                 case published:
+                    submitButton.setVisible(false);
+                    confirmButton.setVisible(true);
+                    String versionNew = String.valueOf(proposalVersion.getVersion());
+                    if (versionNew.startsWith("1."))
+                    {
+                        LOG.debug("HEy whats the vesriosn :" + proposalVersion.getVersion());
+                        productionSignOffButton.setVisible(false);
+                        designSignOffButton.setEnabled(true);
+                        confirmButton.setVisible(false);
+                    }
+                    else if (versionNew.startsWith("2."))
+                    {
+                        designSignOffButton.setVisible(false);
+                        productionSignOffButton.setEnabled(true);
+                        confirmButton.setVisible(false);
+                    }
+                    else
+                    {
+                        designSignOffButton.setVisible(false);
+                        productionSignOffButton.setVisible(false);
+                    }
                     setComponentsReadonly();
+                    discountAmount.setReadOnly(true);
+                    discountPercentage.setReadOnly(true);
+                    /*vTitle.setReadOnly(true);*/
+                    break;
+                case confirmed:
+                    setComponentsReadonly();
+                    submitButton.setVisible(false);
+                    confirmButton.setVisible(false);
+                    discountAmount.setReadOnly(true);
+                    designSignOffButton.setVisible(false);
+                    productionSignOffButton.setVisible(false);
+                    discountPercentage.setReadOnly(true);
+//                    vTitle.setReadOnly(true);
+                    break;
+                case locked:
+                    submitButton.setVisible(false);
+                    confirmButton.setVisible(false);
+                    addKitchenOrWardrobeButton.setVisible(false);
+                    addFromCatalogueButton.setVisible(false);
+                    addonAddButton.setVisible(false);
+                    designSignOffButton.setVisible(false);
+                    productionSignOffButton.setVisible(false);
+                    discountAmount.setReadOnly(true);
+                    discountPercentage.setReadOnly(true);
+//                    vTitle.setReadOnly(true);
+                    break;
+                case DSO:
+                    setComponentsReadonly();
+                    submitButton.setVisible(false);
+                    confirmButton.setVisible(false);
+                    discountAmount.setReadOnly(true);
+                    productionSignOffButton.setVisible(false);
+                    designSignOffButton.setVisible(false);
+                    discountPercentage.setReadOnly(true);
+                    break;
+                case PSO:
+                    setComponentsReadonly();
+                    submitButton.setVisible(false);
+                    confirmButton.setVisible(false);
+                    discountAmount.setReadOnly(true);
+                    designSignOffButton.setVisible(false);
+                    discountPercentage.setReadOnly(true);
                     break;
                 default:
                     throw new RuntimeException("Unknown State");
@@ -1243,10 +1516,55 @@ public class ProductAndAddons extends Window
     private void setComponentsReadonly() {
         addKitchenOrWardrobeButton.setEnabled(false);
         addFromCatalogueButton.setEnabled(false);
-        fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
-        setHeaderFieldsReadOnly(true);
-        fileAttachmentComponent.setReadOnly(true);
         addonAddButton.setEnabled(false);
+    }
+
+    @Subscribe
+    public void productDelete(final ProposalEvent.ProductDeletedEvent event) {
+        List<Product> products = proposal.getProducts();
+        boolean removed = products.remove(event.getProduct());
+        if (removed) {
+            productContainer.removeAllItems();
+            productContainer.addAll(products);
+            productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+            productsGrid.getSelectionModel().reset();
+            updateTotal();
+            productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
+        }
+    }
+
+    @Subscribe
+    public void productCreatedOrUpdated(final ProposalEvent.ProductCreatedOrUpdatedEvent event) {
+        List<Product> products = proposal.getProducts();
+        boolean removed = products.remove(event.getProduct());
+        products.add(event.getProduct());
+        productContainer.removeAllItems();
+        productContainer.addAll(products);
+        productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+        productsGrid.getSelectionModel().reset();
+        updateTotal();
+        productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
+    }
+
+    @Subscribe
+    public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
+        AddonProduct eventAddonProduct = event.getAddonProduct();
+        persistAddon(eventAddonProduct);
+        List<AddonProduct> addons = proposal.getAddons();
+        addons.remove(eventAddonProduct);
+        addons.add(eventAddonProduct);
+        addonsContainer.removeAllItems();
+        addonsContainer.addAll(addons);
+        addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
+        addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
+    }
+
+    private void persistAddon(AddonProduct eventAddonProduct) {
+        if (eventAddonProduct.getId() == 0) {
+            proposalDataProvider.addProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+        } else {
+            proposalDataProvider.updateProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+        }
     }
     private void setHeaderFieldsReadOnly(boolean readOnly) {
         /*proposalTitleField.setReadOnly(readOnly);
