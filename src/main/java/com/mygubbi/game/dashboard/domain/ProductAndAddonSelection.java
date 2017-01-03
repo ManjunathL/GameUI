@@ -12,6 +12,15 @@ public class ProductAndAddonSelection {
     private List<Integer> addonIds = new ArrayList<>();
     private double discountAmount;
     private double discountPercentage;
+    private String fromVersion;
+
+    public String getFromVersion() {
+        return fromVersion;
+    }
+
+    public void setFromVersion(String fromVersion) {
+        this.fromVersion = fromVersion;
+    }
 
     public int getProposalId() {
         return proposalId;
@@ -51,5 +60,16 @@ public class ProductAndAddonSelection {
 
     public void setDiscountPercentage(double discountPercentage) {
         this.discountPercentage = discountPercentage;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductAndAddonSelection{" +
+                "proposalId=" + proposalId +
+                ", productIds=" + productIds +
+                ", addonIds=" + addonIds +
+                ", discountAmount=" + discountAmount +
+                ", discountPercentage=" + discountPercentage +
+                '}';
     }
 }

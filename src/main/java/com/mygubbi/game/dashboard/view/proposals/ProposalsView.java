@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.ProposalHeader;
+import com.mygubbi.game.dashboard.domain.ProposalVersion;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
@@ -61,7 +62,7 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Grid(container);
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
-        grid.setColumns(ProposalHeader.ID,ProposalHeader.CRM_ID, ProposalHeader.QUOTE_NO, ProposalHeader.TITLE, ProposalHeader.STATUS,
+        grid.setColumns(ProposalHeader.ID,ProposalHeader.CRM_ID, ProposalHeader.VERSION, ProposalHeader.QUOTE_NO, ProposalHeader.TITLE, ProposalHeader.STATUS,
                 ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.CREATED_ON,
                 ProposalHeader.CREATED_BY);
 
@@ -69,6 +70,7 @@ public final class ProposalsView extends TabSheet implements View {
         int idx = 0;
         columns.get(idx++).setHeaderCaption("Proposal #");
         columns.get(idx++).setHeaderCaption("CRM #");
+        columns.get(idx++).setHeaderCaption("Version No");
         columns.get(idx++).setHeaderCaption("Quotation #");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Status");
@@ -82,6 +84,7 @@ public final class ProposalsView extends TabSheet implements View {
         filter.setTextFilter(ProposalHeader.TITLE, true, false);
         filter.setTextFilter(ProposalHeader.CRM_ID, true, true);
         filter.setTextFilter(ProposalHeader.ID,true,true);
+        filter.setTextFilter(ProposalHeader.VERSION,true,true);
         filter.setTextFilter(ProposalHeader.QUOTE_NO, true, true);
         filter.setTextFilter(ProposalHeader.STATUS, true, true);
         filter.setTextFilter(ProposalHeader.CREATED_BY, true, true);
@@ -163,7 +166,7 @@ public final class ProposalsView extends TabSheet implements View {
     private void filterByStatus(Button.ClickEvent clickEvent) {
         String status = (String) clickEvent.getButton().getData();
         BeanItemContainer containerDataSource = (BeanItemContainer) this.grid.getContainerDataSource();
-        containerDataSource.removeContainerFilters(ProposalHeader.STATUS);
+        containerDataSource.removeContainerFilters(ProposalVersion.STATUS);
 
         if (!status.equals("all")) {
             containerDataSource.addContainerFilter(new SimpleStringFilter(ProposalHeader.STATUS, status, true, true));

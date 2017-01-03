@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class ProposalHeader {
 
-    public enum ProposalState {draft, active, published, cancelled}
+    public enum ProposalState {Draft, Published, Confirmed, DSO, PSO}
     public enum EDIT {W, R}
 
     public static final String ID = "id";

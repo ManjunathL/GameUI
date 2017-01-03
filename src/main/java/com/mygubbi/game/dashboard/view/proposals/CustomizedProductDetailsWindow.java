@@ -22,8 +22,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Responsive;
+import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -31,6 +30,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,9 +38,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,6 +51,9 @@ public class CustomizedProductDetailsWindow extends Window {
     private static final Logger LOG = LogManager.getLogger(CustomizedProductDetailsWindow.class);
     private static final String CLOSE = "Close";
     private static final String DELETE = "Delete";
+
+    private ProductAndAddonSelection productAndAddonSelection;
+    private ProposalHeader proposalHeader;
 
     private TextField itemTitleField;
     private TextField roomText;
@@ -92,10 +93,11 @@ public class CustomizedProductDetailsWindow extends Window {
     private static Set<CustomizedProductDetailsWindow> previousInstances = new HashSet<>();
     private ProposalVersion proposalVersion;
 
-    public CustomizedProductDetailsWindow(Proposal proposal, Product product, ProposalVersion proposalVersion) {
+    public CustomizedProductDetailsWindow(Proposal proposal, Product product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         this.proposal = proposal;
         this.product = product;
         this.proposalVersion = proposalVersion;
+        this.proposalHeader = proposalHeader;
 
         this.cloneModules();
         this.cloneAddons();
@@ -118,7 +120,10 @@ public class CustomizedProductDetailsWindow extends Window {
         HorizontalLayout horizontalLayout0 = new HorizontalLayout();
         horizontalLayout0.setSizeFull();
         horizontalLayout0.addComponent(buildAddItemBasicFormLeft());
-        horizontalLayout0.addComponent(buildAddItemBasicFormRight());
+        horizontalLayout0.setSpacing(true);
+        horizontalLayout0.addComponent(buildAddItemBasicFormLayoutMiddle());
+        horizontalLayout0.setSpacing(true);
+        horizontalLayout0.addComponent(buildAddItemBasicFormLayoutRight());
         vLayout.addComponent(horizontalLayout0);
         horizontalLayout0.setHeightUndefined();
         vLayout.setExpandRatio(horizontalLayout0, 0.35f);
@@ -135,7 +140,7 @@ public class CustomizedProductDetailsWindow extends Window {
         fileAttachmentComponent = new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(),
                 attachmentData -> proposalDataProvider.addProductDoc(product.getId(), product.getProposalId(), attachmentData.getFileAttachment()),
                 attachmentData -> proposalDataProvider.removeProductDoc(attachmentData.getFileAttachment().getId()),
-                !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name()));
+                !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.Draft.name()));
 
         if (product.getModules().isEmpty()) {
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
@@ -339,7 +344,7 @@ public class CustomizedProductDetailsWindow extends Window {
         enableSave();
     }
 
-    private FormLayout buildAddItemBasicFormRight() {
+    private FormLayout buildAddItemBasicFormLayoutMiddle() {
         FormLayout formLayoutRight = new FormLayout();
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
@@ -391,10 +396,31 @@ public class CustomizedProductDetailsWindow extends Window {
         shutterFinishSelection.addValueChangeListener(this::refreshPrice);
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.setWidth("100%");
-        horizontalLayout.setHeight("100%");
-        horizontalLayout.addComponent(getQuoteUploadControl());
+        totalAmount = new TextField("<h2>Total Amount:</h2>");
+        totalAmount.setValue("0");
+        totalAmount.setImmediate(true);
+        totalAmount.addStyleName("amount-text-customized-product-details");
+        binder.bind(totalAmount, AMOUNT);
+        totalAmount.setReadOnly(true);
+        totalAmount.setCaptionAsHtml(true);
+
+        formLayoutRight.setSpacing(true);
+        formLayoutRight.addComponent(totalAmount);
+
+        return formLayoutRight;
+    }
+
+    private VerticalLayout buildAddItemBasicFormLayoutRight() {
+        VerticalLayout formLayoutRight = new VerticalLayout();
+        formLayoutRight.setSizeUndefined();
+        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+//        HorizontalLayout horizontalLayout = new HorizontalLayout();
+//        horizontalLayout.setWidth("100%");
+//        horizontalLayout.setHeight("100%");
+        formLayoutRight.addComponent(getQuoteUploadControl());
+
+        formLayoutRight.setSpacing(true);
 
         this.addModules = new Button("Add Modules");
         addModules.addClickListener(new Button.ClickListener() {
@@ -427,20 +453,9 @@ public class CustomizedProductDetailsWindow extends Window {
             }
         });
 
-        horizontalLayout.addComponent(addModules);
+        formLayoutRight.addComponent(addModules);
 
-        formLayoutRight.addComponent(horizontalLayout);
-
-        totalAmount = new TextField("<h2>Total Amount:</h2>");
-        totalAmount.setValue("0");
-        totalAmount.setImmediate(true);
-        totalAmount.addStyleName("amount-text-customized-product-details");
-        binder.bind(totalAmount, AMOUNT);
-        totalAmount.setReadOnly(true);
-        totalAmount.setCaptionAsHtml(true);
-
-        formLayoutRight.setSpacing(true);
-        formLayoutRight.addComponent(totalAmount);
+//        formLayoutRight.addComponent(horizontalLayout);
 
         return formLayoutRight;
     }
@@ -610,7 +625,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setSizeFull();
         modulesGrid.setResponsive(true);
         modulesGrid.setColumnReorderingAllowed(true);
-        modulesGrid.setColumns(Module.IMPORT_STATUS, Module.UNIT_TYPE, Module.MG_MODULE_CODE,Module.REMARKS ,Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
+        modulesGrid.setColumns(Module.IMPORT_STATUS,Module.MODULE_SEQUENCE, Module.UNIT_TYPE, Module.MG_MODULE_CODE,Module.REMARKS ,Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
 
         modulesGrid.setCellStyleGenerator(cell -> {
             if (cell.getPropertyId().equals(Module.CARCASS_MATERIAL)
@@ -627,6 +642,7 @@ public class CustomizedProductDetailsWindow extends Window {
         Grid.Column statusColumn = columns.get(idx++);
         statusColumn.setHeaderCaption("");
         statusColumn.setRenderer(new HtmlRenderer(), getResourceConverter());
+        columns.get(idx++).setHeaderCaption("Seq #");
         columns.get(idx++).setHeaderCaption("Unit Type");
         columns.get(idx++).setHeaderCaption("Module");
         Grid.Column remarksColumn = columns.get(idx++);
@@ -650,9 +666,9 @@ public class CustomizedProductDetailsWindow extends Window {
                     return;
                 }
 
-                if (("published").equals(proposalVersion.getStatus()) || ("confirmed").equals(proposalVersion.getStatus()) || ("locked").equals(proposalVersion.getStatus()))
+                if (("Published").equals(proposalVersion.getStatus()) || ("Confirmed").equals(proposalVersion.getStatus()) || ("Locked").equals(proposalVersion.getStatus()))
                 {
-                    Notification.show("Cannot copy on published, confirmed amd locked versions");
+                    Notification.show("Cannot copy on Published, Confirmed amd Locked versions");
                     return;
                 }
 
@@ -660,7 +676,6 @@ public class CustomizedProductDetailsWindow extends Window {
                 List<Module> copy = product.getModules();
                 int length = (copy.size()) + 1;
                 Module copyModule = new Module();
-                copyModule.setModuleSequence(length);
                 copyModule.setUnitType(m.getUnitType());
                 copyModule.setExtCode(m.getExtCode());
                 copyModule.setExtText(m.getExtText());
@@ -701,15 +716,18 @@ public class CustomizedProductDetailsWindow extends Window {
                 copyModule.setAccessoryPackDefault(m.getAccessoryPackDefault());
                 copyModule.setAccessoryPacks(m.getAccessoryPacks());
 
-                copy.add(copyModule);
+                DashboardEventBus.post(new ProposalEvent.ModuleUpdated(copyModule,false,false,product.getModules().size(),CustomizedProductDetailsWindow.this));
+                DashboardEventBus.unregister(this);
+
+                /*copy.add(copyModule);
 
                 moduleContainer.addAll(copy);
-                modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
+                modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());*/
 
-                modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
-                updateTotalAmount();
+                modulesGrid.sort(Module.MODULE_SEQUENCE,SortDirection.ASCENDING);
+           /*     updateTotalAmount();
                 updatePsftCosts();
-                checkAndEnableSave();
+                checkAndEnableSave();*/
             }
 
 
@@ -735,13 +753,13 @@ public class CustomizedProductDetailsWindow extends Window {
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                if (("published").equals(proposalVersion.getStatus()) || ("confirmed").equals(proposalVersion.getStatus()) || ("locked").equals(proposalVersion.getStatus()))
+                if (("Published").equals(proposalVersion.getStatus()) || ("Confirmed").equals(proposalVersion.getStatus()) || ("Locked").equals(proposalVersion.getStatus()))
                 {
-                    Notification.show("Cannot delete modules on published, confirmed amd locked versions");
+                    Notification.show("Cannot delete modules on Published, Confirmed amd Locked versions");
                     return;
                 }
                 if (isProposalReadonly()) {
-                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                    NotificationUtil.showNotification("This operation is allowed only in 'Draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
                 } else {
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Module?",
                             "Yes", "No", dialog -> {
@@ -775,7 +793,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (!product.getModules().isEmpty()) {
             moduleContainer.addAll(product.getModules());
-            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING));
+            modulesGrid.sort(Sort.by(Module.MODULE_SEQUENCE, SortDirection.ASCENDING));
         }
 
         return modulesGrid;
@@ -786,7 +804,7 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private boolean isProposalReadonly() {
-        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name()) || proposal.getProposalHeader().isReadonly();
+        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.Draft.name()) || proposal.getProposalHeader().isReadonly();
     }
 
     private GeneratedPropertyContainer createGeneratedModulePropertyContainer() {
@@ -911,7 +929,7 @@ public class CustomizedProductDetailsWindow extends Window {
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 if (isProposalReadonly()) {
-                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                    NotificationUtil.showNotification("This operation is allowed only in 'Draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
                 } else {
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
                             "Yes", "No", dialog -> {
@@ -1041,7 +1059,162 @@ public class CustomizedProductDetailsWindow extends Window {
         footer.addComponent(saveBtn);
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+        String versionNew = String.valueOf(proposalVersion.getVersion());
+
+
+        if (("admin").equals(role) && versionNew.startsWith("2."))
+        {
+            Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            soExtractButton.setCaptionAsHtml(true);
+            soExtractButton.setIcon(FontAwesome.DOWNLOAD);
+            soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+            soExtractButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+            soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
+            soExtractButton.setWidth("120px");
+
+            FileDownloader soExtractDownloader = this.getSOExtractFileDownloader();
+            soExtractDownloader.extend(soExtractButton);
+            footer.addComponent(soExtractButton);
+            footer.setComponentAlignment(soExtractButton, Alignment.TOP_RIGHT);
+
+            Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            jobcardButton.setCaptionAsHtml(true);
+            jobcardButton.setIcon(FontAwesome.DOWNLOAD);
+            jobcardButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+            jobcardButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+            jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
+            jobcardButton.setWidth("100px");
+
+            StreamResource jobcardResource = createJobcardResource();
+            FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
+            jobcardDownloader.extend(jobcardButton);
+            footer.addComponent(jobcardButton);
+            footer.setComponentAlignment(jobcardButton, Alignment.TOP_RIGHT);
+
+            Button marginButton = new Button("Margin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            marginButton.setCaptionAsHtml(true);
+            marginButton.setIcon(FontAwesome.DOWNLOAD);
+            marginButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+            marginButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+            marginButton.addStyleName(ValoTheme.BUTTON_SMALL);
+            soExtractButton.setWidth("100px");
+
+
+            StreamResource marginSheetResource = createMarginSheetResource();
+            FileDownloader marginSheetDownloader = new FileDownloader(marginSheetResource);
+            marginSheetDownloader.extend(marginButton);
+            footer.addComponent(marginButton);
+            footer.setComponentAlignment(marginButton, Alignment.TOP_RIGHT);
+        }
         return footer;
+    }
+
+    private FileDownloader getSOExtractFileDownloader() {
+        StreamResource soExtractResource =  createSalesOrderResource();
+
+        FileDownloader downloader = new FileDownloader(soExtractResource) {
+            @Override
+            public boolean handleConnectorRequest(VaadinRequest request,
+                                                  VaadinResponse response, String path) throws IOException {
+                soExtractResource.setFilename(getSOFilename());
+                return super.handleConnectorRequest(request, response, path);
+            }
+        };
+        return downloader;
+    }
+
+    private String getSOFilename()
+    {
+        if (this.productAndAddonSelection.getProductIds().size() == 1)
+        {
+            int productId = this.productAndAddonSelection.getProductIds().get(0);
+            String productTitle = "NA";
+            for (Product product : this.proposal.getProducts())
+            {
+                if (product.getId() == productId)
+                {
+                    productTitle = product.getTitle();
+                    break;
+                }
+            }
+            String cname = this.proposalHeader.getCname();
+            String crmid = this.proposalHeader.getCrmId();
+            LOG.debug("name : " + cname +" | " + "crm id : " + " | " + crmid + "product title" + productTitle );
+
+            return "SO-" + this.proposalHeader.getCname() + "-" + this.proposalHeader.getCrmId() + "-" + productTitle + ".xlsx";
+        }
+        return "SO.xlsx";
+    }
+
+    private StreamResource createSalesOrderResource() {
+
+        StreamResource.StreamSource source = () -> {
+
+            if (this.productAndAddonSelection.getProductIds().size() == 1) {
+                String salesOrderFile = proposalDataProvider.getSalesOrderExtract(this.productAndAddonSelection);
+                InputStream input = null;
+                try {
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(salesOrderFile)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return input;
+            } else {
+                return null;
+            }
+        };
+        return new StreamResource(source, "so-initial.xlsx");
+    }
+
+
+    private StreamResource createJobcardResource() {
+        StreamResource.StreamSource source = () -> {
+
+            prepareProductAndAddonObject();
+
+
+            if (this.productAndAddonSelection.getProductIds().size() == 1) {
+                String jobcardFile = proposalDataProvider.getJobCardFile(this.productAndAddonSelection);
+                InputStream input = null;
+                try {
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return input;
+            } else {
+                return null;
+            }
+        };
+        return new StreamResource(source, "JobCard.xlsx");
+    }
+
+    private StreamResource createMarginSheetResource() {
+        StreamResource.StreamSource source = () -> {
+
+            prepareProductAndAddonObject();
+
+            if (this.productAndAddonSelection.getProductIds().size() == 1) {
+                String jobcardFile = proposalDataProvider.getMarginSheet(this.productAndAddonSelection);
+                InputStream input = null;
+                try {
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return input;
+            } else {
+                return null;
+            }
+        };
+        return new StreamResource(source, "MarginSheet.xlsx");
+    }
+
+    private void prepareProductAndAddonObject() {
+        this.productAndAddonSelection = new ProductAndAddonSelection();
+        this.productAndAddonSelection.setProposalId(proposalVersion.getProposalId());
+        this.productAndAddonSelection.getProductIds().add(product.getId());
     }
 
     public static void closeWindow() {
@@ -1148,7 +1321,7 @@ public class CustomizedProductDetailsWindow extends Window {
             moduleContainer.removeAllItems();
             moduleContainer.addAll(modules);
             modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
-            modulesGrid.sort(Sort.by(Module.UNIT_TYPE, SortDirection.ASCENDING).then(Module.SEQ, SortDirection.ASCENDING));
+            modulesGrid.sort(Module.MODULE_SEQUENCE,SortDirection.ASCENDING);
             updateTotalAmount();
             updatePsftCosts();
 
@@ -1213,8 +1386,8 @@ public class CustomizedProductDetailsWindow extends Window {
         updateTotalAmount();
     }
 
-    public static void open(Proposal proposal, Product product, ProposalVersion proposalVersion) {
-        CustomizedProductDetailsWindow w = new CustomizedProductDetailsWindow(proposal, product, proposalVersion);
+    public static void open(Proposal proposal, Product product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
+        CustomizedProductDetailsWindow w = new CustomizedProductDetailsWindow(proposal, product, proposalVersion, proposalHeader);
 
         UI.getCurrent().addWindow(w);
         w.focus();
@@ -1228,15 +1401,15 @@ public class CustomizedProductDetailsWindow extends Window {
         } else {
             ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getStatus());
             switch (proposalStage) {
-                case draft:
+                case Draft:
                     break;
-                case published:
+                case Published:
                     setComponentsReadonly();
                     break;
-                case confirmed:
+                case Confirmed:
                     setComponentsReadonly();
                     break;
-                case locked:
+                case Locked:
                     setComponentsReadonly();
                     break;
                 default:

@@ -1,6 +1,6 @@
 {
-  "restUrl_ignored": "http://192.168.1.4:1443/gapi",
-  "restUrl": "http://localhost:1443/gapi",
+  "restUrl_ignored": "http://192.168.1.4:1445/gapi",
+  "restUrl": "http://localhost:1445/gapi",
   "imageBasePath": "C:\\tmp\\images\\",
   "templates_folder" : "c:/Users/Public/game_files",
   "price_files_folder" : "c:/Users/Public/game_files/price_files",

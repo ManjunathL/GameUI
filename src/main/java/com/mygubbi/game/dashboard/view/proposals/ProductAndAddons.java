@@ -58,7 +58,7 @@ public class ProductAndAddons extends Window
     private static final Logger LOG = LogManager.getLogger(ProductAndAddons.class);
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
-
+    int disAmount;
     private ProductAndAddonSelection productAndAddonSelection;
     private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
@@ -86,12 +86,12 @@ public class ProductAndAddons extends Window
     private Label versionStatus;
 
     private String status=null;
-    Float vid;
+    String vid;
     private Button confirmButton;
     private Button designSignOffButton;
     private Button productionSignOffButton;
 
-    public static void open(ProposalHeader proposalHeader, Proposal proposal, float vid, ProposalVersion proposalVersion )
+    public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
         ProductAndAddons w = new ProductAndAddons(proposalHeader,proposal,vid,proposalVersion);
@@ -100,7 +100,7 @@ public class ProductAndAddons extends Window
 
     }
 
-    public ProductAndAddons(ProposalHeader proposalHeader, Proposal proposal, float vid, ProposalVersion proposalVersion)
+    public ProductAndAddons(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion)
     {
         this.proposalHeader=proposalHeader;
         this.proposal=proposal;
@@ -110,7 +110,7 @@ public class ProductAndAddons extends Window
         this.proposal.setProducts(proposalDataProvider.getVersionProducts(proposalHeader.getId(),vid));
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
-
+        this.productAndAddonSelection.setFromVersion(this.proposalVersion.getVersion());
         DashboardEventBus.register(this);
         setModal(true);
         setSizeFull();
@@ -232,6 +232,61 @@ public class ProductAndAddons extends Window
         right.addComponent(downloadButton);
         right.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
 
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
+        /*if (("planning").equals(role))
+        {
+        Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        soExtractButton.setCaptionAsHtml(true);
+        soExtractButton.setIcon(FontAwesome.DOWNLOAD);
+        soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        soExtractButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        soExtractButton.addStyleName("margin-right-10-for-headerlevelbutton");
+        soExtractButton.setWidth("120px");
+        soExtractButton.addClickListener(this::doSalesOrderDownloadValidation);
+
+        FileDownloader soExtractDownloader = this.getSOExtractFileDownloader();
+        soExtractDownloader.extend(soExtractButton);
+        right.addComponent(soExtractButton);
+        right.setComponentAlignment(soExtractButton, Alignment.MIDDLE_RIGHT);
+
+        Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        jobcardButton.setCaptionAsHtml(true);
+        jobcardButton.setIcon(FontAwesome.DOWNLOAD);
+        jobcardButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        jobcardButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        jobcardButton.addStyleName("margin-right-10-for-headerlevelbutton");
+        jobcardButton.setWidth("100px");
+        jobcardButton.addClickListener(this::checkSingleProductSelection);
+
+        StreamResource jobcardResource = createJobcardResource();
+        FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
+        jobcardDownloader.extend(jobcardButton);
+        right.addComponent(jobcardButton);
+        right.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);
+        }
+
+        if (("margin").equals(role) )
+        {
+            Button marginButton = new Button("Margin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            marginButton.setCaptionAsHtml(true);
+            marginButton.setIcon(FontAwesome.DOWNLOAD);
+            marginButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+            marginButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+            marginButton.addStyleName(ValoTheme.BUTTON_SMALL);
+            marginButton.addStyleName("margin-right-10-for-headerlevelbutton");
+            marginButton.addStyleName("margin-top-for-headerlevelbutton");
+            marginButton.setWidth("100px");
+            marginButton.addClickListener(this::checkSingleProductSelection);
+
+            StreamResource marginSheetResource = createMarginSheetResource();
+            FileDownloader marginSheetDownloader = new FileDownloader(marginSheetResource);
+            marginSheetDownloader.extend(marginButton);
+            right.addComponent(marginButton);
+            right.setComponentAlignment(marginButton, Alignment.MIDDLE_RIGHT);
+        }*/
         horizontalLayout.addComponent(right);
         horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_RIGHT);
 
@@ -299,6 +354,8 @@ public class ProductAndAddons extends Window
         /*Component component=getVersionLayout();
         right.addComponent(component);*/
 
+
+
         /*Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         soExtractButton.setCaptionAsHtml(true);
         soExtractButton.setIcon(FontAwesome.DOWNLOAD);
@@ -363,7 +420,6 @@ public class ProductAndAddons extends Window
         right.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);*/
 
         submitButton = new Button("Publish");
-        submitButton.setVisible(ProposalHeader.ProposalState.draft.name().equals(proposalHeader.getStatus()));
         submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
         submitButton.addStyleName("margin-right-10-for-headerlevelbutton");
         submitButton.addClickListener(this::submit);
@@ -371,7 +427,6 @@ public class ProductAndAddons extends Window
         right.setComponentAlignment(submitButton, Alignment.MIDDLE_RIGHT);
 
         confirmButton = new Button("Confirm");
-        confirmButton.setVisible(ProposalHeader.ProposalState.draft.name().equals(proposalHeader.getStatus()));
         confirmButton.addStyleName(ValoTheme.BUTTON_SMALL);
         confirmButton.addStyleName("margin-right-10-for-headerlevelbutton");
         confirmButton.addClickListener(this::confirm);
@@ -379,7 +434,6 @@ public class ProductAndAddons extends Window
         right.setComponentAlignment(confirmButton, Alignment.MIDDLE_RIGHT);
 
         designSignOffButton = new Button("Design Sign off");
-        designSignOffButton.setVisible(ProposalHeader.ProposalState.draft.name().equals(proposalHeader.getStatus()));
         designSignOffButton.addStyleName(ValoTheme.BUTTON_SMALL);
         designSignOffButton.addStyleName("margin-right-10-for-headerlevelbutton");
         designSignOffButton.addClickListener(this::confirm);
@@ -387,7 +441,6 @@ public class ProductAndAddons extends Window
         right.setComponentAlignment(designSignOffButton, Alignment.MIDDLE_RIGHT);
 
         productionSignOffButton = new Button("Production Sign off");
-        productionSignOffButton.setVisible(ProposalHeader.ProposalState.draft.name().equals(proposalHeader.getStatus()));
         productionSignOffButton.addStyleName(ValoTheme.BUTTON_SMALL);
         productionSignOffButton.addStyleName("margin-right-10-for-headerlevelbutton");
         productionSignOffButton.addClickListener(this::confirm);
@@ -507,8 +560,8 @@ public class ProductAndAddons extends Window
         left1.addComponent(grandTotal);
         this.grandTotal.setConverter(getAmountConverter());
         this.grandTotal.setReadOnly(true);
-        grandTotal.addStyleName("amount-text-label");
-        grandTotal.addStyleName("v-label-amount-text-label");
+        grandTotal.addStyleName("amount-text-label1");
+        grandTotal.addStyleName("v-label-amount-text-label1");
         grandTotal.addStyleName("margin-top-18");
         vlayout.addComponent(left1);
 
@@ -522,11 +575,11 @@ public class ProductAndAddons extends Window
 
         FormLayout left3 = new FormLayout();
         this.discountPercentage = new TextField();
-        discountPercentage.addStyleName("amount-text-label2");
-        discountPercentage.addStyleName("v-label-amount-text-label");
+        discountPercentage.addStyleName("amount-text-label1");
+        discountPercentage.addStyleName("v-label-amount-text-label1");
         discountPercentage.addStyleName("margin-top-18");
         this.discountPercentage.setConverter(new StringToDoubleConverter());
-        this.discountPercentage.setValue("0");
+        this.discountPercentage.setValue(proposalVersion.getDiscountPercentage());
         this.discountPercentage.setNullRepresentation("0");
 
         left3.addComponent(discountPercentage);
@@ -543,11 +596,11 @@ public class ProductAndAddons extends Window
         FormLayout left5 = new FormLayout();
         this.discountAmount=new TextField();
         this.discountAmount.setConverter(new StringToDoubleConverter());
-        this.discountAmount.setValue("0");
-        this.discountAmount.setNullRepresentation("0");
+        this.discountAmount.setValue(proposalVersion.getDiscountAmount());
+        //this.discountAmount.setNullRepresentation("0");
         left5.addComponent(discountAmount);
         discountAmount.addStyleName("amount-text-label1");
-        discountAmount.addStyleName("v-label-amount-text-label");
+        discountAmount.addStyleName("v-label-amount-text-label1");
         discountAmount.addStyleName("margin-top-18");
         vlayout.addComponent(left5);
 
@@ -564,8 +617,8 @@ public class ProductAndAddons extends Window
         this.discountTotal.setConverter(getAmountConverter());
         this.discountTotal.setReadOnly(true);
         left7.addComponent(discountTotal);
-        discountTotal.addStyleName("amount-text-label");
-        discountTotal.addStyleName("v-label-amount-text-label");
+        discountTotal.addStyleName("amount-text-label1");
+        discountTotal.addStyleName("v-label-amount-text-label1");
         discountTotal.addStyleName("margin-top-18");
         vlayout.addComponent(left7);
 
@@ -643,7 +696,11 @@ public class ProductAndAddons extends Window
                     discountPercent = 0.0;
                 }
                 discountAmount = totalWoAccessories * discountPercent / 100.0;
-                this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
+                //double res = discountAmount - discountAmount % 100;
+                this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                disAmount=discountAmount.intValue();
+                LOG.info("Discount Amount" +disAmount);
+                //this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
             }
             else
             {
@@ -669,7 +726,8 @@ public class ProductAndAddons extends Window
         LOG.info(totalAfterDiscount+costOfAccessories+addonsTotal);
 
         Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal;
-        Double rem=grandTotal%10;
+        double res=grandTotal-grandTotal%10;
+        /*Double rem=grandTotal%10;
 
         if(rem<5)
         {
@@ -678,18 +736,22 @@ public class ProductAndAddons extends Window
         else
         {
             grandTotal=grandTotal+(10-rem);
-        }
+        }*/
 
         this.discountTotal.setReadOnly(false);
-        this.discountTotal.setValue(grandTotal.intValue() + "");
+        this.discountTotal.setValue((int)res + "");
         this.discountTotal.setReadOnly(true);
 
         this.grandTotal.setReadOnly(false);
         this.grandTotal.setValue(totalAmount.intValue() + "");
         this.grandTotal.setReadOnly(true);
 
-        productAndAddonSelection.setDiscountPercentage(discountPercent);
-        productAndAddonSelection.setDiscountAmount(discountAmount);
+       /* productAndAddonSelection.setDiscountPercentage(discountPercent);
+        productAndAddonSelection.setDiscountAmount(discountAmount);*/
+
+        productAndAddonSelection.setDiscountPercentage(Double.parseDouble(proposalVersion.getDiscountPercentage()));
+        productAndAddonSelection.setDiscountAmount(Double.parseDouble(proposalVersion.getDiscountAmount()));
+
     }
 
     private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -750,7 +812,7 @@ public class ProductAndAddons extends Window
                     newProduct.setProposalId(this.proposalHeader.getId());
                     LOG.info("Vid in value" +vid);
                     newProduct.setFromVersion(this.vid);
-                    CustomizedProductDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion);
+                    CustomizedProductDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
                 }
         );
 
@@ -787,9 +849,9 @@ public class ProductAndAddons extends Window
             @Override
             public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                if (("published").equals(proposalVersion.getStatus()) || ("confirmed").equals(proposalVersion.getStatus()) || ("locked").equals(proposalVersion.getStatus()))
+                if (("Published").equals(proposalVersion.getStatus()) || ("Confirmed").equals(proposalVersion.getStatus()) || ("Locked").equals(proposalVersion.getStatus()))
                 {
-                    Notification.show("Cannot copy on published, confirmed amd locked versions");
+                    Notification.show("Cannot copy on Published, Confirmed and Locked versions");
                     return;
                 }
                 Product p = (Product) rendererClickEvent.getItemId();
@@ -797,7 +859,7 @@ public class ProductAndAddons extends Window
 
                 productContainer.removeAllItems();
 
-                List<Product> copy = proposal.getProducts();
+                List<Product> copy = proposalDataProvider.getVersionProducts(proposalHeader.getId(),proposalVersion.getVersion());
                 int length = (copy.size()) + 1;
                 System.out.println("original"+ p);
 
@@ -868,7 +930,7 @@ public class ProductAndAddons extends Window
                         List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
                         product.setFileAttachmentList(productAttachments);
                     }
-                    CustomizedProductDetailsWindow.open(proposal, product, proposalVersion);
+                    CustomizedProductDetailsWindow.open(proposal, product, proposalVersion,proposalHeader);
                 } else {
                     CatalogueProduct catalogueProduct = new CatalogueProduct();
                     catalogueProduct.populateFromProduct(product);
@@ -879,14 +941,14 @@ public class ProductAndAddons extends Window
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                if (("published").equals(proposalVersion.getStatus()) || ("confirmed").equals(proposalVersion.getStatus()) || ("locked").equals(proposalVersion.getStatus()))
+                if (("Published").equals(proposalVersion.getStatus()) || ("Confirmed").equals(proposalVersion.getStatus()) || ("Locked").equals(proposalVersion.getStatus()))
                 {
-                    Notification.show("Cannot delete products on published, confirmed amd locked versions");
+                    Notification.show("Cannot delete products on Published, Confirmed and Locked versions");
                     return;
                 }
 
                 if (isProposalReadonly()) {
-                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                    NotificationUtil.showNotification("This operation is allowed only in 'Draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
                 } else {
 
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Product?",
@@ -1006,7 +1068,7 @@ public class ProductAndAddons extends Window
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 if (isProposalReadonly()) {
-                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                    NotificationUtil.showNotification("This operation is allowed only in 'Draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
                 } else {
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
                             "Yes", "No", dialog -> {
@@ -1033,11 +1095,6 @@ public class ProductAndAddons extends Window
         }));
 
         verticalLayout.addComponent(addonsGrid);
-
-        Label label = new Label("Select Addons and click Download Quote/Job Card button to generate output for only the selected Addons.");
-        label.setStyleName("font-italics");
-
-        verticalLayout.addComponent(label);
 
         List<AddonProduct> existingAddons = proposal.getAddons();
         int seq = 0;
@@ -1118,7 +1175,7 @@ public class ProductAndAddons extends Window
             NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
         }
         if (proposal.getAddons().isEmpty()) {
-            NotificationUtil.showNotification("No Addons found.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            NotificationUtil.showNotification("No Addons found.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
         }
     }
     private StringToDoubleConverter getAmountConverter() {
@@ -1204,11 +1261,30 @@ public class ProductAndAddons extends Window
         return new StreamResource(source, "JobCard.xlsx");
     }
 
+    private StreamResource createMarginSheetResource() {
+        StreamResource.StreamSource source = () -> {
+
+            if (this.productAndAddonSelection.getProductIds().size() == 1) {
+                String jobcardFile = proposalDataProvider.getMarginSheet(this.productAndAddonSelection);
+                InputStream input = null;
+                try {
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return input;
+            } else {
+                return null;
+            }
+        };
+        return new StreamResource(source, "MarginSheet.xlsx");
+    }
+
 
     private void submit(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
-            proposalVersion.setStatus(ProposalVersion.ProposalStage.published.name());
+            proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1230,7 +1306,7 @@ public class ProductAndAddons extends Window
                         addKitchenOrWardrobeButton.setVisible(false);
                         addFromCatalogueButton.setVisible(false);
                         addonAddButton.setVisible(false);
-                        /*versionStatus.setValue("published");*/
+                        /*versionStatus.setValue("Published");*/
                         NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                         handleState();
                     } else {
@@ -1243,7 +1319,7 @@ public class ProductAndAddons extends Window
         } catch (FieldGroup.CommitException e) {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
-        proposalDataProvider.updateVersion(proposalVersion.getTitle(), remarksText.getValue(), discountTotal.getValue(), proposalVersion.getStatus(), proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion());
+        proposalDataProvider.updateVersion(proposalVersion.getTitle(), remarksText.getValue(), discountTotal.getValue(), proposalVersion.getStatus(), proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),discountPercentage.getValue(),String.valueOf(disAmount),grandTotal.getValue());
         DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
         DashboardEventBus.unregister(this);
         close();
@@ -1252,7 +1328,7 @@ public class ProductAndAddons extends Window
     private void confirm(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
-            proposalVersion.setStatus(ProposalVersion.ProposalStage.confirmed.name());
+            proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
 
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
@@ -1273,23 +1349,25 @@ public class ProductAndAddons extends Window
                     {
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
-                        proposalVersion.setVersion((float) 1.1);
-                        proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.locked.name());
+                        proposalVersion.setVersion("1.0");
+                        proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                     }
                     else if (versionNew.startsWith("1."))
                     {
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
-                        proposalVersion.setVersion((float) 2.1);
+                        proposalVersion.setVersion("2.0");
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
-                        proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.locked.name());
+                        proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                     }
                     else if (versionNew.startsWith("2."))
                     {
+                        proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
-                        proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.locked.name());
+                        proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
+                        proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                     }
 
@@ -1337,7 +1415,10 @@ public class ProductAndAddons extends Window
     {
 
         try {
-            proposalVersion = proposalDataProvider.updateVersion(proposalVersion.getTitle(), remarksText.getValue(), discountTotal.getValue(), proposalVersion.getStatus(), proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion());
+                String disAmount=discountAmount.getValue();
+                LOG.info(disAmount.replace(",",""));
+                LOG.info("Discount Percentage " +discountPercentage.getValue() + "discount Amount" +discountAmount.getValue());
+                proposalVersion = proposalDataProvider.updateVersion(proposalVersion.getTitle(), remarksText.getValue(), discountTotal.getValue(), proposalVersion.getStatus(), proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),discountPercentage.getValue(),disAmount.replace(",",""),grandTotal.getValue());
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             close();
@@ -1350,12 +1431,12 @@ public class ProductAndAddons extends Window
     }
 
     private boolean isProposalReadonly() {
-        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.draft.name());
+        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.Draft.name());
     }
 
     private void close(Button.ClickEvent clickEvent) {
 
-        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this screen?",
+        ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this screen? All unsaved data will be lost",
                 "Yes", "No", dialog -> {
                     if (!dialog.isCanceled()) {
 
@@ -1373,7 +1454,7 @@ public class ProductAndAddons extends Window
             ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getStatus());
             LOG.debug("Status :" + proposalStage);
             switch (proposalStage) {
-                case draft:
+                case Draft:
                     submitButton.setVisible(true);
                     addKitchenOrWardrobeButton.setEnabled(true);
                     addFromCatalogueButton.setEnabled(true);
@@ -1382,7 +1463,7 @@ public class ProductAndAddons extends Window
                     addonAddButton.setEnabled(true);
                     confirmButton.setVisible(false);
                     break;
-                case published:
+                case Published:
                     submitButton.setVisible(false);
                     confirmButton.setVisible(true);
                     String versionNew = String.valueOf(proposalVersion.getVersion());
@@ -1409,7 +1490,7 @@ public class ProductAndAddons extends Window
                     discountPercentage.setReadOnly(true);
                     /*vTitle.setReadOnly(true);*/
                     break;
-                case confirmed:
+                case Confirmed:
                     setComponentsReadonly();
                     submitButton.setVisible(false);
                     confirmButton.setVisible(false);
@@ -1419,7 +1500,7 @@ public class ProductAndAddons extends Window
                     discountPercentage.setReadOnly(true);
 //                    vTitle.setReadOnly(true);
                     break;
-                case locked:
+                case Locked:
                     submitButton.setVisible(false);
                     confirmButton.setVisible(false);
                     addKitchenOrWardrobeButton.setVisible(false);
@@ -1446,6 +1527,7 @@ public class ProductAndAddons extends Window
                     confirmButton.setVisible(false);
                     discountAmount.setReadOnly(true);
                     designSignOffButton.setVisible(false);
+                    productionSignOffButton.setVisible(false);
                     discountPercentage.setReadOnly(true);
                     break;
                 default:

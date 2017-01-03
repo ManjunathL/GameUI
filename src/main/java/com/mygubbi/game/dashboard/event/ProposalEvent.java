@@ -110,8 +110,6 @@ public abstract class ProposalEvent {
             this.proposalVersion = proposalVersion;
         }
 
-
-
         public ProposalVersion getProposalVersion() {
             return proposalVersion;
         }

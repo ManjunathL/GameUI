@@ -242,15 +242,15 @@ public class ModuleDetailsWindow extends Window {
             {
                 ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getStatus());
                 switch (proposalStage) {
-                    case draft:
+                    case Draft:
                         break;
-                    case published:
+                    case Published:
                         setComponentsReadOnly();
                         break;
-                    case confirmed:
+                    case Confirmed:
                         setComponentsReadOnly();
                         break;
-                    case locked:
+                    case Locked:
                         setComponentsReadOnly();
                         break;
                     default:

@@ -129,7 +129,7 @@ public class FileAttachmentComponent extends VerticalLayout {
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
                 if (readOnly) {
-                    NotificationUtil.showNotification("This operation is allowed only in 'draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                    NotificationUtil.showNotification("This operation is allowed only in 'Draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
                 } else {
                     ConfirmDialog.show(UI.getCurrent(), "", "Do you want to delete the attachment PERMANENTLY?",
                             "Yes", "No", dialog -> {

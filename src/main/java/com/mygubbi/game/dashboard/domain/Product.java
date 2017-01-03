@@ -44,7 +44,7 @@ public class Product implements FileAttachmentsHolder {
 
     private int id;
     private int proposalId;
-    private float fromVersion;
+    private String fromVersion;
     private String title;
     private int seq;
     private String productCategory;
@@ -148,11 +148,11 @@ public class Product implements FileAttachmentsHolder {
         this.id = id;
     }
 
-    public float getFromVersion() {
+    public String getFromVersion() {
         return fromVersion;
     }
 
-    public void setFromVersion(float fromVersion) {
+    public void setFromVersion(String fromVersion) {
         this.fromVersion = fromVersion;
     }
 
@@ -398,7 +398,7 @@ public class Product implements FileAttachmentsHolder {
 
         if (id != product.id) return false;
         if (proposalId != product.proposalId) return false;
-        return Float.compare(product.fromVersion, fromVersion) == 0;
+        return fromVersion.equals(product.fromVersion);
 
     }
 
@@ -406,7 +406,7 @@ public class Product implements FileAttachmentsHolder {
     public int hashCode() {
         int result = id;
         result = 31 * result + proposalId;
-        result = 31 * result + (fromVersion != +0.0f ? Float.floatToIntBits(fromVersion) : 0);
+        result = 31 * result + fromVersion.hashCode();
         return result;
     }
 }

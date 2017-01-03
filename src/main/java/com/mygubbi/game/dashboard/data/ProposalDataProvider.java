@@ -130,7 +130,7 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<Product> getVersionProducts(int proposalId,Float Vid) {
+    public List<Product> getVersionProducts(int proposalId,String Vid) {
         JSONArray jsonArray = dataProviderMode.getResourceArray("product/versionlist", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId + "");
@@ -235,7 +235,7 @@ public class ProposalDataProvider {
 
 
     //give modules and addons
-    public Product getProposalProductDetails(int productId, float proposalVersion) {
+    public Product getProposalProductDetails(int productId, String proposalVersion) {
 
         JSONObject jsonObject = dataProviderMode.getResource("product/detail", new HashMap<String, String>() {
             {
@@ -320,8 +320,10 @@ public class ProposalDataProvider {
     public boolean saveProposal(ProposalHeader proposalHeader) {
 
         try {
+
             proposalHeader.setUpdatedBy(getUserId());
             String proposalJson = this.mapper.writeValueAsString(proposalHeader);
+            LOG.debug("Proposal header json :" + proposalJson);
             JSONObject jsonObject = dataProviderMode.postResource("proposal/update", proposalJson);
             return !jsonObject.has("error");
         } catch (JsonProcessingException e) {
@@ -330,27 +332,28 @@ public class ProposalDataProvider {
         }
     }
 
-    public boolean publishVersion(float version, int proposalId) {
+    public boolean publishVersion(String version, int proposalId) {
         JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publish", "{\"version\": " + version + "," +"\"proposalId\": " + proposalId + "}");
         return !jsonObject.has("error");
     }
 
-    public boolean confirmVersion(float version, int proposalId, float fromVersion, float toVersion) {
+    public boolean confirmVersion(String version, int proposalId, String fromVersion, String toVersion) {
         JSONObject jsonObject = dataProviderMode.postResource("proposal/version/confirm", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "}");
         return !jsonObject.has("error");
     }
 
-    public boolean versionDesignSignOff(float version, int proposalId, float fromVersion, float toVersion) {
+    public boolean versionDesignSignOff(String version, int proposalId, String fromVersion, String toVersion) {
         JSONObject jsonObject = dataProviderMode.postResource("proposal/version/designsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "}");
         return !jsonObject.has("error");
     }
 
-    public boolean versionProductionSignOff(float version, int proposalId, float fromVersion, float toVersion) {
+    public boolean versionProductionSignOff(String version, int proposalId, String fromVersion, String toVersion) {
         JSONObject jsonObject = dataProviderMode.postResource("proposal/version/productionsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "}");
+        LOG.debug("JSON OBJECT :" + jsonObject.toString());
         return !jsonObject.has("error");
     }
 
-    //submit to draft
+    //submit to Draft
     public boolean reviseProposal(int proposalId) {
         JSONObject jsonObject = dataProviderMode.postResource("proposal/revise", "{\"id\": " + proposalId + "}");
         return !jsonObject.has("error");
@@ -684,6 +687,17 @@ public class ProposalDataProvider {
 
     }
 
+    public String getMarginSheet(ProductAndAddonSelection productAndAddonSelection) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
+            JSONObject obj = dataProviderMode.postResource("proposal/downloadmarginsheet", productSelectionsJson);
+            return obj.getString("marginSheetFile");
+        } catch (JSONException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 
 
 
@@ -967,6 +981,7 @@ public class ProposalDataProvider {
         try {
 
             String versionJson = this.mapper.writeValueAsString(proposalversion);
+            LOG.debug("Version json :" + versionJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "proposal/version/createversion", versionJson);
 
@@ -977,11 +992,12 @@ public class ProposalDataProvider {
 
     }
 
-    public ProposalVersion updateVersion(String title, String remarks, String finalAmount, String status, float version, int pid, float fromVersion) {
+    public ProposalVersion updateVersion(String title, String remarks, String finalAmount, String status, String version, int pid, String fromVersion,String discountPercentage,String discountAmount,String grandTotal) {
 
         try
         {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/updateversion",  "{\"title\": " + "\"" + title + "\"" + "," + "\"finalAmount\" : "  + finalAmount + "," + "\"status\" : " + "\"" +  status  + "\"" + "," + "\"remarks\" : " + "\"" + remarks +  "\"" + " , " + "\"version\" : "  + "\"" + version + "\"" + " , " +   "\"proposalId\" : "  + pid + " , " +   "\"fromVersion\" : "  + fromVersion +  "}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/updateversion",  "{\"title\": " + "\"" + title + "\"" + "," + "\"finalAmount\" : "  + finalAmount + "," + "\"status\" : " + "\"" +  status  + "\"" + "," + "\"remarks\" : " + "\"" + remarks +  "\"" + " , " + "\"version\" : "  + "\"" + version + "\"" + " , " +   "\"proposalId\" : "  + pid + " , " +   "\"fromVersion\" : "  + fromVersion + " , " + "\"discountPercentage\" : " +discountPercentage + " , " + "\"discountAmount\" : " +discountAmount + " , " +"\"Amount\" : " +grandTotal + "}");
+
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         }
         catch (IOException e)
@@ -990,11 +1006,11 @@ public class ProposalDataProvider {
         }
     }
 
-    public ProposalVersion lockAllPreSalesVersions(String status) {
+    public ProposalVersion lockAllPreSalesVersions(String status, int proposalId) {
 
         try
         {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/locakallpresalesversions",  "{\"status\": " + "\"" + status + "\"" + "}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/locakallpresalesversions",  "{\"status\": " + "\"" + status + "\""  + "," + "\"proposalId\" : "  + proposalId + "}");
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         }
         catch (IOException e)
@@ -1003,11 +1019,11 @@ public class ProposalDataProvider {
         }
     }
 
-    public ProposalVersion lockAllPostSalesVersions(String status) {
+    public ProposalVersion lockAllPostSalesVersions(String status, int proposalId) {
 
         try
         {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/locakallpostsalesversions",  "{\"status\": " + "\"" + status +  "\"" + "}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/locakallpostsalesversions",  "{\"status\": " + "\"" + status +  "\"" + "," + "\"proposalId\" : "  + proposalId + "}");
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         }
         catch (IOException e)
@@ -1016,7 +1032,21 @@ public class ProposalDataProvider {
         }
     }
 
-    public ProposalVersion updateVersionOnConfirm(float version,int proposalId,float fromVersion) {
+    public ProposalVersion lockAllVersionsExceptPSO(String status, int proposalId) {
+
+        try
+        {
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/lockallversionsexceptpso",  "{\"status\": " + "\"" + status +  "\"" + "," + "\"proposalId\" : "  + proposalId + "}");
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException("Couldn't update proposal", e);
+        }
+    }
+
+
+    public ProposalVersion updateVersionOnConfirm(String version,int proposalId,String fromVersion) {
 
         try
         {
@@ -1026,6 +1056,41 @@ public class ProposalDataProvider {
         catch (IOException e)
         {
             throw new RuntimeException("Couldn't update proposal", e);
+        }
+    }
+
+    public List<ProposalVersion> getLatestVersion(int proposalId) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/getlatestversion", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId + "");
+            }
+        });
+        try
+        {
+            ProposalVersion[] items = this.mapper.readValue(jsonArray.toString(), ProposalVersion[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<ProposalVersion> getLatestVersionTemproary(int proposalId, String version) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/getlatestTemproary", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId + "");
+                put("version", version + "");
+            }
+        });
+        try
+        {
+            ProposalVersion[] items = this.mapper.readValue(jsonArray.toString(), ProposalVersion[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 
