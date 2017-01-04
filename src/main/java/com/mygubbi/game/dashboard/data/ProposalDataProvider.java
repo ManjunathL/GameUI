@@ -1093,6 +1093,34 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
+    public List<ProposalCity> getMonthCount(int curmonth,String city) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("city/selectMonthCount", new HashMap<String, String>() {
+            {
+                put("curmonth", curmonth+"" );
+                put("city", city + "");
+            }
+        });
+
+        try {
+
+            ProposalCity[] items = this.mapper.readValue(jsonArray.toString(),ProposalCity[].class);
+            LOG.info("hegwjewdji"+items);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+
+    }
+    public ProposalHeader createCity(String city,int curmonth,int proposalId,String quoteNo)
+    {
+        try {
+            JSONObject jsonObject = dataProviderMode.postResource("city/newCityQuote", "{\"city\": " + "\"" + city  + "\"" +  "," + "\"curmonth\" : " + "\"" +curmonth +  "\"" + ","  + "\"proposalId\" : " + "\"" + proposalId + "\"" +" , " + "\"quoteNo\" : " + "\"" + quoteNo + "\"" + "}");
+            return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't create proposal", e);
+        }
+    }
 
 
 }
