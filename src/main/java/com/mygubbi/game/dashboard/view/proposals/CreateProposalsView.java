@@ -15,6 +15,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.*;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
@@ -25,6 +26,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
+import org.apache.james.mime4j.field.datetime.DateTime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.gridutil.renderer.ViewEditButtonValueRenderer;
@@ -32,6 +34,7 @@ import org.vaadin.gridutil.renderer.ViewEditButtonValueRenderer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,11 +48,12 @@ import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
 public class CreateProposalsView extends Panel implements View {
 
     private static final Logger LOG = LogManager.getLogger(CreateProposalsView.class);
-
+    ProposalVersion proposalversion = new ProposalVersion();
     private final String NEW_TITLE = "New Proposal";
     private final String NEW_DRAFT_TITLE = "Draft created for ";
     private final String NEW_VERSION = "1.0";
     private String QuoteNum=null;
+    private String QuoteNumNew=null;
     private String status=null;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
@@ -67,7 +71,8 @@ public class CreateProposalsView extends Panel implements View {
     private Field<?> customerEmailField;
     private Field<?> customerNumberField1;
     private Field<?> customerNumberField2;
-    private TextField quote;
+    private Field<?> quote;
+    private TextField quotenew;
 
     private Field<?> projectName;
     private Field<?> projectAddressLine1;
@@ -93,6 +98,8 @@ public class CreateProposalsView extends Panel implements View {
     private ProposalVersion getLatestVersionDetails;
     private BeanItemContainer productContainer;
     private Label grandTotal;
+    String cityCode= "";
+    int month;
 
     private ProductAndAddonSelection productAndAddonSelection;
 
@@ -137,7 +144,8 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal.setProposalHeader(this.proposalHeader);
             this.proposal.setFileAttachments(proposalDataProvider.getProposalDocuments(pid));
             proposalHeader.setVersion(NEW_VERSION);
-            proposalHeader.setEditFlag(EDIT.W.name()); //todo: this has to be removed once server side is fixed
+            proposalHeader.setEditFlag(EDIT.W.name());
+            //todo: this has to be removed once server side is fixed
         } else {
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setTitle(NEW_TITLE);
@@ -457,6 +465,7 @@ public class CreateProposalsView extends Panel implements View {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
+
         proposalVersion = new ProposalVersion();
         List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
         for (ProposalVersion getLatestVersion : proposalVersionLatest)
@@ -464,11 +473,20 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeader.setStatus(getLatestVersion.getStatus());
             proposalHeader.setVersion(getLatestVersion.getVersion());
         }
+       try {
+            proposalDataProvider.createCity(cityCode,month,proposalHeader.getId(),quotenew.getValue());
+
+
+            LOG.info("success");
+       }
+       catch(Exception e){
+            LOG.info(e);
+       }
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
         if (success) {
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-        } else {
+
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
 
@@ -727,15 +745,19 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) crmId).setNullRepresentation("");
         formLayoutRight.addComponent(crmId);
 
-        /*quotationField = binder.buildAndBind("Quotation #", QUOTE_NO);
-        ((TextField) quotationField).setNullRepresentation("");
-        quotationField.setRequired(true);
-        formLayoutRight.addComponent(quotationField);*/
-        quote = new TextField("Quotation #");
-        quote.setValue(proposalHeader.getQuoteNo());
-        //quote.setValue("0");
-        formLayoutRight.addComponent(quote);
 
+
+        quotenew = new TextField("Quotation #");
+        quotenew.setValue(proposalHeader.getQuoteNo());
+        quotenew.setRequired(true);
+        quotenew.setValue(proposalHeader.getQuoteNoNew());
+        quotenew.setNullRepresentation("");
+        formLayoutRight.addComponent(quotenew);
+
+        quote = binder.buildAndBind("Quotation # (Old)", QUOTE_NO);
+        ((TextField) quote).setNullRepresentation("");
+        /*quote.setRequired(true);*/
+        formLayoutRight.addComponent(quote);
         return formLayoutRight;
     }
 
@@ -756,8 +778,10 @@ public class CreateProposalsView extends Panel implements View {
         });
 */
         formLayoutLeft.addComponent(proposalTitleField);
+        /*projectCityField.setInputPrompt("Select City");*/
         proposalVersionField = binder.buildAndBind("Proposal Version", VERSION);
         proposalVersionField.setReadOnly(true);
+
         /*formLayoutLeft.addComponent(proposalVersionField);*/
         projectCityField = getCityCombo();
         binder.bind(projectCityField, P_CITY);
@@ -765,13 +789,12 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.addComponent(projectCityField);
         projectCityField.addValueChangeListener(this :: cityChanged);
 
-
         return formLayoutLeft;
     }
 
     private void cityChanged(Property.ValueChangeEvent valueChangeEvent) {
         String city = (String) projectCityField.getValue();
-        String cityCode= "";
+
         switch(city){
             case "Bangalore": cityCode= "BLR";
                 break;
@@ -787,15 +810,30 @@ public class CreateProposalsView extends Panel implements View {
         List<ProposalHeader> id=proposalDataProvider.getProposalId();
         for(ProposalHeader val: id) {
             pid=val.getId();
+
         }
+        LocalDate today = LocalDate.now();
+        month = today.getMonthValue();
+        LOG.info("month" + month);
 
-        String date=new SimpleDateFormat("MMyy-dd").format(new Date());
 
-        QuoteNum= cityCode + "-" + date+"-"+pid ;
-        proposalHeader.setQuoteNo(QuoteNum);
-        LOG.info("quote no"+ QuoteNum);
-        quote.setValue(QuoteNum);
+        LOG.info("city code"+ cityCode);
+        int value=0;
+        List<ProposalCity> count=proposalDataProvider.getMonthCount(month,cityCode);
+        for(ProposalCity val: count) {
+           value=count.size();
+        }
+        LOG.info("month count"+ value);
 
+
+        String valueStr;
+        valueStr=Integer.toString(value);
+        valueStr=String.format("%04d",value+1);
+        String date=new SimpleDateFormat("yyyy-MM").format(new Date());
+        QuoteNumNew= cityCode + "-" + date+"-"+ valueStr;
+        proposalHeader.setQuoteNoNew(QuoteNumNew);
+        LOG.info("quote no"+ QuoteNumNew);
+        quotenew.setValue(QuoteNumNew);
     }
 
     private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
@@ -866,10 +904,6 @@ public class CreateProposalsView extends Panel implements View {
     @Subscribe
     public void versionCreated(final ProposalEvent.VersionCreated event) {
         List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(proposalHeader.getId());
-        for (ProposalVersion proposalVersionTest : proposalVersionList)
-        {
-            LOG.debug("proposal Version list : " + proposalVersionList.toString());
-        }
         proposalVersionList.remove(event.getProposalVersion());
         versionContainer.removeAllItems();
         proposalVersionList.add(event.getProposalVersion());
