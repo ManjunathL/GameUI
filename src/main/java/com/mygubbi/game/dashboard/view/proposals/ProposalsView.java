@@ -102,7 +102,10 @@ public final class ProposalsView extends TabSheet implements View {
         grid.addSelectionListener(selectionEvent -> {
                     if (!selectionEvent.getAdded().isEmpty()) {
                         Object selected = ((Grid.SingleSelectionModel) grid.getSelectionModel()).getSelectedRow();
+                        LOG.info("object selected value "+selected.toString());
                         int proposalId = (Integer) grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.ID).getValue();
+                        LOG.info("pid value "+proposalId);
+
                         UI.getCurrent().getNavigator()
                                 .navigateTo("New Quotation/" + proposalId);
                     }

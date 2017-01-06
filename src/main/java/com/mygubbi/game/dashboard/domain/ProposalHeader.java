@@ -16,7 +16,7 @@ public class ProposalHeader {
     public static final String TITLE = "title";
     public static final String VERSION = "version";
     public static final String CRM_ID = "crmId";
-    public static final String QUOTE_NO = "quoteNo";
+    public static final String QUOTE_NO =  "quoteNo";
     public static final String CUSTOMER_ID = "customerId";
     public static final String C_NAME = "cname";
     public static final String C_ADDRESS1 = "caddress1";
