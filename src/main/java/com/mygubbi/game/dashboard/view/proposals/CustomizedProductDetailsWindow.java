@@ -411,16 +411,70 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private VerticalLayout buildAddItemBasicFormLayoutRight() {
-        VerticalLayout formLayoutRight = new VerticalLayout();
-        formLayoutRight.setSizeUndefined();
-        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeUndefined();
+        verticalLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeFull();
+
+        if ((("admin").equals(role) || ("planning").equals(role)) && proposalVersion.getVersion().startsWith("2."))
+        {
+            Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            soExtractButton.setCaptionAsHtml(true);
+            soExtractButton.setIcon(FontAwesome.DOWNLOAD);
+            soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+            soExtractButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+            soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
+            soExtractButton.setWidth("120px");
+
+            FileDownloader soExtractDownloader = this.getSOExtractFileDownloader();
+            soExtractDownloader.extend(soExtractButton);
+            horizontalLayout.addComponent(soExtractButton);
+//            footer.setComponentAlignment(soExtractButton, Alignment.TOP_RIGHT);
+
+            Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            jobcardButton.setCaptionAsHtml(true);
+            jobcardButton.setIcon(FontAwesome.DOWNLOAD);
+            jobcardButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+            jobcardButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+            jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
+            jobcardButton.setWidth("100px");
+
+            StreamResource jobcardResource = createJobcardResource();
+            FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
+            jobcardDownloader.extend(jobcardButton);
+            horizontalLayout.addComponent(jobcardButton);
+//            footer.setComponentAlignment(jobcardButton, Alignment.TOP_RIGHT);
+
+           /* Button marginButton = new Button("Margin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            marginButton.setCaptionAsHtml(true);
+            marginButton.setIcon(FontAwesome.DOWNLOAD);
+            marginButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+            marginButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+            marginButton.addStyleName(ValoTheme.BUTTON_SMALL);
+            soExtractButton.setWidth("100px");
+
+
+            StreamResource marginSheetResource = createMarginSheetResource();
+            FileDownloader marginSheetDownloader = new FileDownloader(marginSheetResource);
+            marginSheetDownloader.extend(marginButton);
+            footer.addComponent(marginButton);
+            footer.setComponentAlignment(marginButton, Alignment.TOP_RIGHT);*/
+        }
+
+
 
 //        HorizontalLayout horizontalLayout = new HorizontalLayout();
 //        horizontalLayout.setWidth("100%");
 //        horizontalLayout.setHeight("100%");
-        formLayoutRight.addComponent(getQuoteUploadControl());
 
-        formLayoutRight.setSpacing(true);
+        verticalLayout.addComponent(horizontalLayout);
+        verticalLayout.addComponent(getQuoteUploadControl());
+
+        verticalLayout.setSpacing(true);
 
         this.addModules = new Button("Add Modules");
         addModules.addClickListener(new Button.ClickListener() {
@@ -453,11 +507,11 @@ public class CustomizedProductDetailsWindow extends Window {
             }
         });
 
-        formLayoutRight.addComponent(addModules);
+        verticalLayout.addComponent(addModules);
 
 //        formLayoutRight.addComponent(horizontalLayout);
 
-        return formLayoutRight;
+        return verticalLayout;
     }
 
     private List<Finish> filterShutterFinishByType() {
@@ -666,7 +720,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     return;
                 }
 
-                if (("Published").equals(proposalVersion.getStatus()) || ("Confirmed").equals(proposalVersion.getStatus()) || ("Locked").equals(proposalVersion.getStatus()))
+                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot copy on Published, Confirmed amd Locked versions");
                     return;
@@ -753,7 +807,7 @@ public class CustomizedProductDetailsWindow extends Window {
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                if (("Published").equals(proposalVersion.getStatus()) || ("Confirmed").equals(proposalVersion.getStatus()) || ("Locked").equals(proposalVersion.getStatus()))
+                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot delete modules on Published, Confirmed amd Locked versions");
                     return;
@@ -1038,6 +1092,11 @@ public class CustomizedProductDetailsWindow extends Window {
                     return;
                 }
                 LOG.debug("cwa :" + product.getCostWoAccessories());
+                List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
+                proposal.setProducts(getAllVersionProducts);
+                int size = getAllVersionProducts.size();
+                size++;
+                product.setSeq(size);
                 boolean success = proposalDataProvider.updateProduct(product);
 
                 if (success) {
@@ -1059,10 +1118,8 @@ public class CustomizedProductDetailsWindow extends Window {
         footer.addComponent(saveBtn);
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 
-        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-        String versionNew = String.valueOf(proposalVersion.getVersion());
 
-
+/*
         if (("admin").equals(role) && versionNew.startsWith("2."))
         {
             Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
@@ -1106,7 +1163,7 @@ public class CustomizedProductDetailsWindow extends Window {
             marginSheetDownloader.extend(marginButton);
             footer.addComponent(marginButton);
             footer.setComponentAlignment(marginButton, Alignment.TOP_RIGHT);
-        }
+        }*/
         return footer;
     }
 
@@ -1126,6 +1183,8 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private String getSOFilename()
     {
+        prepareProductAndAddonObject();
+
         if (this.productAndAddonSelection.getProductIds().size() == 1)
         {
             int productId = this.productAndAddonSelection.getProductIds().get(0);
@@ -1150,6 +1209,8 @@ public class CustomizedProductDetailsWindow extends Window {
     private StreamResource createSalesOrderResource() {
 
         StreamResource.StreamSource source = () -> {
+
+            prepareProductAndAddonObject();
 
             if (this.productAndAddonSelection.getProductIds().size() == 1) {
                 String salesOrderFile = proposalDataProvider.getSalesOrderExtract(this.productAndAddonSelection);
@@ -1215,6 +1276,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(proposalVersion.getProposalId());
         this.productAndAddonSelection.getProductIds().add(product.getId());
+        this.productAndAddonSelection.setFromVersion(proposalVersion.getVersion());
     }
 
     public static void closeWindow() {
@@ -1396,10 +1458,8 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void handleState() {
 
-        if (proposal.getProposalHeader().isReadonly()) {
-            setComponentsReadonly();
-        } else {
-            ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getStatus());
+            ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getInternalStatus());
+            LOG.debug("Proposal Stage :" + proposalStage);
             switch (proposalStage) {
                 case Draft:
                     break;
@@ -1412,10 +1472,16 @@ public class CustomizedProductDetailsWindow extends Window {
                 case Locked:
                     setComponentsReadonly();
                     break;
+                case DSO:
+                    setComponentsReadonly();
+                    break;
+                case PSO:
+                    setComponentsReadonly();
+                    break;
                 default:
                     throw new RuntimeException("Unknown State");
             }
-        }
+
     }
 
     private void setComponentsReadonly() {

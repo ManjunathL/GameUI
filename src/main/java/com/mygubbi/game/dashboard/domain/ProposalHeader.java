@@ -11,6 +11,7 @@ public class ProposalHeader {
     public enum EDIT {W, R}
 
     public static final String ID = "id";
+    public static final String QUOTE_NO_NEW = "quoteNoNew";
     public static final String STATUS = "status";
     public static final String TITLE = "title";
     public static final String VERSION = "version";
@@ -43,6 +44,7 @@ public class ProposalHeader {
     public static final String UPDATED_BY = "updatedBy";
 
     private int id;
+    private String quoteNoNew;
     private String status;
     private String title;
     private String version;
@@ -114,6 +116,15 @@ public class ProposalHeader {
     public void setQuoteNo(String quoteNo) {
         this.quoteNo = quoteNo;
     }
+
+    public String getQuoteNoNew() {
+        return quoteNoNew;
+    }
+
+    public void setQuoteNoNew(String quoteNoNew) {
+        this.quoteNoNew = quoteNoNew;
+    }
+
 
     public double getAmount() {
         return amount;

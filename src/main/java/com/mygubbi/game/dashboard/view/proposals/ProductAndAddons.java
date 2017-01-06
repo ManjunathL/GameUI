@@ -43,7 +43,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -67,6 +70,7 @@ public class ProductAndAddons extends Window
     private TextField discountAmount;
     private Label discountTotal;
     private Button addonAddButton;
+    private TextField ttitle;
     private BeanItemContainer<AddonProduct> addonsContainer;
     private Grid addonsGrid;
 
@@ -81,7 +85,6 @@ public class ProductAndAddons extends Window
     private BeanItemContainer<Product> productContainer;
     private Label grandTotal;
     private TextField remarksText;
-    private TextField vTitle;
     private Label versionNum;
     private Label versionStatus;
 
@@ -119,7 +122,6 @@ public class ProductAndAddons extends Window
 
 
         VerticalLayout verticalLayout = new VerticalLayout();
-       // verticalLayout.setSizeUndefined();
 
         setSizeFull();
 
@@ -144,6 +146,7 @@ public class ProductAndAddons extends Window
         Component amountsLayout = getAmountLayout();
         this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
         this.discountAmount.addFocusListener(this::onFocusToDiscountAmount);
+        this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
         this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
         this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
         verticalLayout.addComponent(amountsLayout);
@@ -232,61 +235,6 @@ public class ProductAndAddons extends Window
         right.addComponent(downloadButton);
         right.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
 
-        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-
-        /*if (("planning").equals(role))
-        {
-        Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        soExtractButton.setCaptionAsHtml(true);
-        soExtractButton.setIcon(FontAwesome.DOWNLOAD);
-        soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        soExtractButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        soExtractButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        soExtractButton.setWidth("120px");
-        soExtractButton.addClickListener(this::doSalesOrderDownloadValidation);
-
-        FileDownloader soExtractDownloader = this.getSOExtractFileDownloader();
-        soExtractDownloader.extend(soExtractButton);
-        right.addComponent(soExtractButton);
-        right.setComponentAlignment(soExtractButton, Alignment.MIDDLE_RIGHT);
-
-        Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        jobcardButton.setCaptionAsHtml(true);
-        jobcardButton.setIcon(FontAwesome.DOWNLOAD);
-        jobcardButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        jobcardButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        jobcardButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        jobcardButton.setWidth("100px");
-        jobcardButton.addClickListener(this::checkSingleProductSelection);
-
-        StreamResource jobcardResource = createJobcardResource();
-        FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
-        jobcardDownloader.extend(jobcardButton);
-        right.addComponent(jobcardButton);
-        right.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);
-        }
-
-        if (("margin").equals(role) )
-        {
-            Button marginButton = new Button("Margin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            marginButton.setCaptionAsHtml(true);
-            marginButton.setIcon(FontAwesome.DOWNLOAD);
-            marginButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-            marginButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-            marginButton.addStyleName(ValoTheme.BUTTON_SMALL);
-            marginButton.addStyleName("margin-right-10-for-headerlevelbutton");
-            marginButton.addStyleName("margin-top-for-headerlevelbutton");
-            marginButton.setWidth("100px");
-            marginButton.addClickListener(this::checkSingleProductSelection);
-
-            StreamResource marginSheetResource = createMarginSheetResource();
-            FileDownloader marginSheetDownloader = new FileDownloader(marginSheetResource);
-            marginSheetDownloader.extend(marginButton);
-            right.addComponent(marginButton);
-            right.setComponentAlignment(marginButton, Alignment.MIDDLE_RIGHT);
-        }*/
         horizontalLayout.addComponent(right);
         horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_RIGHT);
 
@@ -330,15 +278,22 @@ public class ProductAndAddons extends Window
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        TextField ttitle=new TextField("Title");
+        ttitle=new TextField("Title");
+
+        ttitle.addStyleName("textfield-background-color");
+        ttitle.addStyleName(ValoTheme.LABEL_COLORED);
+
         formLayoutRight.addComponent(ttitle);
         ttitle.setValue(proposalVersion.getTitle());
 
+
+
         this.remarksText = new TextField("Remarks");
-        remarksText.setWidth("100%");
-        remarksText.addValidator(new StringLengthValidator("Must be 200 characters long",0,200,false));
-        remarksText.setImmediate(true);
-        remarksText.setValue(proposalVersion.getRemarks());
+        this.remarksText.addStyleName("textfield-background-color");
+        this.remarksText.setWidth("100%");
+        this.remarksText.addValidator(new StringLengthValidator("Must be 200 characters long",0,200,false));
+        this.remarksText.setImmediate(true);
+        this.remarksText.setValue(proposalVersion.getRemarks());
         formLayoutRight.addComponent(remarksText);
         return formLayoutRight;
                 }
@@ -350,74 +305,6 @@ public class ProductAndAddons extends Window
         horizontalLayout.setSizeFull();
 
         HorizontalLayout right = new HorizontalLayout();
-
-        /*Component component=getVersionLayout();
-        right.addComponent(component);*/
-
-
-
-        /*Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        soExtractButton.setCaptionAsHtml(true);
-        soExtractButton.setIcon(FontAwesome.DOWNLOAD);
-        soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        soExtractButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        soExtractButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        soExtractButton.setWidth("120px");
-        soExtractButton.addClickListener(this::doSalesOrderDownloadValidation);
-
-        FileDownloader soExtractDownloader = this.getSOExtractFileDownloader();
-        soExtractDownloader.extend(soExtractButton);
-        right.addComponent(soExtractButton);
-        right.setComponentAlignment(soExtractButton, Alignment.MIDDLE_RIGHT);
-
-        Button quotePdf = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        quotePdf.setCaptionAsHtml(true);
-        quotePdf.setIcon(FontAwesome.DOWNLOAD);
-        quotePdf.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        quotePdf.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        quotePdf.addStyleName(ValoTheme.BUTTON_SMALL);
-        quotePdf.addStyleName("margin-right-10-for-headerlevelbutton");
-        quotePdf.setWidth("120px");
-        quotePdf.addClickListener(this::checkProductsAndAddonsAvailable);
-
-        StreamResource quotePdfresource = createQuoteResourcePdf();
-        FileDownloader fileDownloaderPdf = new FileDownloader(quotePdfresource);
-        fileDownloaderPdf.extend(quotePdf);
-        right.addComponent(quotePdf);
-        right.setComponentAlignment(quotePdf, Alignment.MIDDLE_RIGHT);
-
-        Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        downloadButton.setCaptionAsHtml(true);
-        downloadButton.setIcon(FontAwesome.DOWNLOAD);
-        downloadButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        downloadButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        downloadButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        downloadButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        downloadButton.setWidth("85px");
-        downloadButton.addClickListener(this::checkProductsAndAddonsAvailable);
-
-        StreamResource myResource = createQuoteResource();
-        FileDownloader fileDownloader = new FileDownloader(myResource);
-        fileDownloader.extend(downloadButton);
-        right.addComponent(downloadButton);
-        right.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
-
-        Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-        jobcardButton.setCaptionAsHtml(true);
-        jobcardButton.setIcon(FontAwesome.DOWNLOAD);
-        jobcardButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        jobcardButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
-        jobcardButton.addStyleName("margin-right-10-for-headerlevelbutton");
-        jobcardButton.setWidth("100px");
-        jobcardButton.addClickListener(this::checkSingleProductSelection);
-
-        StreamResource jobcardResource = createJobcardResource();
-        FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
-        jobcardDownloader.extend(jobcardButton);
-        right.addComponent(jobcardButton);
-        right.setComponentAlignment(jobcardButton, Alignment.MIDDLE_RIGHT);*/
 
         submitButton = new Button("Publish");
         submitButton.addStyleName(ValoTheme.BUTTON_SMALL);
@@ -515,27 +402,15 @@ public class ProductAndAddons extends Window
         amountsLayout.addComponent(versionStatus);
         amountsLayout.setSpacing(true);
 
-        Label vtitle = new Label("<b>Title :</b>",ContentMode.HTML);
-        amountsLayout.addComponent(vtitle);
-        amountsLayout.setSpacing(true);
-        vtitle.addStyleName("amount-text-label");
-        vtitle.addStyleName("v-label-amount-text-label");
-        vtitle.addStyleName("margin-top-18");
 
-        this.vTitle = new TextField();
-        this.vTitle.setWidth("100%");
-        //this.vTitle.addStyleName("inputTextbox");
-        this.vTitle.addStyleName("margin-top-18");
-        this.vTitle.addStyleName("v-label-amount-text-label");
-        //this.vTitle.setCaptionAsHtml(true);
-        this.vTitle.setValue(proposalVersion.getTitle());
-        amountsLayout.addComponent(vTitle);
+
 
         amountsPanel.setContent(amountsLayout);
         hlayout.addComponent(amountsPanel);
 
         return hlayout;
     }
+
 
 
     private Component getAmountLayout()
@@ -559,6 +434,7 @@ public class ProductAndAddons extends Window
         this.grandTotal.setReadOnly(true);
         left1.addComponent(grandTotal);
         this.grandTotal.setConverter(getAmountConverter());
+        this.grandTotal.setValue(String.valueOf(proposalVersion.getAmount()));
         this.grandTotal.setReadOnly(true);
         grandTotal.addStyleName("amount-text-label1");
         grandTotal.addStyleName("v-label-amount-text-label1");
@@ -579,7 +455,7 @@ public class ProductAndAddons extends Window
         discountPercentage.addStyleName("v-label-amount-text-label1");
         discountPercentage.addStyleName("margin-top-18");
         this.discountPercentage.setConverter(new StringToDoubleConverter());
-        this.discountPercentage.setValue(proposalVersion.getDiscountPercentage());
+        this.discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
         this.discountPercentage.setNullRepresentation("0");
 
         left3.addComponent(discountPercentage);
@@ -596,7 +472,7 @@ public class ProductAndAddons extends Window
         FormLayout left5 = new FormLayout();
         this.discountAmount=new TextField();
         this.discountAmount.setConverter(new StringToDoubleConverter());
-        this.discountAmount.setValue(proposalVersion.getDiscountAmount());
+        this.discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
         //this.discountAmount.setNullRepresentation("0");
         left5.addComponent(discountAmount);
         discountAmount.addStyleName("amount-text-label1");
@@ -615,6 +491,8 @@ public class ProductAndAddons extends Window
         FormLayout left7 = new FormLayout();
         this.discountTotal=new Label();
         this.discountTotal.setConverter(getAmountConverter());
+        this.discountTotal.setValue(String.valueOf(proposalVersion.getFinalAmount()));
+        //this.discountTotal.setValue(proposalVersion.getDiscountAmount());
         this.discountTotal.setReadOnly(true);
         left7.addComponent(discountTotal);
         discountTotal.addStyleName("amount-text-label1");
@@ -678,7 +556,7 @@ public class ProductAndAddons extends Window
         }
 
         Double totalWoAccessories = 0.0;
-        List<Product> products = proposal.getProducts();
+        List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
         for (Product product : products) {
             totalWoAccessories += product.getCostWoAccessories();
         }
@@ -686,8 +564,14 @@ public class ProductAndAddons extends Window
         Double totalAmount = addonsTotal + productsTotal;
         Double costOfAccessories = productsTotal - totalWoAccessories;
 
-        Double discountPercent=0.0,discountAmount=0.0;
 
+        refreshDiscount(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal);
+    }
+    private void refreshDiscount(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
+    {
+        LOG.debug("TW"+ totalWoAccessories+ "TA" +totalAmount + "CA" + costOfAccessories +"Addon" + addonsTotal);
+
+        Double discountPercent=0.0,discountAmount=0.0;
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
@@ -695,11 +579,11 @@ public class ProductAndAddons extends Window
                 if (discountPercent == null) {
                     discountPercent = 0.0;
                 }
+
                 discountAmount = totalWoAccessories * discountPercent / 100.0;
                 //double res = discountAmount - discountAmount % 100;
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
                 disAmount=discountAmount.intValue();
-                LOG.info("Discount Amount" +disAmount);
                 //this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
             }
             else
@@ -721,9 +605,7 @@ public class ProductAndAddons extends Window
                 return;
             }
         }
-
         Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
-        LOG.info(totalAfterDiscount+costOfAccessories+addonsTotal);
 
         Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal;
         double res=grandTotal-grandTotal%10;
@@ -739,21 +621,20 @@ public class ProductAndAddons extends Window
         }*/
 
         this.discountTotal.setReadOnly(false);
-        this.discountTotal.setValue((int)res + "");
-        this.discountTotal.setReadOnly(true);
+        this.discountTotal.setValue(String.valueOf(res));
 
         this.grandTotal.setReadOnly(false);
         this.grandTotal.setValue(totalAmount.intValue() + "");
         this.grandTotal.setReadOnly(true);
 
+        //this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
        /* productAndAddonSelection.setDiscountPercentage(discountPercent);
         productAndAddonSelection.setDiscountAmount(discountAmount);*/
 
-        productAndAddonSelection.setDiscountPercentage(Double.parseDouble(proposalVersion.getDiscountPercentage()));
-        productAndAddonSelection.setDiscountAmount(Double.parseDouble(proposalVersion.getDiscountAmount()));
+        productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
+        productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
 
     }
-
     private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
         if("DA".equals(status))
         {
@@ -766,6 +647,12 @@ public class ProductAndAddons extends Window
         {
             updateTotal();
         }
+    }
+
+    private void onGrandTotalValueChange(Property.ValueChangeEvent valueChangeEvent)
+    {
+        status="DP";
+        updateTotal();
     }
 
     private Component buildProductDetails() {
@@ -810,7 +697,6 @@ public class ProductAndAddons extends Window
                     newProduct.setType(Product.TYPES.CUSTOMIZED.name());
                     newProduct.setSeq(this.proposal.getProducts().size() + 1);
                     newProduct.setProposalId(this.proposalHeader.getId());
-                    LOG.info("Vid in value" +vid);
                     newProduct.setFromVersion(this.vid);
                     CustomizedProductDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
                 }
@@ -849,7 +735,7 @@ public class ProductAndAddons extends Window
             @Override
             public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                if (("Published").equals(proposalVersion.getStatus()) || ("Confirmed").equals(proposalVersion.getStatus()) || ("Locked").equals(proposalVersion.getStatus()))
+                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot copy on Published, Confirmed and Locked versions");
                     return;
@@ -912,6 +798,11 @@ public class ProductAndAddons extends Window
                 }
                 productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
                 updateTotal();
+                status = "DP";
+
+
+
+
 
             }
             @Override
@@ -941,7 +832,7 @@ public class ProductAndAddons extends Window
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                if (("Published").equals(proposalVersion.getStatus()) || ("Confirmed").equals(proposalVersion.getStatus()) || ("Locked").equals(proposalVersion.getStatus()))
+                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot delete products on Published, Confirmed and Locked versions");
                     return;
@@ -1284,7 +1175,12 @@ public class ProductAndAddons extends Window
     private void submit(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date();
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
+            proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
+            proposalVersion.setDate(dateFormat.format(date));
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1319,7 +1215,7 @@ public class ProductAndAddons extends Window
         } catch (FieldGroup.CommitException e) {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
-        proposalDataProvider.updateVersion(proposalVersion.getTitle(), remarksText.getValue(), discountTotal.getValue(), proposalVersion.getStatus(), proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),discountPercentage.getValue(),String.valueOf(disAmount),grandTotal.getValue());
+        proposalDataProvider.updateVersion(proposalVersion);
         DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
         DashboardEventBus.unregister(this);
         close();
@@ -1328,7 +1224,13 @@ public class ProductAndAddons extends Window
     private void confirm(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date();
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
+            proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
+            proposalVersion.setDate(dateFormat.format(date));
+
 
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
@@ -1351,7 +1253,7 @@ public class ProductAndAddons extends Window
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("1.0");
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
+                        success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                     }
                     else if (versionNew.startsWith("1."))
                     {
@@ -1359,16 +1261,18 @@ public class ProductAndAddons extends Window
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("2.0");
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
+                        proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
+                        success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                     }
                     else if (versionNew.startsWith("2."))
                     {
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
+                        proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.PSO.name());
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
+                        success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                     }
 
                     proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
@@ -1414,11 +1318,25 @@ public class ProductAndAddons extends Window
     private void save(Button.ClickEvent clickEvent)
     {
 
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
         try {
                 String disAmount=discountAmount.getValue();
-                LOG.info(disAmount.replace(",",""));
-                LOG.info("Discount Percentage " +discountPercentage.getValue() + "discount Amount" +discountAmount.getValue());
-                proposalVersion = proposalDataProvider.updateVersion(proposalVersion.getTitle(), remarksText.getValue(), discountTotal.getValue(), proposalVersion.getStatus(), proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),discountPercentage.getValue(),disAmount.replace(",",""),grandTotal.getValue());
+                proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+                proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
+                proposalVersion.setDate(dateFormat.format(date));
+                proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
+                proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
+            LOG.debug("Proposal Version" + proposalVersion.toString());
+            LOG.debug("Proposal remarks" + remarksText.getValue());
+            LOG.debug("Proposal title" + ttitle.getValue());
+
+                proposalVersion.setRemarks(remarksText.getValue());
+                proposalVersion.setTitle(this.ttitle.getValue());
+
+                /*LOG.debug("Proposal Version" + proposalVersion.toString());*/
+
+                proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             close();
@@ -1439,7 +1357,7 @@ public class ProductAndAddons extends Window
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this screen? All unsaved data will be lost",
                 "Yes", "No", dialog -> {
                     if (!dialog.isCanceled()) {
-
+                        save(clickEvent);
                         DashboardEventBus.unregister(this);
                         close();
 
@@ -1451,8 +1369,7 @@ public class ProductAndAddons extends Window
         if (proposalHeader.isReadonly()) {
             setComponentsReadonly();
         } else {
-            ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getStatus());
-            LOG.debug("Status :" + proposalStage);
+            ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getInternalStatus());
             switch (proposalStage) {
                 case Draft:
                     submitButton.setVisible(true);
@@ -1469,7 +1386,6 @@ public class ProductAndAddons extends Window
                     String versionNew = String.valueOf(proposalVersion.getVersion());
                     if (versionNew.startsWith("1."))
                     {
-                        LOG.debug("HEy whats the vesriosn :" + proposalVersion.getVersion());
                         productionSignOffButton.setVisible(false);
                         designSignOffButton.setEnabled(true);
                         confirmButton.setVisible(false);
@@ -1488,7 +1404,7 @@ public class ProductAndAddons extends Window
                     setComponentsReadonly();
                     discountAmount.setReadOnly(true);
                     discountPercentage.setReadOnly(true);
-                    /*vTitle.setReadOnly(true);*/
+
                     break;
                 case Confirmed:
                     setComponentsReadonly();
@@ -1498,7 +1414,7 @@ public class ProductAndAddons extends Window
                     designSignOffButton.setVisible(false);
                     productionSignOffButton.setVisible(false);
                     discountPercentage.setReadOnly(true);
-//                    vTitle.setReadOnly(true);
+
                     break;
                 case Locked:
                     submitButton.setVisible(false);
@@ -1510,7 +1426,6 @@ public class ProductAndAddons extends Window
                     productionSignOffButton.setVisible(false);
                     discountAmount.setReadOnly(true);
                     discountPercentage.setReadOnly(true);
-//                    vTitle.setReadOnly(true);
                     break;
                 case DSO:
                     setComponentsReadonly();

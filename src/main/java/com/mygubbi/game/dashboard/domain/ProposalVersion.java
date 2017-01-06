@@ -1,7 +1,5 @@
 package com.mygubbi.game.dashboard.domain;
 
-import java.util.Date;
-
 /**
  * Created by Chirag on 06-12-2016.
  */
@@ -15,6 +13,7 @@ public class ProposalVersion implements Cloneable {
     public static final String TITLE = "title";
     public static final String FINAL_AMOUNT = "finalAmount";
     public static final String STATUS = "status";
+    public static final String INTERNAL_STATUS = "internalStatus";
     public static final String DATE = "date";
     public static final String REMARKS = "remarks";
     public static final String PRODUCTS = "products";
@@ -26,15 +25,16 @@ public class ProposalVersion implements Cloneable {
     private String version;
     private int proposalId;
     private String title;
-    private String finalAmount;
+    private double finalAmount;
     private String status;
-    private Date date;
+    private String internalStatus;
+    private String date;
     private String remarks;
     private String fromVersion;
     private String toVersion;
-    private String discountAmount;
-    private String discountPercentage;
-    private String amount;
+    private double discountAmount;
+    private double discountPercentage;
+    private double amount;
 
     @Override
     public Object clone()  {
@@ -73,6 +73,7 @@ public class ProposalVersion implements Cloneable {
                 ", title='" + title + '\'' +
                 ", finalAmount='" + finalAmount + '\'' +
                 ", status='" + status + '\'' +
+                ", internalStatus='" + internalStatus + '\'' +
                 ", date=" + date +
                 ", remarks='" + remarks + '\'' +
                 ", fromVersion='" + fromVersion + '\'' +
@@ -103,41 +104,40 @@ public class ProposalVersion implements Cloneable {
         return title;
     }
 
-    public String getAmount() {
-        return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
-
-    public String getDiscountAmount() {
-
-        return discountAmount;
-    }
-
-    public void setDiscountAmount(String discountAmount) {
-        this.discountAmount = discountAmount;
-    }
-
-    public String getDiscountPercentage() {
-        return discountPercentage;
-    }
-
-    public void setDiscountPercentage(String discountPercentage) {
-        this.discountPercentage = discountPercentage;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
 
-    public String getFinalAmount() {
+    public double getFinalAmount() {
         return finalAmount;
     }
 
-    public void setFinalAmount(String finalAmount) {
+    public void setFinalAmount(double finalAmount) {
         this.finalAmount = finalAmount;
+    }
+
+    public double getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(double discountAmount) {
+        this.discountAmount = discountAmount;
+    }
+
+    public double getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(double discountPercentage) {
+        this.discountPercentage = discountPercentage;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public String getStatus() {
@@ -148,11 +148,19 @@ public class ProposalVersion implements Cloneable {
         this.status = status;
     }
 
-    public Date getDate() {
+    public String getInternalStatus() {
+        return internalStatus;
+    }
+
+    public void setInternalStatus(String internalStatus) {
+        this.internalStatus = internalStatus;
+    }
+
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

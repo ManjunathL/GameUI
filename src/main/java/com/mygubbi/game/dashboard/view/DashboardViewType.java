@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum DashboardViewType {
-    PROPOSALS(new ViewType("Proposals", ProposalsView.class, FontAwesome.ANCHOR, false, new ArrayList<ViewType>() {{
-        add(new ViewType("New Proposal", CreateProposalsView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
+    PROPOSALS(new ViewType("Quotations", ProposalsView.class, FontAwesome.ANCHOR, false, new ArrayList<ViewType>() {{
+        add(new ViewType("New Quotation", CreateProposalsView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));
     }}));
 //    CATALOG(new ViewType("Catalog", CatalogView.class, FontAwesome.BAR_CHART_O, false, new ArrayList<ViewType>() {{
 //        add(new ViewType("JSON", CatalogView.class, FontAwesome.PLUS_CIRCLE, false, new ArrayList<>()));

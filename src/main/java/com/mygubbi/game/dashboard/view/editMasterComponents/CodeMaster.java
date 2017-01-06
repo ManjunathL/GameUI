@@ -90,7 +90,7 @@ public class CodeMaster extends Panel implements View {
                         int proposalId = (Integer) grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.ID).getValue();
 
                         UI.getCurrent().getNavigator()
-                                .navigateTo("New Proposal/" + proposalId);
+                                .navigateTo("New Quotation/" + proposalId);
                         //DashboardViewType.PROPOSALS.getViewType().getSubViewTypes().stream().filter(viewType -> viewType.getViewClass().equals(CreateProposalsView.class)).findFirst().get().getViewName());
 
 

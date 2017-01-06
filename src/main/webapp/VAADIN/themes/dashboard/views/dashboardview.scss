@@ -439,6 +439,9 @@
   .vLayoutScroll > div {
 	overflow: auto !important;
   }
+  .textfield-background-color {
+   background: #FFFFCC !important;
+  }
   .labelFont {
 	font-size: 11px
   }
@@ -491,6 +494,8 @@
 	.v-vertical-customized-product-details{
 	height: 130% !important;
 	}
+
+
 }
 
 	@media only screen and (max-width: 1370px) {

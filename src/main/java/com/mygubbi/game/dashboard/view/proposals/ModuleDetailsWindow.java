@@ -240,7 +240,7 @@ public class ModuleDetailsWindow extends Window {
         }
 
             {
-                ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getStatus());
+                ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getInternalStatus());
                 switch (proposalStage) {
                     case Draft:
                         break;

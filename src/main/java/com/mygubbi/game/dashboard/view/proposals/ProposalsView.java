@@ -18,6 +18,8 @@ import com.vaadin.server.Responsive;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.vaadin.gridutil.cell.GridCellFilter;
 
 import java.util.HashMap;
@@ -26,6 +28,11 @@ import java.util.Map;
 
 @SuppressWarnings("serial")
 public final class ProposalsView extends TabSheet implements View {
+
+
+    private static final Logger LOG = LogManager.getLogger(ProposalsView.class);
+
+
 
     private Grid grid;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
@@ -62,16 +69,16 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Grid(container);
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
-        grid.setColumns(ProposalHeader.ID,ProposalHeader.CRM_ID, ProposalHeader.VERSION, ProposalHeader.QUOTE_NO, ProposalHeader.TITLE, ProposalHeader.STATUS,
+        grid.setColumns(ProposalHeader.QUOTE_NO_NEW,ProposalHeader.CRM_ID, ProposalHeader.VERSION, ProposalHeader.QUOTE_NO, ProposalHeader.TITLE, ProposalHeader.STATUS,
                 ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.CREATED_ON,
                 ProposalHeader.CREATED_BY);
 
         List<Grid.Column> columns = grid.getColumns();
         int idx = 0;
-        columns.get(idx++).setHeaderCaption("Proposal #");
+        columns.get(idx++).setHeaderCaption("Quotation #");
         columns.get(idx++).setHeaderCaption("CRM #");
         columns.get(idx++).setHeaderCaption("Version No");
-        columns.get(idx++).setHeaderCaption("Quotation #");
+        columns.get(idx++).setHeaderCaption("Quotation # (old)");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Status");
         columns.get(idx++).setHeaderCaption("Sales");
@@ -97,7 +104,7 @@ public final class ProposalsView extends TabSheet implements View {
                         Object selected = ((Grid.SingleSelectionModel) grid.getSelectionModel()).getSelectedRow();
                         int proposalId = (Integer) grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.ID).getValue();
                         UI.getCurrent().getNavigator()
-                                .navigateTo("New Proposal/" + proposalId);
+                                .navigateTo("New Quotation/" + proposalId);
                     }
                 }
         );
@@ -121,7 +128,7 @@ public final class ProposalsView extends TabSheet implements View {
         HorizontalLayout header = new HorizontalLayout();
         header.setSpacing(true);
 
-        Label titleLabel = new Label("Proposals");
+        Label titleLabel = new Label("Quotations");
         titleLabel.setSizeUndefined();
         titleLabel.addStyleName(ValoTheme.LABEL_H1);
         titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
