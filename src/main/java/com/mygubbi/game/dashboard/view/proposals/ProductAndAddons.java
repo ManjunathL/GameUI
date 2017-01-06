@@ -1181,6 +1181,7 @@ public class ProductAndAddons extends Window
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setDate(dateFormat.format(date));
+            save(clickEvent);
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1327,9 +1328,6 @@ public class ProductAndAddons extends Window
                 proposalVersion.setDate(dateFormat.format(date));
                 proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
-            LOG.debug("Proposal Version" + proposalVersion.toString());
-            LOG.debug("Proposal remarks" + remarksText.getValue());
-            LOG.debug("Proposal title" + ttitle.getValue());
 
                 proposalVersion.setRemarks(remarksText.getValue());
                 proposalVersion.setTitle(this.ttitle.getValue());
