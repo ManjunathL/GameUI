@@ -720,7 +720,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     return;
                 }
 
-                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()))
+                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()) || ("DSO").equals(proposalVersion.getInternalStatus()) || ("PSO").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot copy on Published, Confirmed amd Locked versions");
                     return;
@@ -807,7 +807,7 @@ public class CustomizedProductDetailsWindow extends Window {
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()))
+                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()) || ("DSO").equals(proposalVersion.getInternalStatus()) || ("PSO").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot delete modules on Published, Confirmed amd Locked versions");
                     return;

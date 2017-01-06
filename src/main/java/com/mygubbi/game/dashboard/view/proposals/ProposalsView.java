@@ -69,16 +69,17 @@ public final class ProposalsView extends TabSheet implements View {
         grid = new Grid(container);
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
-        grid.setColumns(ProposalHeader.QUOTE_NO_NEW,ProposalHeader.CRM_ID, ProposalHeader.VERSION, ProposalHeader.QUOTE_NO, ProposalHeader.TITLE, ProposalHeader.STATUS,
+        grid.setColumns(ProposalHeader.QUOTE_NO_NEW,ProposalHeader.QUOTE_NO,ProposalHeader.CRM_ID, ProposalHeader.VERSION,  ProposalHeader.TITLE, ProposalHeader.STATUS,
                 ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.CREATED_ON,
                 ProposalHeader.CREATED_BY);
 
         List<Grid.Column> columns = grid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("Quotation #");
+        columns.get(idx++).setHeaderCaption("Quotation # (old)");
         columns.get(idx++).setHeaderCaption("CRM #");
         columns.get(idx++).setHeaderCaption("Version No");
-        columns.get(idx++).setHeaderCaption("Quotation # (old)");
+
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Status");
         columns.get(idx++).setHeaderCaption("Sales");
@@ -88,10 +89,11 @@ public final class ProposalsView extends TabSheet implements View {
         grid.sort("createdOn", SortDirection.DESCENDING);
         GridCellFilter filter = new GridCellFilter(grid);
 
-        filter.setTextFilter(ProposalHeader.TITLE, true, false);
+        filter.setTextFilter(ProposalHeader.TITLE, true, true);
         filter.setTextFilter(ProposalHeader.CRM_ID, true, true);
         filter.setTextFilter(ProposalHeader.ID,true,true);
         filter.setTextFilter(ProposalHeader.VERSION,true,true);
+        filter.setTextFilter(ProposalHeader.QUOTE_NO_NEW,true,true);
         filter.setTextFilter(ProposalHeader.QUOTE_NO, true, true);
         filter.setTextFilter(ProposalHeader.STATUS, true, true);
         filter.setTextFilter(ProposalHeader.CREATED_BY, true, true);

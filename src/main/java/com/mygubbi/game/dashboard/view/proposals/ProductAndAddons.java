@@ -735,7 +735,7 @@ public class ProductAndAddons extends Window
             @Override
             public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()))
+                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()) || ("DSO").equals(proposalVersion.getInternalStatus()) || ("PSO").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot copy on Published, Confirmed and Locked versions");
                     return;
@@ -747,7 +747,6 @@ public class ProductAndAddons extends Window
 
                 List<Product> copy = proposalDataProvider.getVersionProducts(proposalHeader.getId(),proposalVersion.getVersion());
                 int length = (copy.size()) + 1;
-                System.out.println("original"+ p);
 
                 Product proposalProductDetails = proposalDataProvider.getProposalProductDetails(p.getId(),p.getFromVersion());
                 List<Module> modulesFromOldProduct = proposalProductDetails.getModules();
@@ -800,10 +799,6 @@ public class ProductAndAddons extends Window
                 updateTotal();
                 status = "DP";
 
-
-
-
-
             }
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
@@ -832,7 +827,7 @@ public class ProductAndAddons extends Window
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()))
+                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()) || ("DSO").equals(proposalVersion.getInternalStatus()) || ("PSO").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot delete products on Published, Confirmed and Locked versions");
                     return;
@@ -1231,6 +1226,7 @@ public class ProductAndAddons extends Window
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setDate(dateFormat.format(date));
+            save(clickEvent);
 
 
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
@@ -1346,6 +1342,30 @@ public class ProductAndAddons extends Window
         }
     }
 
+    private void saveWithoutClose(Button.ClickEvent clickEvent)
+    {
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        try {
+                String disAmount=discountAmount.getValue();
+                proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+                proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
+                proposalVersion.setDate(dateFormat.format(date));
+
+                /*LOG.debug("Proposal Version" + proposalVersion.toString());*/
+
+                proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
+            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+            close();
+        }
+        catch (Exception e)
+        {
+            NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            LOG.info("Exception :" + e.toString());
+        }
+    }
+
     private boolean isProposalReadonly() {
         return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.Draft.name());
     }
@@ -1355,7 +1375,7 @@ public class ProductAndAddons extends Window
         ConfirmDialog.show(UI.getCurrent(), "", "Do you want to close this screen? All unsaved data will be lost",
                 "Yes", "No", dialog -> {
                     if (!dialog.isCanceled()) {
-                        save(clickEvent);
+                        saveWithoutClose(clickEvent);
                         DashboardEventBus.unregister(this);
                         close();
 

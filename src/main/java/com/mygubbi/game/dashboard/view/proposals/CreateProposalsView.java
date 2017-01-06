@@ -602,7 +602,8 @@ public class CreateProposalsView extends Panel implements View {
         HorizontalLayout horizontalLayout3 = new HorizontalLayout();
         horizontalLayout3.setSizeFull();
         horizontalLayout3.addComponent(buildContactDetailsLeft());
-        horizontalLayout3.addComponent(buildContactDetailsRight());
+        horizontalLayout3.addComponent(buildContactDetailsCenter());
+        /*horizontalLayout3.addComponent(buildContactDetailsRight());*/
         verticalLayout.addComponent(horizontalLayout3);
 
         return verticalLayout;
@@ -680,6 +681,32 @@ public class CreateProposalsView extends Panel implements View {
 
         return formLayoutRight;
 
+    }
+
+    private FormLayout buildContactDetailsCenter() {
+        FormLayout formLayoutRight = new FormLayout();
+        formLayoutRight.setSizeFull();
+        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        Label mygubbiDetails = new Label("");
+        mygubbiDetails.addStyleName(ValoTheme.LABEL_HUGE);
+        mygubbiDetails.addStyleName(ValoTheme.LABEL_COLORED);
+        formLayoutRight.addComponent(mygubbiDetails);
+
+        designPerson = getDesignPersonCombo();
+        binder.bind(designPerson, DESIGNER_NAME);
+        designPerson.setRequired(true);
+        formLayoutRight.addComponent(designPerson);
+        designEmail = binder.buildAndBind("Email", DESIGNER_EMAIL);
+        ((TextField) designEmail).setNullRepresentation("");
+        designEmail.setRequired(true);
+        formLayoutRight.addComponent(designEmail);
+        designContact = binder.buildAndBind("Phone", DESIGNER_PHONE);
+        ((TextField) designContact).setNullRepresentation("");
+        designContact.setRequired(true);
+        designPerson.addValueChangeListener(this::designerChanged);
+        formLayoutRight.addComponent(designContact);
+        return formLayoutRight;
     }
 
     private FormLayout buildContactDetailsRight() {
@@ -795,6 +822,31 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private ComboBox getDesignPersonCombo() {
+        List<User> list = proposalDataProvider.getDesignerUsers();
+        final BeanContainer<String, User> container =
+                new BeanContainer<>(User.class);
+        container.setBeanIdProperty(User.NAME);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox("Designer");
+        select.setWidth("300px");
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(User.NAME);
+
+        if (StringUtils.isNotEmpty(proposalHeader.getDesignerName())) {
+            select.setValue(proposalHeader.getDesignerName());
+        } else if (container.size() > 0) {
+            select.setValue(select.getItemIds().iterator().next());
+            proposalHeader.setDesignerName((String) select.getValue());
+            proposalHeader.setDesignerPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
+            proposalHeader.setDesignerEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
+        }
+
+        return select;
+    }
+
+    private ComboBox getDesignPartnerPersonCombo() {
         List<User> list = proposalDataProvider.getDesignerUsers();
         final BeanContainer<String, User> container =
                 new BeanContainer<>(User.class);

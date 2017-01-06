@@ -36,6 +36,9 @@ public class ProposalHeader {
     public static final String DESIGNER_NAME = "designerName";
     public static final String DESIGNER_EMAIL = "designerEmail";
     public static final String DESIGNER_PHONE = "designerPhone";
+    public static final String DESIGN_PARTNER_NAME = "designPartnerName";
+    public static final String DESIGN_PARTNER_EMAIL = "designPartnerEmail";
+    public static final String DESIGN_PARTNER_PHONE = "designPartnerPhone";
     public static final String AMOUNT = "amount";
     public static final String FOLDER_PATH = "folderPath";
     public static final String CREATED_ON = "createdOn";
@@ -69,6 +72,9 @@ public class ProposalHeader {
     private String designerName;
     private String designerEmail;
     private String designerPhone;
+    private String designPartnerName;
+    private String designPartnerEmail;
+    private String designPartnerPhone;
     private double amount;
     private String folderPath;
     private Date createdOn;
@@ -308,6 +314,30 @@ public class ProposalHeader {
 
     public void setDesignerPhone(String designerPhone) {
         this.designerPhone = designerPhone;
+    }
+
+    public String getDesignPartnerName() {
+        return designPartnerName;
+    }
+
+    public void setDesignPartnerName(String designPartnerName) {
+        this.designPartnerName = designPartnerName;
+    }
+
+    public String getDesignPartnerEmail() {
+        return designPartnerEmail;
+    }
+
+    public void setDesignPartnerEmail(String designPartnerEmail) {
+        this.designPartnerEmail = designPartnerEmail;
+    }
+
+    public String getDesignPartnerPhone() {
+        return designPartnerPhone;
+    }
+
+    public void setDesignPartnerPhone(String designPartnerPhone) {
+        this.designPartnerPhone = designPartnerPhone;
     }
 
     public String getFolderPath() {
