@@ -5,6 +5,7 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.domain.ProposalVersion;
+import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
@@ -15,6 +16,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -70,7 +72,7 @@ public final class ProposalsView extends TabSheet implements View {
         grid.setSizeFull();
         grid.setColumnReorderingAllowed(true);
         grid.setColumns(ProposalHeader.QUOTE_NO_NEW,ProposalHeader.QUOTE_NO,ProposalHeader.CRM_ID, ProposalHeader.VERSION,  ProposalHeader.TITLE, ProposalHeader.STATUS,
-                ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.CREATED_ON,
+                ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.DESIGN_PARTNER_NAME, ProposalHeader.CREATED_ON,
                 ProposalHeader.CREATED_BY);
 
         List<Grid.Column> columns = grid.getColumns();
@@ -79,11 +81,11 @@ public final class ProposalsView extends TabSheet implements View {
         columns.get(idx++).setHeaderCaption("Quotation # (old)");
         columns.get(idx++).setHeaderCaption("CRM #");
         columns.get(idx++).setHeaderCaption("Version No");
-
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Status");
         columns.get(idx++).setHeaderCaption("Sales");
         columns.get(idx++).setHeaderCaption("Designer");
+        columns.get(idx++).setHeaderCaption("DesignPartner");
         columns.get(idx++).setHeaderCaption("Create Date");
         columns.get(idx++).setHeaderCaption("Created By");
         grid.sort("createdOn", SortDirection.DESCENDING);
@@ -98,6 +100,7 @@ public final class ProposalsView extends TabSheet implements View {
         filter.setTextFilter(ProposalHeader.STATUS, true, true);
         filter.setTextFilter(ProposalHeader.CREATED_BY, true, true);
         filter.setTextFilter(ProposalHeader.DESIGNER_NAME, true, true);
+        filter.setTextFilter(ProposalHeader.DESIGN_PARTNER_NAME, true, true);
         filter.setTextFilter(ProposalHeader.SALES_NAME, true, true);
         filter.setDateFilter(ProposalHeader.CREATED_ON);
 
@@ -186,7 +189,19 @@ public final class ProposalsView extends TabSheet implements View {
     }
 
     private List<ProposalHeader> getProposalsListing() {
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+        LOG.debug("role :" + role);
+        String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
+        LOG.debug("email :" + email);
+
+        if (("designpartner").equals(role))
+        {
+            return proposalDataProvider.getProposalHeadersBasedOnDesignPartner(email);
+        }
+        else
+        {
         return proposalDataProvider.getProposalHeaders();
+        }
     }
 
     private List<ProposalHeader> getProposalsListingByStatus(String proposalStatus) {

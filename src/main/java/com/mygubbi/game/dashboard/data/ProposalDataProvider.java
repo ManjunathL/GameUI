@@ -47,6 +47,7 @@ public class ProposalDataProvider {
     public static final String SUB_CATEGORY_LOOKUP = "psubcategory";
     public static final String CITY_LOOKUP = "city";
     private static final String ROLE_DESIGNER = "designer";
+    private static final String ROLE_DESIGN_PARTNER = "designPartner";
     private static final String ROLE_SALES = "sales";
     public static final String MODULE_CATEGORY_LOOKUP = "modulecategory";
     private static final String MODULE_SELECTION_LOOKUP = "module";
@@ -84,6 +85,15 @@ public class ProposalDataProvider {
         JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/list", new HashMap<String, String>() {
             {
                 put("userid", getUserId());
+            }
+        });
+        return getProposalHeaders(proposalHeaders);
+    }
+
+    public List<ProposalHeader> getProposalHeadersBasedOnDesignPartner(String designPartnerEmail) {
+        JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/listbydesignpartner", new HashMap<String, String>() {
+            {
+                put("designPartnerEmail", designPartnerEmail);
             }
         });
         return getProposalHeaders(proposalHeaders);
@@ -374,6 +384,17 @@ public class ProposalDataProvider {
         }
     }
 
+    public boolean deleteProposalVersion(int proposalId) {
+
+        try {
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/delete", "{\"id\": " + proposalId + "}");
+            return jsonObject.has("status") && jsonObject.getString("status").equals("success");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Couldn't delete proposal", e);
+        }
+    }
+
     public boolean cancelProposal(int proposalId) {
         try {
             JSONObject jsonObject = dataProviderMode.postResource("proposal/cancel", "{\"id\": " + proposalId + "}");
@@ -536,6 +557,10 @@ public class ProposalDataProvider {
 
     public List<User> getDesignerUsers() {
         return getUsersByRole(ROLE_DESIGNER);
+    }
+
+    public List<User> getDesignPartnerUsers() {
+        return getUsersByRole(ROLE_DESIGN_PARTNER);
     }
 
     public List<LookupItem> getLookupItems(String type) {

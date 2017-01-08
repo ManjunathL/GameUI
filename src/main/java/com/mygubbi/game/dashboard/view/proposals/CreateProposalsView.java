@@ -85,6 +85,9 @@ public class CreateProposalsView extends Panel implements View {
     private ComboBox designPerson;
     private Field<?> designEmail;
     private Field<?> designContact;
+    private ComboBox designPartner;
+    private Field<?> designPartnerEmail;
+    private Field<?> designPartnerContact;
 
     private Grid productsGrid;
     private Label proposalTitleLabel;
@@ -120,7 +123,7 @@ public class CreateProposalsView extends Panel implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-      /*  UI.getCurrent().getNavigator().addViewChangeListener(new ViewChangeListener() {
+        UI.getCurrent().getNavigator().addViewChangeListener(new ViewChangeListener() {
 
             @Override
             public boolean beforeViewChange(ViewChangeEvent viewChangeEvent) {
@@ -130,8 +133,10 @@ public class CreateProposalsView extends Panel implements View {
                 }
                 catch (FieldGroup.CommitException e)
                 {
-                    NotificationUtil.showNotification("Validation Error, please fill all mandatory fields! and click save button", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return false;
+                    if (proposalHeader.getQuoteNoNew() == null) {
+                        proposalDataProvider.deleteProposal(proposalHeader.getId());
+                    }
+                    return true;
                 }
                 return true;
             }
@@ -140,7 +145,7 @@ public class CreateProposalsView extends Panel implements View {
             public void afterViewChange(ViewChangeEvent viewChangeEvent) {
 
             }
-        });*/
+        });
         parameters = event.getParameters();
         if (StringUtils.isNotEmpty(parameters)) {
             pid = Integer.parseInt(parameters);
@@ -151,6 +156,7 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeader.setEditFlag(EDIT.W.name());
             //todo: this has to be removed once server side is fixed
         } else {
+
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setTitle(NEW_TITLE);
             proposalHeader.setVersion(NEW_VERSION);
@@ -570,10 +576,10 @@ public class CreateProposalsView extends Panel implements View {
             }
             else
             {
-                NotificationUtil.showNotification("Couldn't Delete Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Couldn't Cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
         } catch (Exception e) {
-            NotificationUtil.showNotification("Couldn't Delete Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            NotificationUtil.showNotification("Couldn't Cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
 
     }
@@ -603,7 +609,9 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout3.setSizeFull();
         horizontalLayout3.addComponent(buildContactDetailsLeft());
         horizontalLayout3.addComponent(buildContactDetailsCenter());
-        /*horizontalLayout3.addComponent(buildContactDetailsRight());*/
+/*
+        horizontalLayout3.addComponent(buildContactDetailsRight());
+*/
         verticalLayout.addComponent(horizontalLayout3);
 
         return verticalLayout;
@@ -719,19 +727,19 @@ public class CreateProposalsView extends Panel implements View {
         mygubbiDetails.addStyleName(ValoTheme.LABEL_COLORED);
         formLayoutRight.addComponent(mygubbiDetails);
 
-        designPerson = getDesignPersonCombo();
-        binder.bind(designPerson, DESIGNER_NAME);
-        designPerson.setRequired(true);
-        formLayoutRight.addComponent(designPerson);
-        designEmail = binder.buildAndBind("Email", DESIGNER_EMAIL);
-        ((TextField) designEmail).setNullRepresentation("");
-        designEmail.setRequired(true);
-        formLayoutRight.addComponent(designEmail);
-        designContact = binder.buildAndBind("Phone", DESIGNER_PHONE);
-        ((TextField) designContact).setNullRepresentation("");
-        designContact.setRequired(true);
-        designPerson.addValueChangeListener(this::designerChanged);
-        formLayoutRight.addComponent(designContact);
+        designPartner = getDesignPartnerPersonCombo();
+        binder.bind(designPartner, DESIGN_PARTNER_NAME);
+        designPartner.setRequired(false);
+        formLayoutRight.addComponent(designPartner);
+        designPartnerEmail = binder.buildAndBind("Email", DESIGN_PARTNER_EMAIL);
+        ((TextField) designPartnerEmail).setNullRepresentation("");
+        designPartnerEmail.setRequired(false);
+        formLayoutRight.addComponent(designPartnerEmail);
+        designPartnerContact = binder.buildAndBind("Phone", DESIGN_PARTNER_PHONE);
+        ((TextField) designPartnerContact).setNullRepresentation("");
+        designPartnerContact.setRequired(false);
+        designPartner.addValueChangeListener(this::designerChanged);
+        formLayoutRight.addComponent(designPartnerContact);
         return formLayoutRight;
     }
 
@@ -773,6 +781,19 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) salesContact).setValue(phone);
         String email = (String) salesPerson.getItem(salesPerson.getValue()).getItemProperty(User.EMAIL).getValue();
         ((TextField) salesEmail).setValue(email);
+    }
+
+    private void designPartnerChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        if (designPartner == null)
+        {
+            ((TextField) designContact).setValue(null);
+            ((TextField) designEmail).setValue(null);
+        }
+        String phone = (String) designPartner.getItem(designPartner.getValue()).getItemProperty(User.PHONE).getValue();
+        ((TextField) designContact).setValue(phone);
+        String email = (String) designPartner.getItem(designPartner.getValue()).getItemProperty(User.EMAIL).getValue();
+        ((TextField) designEmail).setValue(email);
     }
 
     private ComboBox getSalesPersonCombo() {
@@ -847,26 +868,28 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private ComboBox getDesignPartnerPersonCombo() {
-        List<User> list = proposalDataProvider.getDesignerUsers();
+        List<User> list = proposalDataProvider.getDesignPartnerUsers();
         final BeanContainer<String, User> container =
                 new BeanContainer<>(User.class);
         container.setBeanIdProperty(User.NAME);
         container.addAll(list);
 
-        ComboBox select = new ComboBox("Designer");
+        ComboBox select = new ComboBox("Design Partner");
         select.setWidth("300px");
-        select.setNullSelectionAllowed(false);
+        select.setNullSelectionAllowed(true);
+        select.setImmediate(true);
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(User.NAME);
+        select.addValueChangeListener(this::designPartnerChanged);
 
-        if (StringUtils.isNotEmpty(proposalHeader.getDesignerName())) {
+     /*   if (StringUtils.isNotEmpty(proposalHeader.getDesignerName())) {
             select.setValue(proposalHeader.getDesignerName());
         } else if (container.size() > 0) {
             select.setValue(select.getItemIds().iterator().next());
             proposalHeader.setDesignerName((String) select.getValue());
             proposalHeader.setDesignerPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
             proposalHeader.setDesignerEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
-        }
+        }*/
 
         return select;
     }
@@ -964,6 +987,8 @@ public class CreateProposalsView extends Panel implements View {
         LOG.info("quote no"+ QuoteNumNew);
         quotenew.setValue(QuoteNumNew);
     }
+
+
 
     private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productContainer);
