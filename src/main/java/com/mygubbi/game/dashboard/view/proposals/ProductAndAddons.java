@@ -695,7 +695,6 @@ public class ProductAndAddons extends Window
                 clickEvent -> {
                     Product newProduct = new Product();
                     newProduct.setType(Product.TYPES.CUSTOMIZED.name());
-                    newProduct.setSeq(this.proposal.getProducts().size() + 1);
                     newProduct.setProposalId(this.proposalHeader.getId());
                     newProduct.setFromVersion(this.vid);
                     CustomizedProductDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
@@ -706,7 +705,6 @@ public class ProductAndAddons extends Window
                 clickEvent -> {
                     CatalogueProduct newProduct = new CatalogueProduct();
                     newProduct.setType(CatalogueProduct.TYPES.CATALOGUE.name());
-                    newProduct.setSeq(this.proposal.getProducts().size() + 1);
                     newProduct.setProposalId(this.proposalHeader.getId());
                     CatalogItemDetailsWindow.open(ProductAndAddons.this.proposal, newProduct);
                 }
@@ -1349,8 +1347,6 @@ public class ProductAndAddons extends Window
         Date date = new Date();
         try {
                 String disAmount=discountAmount.getValue();
-                proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
-                proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
                 proposalVersion.setDate(dateFormat.format(date));
 
                 /*LOG.debug("Proposal Version" + proposalVersion.toString());*/

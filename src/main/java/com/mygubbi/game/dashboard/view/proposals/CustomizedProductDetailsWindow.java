@@ -1094,9 +1094,14 @@ public class CustomizedProductDetailsWindow extends Window {
                 LOG.debug("cwa :" + product.getCostWoAccessories());
                 List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
                 proposal.setProducts(getAllVersionProducts);
-                int size = getAllVersionProducts.size();
-                size++;
-                product.setSeq(size);
+                LOG.debug("Product Get Seq :"+ product.getSeq());
+                if (product.getSeq() == 0)
+                {
+                    int size = getAllVersionProducts.size();
+                    size++;
+                    product.setSeq(size);
+                }
+
                 boolean success = proposalDataProvider.updateProduct(product);
 
                 if (success) {

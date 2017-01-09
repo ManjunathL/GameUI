@@ -107,9 +107,7 @@ public final class ProposalsView extends TabSheet implements View {
         grid.addSelectionListener(selectionEvent -> {
                     if (!selectionEvent.getAdded().isEmpty()) {
                         Object selected = ((Grid.SingleSelectionModel) grid.getSelectionModel()).getSelectedRow();
-                        LOG.info("object selected value "+selected.toString());
-                        int proposalId = (Integer) grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.ID).getValue();
-                        LOG.info("pid value "+proposalId);
+                       int proposalId = (Integer) grid.getContainerDataSource().getItem(selected).getItemProperty(ProposalHeader.ID).getValue();
 
                         UI.getCurrent().getNavigator()
                                 .navigateTo("New Quotation/" + proposalId);
@@ -190,9 +188,7 @@ public final class ProposalsView extends TabSheet implements View {
 
     private List<ProposalHeader> getProposalsListing() {
         String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-        LOG.debug("role :" + role);
         String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
-        LOG.debug("email :" + email);
 
         if (("designpartner").equals(role))
         {

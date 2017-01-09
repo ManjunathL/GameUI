@@ -257,8 +257,6 @@ public class CreateProposalsView extends Panel implements View {
         List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(proposalHeader.getId());
         this.proposal.setVersions(proposalVersionList);
 
-        LOG.debug("Proposal Version List :" + proposalVersionList.size());
-
         GeneratedPropertyContainer genContainer = createGeneratedVersionPropertyContainer();
         versionsGrid = new Grid(genContainer);
         versionsGrid.setSizeFull();
@@ -305,7 +303,6 @@ public class CreateProposalsView extends Panel implements View {
 
                 if (pVersion.getVersion().startsWith("0."))
                 {
-                    LOG.debug("ID : " + proposalHeader.getId());
                     List<ProposalVersion> proposalVersionPreSales = proposalDataProvider.getProposalVersionPreSales(proposalHeader.getId());
                     int size = proposalVersionPreSales.size();
                     if (size == 9)
@@ -509,6 +506,12 @@ public class CreateProposalsView extends Panel implements View {
     private void save(Button.ClickEvent clickEvent)
     {
 
+        if (checkForDuplicateCRM())
+        {
+            NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
+
         if (StringUtils.isEmpty(proposalHeader.getTitle()))
         {
             proposalHeader.setTitle(NEW_TITLE);
@@ -530,7 +533,6 @@ public class CreateProposalsView extends Panel implements View {
        try {
 
            List<ProposalCity> insertCity=proposalDataProvider.getCityDataTest(proposalHeader.getId());
-           LOG.info("insert city" + insertCity);
            if(!(insertCity.size() >= 1)) {
                proposalDataProvider.createCity(cityCode, month, proposalHeader.getId(), quotenew.getValue());
                LOG.info("success");
@@ -550,6 +552,19 @@ public class CreateProposalsView extends Panel implements View {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
 
+    }
+
+    private boolean checkForDuplicateCRM() {
+        String crmIdValue = proposalHeader.getCrmId();
+        List<ProposalHeader> crmIdFromOldProposals = proposalDataProvider.getProposalHeaders();
+        for(ProposalHeader crmOld : crmIdFromOldProposals)
+        {
+            String crmOldTest = crmOld.getCrmId();
+            if(crmOldTest.equals( crmIdValue)) {
+                break;
+            }
+        }
+        return false;
     }
 
 
@@ -609,9 +624,7 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout3.setSizeFull();
         horizontalLayout3.addComponent(buildContactDetailsLeft());
         horizontalLayout3.addComponent(buildContactDetailsCenter());
-/*
         horizontalLayout3.addComponent(buildContactDetailsRight());
-*/
         verticalLayout.addComponent(horizontalLayout3);
 
         return verticalLayout;
@@ -738,7 +751,7 @@ public class CreateProposalsView extends Panel implements View {
         designPartnerContact = binder.buildAndBind("Phone", DESIGN_PARTNER_PHONE);
         ((TextField) designPartnerContact).setNullRepresentation("");
         designPartnerContact.setRequired(false);
-        designPartner.addValueChangeListener(this::designerChanged);
+        designPartner.addValueChangeListener(this::designPartnerChanged);
         formLayoutRight.addComponent(designPartnerContact);
         return formLayoutRight;
     }
@@ -785,15 +798,10 @@ public class CreateProposalsView extends Panel implements View {
 
     private void designPartnerChanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        if (designPartner == null)
-        {
-            ((TextField) designContact).setValue(null);
-            ((TextField) designEmail).setValue(null);
-        }
         String phone = (String) designPartner.getItem(designPartner.getValue()).getItemProperty(User.PHONE).getValue();
-        ((TextField) designContact).setValue(phone);
+        ((TextField) designPartnerContact).setValue(phone);
         String email = (String) designPartner.getItem(designPartner.getValue()).getItemProperty(User.EMAIL).getValue();
-        ((TextField) designEmail).setValue(email);
+        ((TextField) designPartnerEmail).setValue(email);
     }
 
     private ComboBox getSalesPersonCombo() {
@@ -811,11 +819,11 @@ public class CreateProposalsView extends Panel implements View {
 
         if (StringUtils.isNotEmpty(proposalHeader.getSalesName())) {
             select.setValue(proposalHeader.getSalesName());
-        } else if (container.size() > 0) {
+        } else if (container.size() == 1) {
             select.setValue(select.getItemIds().iterator().next());
-            proposalHeader.setSalesName((String) select.getValue());
-            proposalHeader.setSalesPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
-            proposalHeader.setSalesEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
+           // proposalHeader.setSalesName((String) select.getValue());
+           // proposalHeader.setSalesPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
+           // proposalHeader.setSalesEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
         }
         return select;
     }
@@ -857,11 +865,11 @@ public class CreateProposalsView extends Panel implements View {
 
         if (StringUtils.isNotEmpty(proposalHeader.getDesignerName())) {
             select.setValue(proposalHeader.getDesignerName());
-        } else if (container.size() > 0) {
+        } else if (container.size() == 1) {
             select.setValue(select.getItemIds().iterator().next());
-            proposalHeader.setDesignerName((String) select.getValue());
-            proposalHeader.setDesignerPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
-            proposalHeader.setDesignerEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
+           // proposalHeader.setDesignerName((String) select.getValue());
+            //proposalHeader.setDesignerPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
+           // proposalHeader.setDesignerEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
         }
 
         return select;
@@ -880,16 +888,15 @@ public class CreateProposalsView extends Panel implements View {
         select.setImmediate(true);
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(User.NAME);
-        select.addValueChangeListener(this::designPartnerChanged);
 
-     /*   if (StringUtils.isNotEmpty(proposalHeader.getDesignerName())) {
-            select.setValue(proposalHeader.getDesignerName());
-        } else if (container.size() > 0) {
+        if (StringUtils.isNotEmpty(proposalHeader.getDesignPartnerName())) {
+            select.setValue(proposalHeader.getDesignPartnerName());
+        } else if (container.size() == 1) {
             select.setValue(select.getItemIds().iterator().next());
-            proposalHeader.setDesignerName((String) select.getValue());
+           /* proposalHeader.setDesignerName((String) select.getValue());
             proposalHeader.setDesignerPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
-            proposalHeader.setDesignerEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
-        }*/
+            proposalHeader.setDesignerEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());*/
+        }
 
         return select;
     }
@@ -905,8 +912,6 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) crmId).setNullRepresentation("");
         formLayoutRight.addComponent(crmId);
 
-
-
         quotenew = new TextField("Quotation #");
         quotenew.setValue(proposalHeader.getQuoteNo());
         quotenew.setRequired(true);
@@ -921,6 +926,19 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.addComponent(quote);
 
         return formLayoutRight;
+    }
+
+    private void crmIdChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+         String crmIdValue = (String) crmId.getValue();
+         List <ProposalHeader> crmIdFromOldProposals = proposalDataProvider.getProposalHeaders();
+         for(ProposalHeader crmOld : crmIdFromOldProposals)
+         {
+             if((crmOld.getCrmId()).contains(crmIdValue))
+                 NotificationUtil.showNotification("Quotation with same crmId already exists",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+             return;
+         }
+
     }
 
     private FormLayout buildMainFormLayoutLeft() {
@@ -968,15 +986,11 @@ public class CreateProposalsView extends Panel implements View {
 
         LocalDate today = LocalDate.now();
         month = today.getMonthValue();
-        LOG.info("month" + month);
 
 
-        LOG.info("city code"+ cityCode);
         int value=0;
         List<ProposalCity> count=proposalDataProvider.getMonthCount(month,cityCode);
            value=count.size();
-        LOG.info("month count"+ value);
-
 
         String valueStr;
         valueStr=Integer.toString(value);
@@ -984,7 +998,6 @@ public class CreateProposalsView extends Panel implements View {
         String date=new SimpleDateFormat("yyyy-MM").format(new Date());
         QuoteNumNew= cityCode + "-" + date+"-"+ valueStr;
         proposalHeader.setQuoteNoNew(QuoteNumNew);
-        LOG.info("quote no"+ QuoteNumNew);
         quotenew.setValue(QuoteNumNew);
     }
 
