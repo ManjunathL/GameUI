@@ -50,7 +50,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private static final Logger LOG = LogManager.getLogger(CustomizedProductDetailsWindow.class);
     private static final String CLOSE = "Close";
-    private static final String DELETE = "Delete";
+    private static final String CANCEL = "Cancel";
 
     private ProductAndAddonSelection productAndAddonSelection;
     private ProposalHeader proposalHeader;
@@ -1045,7 +1045,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
             caption = CLOSE;
         } else {
-            caption = DELETE;
+            caption = CANCEL;
         }
 
 

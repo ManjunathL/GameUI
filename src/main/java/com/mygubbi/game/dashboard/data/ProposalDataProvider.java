@@ -304,7 +304,8 @@ public class ProposalDataProvider {
 
         try {
 
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/create", "{\"title\": \"New Quotation\", \"createdBy\": \"" + getUserId() + "\"}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/create", "{\"createdBy\": \"" + getUserId() + "\"}");
+            LOG.debug("Create Proposal OP :" + jsonObject.toString());
             return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);
@@ -1083,7 +1084,7 @@ public class ProposalDataProvider {
 
         try
         {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/lockallversionsexceptpso",  "{\"internalStatus\": " + "\"" + status +  "\"" + "," + "\"proposalId\" : "  + proposalId + "}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/lockallversions",  "{\"internalStatus\": " + "\"" + status +  "\"" + "," + "\"proposalId\" : "  + proposalId + "}");
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         }
         catch (IOException e)
