@@ -19,6 +19,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.SelectionEvent;
 import com.vaadin.server.*;
@@ -86,6 +87,7 @@ public class ProductAndAddons extends Window
     private TextField remarksText;
     private Label versionNum;
     private Label versionStatus;
+    private TextArea remarksTextArea;
 
     private String status=null;
     String vid;
@@ -149,6 +151,9 @@ public class ProductAndAddons extends Window
         this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
         this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
         verticalLayout.addComponent(amountsLayout);
+
+        Component OptionDescriptionLayout=buildOptionLayout();
+        verticalLayout.addComponent(OptionDescriptionLayout);
 
         Component componentactionbutton=buildActionButtons();
         verticalLayout.addComponent(componentactionbutton);
@@ -253,29 +258,58 @@ public class ProductAndAddons extends Window
         return verticalLayout;
     }
 
-    private FormLayout buildMainFormLayoutLeft() {
+    private Component buildMainFormLayoutLeft()
+    {
+        /*VerticalLayout verticalLayout =new VerticalLayout();
+        //verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+
+        HorizontalLayout vlayout  = new HorizontalLayout();
+        vlayout.addStyleName("label-style");
+        FormLayout left = new FormLayout();
+        left.setSizeFull();
+
+        Label titleLabel=new Label("Title:");
+        titleLabel.addStyleName("label-style");
+        left.addStyleName("label-style");
+        //titleLabel.addStyleName(ValoTheme.TEXTFIELD_HUGE);
+        left.addComponent(titleLabel);
+        vlayout.addComponent(left);
 
         FormLayout formLayoutRight = new FormLayout();
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        ttitle=new TextField("Title :");
-
+        ttitle=new TextField();
         ttitle.addStyleName("textfield-background-color");
         ttitle.addStyleName(ValoTheme.LABEL_COLORED);
         ttitle.addStyleName(ValoTheme.TEXTFIELD_HUGE);
         formLayoutRight.addComponent(ttitle);
         ttitle.setValue(proposalVersion.getTitle());
+        vlayout.addComponent(formLayoutRight);
 
-/*
+        verticalLayout.addComponent(vlayout);
+*//*
         this.remarksText = new TextField("Remarks");
         this.remarksText.addStyleName("textfield-background-color");
         this.remarksText.setWidth("100%");
         this.remarksText.addValidator(new StringLengthValidator("Must be 200 characters long",0,200,false));
         this.remarksText.setImmediate(true);
         this.remarksText.setValue(proposalVersion.getRemarks());
-        formLayoutRight.addComponent(remarksText);*/
-        return formLayoutRight;
+        formLayoutRight.addComponent(remarksText);*//*
+        return verticalLayout;*/
+
+        FormLayout formLayoutLeft = new FormLayout();
+        formLayoutLeft.setSizeFull();
+        formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        ttitle=new TextField("Title: ");
+        ttitle.addStyleName("textfield-background-color");
+        ttitle.addStyleName(ValoTheme.LABEL_COLORED);
+        ttitle.addStyleName(ValoTheme.TEXTFIELD_HUGE);
+        formLayoutLeft.addComponent(ttitle);
+        ttitle.setValue(proposalVersion.getTitle());
+
+        return formLayoutLeft;
     }
 
     private FormLayout buildMainFormLayoutCenter() {
@@ -423,6 +457,36 @@ public class ProductAndAddons extends Window
         return hlayout;
     }
 
+    private Component buildOptionLayout()
+    {
+        VerticalLayout verticalLayout =new VerticalLayout();
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+
+        HorizontalLayout vlayout  = new HorizontalLayout();
+       // vlayout.addStyleName("text-area-main-size");
+        FormLayout left = new FormLayout();
+
+        Label remarks = new Label("Remarks:");
+        left.addComponent(remarks);
+        remarks.addStyleName("amount-text-label1");
+        remarks.addStyleName("v-label-amount-text-label1");
+        remarks.addStyleName("margin-top-18");
+        vlayout.addComponent(left);
+
+        FormLayout left1 = new FormLayout();
+        left1.addStyleName("text-area-main-size");
+        this.remarksTextArea=new TextArea();
+        remarksTextArea.setValue(proposalVersion.getRemarks());
+        remarksTextArea.setRequired(true);
+        remarksTextArea.addValidator(new StringLengthValidator("Remarks Must not exceed 255 characters long and it should not be empty ", 0, 255, true));
+       /* remarksTextArea.setImmediate(true);*/
+        remarksTextArea.addStyleName("text-area-size");
+        left1.addComponent(remarksTextArea);
+        vlayout.addComponent(left1);
+
+        verticalLayout.addComponent(vlayout);
+        return verticalLayout;
+    }
 
 
     private Component getAmountLayout()
@@ -431,8 +495,8 @@ public class ProductAndAddons extends Window
         verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
         HorizontalLayout vlayout  = new HorizontalLayout();
-        FormLayout left = new FormLayout();
 
+        FormLayout left = new FormLayout();
         Label totalWithoutDiscount = new Label("Total Without Discount:");
         left.addComponent(totalWithoutDiscount);
         totalWithoutDiscount.addStyleName("amount-text-label1");
@@ -1187,7 +1251,6 @@ public class ProductAndAddons extends Window
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setDate(dateFormat.format(date));
-            save(clickEvent);
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1202,7 +1265,7 @@ public class ProductAndAddons extends Window
                 if (!mapped) {
                     NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 } else {
-
+                    saveProposalVersion();
                     success = proposalDataProvider.publishVersion(proposalVersion.getVersion(),proposalHeader.getId());
                     if (success) {
                         saveButton.setVisible(false);
@@ -1237,7 +1300,6 @@ public class ProductAndAddons extends Window
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setDate(dateFormat.format(date));
-            save(clickEvent);
 
 
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
@@ -1329,17 +1391,44 @@ public class ProductAndAddons extends Window
     private void save(Button.ClickEvent clickEvent)
     {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
-        try {
+
+        remarksTextArea.setValidationVisible(false);
+        try
+        {
+            remarksTextArea.validate();
+        }
+        catch (Exception e)
+        {
+            NotificationUtil.showNotification("Validation Error, please fill remarks fields and remarks should not exceed 255 characters", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            remarksTextArea.setValidationVisible(false);
+            return;
+        }
+        /*if(remarksTextArea.getValue().equals(""))
+        {
+            LOG.info("remarks text true" );
+            NotificationUtil.showNotification("Validation Error, please fill remarks fields", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
+        else
+        {
+            LOG.info("remarks text false" );
+        }*/
+
+        saveProposalVersion();
+    }
+
+    private void saveProposalVersion() {
+        try
+        {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date();
                 String disAmount=discountAmount.getValue();
                 proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
                 proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
                 proposalVersion.setDate(dateFormat.format(date));
                 proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
-
-                proposalVersion.setRemarks(remarksText.getValue());
+                proposalVersion.setRemarks(remarksTextArea.getValue());
                 proposalVersion.setTitle(this.ttitle.getValue());
 
                 /*LOG.debug("Proposal Version" + proposalVersion.toString());*/
