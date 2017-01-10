@@ -62,7 +62,7 @@ public class CreateProposalsView extends Panel implements View {
     private Field<?> proposalVersionField;
     private Field<?> quotationField;
 
-    private Field<?> customerIdField;
+   // private Field<?> customerIdField;
     private Field<?> customerNameField;
     private Field<?> customerAddressLine1;
     private Field<?> customerAddressLine2;
@@ -426,7 +426,7 @@ public class CreateProposalsView extends Panel implements View {
         proposalTitleField.setReadOnly(readOnly);
         crmId.setReadOnly(readOnly);
         quotationField.setReadOnly(readOnly);
-        customerIdField.setReadOnly(readOnly);
+        //customerIdField.setReadOnly(readOnly);
         customerNameField.setReadOnly(readOnly);
         customerAddressLine1.setReadOnly(readOnly);
         customerAddressLine2.setReadOnly(readOnly);
@@ -506,6 +506,7 @@ public class CreateProposalsView extends Panel implements View {
     private void save(Button.ClickEvent clickEvent)
     {
         boolean duplicateCrm = checkForDuplicateCRM();
+
         LOG.debug("duplicate crm" + duplicateCrm);
         if (duplicateCrm)
         {
@@ -542,10 +543,12 @@ public class CreateProposalsView extends Panel implements View {
        catch(Exception e){
             LOG.info(e);
        }
-
+        proposalHeader.setQuoteNoNew(QuoteNumNew);
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
         if (success) {
+
+            quotenew.setValue(QuoteNumNew);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             cityLockedForSave();
         } else {
@@ -556,7 +559,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private boolean checkForDuplicateCRM() {
 
-        String crmIdValue = proposalHeader.getCrmId();
+        String crmIdValue = (String)crmId.getValue();
         LOG.debug("Crm new :" + crmIdValue);
 
         List<ProposalHeader> crmIdFromOldProposals = proposalDataProvider.getProposalHeaders();
@@ -581,7 +584,7 @@ public class CreateProposalsView extends Panel implements View {
     private void cancel(Button.ClickEvent clickEvent)
     {
         try {
-            if (StringUtils.isEmpty(proposalHeader.getTitle()) || StringUtils.isEmpty(proposalHeader.getCrmId())  || StringUtils.isEmpty(proposalHeader.getCustomerId()) || StringUtils.isEmpty(proposalHeader.getCname()) || StringUtils.isEmpty(proposalHeader.getQuoteNo()))
+            if (StringUtils.isEmpty(proposalHeader.getTitle()) || StringUtils.isEmpty(proposalHeader.getCrmId())   || StringUtils.isEmpty(proposalHeader.getCname()) || StringUtils.isEmpty(proposalHeader.getQuoteNo()))
             {
                 List<Product> listOfProducts = proposalDataProvider.getProposalProducts(proposalHeader.getId());
                 if (!(listOfProducts.size() == 0))
@@ -652,10 +655,10 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.addComponent(customerDetailsLabel);
         formLayoutLeft.setComponentAlignment(customerDetailsLabel, Alignment.MIDDLE_LEFT);
 
-        customerIdField = binder.buildAndBind("Customer ID", CUSTOMER_ID);
+        /*customerIdField = binder.buildAndBind("Customer ID", CUSTOMER_ID);
         customerIdField.setRequired(true);
         ((TextField) customerIdField).setNullRepresentation("");
-        formLayoutLeft.addComponent(customerIdField);
+        formLayoutLeft.addComponent(customerIdField);*/
         customerNameField = binder.buildAndBind("Customer Name", C_NAME);
         customerNameField.setRequired(true);
         ((TextField) customerNameField).setNullRepresentation("");
@@ -921,7 +924,6 @@ public class CreateProposalsView extends Panel implements View {
         crmId.setRequired(true);
         ((TextField) crmId).setNullRepresentation("");
         formLayoutRight.addComponent(crmId);
-
         quotenew = new TextField("Quotation #");
         quotenew.setValue(proposalHeader.getQuoteNo());
         quotenew.setRequired(true);
@@ -1007,8 +1009,8 @@ public class CreateProposalsView extends Panel implements View {
         valueStr=String.format("%04d",value+1);
         String date=new SimpleDateFormat("yyyy-MM").format(new Date());
         QuoteNumNew= cityCode + "-" + date+"-"+ valueStr;
-        proposalHeader.setQuoteNoNew(QuoteNumNew);
-        quotenew.setValue(QuoteNumNew);
+        //proposalHeader.setQuoteNoNew(QuoteNumNew);
+      //         quotenew.setValue(QuoteNumNew);
     }
 
 
