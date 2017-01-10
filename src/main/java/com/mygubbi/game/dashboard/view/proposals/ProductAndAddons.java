@@ -19,7 +19,6 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
-import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.SelectionEvent;
 import com.vaadin.server.*;
@@ -248,6 +247,7 @@ public class ProductAndAddons extends Window
         horizontalLayout1.setSizeFull();
 
         horizontalLayout1.addComponent(buildMainFormLayoutLeft());
+        horizontalLayout1.addComponent(buildMainFormLayoutCenter());
         horizontalLayout1.addComponent(buildMainFormLayoutRight());
         verticalLayout.addComponent(horizontalLayout1);
         return verticalLayout;
@@ -255,16 +255,52 @@ public class ProductAndAddons extends Window
 
     private FormLayout buildMainFormLayoutLeft() {
 
+        FormLayout formLayoutRight = new FormLayout();
+        formLayoutRight.setSizeFull();
+        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        ttitle=new TextField("Title :");
+
+        ttitle.addStyleName("textfield-background-color");
+        ttitle.addStyleName(ValoTheme.LABEL_COLORED);
+        ttitle.addStyleName(ValoTheme.TEXTFIELD_HUGE);
+        formLayoutRight.addComponent(ttitle);
+        ttitle.setValue(proposalVersion.getTitle());
+
+/*
+        this.remarksText = new TextField("Remarks");
+        this.remarksText.addStyleName("textfield-background-color");
+        this.remarksText.setWidth("100%");
+        this.remarksText.addValidator(new StringLengthValidator("Must be 200 characters long",0,200,false));
+        this.remarksText.setImmediate(true);
+        this.remarksText.setValue(proposalVersion.getRemarks());
+        formLayoutRight.addComponent(remarksText);*/
+        return formLayoutRight;
+    }
+
+    private FormLayout buildMainFormLayoutCenter() {
+
         FormLayout formLayoutLeft = new FormLayout();
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        TextField tvnum=new TextField("Version #");
+        TextField tvnum=new TextField("Version # :");
+        tvnum.addStyleName(ValoTheme.TEXTFIELD_HUGE);
         tvnum.setValue(String.valueOf(proposalVersion.getVersion()));
         formLayoutLeft.addComponent(tvnum);
         tvnum.setReadOnly(true);
 
-        TextField tstatus=new TextField("Status");
+        return formLayoutLeft;
+    }
+
+    private FormLayout buildMainFormLayoutRight() {
+
+        FormLayout formLayoutLeft = new FormLayout();
+        formLayoutLeft.setSizeFull();
+        formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+        TextField tstatus=new TextField("Status :");
+        tstatus.addStyleName(ValoTheme.TEXTFIELD_HUGE);
         tstatus.setValue(proposalVersion.getStatus());
         formLayoutLeft.addComponent(tstatus);
         tstatus.setReadOnly(true);
@@ -272,31 +308,7 @@ public class ProductAndAddons extends Window
         return formLayoutLeft;
     }
 
-    private FormLayout buildMainFormLayoutRight() {
 
-        FormLayout formLayoutRight = new FormLayout();
-        formLayoutRight.setSizeFull();
-        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        ttitle=new TextField("Title");
-
-        ttitle.addStyleName("textfield-background-color");
-        ttitle.addStyleName(ValoTheme.LABEL_COLORED);
-
-        formLayoutRight.addComponent(ttitle);
-        ttitle.setValue(proposalVersion.getTitle());
-
-
-
-        this.remarksText = new TextField("Remarks");
-        this.remarksText.addStyleName("textfield-background-color");
-        this.remarksText.setWidth("100%");
-        this.remarksText.addValidator(new StringLengthValidator("Must be 200 characters long",0,200,false));
-        this.remarksText.setImmediate(true);
-        this.remarksText.setValue(proposalVersion.getRemarks());
-        formLayoutRight.addComponent(remarksText);
-        return formLayoutRight;
-                }
 
     private Component buildActionButtons()
     {
@@ -563,6 +575,7 @@ public class ProductAndAddons extends Window
 
         Double totalAmount = addonsTotal + productsTotal;
         Double costOfAccessories = productsTotal - totalWoAccessories;
+
 
 
         refreshDiscount(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal);
@@ -1249,6 +1262,8 @@ public class ProductAndAddons extends Window
                         proposalVersion.setVersion("1.0");
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
+                        proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+
                     }
                     else if (versionNew.startsWith("1."))
                     {
@@ -1259,18 +1274,19 @@ public class ProductAndAddons extends Window
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
+                        proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+
                     }
                     else if (versionNew.startsWith("2."))
                     {
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
-                        proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.PSO.name());
-                        proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
+                        proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Locked.name());
                         proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                     }
 
-                    proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+
                     if (success) {
                         saveButton.setVisible(false);
                         NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
