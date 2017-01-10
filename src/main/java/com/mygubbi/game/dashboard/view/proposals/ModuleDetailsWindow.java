@@ -575,8 +575,6 @@ public class ModuleDetailsWindow extends Window {
         module.clearAcessorryPacks();
         this.removeAddons();
         this.emptyAccessoryImages();
-
-
         module.setModuleType(mgModule.getModuleType());
         module.setModuleCategory(mgModule.getModuleCategory());
         module.setAccessoryPackDefault(mgModule.getAccessoryPackDefault());
@@ -1273,6 +1271,11 @@ public class ModuleDetailsWindow extends Window {
                 }
             }
 
+            if(module.getDepth()== 0 || module.getHeight()==0 || module.getWidth() == 0)
+            {
+                NotificationUtil.showNotification("Please enter valid dimensions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
                 String accPack1 = ((String) accessoryPack1.getValue());
             String addon11 = ((String) addons11.getValue());
 

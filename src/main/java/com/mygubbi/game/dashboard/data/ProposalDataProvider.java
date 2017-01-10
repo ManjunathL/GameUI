@@ -71,6 +71,8 @@ public class ProposalDataProvider {
             }
         }
 
+
+
         return proposalHeaderList;
 
     }
@@ -79,6 +81,13 @@ public class ProposalDataProvider {
         JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/id", new HashMap<>());
         return getProposalHeaders(proposalHeaders);
     }
+
+    public List<ProposalHeader> fetchCrmId()
+    {
+        JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/crmId", new HashMap<>());
+        return getProposalHeaders(proposalHeaders);
+    }
+
 
 
     public List<ProposalHeader> getProposalHeaders() {

@@ -27,6 +27,7 @@ public class AddonProduct implements Cloneable {
     public static final String PRODUCT_TYPE = "productType";
     public static final String BRAND = "brand";
     public static final String CATALOGUE_CODE = "catalogueCode";
+    public static final String DESCRIPTION = "description";
 
     private int seq;
     private int id;
@@ -47,6 +48,7 @@ public class AddonProduct implements Cloneable {
     private int quantity;
     private double rate;
     private String updatedBy;
+    private String description;
 
     private boolean add = false;
 
@@ -218,6 +220,14 @@ public class AddonProduct implements Cloneable {
 
     public void setProposalId(int proposalId) {
         this.proposalId = proposalId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

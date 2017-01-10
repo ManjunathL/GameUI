@@ -727,13 +727,14 @@ public class CustomizedProductDetailsWindow extends Window {
                 }
 
                 Module m = (Module) rendererClickEvent.getItemId();
+                LOG.info("modules:"+ m);
                 List<Module> copy = product.getModules();
                 int length = (copy.size()) + 1;
                 Module copyModule = new Module();
                 copyModule.setUnitType(m.getUnitType());
                 copyModule.setExtCode(m.getExtCode());
                 copyModule.setExtText(m.getExtText());
-                copyModule.setMgCode(m.getMgCode());
+                copyModule.setMgCode(m.getMgCode()) ;
                 copyModule.setCarcass(m.getCarcass());
                 copyModule.setCarcassCode(m.getCarcassCode());
                 copyModule.setFixedCarcassCode(m.getFixedCarcassCode());
@@ -1375,6 +1376,7 @@ public class CustomizedProductDetailsWindow extends Window {
         try {
             List<Module> modules = this.product.getModules();
             Module module = event.getModule();
+
             if (module.getModuleSequence() == 0)
             {
                 module.setSeq(this.getNextUnitSequence(modules, module.getUnitType()));
@@ -1384,6 +1386,8 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 modules.remove(module);
             }
+            LOG.info("modseq"+module.getModuleSequence());
+
             modules.add(module);
             moduleContainer.removeAllItems();
             moduleContainer.addAll(modules);

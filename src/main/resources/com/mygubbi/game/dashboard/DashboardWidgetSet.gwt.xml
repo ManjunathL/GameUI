@@ -42,7 +42,7 @@
 
     
 
-    <inherits name="com.zybnet.autocomplete.AutocompleteWidgetSet" />
+    
 
     <inherits name="org.vaadin.peter.imagestrip.ImageStripApplicationWidgetset" />
 

@@ -44,6 +44,7 @@ public class AddonDetailsWindow extends Window {
     private TextField rate;
     private TextField quantity;
     private TextField amount;
+    private TextField description;
     private Button applyButton;
     private Image addonImage;
     private String imageBasePath = ConfigHolder.getInstance().getImageBasePath();
@@ -177,6 +178,11 @@ public class AddonDetailsWindow extends Window {
         binder.bind(this.amount, AddonProduct.AMOUNT);
         this.amount.setReadOnly(true);
         formLayoutRight.addComponent(this.amount);
+
+        this.description = new TextField("Description");
+        binder.bind(this.description, AddonProduct.DESCRIPTION);
+        this.description.setReadOnly(true);
+        formLayoutRight.addComponent(this.description);
 
         if (StringUtils.isEmpty(addonProduct.getImagePath())) {
             addonImage = new Image("", new ThemeResource("img/empty-poster.png"));
