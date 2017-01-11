@@ -8,6 +8,7 @@ import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
+import com.mygubbi.game.dashboard.view.DashboardMenu;
 import com.mygubbi.game.dashboard.view.DashboardViewType;
 import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
@@ -98,6 +99,7 @@ public class CreateProposalsView extends Panel implements View {
     private ProposalVersion proposalVersion;
     private Proposal proposal;
     private Button saveButton;
+    private Button saveAndCloseButton;
     private Button cancelButton;
     private ProposalVersion getLatestVersionDetails;
     private BeanItemContainer productContainer;
@@ -105,6 +107,7 @@ public class CreateProposalsView extends Panel implements View {
     String cityCode= "";
     String cityStatus= "";
     int month;
+    private DashboardMenu dashboardMenu;
 
 
     private ProductAndAddonSelection productAndAddonSelection;
@@ -123,29 +126,6 @@ public class CreateProposalsView extends Panel implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        UI.getCurrent().getNavigator().addViewChangeListener(new ViewChangeListener() {
-
-            @Override
-            public boolean beforeViewChange(ViewChangeEvent viewChangeEvent) {
-                try
-                {
-                    binder.commit();
-                }
-                catch (FieldGroup.CommitException e)
-                {
-                    if (proposalHeader.getQuoteNoNew() == null) {
-                        proposalDataProvider.deleteProposal(proposalHeader.getId());
-                    }
-                    return true;
-                }
-                return true;
-            }
-
-            @Override
-            public void afterViewChange(ViewChangeEvent viewChangeEvent) {
-
-            }
-        });
         parameters = event.getParameters();
         if (StringUtils.isNotEmpty(parameters)) {
             pid = Integer.parseInt(parameters);
@@ -161,8 +141,13 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name());
             proposalHeader.setStatus(ProposalState.Draft.name());
-            QuoteNum="";
+            QuoteNum = "";
             proposalHeader.setQuoteNo(QuoteNum);
+            DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(true));
+
+
+
+
            /* List<ProposalHeader> id=proposalDataProvider.getProposalId();
             for(ProposalHeader val: id) {
                 pid=val.getId();
@@ -172,68 +157,70 @@ public class CreateProposalsView extends Panel implements View {
 
             QuoteNum=date+"-"+pid ;*/
            /* proposalHeader.setQuoteNo(QuoteNum);*/
-            this.proposal = new Proposal();
-            this.proposal.setProposalHeader(proposalHeader);
+                this.proposal = new Proposal();
+                this.proposal.setProposalHeader(proposalHeader);
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
-            proposalVersion = proposalDataProvider.createDraft(proposalHeader.getId(), NEW_DRAFT_TITLE ,dateFormat.format(date));
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date date = new Date();
+                proposalVersion = proposalDataProvider.createDraft(proposalHeader.getId(), NEW_DRAFT_TITLE, dateFormat.format(date));
 
-        }
+            }
 
-       // quotationField.setValue(String.valueOf(pid));
-        this.productAndAddonSelection = new ProductAndAddonSelection();
-        this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
+            // quotationField.setValue(String.valueOf(pid));
+            this.productAndAddonSelection = new ProductAndAddonSelection();
+            this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
 
-        DashboardEventBus.register(this);
-        this.binder.setItemDataSource(proposalHeader);
+            DashboardEventBus.register(this);
+            this.binder.setItemDataSource(proposalHeader);
 
-        //proposalCityData = proposalDataProvider.getCityData(proposalHeader.getId());
+            //proposalCityData = proposalDataProvider.getCityData(proposalHeader.getId());
 
-        setWidth("100%");
-        setHeight("100%");
+            setWidth("100%");
+            setHeight("100%");
 
-        VerticalLayout vLayout = new VerticalLayout();
-        vLayout.addComponent(buildHeader());
+            VerticalLayout vLayout = new VerticalLayout();
+            vLayout.addComponent(buildHeader());
 
-        TabSheet tabs = new TabSheet();
-        tabs.addTab(buildForm(), "Header");
-        tabs.addTab(buildVersionsGrids(), "Quotation Version");
+            TabSheet tabs = new TabSheet();
+            tabs.addTab(buildForm(), "Header");
+            tabs.addTab(buildVersionsGrids(), "Quotation Version");
 //      tabs.addTab(buildProductsAndAddonsPage(), "Products and Addons");
-        fileAttachmentComponent = new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
-                attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
-                attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId()),
-                !proposalHeader.getStatus().equals(ProposalState.Draft.name())
-        );
-        tabs.addTab(fileAttachmentComponent, "Attachments");
+            fileAttachmentComponent = new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
+                    attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
+                    attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId()),
+                    !proposalHeader.getStatus().equals(ProposalState.Draft.name())
+            );
+            tabs.addTab(fileAttachmentComponent, "Attachments");
 
-        vLayout.addComponent(tabs);
-        setContent(vLayout);
-        Responsive.makeResponsive(tabs);
-        cityLockedForOldProposal();
-    }
-
-    private void cityLockedForSave()
-    {
-        List<ProposalCity> proposalCityList = proposalDataProvider.checkCity(proposalHeader.getId());
-        for (ProposalCity proposalCity : proposalCityList)
-        {
-          cityStatus = proposalCity.getCityLocked();
+            vLayout.addComponent(tabs);
+            setContent(vLayout);
+            Responsive.makeResponsive(tabs);
+            cityLockedForOldProposal();
         }
-        if (("Yes").contains(cityStatus))
-        {
-           quotenew.setReadOnly(true);
+
+    private void cityLockedForSave() {
+        List<ProposalCity> proposalCityList = proposalDataProvider.checkCity(proposalHeader.getId());
+        for (ProposalCity proposalCity : proposalCityList) {
+            cityStatus = proposalCity.getCityLocked();
+        }
+        if (("Yes").contains(cityStatus)) {
+            quotenew.setReadOnly(true);
             projectCityField.setReadOnly(true);
         }
     }
 
-    private void cityLockedForOldProposal()
-    {
-        if (!(proposalHeader.getQuoteNoNew() == null))
-        {
+    private void cityLockedForOldProposal() {
+        if (!(proposalHeader.getQuoteNoNew() == null)) {
             quotenew.setReadOnly(true);
             projectCityField.setReadOnly(true);
             cancelButton.setVisible(false);
+            saveAndCloseButton.setVisible(true);
+
+        }
+        else
+        {
+            saveAndCloseButton.setVisible(false);
+
         }
     }
 
@@ -246,7 +233,7 @@ public class CreateProposalsView extends Panel implements View {
         Label title = new Label("Version Details");
         title.setStyleName("products-and-addons-label-text");
         verticalLayout.addComponent(title);
-        verticalLayout.setComponentAlignment(title,Alignment.TOP_LEFT);
+        verticalLayout.setComponentAlignment(title, Alignment.TOP_LEFT);
 
 
         verticalLayout.setSpacing(true);
@@ -260,7 +247,7 @@ public class CreateProposalsView extends Panel implements View {
         versionsGrid = new Grid(genContainer);
         versionsGrid.setSizeFull();
         versionsGrid.setColumns(ProposalVersion.VERSION, ProposalVersion.FROM_VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
-                ProposalVersion.REMARKS,"actions");
+                ProposalVersion.REMARKS, "actions");
 
 
         versionContainer.addAll(proposalVersionList);
@@ -283,58 +270,48 @@ public class CreateProposalsView extends Panel implements View {
             @Override
             public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
 
-                ProposalVersion pVersion = (ProposalVersion)rendererClickEvent.getItemId();
+                ProposalVersion pVersion = (ProposalVersion) rendererClickEvent.getItemId();
                 LOG.debug("Proposal version to be copied :" + pVersion.toString());
 
-                if ((0.0) == pVersion.getFinalAmount())
-                {
+                if ((0.0) == pVersion.getFinalAmount()) {
                     Notification.show("Please add products before copying");
                     return;
                 }
 
-                if (("Locked").equals(pVersion.getInternalStatus()))
-                {
+                if (("Locked").equals(pVersion.getInternalStatus())) {
                     Notification.show("Cannot copy on Locked version");
                     return;
                 }
                 ProposalVersion copyVersion = new ProposalVersion();
                 Float versionNew = Float.valueOf(pVersion.getVersion());
 
-                if (pVersion.getVersion().startsWith("0."))
-                {
+                if (pVersion.getVersion().startsWith("0.")) {
                     List<ProposalVersion> proposalVersionPreSales = proposalDataProvider.getProposalVersionPreSales(proposalHeader.getId());
                     int size = proposalVersionPreSales.size();
-                    if (size == 9)
-                    {
-                        NotificationUtil.showNotification("Cannot exceed more than 9 versions",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        return;
-                    }
-                    String str= ("0."+(size+1));
-                    versionNew = Float.valueOf(str);
-                }
-                else if (pVersion.getVersion().startsWith("1."))
-                {
-                    List<ProposalVersion> proposalVersionPostSales = proposalDataProvider.getProposalVersionPostSales(proposalHeader.getId());
-                    int size = proposalVersionPostSales.size();
-                    if (size == 9)
-                    {
+                    if (size == 9) {
                         NotificationUtil.showNotification("Cannot exceed more than 9 versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                     }
-                    String str= ("1."+(size));
+                    String str = ("0." + (size + 1));
                     versionNew = Float.valueOf(str);
-
-                }
-                else if (pVersion.getVersion().startsWith("2."))
-                {
-                    List<ProposalVersion> proposalVersionProduction = proposalDataProvider.getProposalVersionProduction(proposalHeader.getId());
-                    int size = proposalVersionProduction.size();
-                    if (size == 9)
-                    {
-                        NotificationUtil.showNotification("Cannot exceed more than 9 versions",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                } else if (pVersion.getVersion().startsWith("1.")) {
+                    List<ProposalVersion> proposalVersionPostSales = proposalDataProvider.getProposalVersionPostSales(proposalHeader.getId());
+                    int size = proposalVersionPostSales.size();
+                    if (size == 9) {
+                        NotificationUtil.showNotification("Cannot exceed more than 9 versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                     }
-                    String str= ("2."+(size));
+                    String str = ("1." + (size));
+                    versionNew = Float.valueOf(str);
+
+                } else if (pVersion.getVersion().startsWith("2.")) {
+                    List<ProposalVersion> proposalVersionProduction = proposalDataProvider.getProposalVersionProduction(proposalHeader.getId());
+                    int size = proposalVersionProduction.size();
+                    if (size == 9) {
+                        NotificationUtil.showNotification("Cannot exceed more than 9 versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                    String str = ("2." + (size));
                     versionNew = Float.valueOf(str);
                 }
 
@@ -363,19 +340,15 @@ public class CreateProposalsView extends Panel implements View {
             }
 
             @Override
-            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent)
-            {
-                try
-                {
+            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+                try {
                     binder.commit();
-                }
-                catch (FieldGroup.CommitException e)
-                {
+                } catch (FieldGroup.CommitException e) {
                     NotificationUtil.showNotification("Validation Error, please fill all mandatory fields in header tab", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
                 ProposalVersion proposalVersion = (ProposalVersion) rendererClickEvent.getItemId();
-                ProductAndAddons.open(proposalHeader,proposal,proposalVersion.getVersion(),proposalVersion);
+                ProductAndAddons.open(proposalHeader, proposal, proposalVersion.getVersion(), proposalVersion);
             }
         }));
 
@@ -393,8 +366,6 @@ public class CreateProposalsView extends Panel implements View {
         versionsGrid.setContainerDataSource(createGeneratedVersionPropertyContainer());
         versionsGrid.getSelectionModel().reset();
     }
-
-
 
 
     private GeneratedPropertyContainer createGeneratedVersionPropertyContainer() {
@@ -448,7 +419,7 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.setSizeFull();
 
         HorizontalLayout left = new HorizontalLayout();
-        horizontalLayout.setMargin(new MarginInfo(false,false,false,true));
+        horizontalLayout.setMargin(new MarginInfo(false, false, false, true));
         String title = proposalHeader.getTitle();
         if (title == null) title = "";
         proposalTitleLabel = new Label(getFormattedTitle(title) + "&nbsp;", ContentMode.HTML);
@@ -476,6 +447,13 @@ public class CreateProposalsView extends Panel implements View {
         right.addComponent(saveButton);
         right.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
 
+        saveAndCloseButton = new Button("Save & Close");
+        saveAndCloseButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        saveAndCloseButton.addStyleName("margin-right-10-for-headerlevelbutton");
+        saveAndCloseButton.addClickListener(this::saveAndClose);
+        right.addComponent(saveAndCloseButton);
+        right.setComponentAlignment(saveAndCloseButton, Alignment.MIDDLE_RIGHT);
+
         cancelButton = new Button("Cancel");
         cancelButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         cancelButton.addStyleName("margin-right-10-for-headerlevelbutton");
@@ -491,8 +469,6 @@ public class CreateProposalsView extends Panel implements View {
     }
 
 
-
-
     private String getFormattedTitle(String title) {
         if (title.length() <= 30) {
             return title;
@@ -503,19 +479,16 @@ public class CreateProposalsView extends Panel implements View {
     }
 
 
-    private void save(Button.ClickEvent clickEvent)
-    {
+    private void save(Button.ClickEvent clickEvent) {
         boolean duplicateCrm = checkForDuplicateCRM();
 
         LOG.debug("duplicate crm" + duplicateCrm);
-        if (duplicateCrm)
-        {
+        if (duplicateCrm) {
             NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
 
-        if (StringUtils.isEmpty(proposalHeader.getTitle()))
-        {
+        if (StringUtils.isEmpty(proposalHeader.getTitle())) {
             proposalHeader.setTitle(NEW_TITLE);
         }
         try {
@@ -526,25 +499,25 @@ public class CreateProposalsView extends Panel implements View {
         }
         proposalVersion = new ProposalVersion();
         List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
-        for (ProposalVersion getLatestVersion : proposalVersionLatest)
-        {
+        for (ProposalVersion getLatestVersion : proposalVersionLatest) {
             proposalHeader.setStatus(getLatestVersion.getStatus());
             proposalHeader.setVersion(getLatestVersion.getVersion());
         }
 
-       try {
+        try {
 
-           List<ProposalCity> insertCity=proposalDataProvider.getCityDataTest(proposalHeader.getId());
-           if(!(insertCity.size() >= 1)) {
-               proposalDataProvider.createCity(cityCode, month, proposalHeader.getId(), quotenew.getValue());
-               LOG.info("success");
-           }
-       }
-       catch(Exception e){
+            List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(proposalHeader.getId());
+            if (!(insertCity.size() >= 1)) {
+                proposalDataProvider.createCity(cityCode, month, proposalHeader.getId(), quotenew.getValue());
+                LOG.info("success");
+            }
+        } catch (Exception e) {
             LOG.info(e);
-       }
+        }
         proposalHeader.setQuoteNoNew(QuoteNumNew);
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
+        cancelButton.setVisible(false);
+        saveAndCloseButton.setVisible(true);
 
         if (success) {
 
@@ -554,18 +527,67 @@ public class CreateProposalsView extends Panel implements View {
         } else {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
+    }
 
+    private void saveAndClose(Button.ClickEvent clickEvent) {
+        boolean duplicateCrm = checkForDuplicateCRM();
+
+        LOG.debug("duplicate crm" + duplicateCrm);
+        if (duplicateCrm) {
+            NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
+
+        if (StringUtils.isEmpty(proposalHeader.getTitle())) {
+            proposalHeader.setTitle(NEW_TITLE);
+        }
+        try {
+            binder.commit();
+        } catch (FieldGroup.CommitException e) {
+            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
+        proposalVersion = new ProposalVersion();
+        List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
+        for (ProposalVersion getLatestVersion : proposalVersionLatest) {
+            proposalHeader.setStatus(getLatestVersion.getStatus());
+            proposalHeader.setVersion(getLatestVersion.getVersion());
+        }
+
+        try {
+
+            List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(proposalHeader.getId());
+            if (!(insertCity.size() >= 1)) {
+                proposalDataProvider.createCity(cityCode, month, proposalHeader.getId(), quotenew.getValue());
+                LOG.info("success");
+            }
+        } catch (Exception e) {
+            LOG.info(e);
+        }
+
+        boolean success = proposalDataProvider.saveProposal(proposalHeader);
+        cancelButton.setVisible(false);
+
+        if (success) {
+
+            NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+            cityLockedForSave();
+        } else {
+            NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        }
+        DashboardEventBus.unregister(this);
+        UI.getCurrent().getNavigator().navigateTo(DashboardViewType.PROPOSALS.name());
     }
 
     private boolean checkForDuplicateCRM() {
 
-        String crmIdValue = (String)crmId.getValue();
+        String crmIdValue = (String) crmId.getValue();
         LOG.debug("Crm new :" + crmIdValue);
 
         List<ProposalHeader> crmIdFromOldProposals = proposalDataProvider.getProposalHeaders();
         LOG.debug(crmIdFromOldProposals.size());
         boolean duplicateCrm = false;
-        for(ProposalHeader crmOld : crmIdFromOldProposals) {
+        for (ProposalHeader crmOld : crmIdFromOldProposals) {
             String crmOldTest = crmOld.getCrmId();
             if (null == crmOldTest || ("").equals(crmOldTest)) continue;
             ProposalHeader getCrm = proposalDataProvider.getProposalHeader(proposalHeader.getId());
@@ -581,29 +603,24 @@ public class CreateProposalsView extends Panel implements View {
     }
 
 
-    private void cancel(Button.ClickEvent clickEvent)
-    {
+    private void cancel(Button.ClickEvent clickEvent) {
         try {
-            if (StringUtils.isEmpty(proposalHeader.getTitle()) || StringUtils.isEmpty(proposalHeader.getCrmId())   || StringUtils.isEmpty(proposalHeader.getCname()) || StringUtils.isEmpty(proposalHeader.getQuoteNo()))
-            {
+            if (StringUtils.isEmpty(proposalHeader.getTitle()) || StringUtils.isEmpty(proposalHeader.getCrmId()) || StringUtils.isEmpty(proposalHeader.getCname()) || StringUtils.isEmpty(proposalHeader.getQuoteNo())) {
                 List<Product> listOfProducts = proposalDataProvider.getProposalProducts(proposalHeader.getId());
-                if (!(listOfProducts.size() == 0))
-                {
+                if (!(listOfProducts.size() == 0)) {
                     NotificationUtil.showNotification("Cannot cancel proposal after adding products!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                }
-                else {
-                        boolean success = proposalDataProvider.deleteProposal(proposalHeader.getId());
+                } else {
+                    boolean success = proposalDataProvider.deleteProposal(proposalHeader.getId());
 
-                        if (!success) {
-                            DashboardEventBus.unregister(this);
-                            UI.getCurrent().getNavigator().navigateTo(DashboardViewType.PROPOSALS.name());
-                        } else {
-                            NotificationUtil.showNotification("Couldn't cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        }
+                    if (!success) {
+                        DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(false));
+                        UI.getCurrent().getNavigator().navigateTo(DashboardViewType.PROPOSALS.name());
+                        DashboardEventBus.unregister(this);
+                    } else {
+                        NotificationUtil.showNotification("Couldn't cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    }
                 }
-            }
-            else
-            {
+            } else {
                 NotificationUtil.showNotification("Couldn't Cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
         } catch (Exception e) {
@@ -809,8 +826,7 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) salesEmail).setValue(email);
     }
 
-    private void designPartnerChanged(Property.ValueChangeEvent valueChangeEvent)
-    {
+    private void designPartnerChanged(Property.ValueChangeEvent valueChangeEvent) {
         String phone = (String) designPartner.getItem(designPartner.getValue()).getItemProperty(User.PHONE).getValue();
         ((TextField) designPartnerContact).setValue(phone);
         String email = (String) designPartner.getItem(designPartner.getValue()).getItemProperty(User.EMAIL).getValue();
@@ -834,9 +850,9 @@ public class CreateProposalsView extends Panel implements View {
             select.setValue(proposalHeader.getSalesName());
         } else if (container.size() == 1) {
             select.setValue(select.getItemIds().iterator().next());
-           // proposalHeader.setSalesName((String) select.getValue());
-           // proposalHeader.setSalesPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
-           // proposalHeader.setSalesEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
+            // proposalHeader.setSalesName((String) select.getValue());
+            // proposalHeader.setSalesPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
+            // proposalHeader.setSalesEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
         }
         return select;
     }
@@ -880,9 +896,9 @@ public class CreateProposalsView extends Panel implements View {
             select.setValue(proposalHeader.getDesignerName());
         } else if (container.size() == 1) {
             select.setValue(select.getItemIds().iterator().next());
-           // proposalHeader.setDesignerName((String) select.getValue());
+            // proposalHeader.setDesignerName((String) select.getValue());
             //proposalHeader.setDesignerPhone(select.getItem(select.getValue()).getItemProperty(User.PHONE).getValue().toString());
-           // proposalHeader.setDesignerEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
+            // proposalHeader.setDesignerEmail(select.getItem(select.getValue()).getItemProperty(User.EMAIL).getValue().toString());
         }
 
         return select;
@@ -940,16 +956,14 @@ public class CreateProposalsView extends Panel implements View {
         return formLayoutRight;
     }
 
-    private void crmIdChanged(Property.ValueChangeEvent valueChangeEvent)
-    {
-         String crmIdValue = (String) crmId.getValue();
-         List <ProposalHeader> crmIdFromOldProposals = proposalDataProvider.getProposalHeaders();
-         for(ProposalHeader crmOld : crmIdFromOldProposals)
-         {
-             if((crmOld.getCrmId()).contains(crmIdValue))
-                 NotificationUtil.showNotification("Quotation with same crmId already exists",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-             return;
-         }
+    private void crmIdChanged(Property.ValueChangeEvent valueChangeEvent) {
+        String crmIdValue = (String) crmId.getValue();
+        List<ProposalHeader> crmIdFromOldProposals = proposalDataProvider.getProposalHeaders();
+        for (ProposalHeader crmOld : crmIdFromOldProposals) {
+            if ((crmOld.getCrmId()).contains(crmIdValue))
+                NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
 
     }
 
@@ -977,7 +991,7 @@ public class CreateProposalsView extends Panel implements View {
         binder.bind(projectCityField, P_CITY);
         projectCityField.setRequired(true);
         formLayoutLeft.addComponent(projectCityField);
-        projectCityField.addValueChangeListener(this :: cityChanged);
+        projectCityField.addValueChangeListener(this::cityChanged);
 
 
         return formLayoutLeft;
@@ -985,14 +999,18 @@ public class CreateProposalsView extends Panel implements View {
 
     private void cityChanged(Property.ValueChangeEvent valueChangeEvent) {
         String city = (String) projectCityField.getValue();
-        switch(city){
-            case "Bangalore": cityCode= "BLR";
+        switch (city) {
+            case "Bangalore":
+                cityCode = "BLR";
                 break;
-            case "Chennai": cityCode= "CHN";
+            case "Chennai":
+                cityCode = "CHN";
                 break;
-            case "Mangalore": cityCode= "MLR";
+            case "Mangalore":
+                cityCode = "MLR";
                 break;
-            case "Pune": cityCode= "PUN";
+            case "Pune":
+                cityCode = "PUN";
                 break;
         }
 
@@ -1000,19 +1018,18 @@ public class CreateProposalsView extends Panel implements View {
         month = today.getMonthValue();
 
 
-        int value=0;
-        List<ProposalCity> count=proposalDataProvider.getMonthCount(month,cityCode);
-           value=count.size();
+        int value = 0;
+        List<ProposalCity> count = proposalDataProvider.getMonthCount(month, cityCode);
+        value = count.size();
 
         String valueStr;
-        valueStr=Integer.toString(value);
-        valueStr=String.format("%04d",value+1);
-        String date=new SimpleDateFormat("yyyy-MM").format(new Date());
-        QuoteNumNew= cityCode + "-" + date+"-"+ valueStr;
+        valueStr = Integer.toString(value);
+        valueStr = String.format("%04d", value + 1);
+        String date = new SimpleDateFormat("yyyy-MM").format(new Date());
+        QuoteNumNew = cityCode + "-" + date + "-" + valueStr;
         //proposalHeader.setQuoteNoNew(QuoteNumNew);
-      //         quotenew.setValue(QuoteNumNew);
+        //         quotenew.setValue(QuoteNumNew);
     }
-
 
 
     private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
@@ -1083,8 +1100,7 @@ public class CreateProposalsView extends Panel implements View {
     @Subscribe
     public void versionCreated(final ProposalEvent.VersionCreated event) {
         List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(proposalHeader.getId());
-        for (ProposalVersion proposalVersionTest : proposalVersionList)
-        {
+        for (ProposalVersion proposalVersionTest : proposalVersionList) {
             LOG.debug("proposal Version list : " + proposalVersionTest.toString());
         }
         proposalVersionList.remove(event.getProposalVersion());
@@ -1094,47 +1110,74 @@ public class CreateProposalsView extends Panel implements View {
 
     }
 
-   /* @Subscribe
-    public void productDelete(final ProposalEvent.ProductDeletedEvent event) {
-        List<Product> products = proposal.getProducts();
-        boolean removed = products.remove(event.getProduct());
-        if (removed) {
-            productContainer.removeAllItems();
-            productContainer.addAll(products);
-            productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
-            productsGrid.getSelectionModel().reset();
-            updateTotal();
-            productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
-        }
-    }
+    /* @Subscribe
+     public void productDelete(final ProposalEvent.ProductDeletedEvent event) {
+         List<Product> products = proposal.getProducts();
+         boolean removed = products.remove(event.getProduct());
+         if (removed) {
+             productContainer.removeAllItems();
+             productContainer.addAll(products);
+             productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+             productsGrid.getSelectionModel().reset();
+             updateTotal();
+             productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
+         }
+     }
 
-    @Subscribe
-    public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
-        AddonProduct eventAddonProduct = event.getAddonProduct();
-        persistAddon(eventAddonProduct);
-        List<AddonProduct> addons = proposal.getAddons();
-        addons.remove(eventAddonProduct);
-        addons.add(eventAddonProduct);
-        addonsContainer.removeAllItems();
-        addonsContainer.addAll(addons);
-        addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
-        addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
-    }
+     @Subscribe
+     public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
+         AddonProduct eventAddonProduct = event.getAddonProduct();
+         persistAddon(eventAddonProduct);
+         List<AddonProduct> addons = proposal.getAddons();
+         addons.remove(eventAddonProduct);
+         addons.add(eventAddonProduct);
+         addonsContainer.removeAllItems();
+         addonsContainer.addAll(addons);
+         addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
+         addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
+     }
 
-    private void persistAddon(AddonProduct eventAddonProduct) {
-        if (eventAddonProduct.getId() == 0) {
-            proposalDataProvider.addProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
-        } else {
-            proposalDataProvider.updateProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
-        }
-    }
-*/
-    private double round(double value, int places)
-    {
+     private void persistAddon(AddonProduct eventAddonProduct) {
+         if (eventAddonProduct.getId() == 0) {
+             proposalDataProvider.addProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+         } else {
+             proposalDataProvider.updateProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+         }
+     }
+ */
+    private double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+
+    public final class ValoMenuItemButton extends Button {
+
+        private static final String STYLE_SELECTED = "selected";
+
+        private final DashboardViewType.ViewType view;
+
+        public ValoMenuItemButton(final DashboardViewType.ViewType view) {
+            this.view = view;
+            setPrimaryStyleName("valo-menu-item");
+            setIcon(view.getIcon());
+            setCaption(view.getViewName().substring(0, 1).toUpperCase()
+                    + view.getViewName().substring(1));
+
+            DashboardEventBus.register(this);
+            addClickListener(new ClickListener() {
+                @Override
+                public void buttonClick(final ClickEvent event) {
+                    UI.getCurrent().getNavigator()
+                            .navigateTo(view.getViewName());
+                }
+            });
+
+        }
+
+
     }
 }
 

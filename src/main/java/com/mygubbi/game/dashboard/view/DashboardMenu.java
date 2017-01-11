@@ -2,10 +2,11 @@ package com.mygubbi.game.dashboard.view;
 
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.domain.User;
-import com.mygubbi.game.dashboard.event.DashboardEvent.PostViewChangeEvent;
 import com.mygubbi.game.dashboard.event.DashboardEvent.ItemDetailsEvent;
+import com.mygubbi.game.dashboard.event.DashboardEvent.PostViewChangeEvent;
 import com.mygubbi.game.dashboard.event.DashboardEvent.UserLoggedOutEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -16,6 +17,8 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A responsive menu component providing user information and the controls for
@@ -24,6 +27,8 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings({"serial", "unchecked"})
 public final class DashboardMenu extends CustomComponent {
 
+    private static final Logger LOG = LogManager.getLogger(DashboardMenu.class);
+
     public static final String ID = "dashboard-menu";
     public static final String REPORTS_BADGE_ID = "dashboard-menu-reports-badge";
     public static final String NOTIFICATIONS_BADGE_ID = "dashboard-menu-notifications-badge";
@@ -31,6 +36,8 @@ public final class DashboardMenu extends CustomComponent {
     private Label notificationsBadge;
     private Label reportsBadge;
     private MenuItem settingsItem;
+    private Component menuItemComponent;
+    private Component subMenuItemComponent;
 
     public DashboardMenu() {
         setPrimaryStyleName("valo-menu");
@@ -128,7 +135,7 @@ public final class DashboardMenu extends CustomComponent {
         menuItemsLayout.addStyleName("valo-menuitems");
 
         for (final DashboardViewType view : DashboardViewType.values()) {
-            Component menuItemComponent = new ValoMenuItemButton(view.getViewType());
+           menuItemComponent = new ValoMenuItemButton(view.getViewType());
             //if role is admin, then only add Setup Master Data, else continue
             String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
@@ -141,13 +148,28 @@ public final class DashboardMenu extends CustomComponent {
             menuItemsLayout.addComponent(menuItemComponent);
 
             for (DashboardViewType.ViewType viewType : view.getViewType().getSubViewTypes()) {
-                Component subMenuItemComponent = new ValoMenuItemButton(viewType);
+                subMenuItemComponent = new ValoMenuItemButton(viewType);
                 subMenuItemComponent.addStyleName("sub-menu");
                 menuItemsLayout.addComponent(subMenuItemComponent);
             }
         }
         return menuItemsLayout;
+    }
 
+    private void disableNewQuotation()
+    {
+        menuItemComponent.setEnabled(false);
+        subMenuItemComponent.setEnabled(false);
+        menuItemComponent.setVisible(false);
+        subMenuItemComponent.setVisible(false);
+    }
+
+    private void enableNewQuotation()
+    {
+        menuItemComponent.setEnabled(true);
+        subMenuItemComponent.setEnabled(true);
+        menuItemComponent.setVisible(true);
+        subMenuItemComponent.setVisible(true);
     }
 
     private Component buildBadgeWrapper(final Component menuItemButton,
@@ -174,6 +196,19 @@ public final class DashboardMenu extends CustomComponent {
     public void updateUserName(final ItemDetailsEvent event) {
         User user = getCurrentUser();
         settingsItem.setText(user.getName());
+    }
+
+    @Subscribe
+    public void DashboardMenuUpdated(final ProposalEvent.DashboardMenuUpdated event) {
+       boolean status = event.getDashboardMenuStatus();
+        if (status)
+        {
+            disableNewQuotation();
+        }
+        else {
+            enableNewQuotation();
+        }
+
     }
 
     public final class ValoMenuItemButton extends Button {

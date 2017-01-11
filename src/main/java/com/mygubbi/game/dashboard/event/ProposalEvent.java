@@ -115,6 +115,16 @@ public abstract class ProposalEvent {
         }
     }
 
+    public static class DashboardMenuUpdated {
+        boolean status;
+        public DashboardMenuUpdated(boolean status) {
+            this.status = status;
+        }
+             public boolean getDashboardMenuStatus() {
+            return status;
+        }
+    }
+
     public static class AddonUpdated {
 
         private final AddonProduct addonProduct;

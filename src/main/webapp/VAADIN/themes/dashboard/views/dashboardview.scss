@@ -336,6 +336,21 @@
    	    margin-left: 0px ! important;
 		margin-top: 25px !important;
   }
+  .text-area-size{
+  width: 300%;
+  display:block;
+  }
+
+  .label-style{
+      padding-bottom: 0px;
+          padding-top: 0px;
+  }
+
+.text-area-main-size{
+  width: 500%;
+  display: block;
+  margin-left: 22px;
+  }
 
   .amount-text-value {
 		font-size: 22.4px !important;
@@ -440,8 +455,9 @@
 	overflow: auto !important;
   }
   .textfield-background-color {
-   background: #FFFFCC !important;
+   border: 2px solid !important;
   }
+
   .labelFont {
 	font-size: 11px
   }

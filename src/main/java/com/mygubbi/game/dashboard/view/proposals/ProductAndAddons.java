@@ -84,7 +84,7 @@ public class ProductAndAddons extends Window
     private Button closeButton;
     private BeanItemContainer<Product> productContainer;
     private Label grandTotal;
-    private TextField remarksText;
+
     private Label versionNum;
     private Label versionStatus;
     private TextArea remarksTextArea;
@@ -288,15 +288,7 @@ public class ProductAndAddons extends Window
         vlayout.addComponent(formLayoutRight);
 
         verticalLayout.addComponent(vlayout);
-*//*
-        this.remarksText = new TextField("Remarks");
-        this.remarksText.addStyleName("textfield-background-color");
-        this.remarksText.setWidth("100%");
-        this.remarksText.addValidator(new StringLengthValidator("Must be 200 characters long",0,200,false));
-        this.remarksText.setImmediate(true);
-        this.remarksText.setValue(proposalVersion.getRemarks());
-        formLayoutRight.addComponent(remarksText);*//*
-        return verticalLayout;*/
+*/
 
         FormLayout formLayoutLeft = new FormLayout();
         formLayoutLeft.setSizeFull();
@@ -463,22 +455,14 @@ public class ProductAndAddons extends Window
         verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
         HorizontalLayout vlayout  = new HorizontalLayout();
-       // vlayout.addStyleName("text-area-main-size");
-        FormLayout left = new FormLayout();
-
-        Label remarks = new Label("Remarks:");
-        left.addComponent(remarks);
-        remarks.addStyleName("amount-text-label1");
-        remarks.addStyleName("v-label-amount-text-label1");
-        remarks.addStyleName("margin-top-18");
-        vlayout.addComponent(left);
 
         FormLayout left1 = new FormLayout();
         left1.addStyleName("text-area-main-size");
         this.remarksTextArea=new TextArea();
+        this.remarksTextArea.setCaption("<h3> Remarks </h3>");
+        this.remarksTextArea.setCaptionAsHtml(true);
         remarksTextArea.setValue(proposalVersion.getRemarks());
-        remarksTextArea.setRequired(true);
-        remarksTextArea.addValidator(new StringLengthValidator("Remarks Must not exceed 255 characters long and it should not be empty ", 0, 255, true));
+        remarksTextArea.addValidator(new StringLengthValidator("Remarks must not exceed 255 characters long ", 0, 255, true));
        /* remarksTextArea.setImmediate(true);*/
         remarksTextArea.addStyleName("text-area-size");
         left1.addComponent(remarksTextArea);
@@ -736,7 +720,7 @@ public class ProductAndAddons extends Window
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
-        verticalLayout.setSpacing(true);
+
         verticalLayout.setMargin(new MarginInfo(true, true, true, true));
         verticalLayout.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
@@ -748,6 +732,7 @@ public class ProductAndAddons extends Window
         title.setStyleName("products-and-addons-label-text");
         horizontalLayout.addComponent(title);
         horizontalLayout.setComponentAlignment(title,Alignment.TOP_LEFT);
+        verticalLayout.setSpacing(true);
 
         HorizontalLayout hLayoutInner = new HorizontalLayout();
 
@@ -956,6 +941,7 @@ public class ProductAndAddons extends Window
         label.setStyleName("font-italics");
 
         verticalLayout.addComponent(horizontalLayout);
+        verticalLayout.setSpacing(true);
 
         verticalLayout.addComponent(productsGrid);
 
@@ -1246,6 +1232,12 @@ public class ProductAndAddons extends Window
         try {
             binder.commit();
 
+            if (remarksTextArea == null || remarksTextArea.isEmpty())
+            {
+                NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = new Date();
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
@@ -1294,6 +1286,12 @@ public class ProductAndAddons extends Window
     private void confirm(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
+
+            if (remarksTextArea == null || remarksTextArea.isEmpty())
+            {
+                NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = new Date();
@@ -1415,6 +1413,7 @@ public class ProductAndAddons extends Window
         }*/
 
         saveProposalVersion();
+
     }
 
     private void saveProposalVersion() {
@@ -1453,10 +1452,10 @@ public class ProductAndAddons extends Window
         try {
                 String disAmount=discountAmount.getValue();
                 proposalVersion.setDate(dateFormat.format(date));
+            proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+            proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
 
-                /*LOG.debug("Proposal Version" + proposalVersion.toString());*/
-
-                proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
+            proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             close();
         }
