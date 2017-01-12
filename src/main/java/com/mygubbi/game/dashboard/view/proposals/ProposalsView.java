@@ -45,7 +45,7 @@ public final class ProposalsView extends TabSheet implements View {
 
         VerticalLayout root = new VerticalLayout();
         root.setMargin(true);
-        root.setCaption("All Proposals");
+        root.setCaption("All Quotations");
 
         addTab(root);
         Responsive.makeResponsive(root);

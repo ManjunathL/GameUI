@@ -567,9 +567,9 @@ public class CreateProposalsView extends Panel implements View {
 
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
         cancelButton.setVisible(false);
+        DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(false));
 
         if (success) {
-
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             cityLockedForSave();
         } else {
@@ -582,7 +582,8 @@ public class CreateProposalsView extends Panel implements View {
     private boolean checkForDuplicateCRM() {
 
         String crmIdValue = (String) crmId.getValue();
-        LOG.debug("Crm new :" + crmIdValue);
+        ProposalHeader getCrm = proposalDataProvider.getProposalHeader(proposalHeader.getId());
+
 
         List<ProposalHeader> crmIdFromOldProposals = proposalDataProvider.getProposalHeaders();
         LOG.debug(crmIdFromOldProposals.size());
@@ -590,7 +591,6 @@ public class CreateProposalsView extends Panel implements View {
         for (ProposalHeader crmOld : crmIdFromOldProposals) {
             String crmOldTest = crmOld.getCrmId();
             if (null == crmOldTest || ("").equals(crmOldTest)) continue;
-            ProposalHeader getCrm = proposalDataProvider.getProposalHeader(proposalHeader.getId());
             if (getCrm.getCrmId().isEmpty() || getCrm.getCrmId() == null) {
 
                 if (crmOldTest.equals(crmIdValue)) {
