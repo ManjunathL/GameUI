@@ -521,7 +521,6 @@ public class CreateProposalsView extends Panel implements View {
 
         if (success) {
 
-            quotenew.setValue(QuoteNumNew);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             cityLockedForSave();
         } else {
@@ -564,7 +563,6 @@ public class CreateProposalsView extends Panel implements View {
         } catch (Exception e) {
             LOG.info(e);
         }
-        proposalHeader.setQuoteNoNew(QuoteNumNew);
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
         cancelButton.setVisible(false);
         DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(false));
