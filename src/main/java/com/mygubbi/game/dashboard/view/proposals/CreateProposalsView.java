@@ -564,7 +564,7 @@ public class CreateProposalsView extends Panel implements View {
         } catch (Exception e) {
             LOG.info(e);
         }
-
+        proposalHeader.setQuoteNoNew(QuoteNumNew);
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
         cancelButton.setVisible(false);
         DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(false));

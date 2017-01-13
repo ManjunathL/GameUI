@@ -91,16 +91,16 @@ public final class ProposalsView extends TabSheet implements View {
         grid.sort("createdOn", SortDirection.DESCENDING);
         GridCellFilter filter = new GridCellFilter(grid);
 
-        filter.setTextFilter(ProposalHeader.TITLE, true, true);
-        filter.setTextFilter(ProposalHeader.CRM_ID, true, true);
-        filter.setTextFilter(ProposalHeader.ID,true,true);
+        filter.setTextFilter(ProposalHeader.TITLE, true, false);
+        filter.setTextFilter(ProposalHeader.CRM_ID, true, false);
+        filter.setTextFilter(ProposalHeader.ID,true,false);
         filter.setTextFilter(ProposalHeader.VERSION,true,true);
-        filter.setTextFilter(ProposalHeader.QUOTE_NO_NEW,true,true);
+        filter.setTextFilter(ProposalHeader.QUOTE_NO_NEW,true,false);
         filter.setTextFilter(ProposalHeader.QUOTE_NO, true, true);
         filter.setTextFilter(ProposalHeader.STATUS, true, true);
-        filter.setTextFilter(ProposalHeader.CREATED_BY, true, true);
-        filter.setTextFilter(ProposalHeader.DESIGNER_NAME, true, true);
-        filter.setTextFilter(ProposalHeader.DESIGN_PARTNER_NAME, true, true);
+        filter.setTextFilter(ProposalHeader.CREATED_BY, true, false);
+        filter.setTextFilter(ProposalHeader.DESIGNER_NAME, true, false);
+        filter.setTextFilter(ProposalHeader.DESIGN_PARTNER_NAME, true, false);
         filter.setTextFilter(ProposalHeader.SALES_NAME, true, true);
         filter.setDateFilter(ProposalHeader.CREATED_ON);
 

@@ -1620,7 +1620,6 @@ public class ProductAndAddons extends Window
                             .collect(Collectors.toList()).get(0).getTitle();
                 }
             }
-
             @Override
             public Class<String> getType() {
                 return String.class;
@@ -1650,9 +1649,7 @@ public class ProductAndAddons extends Window
 
     @Subscribe
     public void productCreatedOrUpdated(final ProposalEvent.ProductCreatedOrUpdatedEvent event) {
-        List<Product> products = proposal.getProducts();
-        boolean removed = products.remove(event.getProduct());
-        products.add(event.getProduct());
+        List<Product> products = proposalDataProvider.getVersionProducts(proposalHeader.getId(),proposalVersion.getVersion());
         productContainer.removeAllItems();
         productContainer.addAll(products);
         productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
