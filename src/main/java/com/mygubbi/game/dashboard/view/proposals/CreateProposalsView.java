@@ -520,7 +520,7 @@ public class CreateProposalsView extends Panel implements View {
         saveAndCloseButton.setVisible(true);
 
         if (success) {
-
+            quotenew.setValue(QuoteNumNew);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             cityLockedForSave();
         } else {
