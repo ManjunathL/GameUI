@@ -166,6 +166,24 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<AddonProduct> getVersionAddons(int proposalId,String Vid) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/addonlist", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId + "");
+                put("fromVersion" ,Vid + "");
+            }
+        });
+        try
+        {
+            AddonProduct[] items = this.mapper.readValue(jsonArray.toString(), AddonProduct[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     public List<ProposalVersion> getProposalVersionPreSales(int proposalId) {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/presales", new HashMap<String, String>() {
             {
@@ -998,6 +1016,7 @@ public class ProposalDataProvider {
             addonProduct.setUpdatedBy(getUserId());
             addonProduct.setProposalId(proposalId);
             String faJson = this.mapper.writeValueAsString(addonProduct);
+            LOG.debug("Proposal Addon : " + faJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "proposal/addon.add", faJson);
             if (!jsonObject.has("error")) {

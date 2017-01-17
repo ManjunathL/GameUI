@@ -21,6 +21,8 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.List;
@@ -55,12 +57,17 @@ public class AddonDetailsWindow extends Window {
     private BeanContainer<String, AddonBrand> brandBeanContainer;
     private BeanContainer<String, AddonCategory> categoryBeanContainer;
     private boolean readOnly;
+    private ProposalVersion proposalVersion;
 
-    public AddonDetailsWindow(AddonProduct addonProduct, boolean readOnly, String title, boolean isProposalAddon) {
+    private static final Logger LOG = LogManager.getLogger(AddonProduct.class);
+
+
+    public AddonDetailsWindow(AddonProduct addonProduct, boolean readOnly, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
         this.addonProduct = addonProduct;
         this.readOnly = readOnly;
         this.isProposalAddon = isProposalAddon;
         this.originalImagePath = this.addonProduct.getImagePath();
+        this.proposalVersion = proposalVersion;
         this.binder.setItemDataSource(this.addonProduct);
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
@@ -410,18 +417,31 @@ public class AddonDetailsWindow extends Window {
             } else {
 
                 try {
+                    int seq = 0;
                     binder.commit();
-
+                    List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
+                    if (addons.size() == 0)
+                    {
+                        addonProduct.setSeq(++seq);
+                    }
+                    else
+                    {
+                        seq = addons.size()+1;
+                        addonProduct.setSeq(seq);
+                    }
+                    addonProduct.setFromVersion(proposalVersion.getVersion());
                     addonProduct.setCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
                     addonProduct.setProductType(this.productTypeBeanContainer.getItem(this.productType.getValue()).getBean().getProductTypeCode());
                     addonProduct.setBrand(this.brandBeanContainer.getItem(this.brand.getValue()).getBean().getBrandCode());
                     addonProduct.setCode(this.catalogueCodeBeanContainer.getItem(this.catalogueCode.getValue()).getBean().getCode());
+                    LOG.debug("Addon product Class :" + addonProduct.toString());
 
-                    if (isProposalAddon) {
-                        DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));
-                    } else {
-                        DashboardEventBus.post(new ProposalEvent.AddonUpdated(addonProduct));
-                    }
+
+                        if (isProposalAddon) {
+                            DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));
+                        } else {
+                            DashboardEventBus.post(new ProposalEvent.AddonUpdated(addonProduct));
+                        }
                     close();
                 } catch (FieldGroup.CommitException e) {
                     e.printStackTrace();
@@ -445,8 +465,8 @@ public class AddonDetailsWindow extends Window {
         }
     }
 
-    public static void open(AddonProduct addon, boolean readOnly, String title, boolean isProposalAddon) {
-        Window w = new AddonDetailsWindow(addon, readOnly, title, isProposalAddon);
+    public static void open(AddonProduct addon, boolean readOnly, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
+        Window w = new AddonDetailsWindow(addon, readOnly, title, isProposalAddon,proposalVersion);
         UI.getCurrent().addWindow(w);
         w.focus();
 

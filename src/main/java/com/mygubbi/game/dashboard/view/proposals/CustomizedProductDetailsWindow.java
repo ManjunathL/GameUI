@@ -940,7 +940,7 @@ public class CustomizedProductDetailsWindow extends Window {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setSeq(addons.size() + 1);
             addonProduct.setAdd(true);
-            AddonDetailsWindow.open(addonProduct, false, itemTitleField.getValue(), false);
+            AddonDetailsWindow.open(addonProduct, false, itemTitleField.getValue(), false,proposalVersion);
         });
 
         verticalLayout.addComponent(addonAddButton);
@@ -978,7 +978,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                 addon.setAdd(false);
                 boolean readOnly = isProposalReadonly();
-                AddonDetailsWindow.open(addon, readOnly, itemTitleField.getValue(), false);
+                AddonDetailsWindow.open(addon, readOnly, itemTitleField.getValue(), false,proposalVersion);
             }
 
             @Override
@@ -1379,7 +1379,6 @@ public class CustomizedProductDetailsWindow extends Window {
 
             if (module.getModuleSequence() == 0)
             {
-                module.setSeq(this.getNextUnitSequence(modules, module.getUnitType()));
                 module.setModuleSequence(this.getNextModuleSequence(modules));
             }
             else

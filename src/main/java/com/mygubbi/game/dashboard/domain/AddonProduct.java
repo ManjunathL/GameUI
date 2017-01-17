@@ -32,7 +32,7 @@ public class AddonProduct implements Cloneable {
     private int seq;
     private int id;
     private int proposalId;
-    private double fromVersion;
+    private String fromVersion;
     private String code;
     private String catalogueCode;
     private String title;
@@ -94,11 +94,11 @@ public class AddonProduct implements Cloneable {
         this.id = id;
     }
 
-    public double getFromVersion() {
+    public String getFromVersion() {
         return fromVersion;
     }
 
-    public void setFromVersion(double fromVersion) {
+    public void setFromVersion(String fromVersion) {
         this.fromVersion = fromVersion;
     }
 
@@ -253,5 +253,32 @@ public class AddonProduct implements Cloneable {
         result = 31 * result + productTypeCode.hashCode();
         result = 31 * result + brandCode.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "AddonProduct{" +
+                "seq=" + seq +
+                ", id=" + id +
+                ", proposalId=" + proposalId +
+                ", fromVersion='" + fromVersion + '\'' +
+                ", code='" + code + '\'' +
+                ", catalogueCode='" + catalogueCode + '\'' +
+                ", title='" + title + '\'' +
+                ", categoryCode='" + categoryCode + '\'' +
+                ", category='" + category + '\'' +
+                ", productTypeCode='" + productTypeCode + '\'' +
+                ", productType='" + productType + '\'' +
+                ", brandCode='" + brandCode + '\'' +
+                ", brand='" + brand + '\'' +
+                ", uom='" + uom + '\'' +
+                ", amount=" + amount +
+                ", imagePath='" + imagePath + '\'' +
+                ", quantity=" + quantity +
+                ", rate=" + rate +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", description='" + description + '\'' +
+                ", add=" + add +
+                '}';
     }
 }

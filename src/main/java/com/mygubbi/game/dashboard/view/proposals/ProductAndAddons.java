@@ -112,6 +112,7 @@ public class ProductAndAddons extends Window
         this.vid=vid;
 
         this.proposal.setProducts(proposalDataProvider.getVersionProducts(proposalHeader.getId(),vid));
+        this.proposal.setAddons(proposalDataProvider.getVersionAddons(proposalHeader.getId(),vid));
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
         this.productAndAddonSelection.setFromVersion(this.proposalVersion.getVersion());
@@ -909,7 +910,7 @@ public class ProductAndAddons extends Window
 
                                     proposalDataProvider.deleteProduct(product.getId());
 
-                                    for (Product product1 : proposal.getProducts()) {
+                                    for (Product product1 : proposalDataProvider.getVersionProducts(proposalHeader.getId(),proposalVersion.getVersion())) {
                                         if (product1.getSeq() > seq) {
                                             product1.setSeq(product1.getSeq() - 1);
                                             proposalDataProvider.updateProductSequence(product1.getSeq(),product1.getId());
@@ -967,9 +968,8 @@ public class ProductAndAddons extends Window
         addonAddButton.setStyleName("add-addon-btn");
         addonAddButton.addClickListener(clickEvent -> {
             AddonProduct addonProduct = new AddonProduct();
-            addonProduct.setSeq(proposal.getAddons().size() + 1);
             addonProduct.setAdd(true);
-            AddonDetailsWindow.open(addonProduct, false, "Add Addon", true);
+            AddonDetailsWindow.open(addonProduct, false, "Add Addon", true, proposalVersion);
         });
 
         horizontalLayout.addComponent(addonAddButton);
@@ -1009,7 +1009,7 @@ public class ProductAndAddons extends Window
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                 addon.setAdd(false);
                 boolean readOnly = isProposalReadonly();
-                AddonDetailsWindow.open(addon, readOnly, "Edit Addon", true);
+                AddonDetailsWindow.open(addon, readOnly, "Edit Addon", true,proposalVersion);
             }
 
             @Override
@@ -1022,8 +1022,7 @@ public class ProductAndAddons extends Window
                                 if (dialog.isConfirmed()) {
                                     AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                                     proposalDataProvider.removeProposalAddon(addon.getId());
-                                    List<AddonProduct> addons = proposal.getAddons();
-                                    addons.remove(addon);
+                                    List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalHeader.getId(),proposalVersion.getVersion());
 
                                     int seq = addon.getSeq();
                                     addonsContainer.removeAllItems();
@@ -1662,13 +1661,12 @@ public class ProductAndAddons extends Window
     public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
         AddonProduct eventAddonProduct = event.getAddonProduct();
         persistAddon(eventAddonProduct);
-        List<AddonProduct> addons = proposal.getAddons();
-        addons.remove(eventAddonProduct);
-        addons.add(eventAddonProduct);
+        List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalHeader.getId(),proposalVersion.getVersion());
         addonsContainer.removeAllItems();
         addonsContainer.addAll(addons);
         addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
         addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
+        updateTotal();
     }
 
     private void persistAddon(AddonProduct eventAddonProduct) {
