@@ -514,13 +514,15 @@ public class CreateProposalsView extends Panel implements View {
         } catch (Exception e) {
             LOG.info(e);
         }
+
+        checkQuoteNoNew();
         proposalHeader.setQuoteNoNew(QuoteNumNew);
         boolean success = proposalDataProvider.saveProposal(proposalHeader);
         cancelButton.setVisible(false);
         saveAndCloseButton.setVisible(true);
 
         if (success) {
-            quotenew.setValue(QuoteNumNew);
+
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             cityLockedForSave();
         } else {
@@ -528,10 +530,21 @@ public class CreateProposalsView extends Panel implements View {
         }
     }
 
+    private void checkQuoteNoNew() {
+        if (!(proposalHeader.getQuoteNoNew() == null || proposalHeader.getQuoteNoNew().isEmpty()))
+        {
+            QuoteNumNew = proposalHeader.getQuoteNoNew();
+        }
+
+        if (proposalHeader.getQuoteNoNew() == null || proposalHeader.getQuoteNoNew().isEmpty())
+        {
+            quotenew.setValue(QuoteNumNew);
+        }
+    }
+
     private void saveAndClose(Button.ClickEvent clickEvent) {
         boolean duplicateCrm = checkForDuplicateCRM();
 
-        LOG.debug("duplicate crm" + duplicateCrm);
         if (duplicateCrm) {
             NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
