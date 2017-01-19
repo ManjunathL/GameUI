@@ -112,7 +112,7 @@ public class ProductAndAddons extends Window
         this.vid=vid;
 
         this.proposal.setProducts(proposalDataProvider.getVersionProducts(proposalHeader.getId(),vid));
-        this.proposal.setAddons(proposalDataProvider.getVersionAddons(proposalHeader.getId(),vid));
+//        this.proposal.setAddons(proposalDataProvider.getVersionAddons(proposalHeader.getId(),vid));
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
         this.productAndAddonSelection.setFromVersion(this.proposalVersion.getVersion());
@@ -1022,9 +1022,11 @@ public class ProductAndAddons extends Window
                                 if (dialog.isConfirmed()) {
                                     AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                                     proposalDataProvider.removeProposalAddon(addon.getId());
+/*
                                     List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalHeader.getId(),proposalVersion.getVersion());
+*/
 
-                                    int seq = addon.getSeq();
+                                  /*  int seq = addon.getSeq();
                                     addonsContainer.removeAllItems();
 
                                     for (AddonProduct addonProduct : addons) {
@@ -1032,7 +1034,7 @@ public class ProductAndAddons extends Window
                                             addonProduct.setSeq(addonProduct.getSeq() - 1);
                                         }
                                     }
-                                    addonsContainer.addAll(addons);
+                                    addonsContainer.addAll(addons);*/
                                     addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
                                 }
                             });
@@ -1657,7 +1659,7 @@ public class ProductAndAddons extends Window
         productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
     }
 
-    @Subscribe
+  /*  @Subscribe
     public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
         AddonProduct eventAddonProduct = event.getAddonProduct();
         persistAddon(eventAddonProduct);
@@ -1667,7 +1669,7 @@ public class ProductAndAddons extends Window
         addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
         addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
         updateTotal();
-    }
+    }*/
 
     private void persistAddon(AddonProduct eventAddonProduct) {
         if (eventAddonProduct.getId() == 0) {

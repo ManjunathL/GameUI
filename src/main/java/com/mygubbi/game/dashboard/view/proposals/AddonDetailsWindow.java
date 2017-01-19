@@ -419,8 +419,8 @@ public class AddonDetailsWindow extends Window {
                 try {
                     int seq = 0;
                     binder.commit();
-                    List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
-                    if (addons.size() == 0)
+//                    List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
+                   /* if (addons.size() == 0)
                     {
                         addonProduct.setSeq(++seq);
                     }
@@ -428,7 +428,7 @@ public class AddonDetailsWindow extends Window {
                     {
                         seq = addons.size()+1;
                         addonProduct.setSeq(seq);
-                    }
+                    }*/
                     addonProduct.setFromVersion(proposalVersion.getVersion());
                     addonProduct.setCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
                     addonProduct.setProductType(this.productTypeBeanContainer.getItem(this.productType.getValue()).getBean().getProductTypeCode());
