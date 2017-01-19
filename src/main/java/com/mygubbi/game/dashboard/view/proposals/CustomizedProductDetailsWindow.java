@@ -140,7 +140,7 @@ public class CustomizedProductDetailsWindow extends Window {
         fileAttachmentComponent = new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(),
                 attachmentData -> proposalDataProvider.addProductDoc(product.getId(), product.getProposalId(), attachmentData.getFileAttachment()),
                 attachmentData -> proposalDataProvider.removeProductDoc(attachmentData.getFileAttachment().getId()),
-                !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.Draft.name()));
+                !proposal.getProposalHeader().getStatus().equals(ProposalVersion.ProposalStage.Draft.name()));
 
         if (product.getModules().isEmpty()) {
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);

@@ -421,7 +421,7 @@ public class ProductAndAddons extends Window
         this.versionNum.addStyleName("margin-top-18");
         this.versionNum.addStyleName("v-label-amount-text-label");
         this.versionNum.setReadOnly(true);
-        this.versionNum.setValue(vid.toString());
+        this.versionNum.setValue(vid);
         amountsLayout.addComponent(versionNum);
         amountsLayout.setSpacing(true);
 
@@ -1054,7 +1054,7 @@ public class ProductAndAddons extends Window
 
     }
 
-    private void doSalesOrderDownloadValidation(Button.ClickEvent clickEvent) {
+   /* private void doSalesOrderDownloadValidation(Button.ClickEvent clickEvent) {
         if (this.productAndAddonSelection.getProductIds().size() != 1) {
             NotificationUtil.showNotification("Please select a single product to download SO extract.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
         }
@@ -1071,9 +1071,9 @@ public class ProductAndAddons extends Window
             }
         };
         return downloader;
-    }
+    }*/
 
-    private String getSOFilename()
+   /* private String getSOFilename()
     {
         if (this.productAndAddonSelection.getProductIds().size() == 1)
         {
@@ -1114,7 +1114,7 @@ public class ProductAndAddons extends Window
             }
         };
         return new StreamResource(source, "so-initial.xlsx");
-    }
+    }*/
 
     private void checkProductsAndAddonsAvailable(Button.ClickEvent clickEvent) {
         if (proposal.getProducts().isEmpty() ) {

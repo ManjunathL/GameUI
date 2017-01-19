@@ -136,11 +136,10 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeader.setEditFlag(EDIT.W.name());
             //todo: this has to be removed once server side is fixed
         } else {
-
             proposalHeader = proposalDataProvider.createProposal();
             proposalHeader.setVersion(NEW_VERSION);
             proposalHeader.setEditFlag(EDIT.W.name());
-            proposalHeader.setStatus(ProposalState.Draft.name());
+            proposalHeader.setStatus(ProposalState.Deleted.name());
             QuoteNum = "";
             proposalHeader.setQuoteNo(QuoteNum);
             DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(true));
@@ -188,7 +187,7 @@ public class CreateProposalsView extends Panel implements View {
             fileAttachmentComponent = new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
                     attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
                     attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId()),
-                    !proposalHeader.getStatus().equals(ProposalState.Draft.name())
+                    true
             );
             tabs.addTab(fileAttachmentComponent, "Attachments");
 
@@ -342,6 +341,10 @@ public class CreateProposalsView extends Panel implements View {
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 try {
+                    if(("Deleted").equals(proposalHeader.getStatus())) {
+                        NotificationUtil.showNotification("Validation Error, please save the quote before proceeding", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
                     binder.commit();
                 } catch (FieldGroup.CommitException e) {
                     NotificationUtil.showNotification("Validation Error, please fill all mandatory fields in header tab", NotificationUtil.STYLE_BAR_ERROR_SMALL);
