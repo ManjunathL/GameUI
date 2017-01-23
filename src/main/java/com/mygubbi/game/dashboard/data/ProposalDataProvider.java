@@ -697,6 +697,19 @@ public class ProposalDataProvider {
 
     }
 
+    public ProposalVersion createNewProductFromOldProposal(ProposalVersion proposalVersion ) {
+        try {
+            String productJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/createnewfromoldproposal", productJson);
+
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
+
+    }
+
     public ProposalVersion copyProposalVersion(ProposalVersion proposalVersion ) {
         try {
             String productJson = this.mapper.writeValueAsString(proposalVersion);
@@ -942,10 +955,9 @@ public class ProposalDataProvider {
     }
 
     //addon/productTypes
-    public List<AddonProductType> getAddonProductTypes(String roomCode, String addonCategoryCode) {
+    public List<AddonProductType> getAddonProductTypes( String addonCategoryCode) {
         JSONArray array = dataProviderMode.getResourceArray("addon/productTypes", new HashMap<String, String>() {
             {
-                put("roomCode", roomCode);
                 put("categoryCode", addonCategoryCode);
             }
         });
@@ -959,10 +971,29 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<AddonProductSubtype> getAddonProductSubTypes(String addonCategoryCode, String addonProductTypeCode) {
+        JSONArray array = dataProviderMode.getResourceArray("addon/productSubTypes", new HashMap<String, String>() {
+            {
+                put("categoryCode", addonCategoryCode);
+                put("productCategoryType", addonProductTypeCode);
+            }
+        });
+        try {
+            AddonProductSubtype[] items = this.mapper.readValue(array.toString(), AddonProductSubtype[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
     //addon/brands
-    public List<AddonBrand> getAddonBrands(String addonProductTypeCode) {
+    public List<AddonBrand> getAddonBrands(String category, String addonProductSubType, String addonProductTypeCode) {
         JSONArray array = dataProviderMode.getResourceArray("addon/brands", new HashMap<String, String>() {
             {
+                put("categoryCode", urlEncode(category));
+                put("productSubTypeCode", urlEncode(addonProductSubType));
                 put("productTypeCode", urlEncode(addonProductTypeCode));
             }
         });
@@ -985,10 +1016,12 @@ public class ProposalDataProvider {
     }
 
     //addon/products
-    public List<AddonProductItem> getAddonProductItems(String addonProductTypeCode, String brandCode) {
+    public List<AddonProductItem> getAddonProductItems(String categoryCode, String addonProductTypeCode, String addonProductSubTypeCode, String brandCode) {
         JSONArray array = dataProviderMode.getResourceArray("addon/products", new HashMap<String, String>() {
             {
+                put("categoryCode", urlEncode(categoryCode));
                 put("productTypeCode", urlEncode(addonProductTypeCode));
+                put("productSubTypeCode", urlEncode(addonProductSubTypeCode));
                 put("brandCode", urlEncode(brandCode));
             }
         });
@@ -1016,7 +1049,6 @@ public class ProposalDataProvider {
             addonProduct.setUpdatedBy(getUserId());
             addonProduct.setProposalId(proposalId);
             String faJson = this.mapper.writeValueAsString(addonProduct);
-            LOG.debug("Proposal Addon : " + faJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "proposal/addon.add", faJson);
             if (!jsonObject.has("error")) {

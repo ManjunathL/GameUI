@@ -39,6 +39,7 @@ public class AddonDetailsWindow extends Window {
     private final BeanFieldGroup<AddonProduct> binder = new BeanFieldGroup<>(AddonProduct.class);
     private ComboBox category;
     private ComboBox productType;
+    private ComboBox productSubtype;
     private ComboBox brand;
     private ComboBox catalogueCode;
     private TextField title;
@@ -53,6 +54,7 @@ public class AddonDetailsWindow extends Window {
 
     private String originalImagePath;
     private BeanContainer<String, AddonProductType> productTypeBeanContainer;
+    private BeanContainer<String, AddonProductSubtype> productSubtypeBeanContainer;
     private BeanContainer<String, AddonProductItem> catalogueCodeBeanContainer;
     private BeanContainer<String, AddonBrand> brandBeanContainer;
     private BeanContainer<String, AddonCategory> categoryBeanContainer;
@@ -71,7 +73,7 @@ public class AddonDetailsWindow extends Window {
         this.binder.setItemDataSource(this.addonProduct);
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("60%");
+        setWidth("80%");
         setClosable(false);
         setCaption("Addon Configuration for " + title);
 
@@ -99,6 +101,7 @@ public class AddonDetailsWindow extends Window {
         if (readOnly) {
             category.setReadOnly(true);
             productType.setReadOnly(true);
+            productSubtype.setReadOnly(true);
             brand.setReadOnly(true);
             catalogueCode.setReadOnly(true);
             title.setReadOnly(true);
@@ -134,6 +137,13 @@ public class AddonDetailsWindow extends Window {
         this.productType.addValueChangeListener(this::productTypeChanged);
         formLayoutLeft.addComponent(this.productType);
 
+        this.productSubtype = getProductSubtypeCombo();
+        this.productSubtype.setRequired(true);
+        binder.bind(this.productSubtype, AddonProduct.PRODUCT_SUB_TYPE_CODE);
+        this.productSubtype.addValueChangeListener(this::productSubtypeChanged);
+        formLayoutLeft.addComponent(this.productSubtype);
+
+
         this.brand = getBrandCombo();
         this.brand.setRequired(true);
         binder.bind(this.brand, AddonProduct.BRAND_CODE);
@@ -146,16 +156,17 @@ public class AddonDetailsWindow extends Window {
         this.catalogueCode.addValueChangeListener(this::catalogueCodeChanged);
         formLayoutLeft.addComponent(this.catalogueCode);
 
-        this.title = new TextField("Title");
-        this.title.setRequired(true);
-        this.title.setNullRepresentation("");
-        binder.bind(this.title, AddonProductItem.TITLE);
-        formLayoutLeft.addComponent(this.title);
-
         FormLayout formLayoutRight = new FormLayout();
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         horizontalLayout.addComponent(formLayoutRight);
+
+        this.title = new TextField("Specification");
+        this.title.setHeightUndefined();
+        this.title.setRequired(true);
+        this.title.setNullRepresentation("");
+        binder.bind(this.title, AddonProductItem.TITLE);
+        formLayoutRight.addComponent(this.title);
 
         this.uom = new TextField("UOM");
         this.uom.setNullRepresentation("");
@@ -186,10 +197,6 @@ public class AddonDetailsWindow extends Window {
         this.amount.setReadOnly(true);
         formLayoutRight.addComponent(this.amount);
 
-        this.description = new TextField("Description");
-        binder.bind(this.description, AddonProduct.DESCRIPTION);
-        this.description.setReadOnly(true);
-        formLayoutRight.addComponent(this.description);
 
         if (StringUtils.isEmpty(addonProduct.getImagePath())) {
             addonImage = new Image("", new ThemeResource("img/empty-poster.png"));
@@ -232,7 +239,7 @@ public class AddonDetailsWindow extends Window {
 
         String prevCode = (String) productType.getValue();
 
-        List<AddonProductType> list = proposalDataProvider.getAddonProductTypes(BLANK_ROOM_CODE, (String) this.category.getValue());
+        List<AddonProductType> list = proposalDataProvider.getAddonProductTypes( (String) this.category.getValue());
         this.productTypeBeanContainer.removeAllItems();
         this.productTypeBeanContainer.addAll(list);
 
@@ -284,7 +291,7 @@ public class AddonDetailsWindow extends Window {
     private void brandChanged(Property.ValueChangeEvent valueChangeEvent) {
         String prevCode = (String) this.catalogueCode.getValue();
 
-        List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.productType.getValue(), (String) this.brand.getValue());
+        List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.category.getValue(), (String) this.productType.getValue(),(String) this.productSubtype.getValue(), (String) this.brand.getValue());
         this.catalogueCodeBeanContainer.removeAllItems();
         this.catalogueCodeBeanContainer.addAll(list);
         Object next = this.catalogueCode.getItemIds().iterator().next();
@@ -296,9 +303,25 @@ public class AddonDetailsWindow extends Window {
     }
 
     private void productTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
+        String prevCode = (String) productSubtype.getValue(); //addonProduct.getBrandCode();
+
+        List<AddonProductSubtype> list = proposalDataProvider.getAddonProductSubTypes( (String) this.category.getValue(),(String) this.productType.getValue());
+        this.productSubtypeBeanContainer.removeAllItems();
+        this.productSubtypeBeanContainer.addAll(list);
+        Object next = this.brand.getItemIds().iterator().next();
+        this.productSubtype.setValue(next);
+
+        if (next.equals(prevCode)) {
+            this.productSubtypeChanged(null);
+        }
+
+        checkApply();
+    }
+
+    private void productSubtypeChanged(Property.ValueChangeEvent valueChangeEvent) {
         String prevCode = (String) brand.getValue(); //addonProduct.getBrandCode();
 
-        List<AddonBrand> list = proposalDataProvider.getAddonBrands((String) this.productType.getValue());
+        List<AddonBrand> list = proposalDataProvider.getAddonBrands((String) this.category.getValue(), (String) this.productSubtype.getValue(), (String) this.productType.getValue());
         this.brandBeanContainer.removeAllItems();
         this.brandBeanContainer.addAll(list);
         Object next = this.brand.getItemIds().iterator().next();
@@ -312,7 +335,7 @@ public class AddonDetailsWindow extends Window {
     }
 
     private ComboBox getProductTypeCombo() {
-        List<AddonProductType> list = proposalDataProvider.getAddonProductTypes(BLANK_ROOM_CODE, (String) this.category.getValue());
+        List<AddonProductType> list = proposalDataProvider.getAddonProductTypes((String) this.category.getValue());
 
         productTypeBeanContainer = new BeanContainer<>(AddonProductType.class);
         productTypeBeanContainer.setBeanIdProperty(AddonProductType.PRODUCT_TYPE_CODE);
@@ -331,8 +354,28 @@ public class AddonDetailsWindow extends Window {
         return select;
     }
 
+   private ComboBox getProductSubtypeCombo() {
+        List<AddonProductSubtype> list = proposalDataProvider.getAddonProductSubTypes( (String) this.category.getValue(),(String) this.productType.getValue());
+
+        productSubtypeBeanContainer = new BeanContainer<>(AddonProductSubtype.class);
+        productSubtypeBeanContainer.setBeanIdProperty(AddonProductSubtype.PRODUCT_SUBTYPE_CODE);
+        productSubtypeBeanContainer.addAll(list);
+
+        ComboBox select = new ComboBox("Product Subtype");
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(productSubtypeBeanContainer);
+        select.setItemCaptionPropertyId(AddonProductSubtype.PRODUCT_SUBTYPE_CODE);
+        if (StringUtils.isNotEmpty(addonProduct.getProductSubTypeCode())) {
+            select.setValue(addonProduct.getProductSubTypeCode());
+        } else {
+            select.setValue(select.getItemIds().iterator().next());
+            addonProduct.setProductSubTypeCode(select.getValue().toString());
+        }
+        return select;
+    }
+
     private ComboBox getCatalogueCodeCombo() {
-        List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.productType.getValue(), (String) this.brand.getValue());
+        List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.category.getValue(), (String) this.productType.getValue(),(String) this.productSubtype.getValue(), (String) this.brand.getValue());
 
         catalogueCodeBeanContainer = new BeanContainer<>(AddonProductItem.class);
         catalogueCodeBeanContainer.setBeanIdProperty(AddonProductItem.CATALOGUE_CODE);
@@ -352,7 +395,7 @@ public class AddonDetailsWindow extends Window {
     }
 
     private ComboBox getBrandCombo() {
-        List<AddonBrand> list = proposalDataProvider.getAddonBrands((String) this.productType.getValue());
+        List<AddonBrand> list = proposalDataProvider.getAddonBrands((String) this.category.getValue(), (String) this.productSubtype.getValue(), (String) this.productType.getValue());
 
         brandBeanContainer = new BeanContainer<>(AddonBrand.class);
         brandBeanContainer.setBeanIdProperty(AddonBrand.BRAND_CODE);
@@ -419,8 +462,8 @@ public class AddonDetailsWindow extends Window {
                 try {
                     int seq = 0;
                     binder.commit();
-//                    List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
-                   /* if (addons.size() == 0)
+                    List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
+                    if (addons.size() == 0)
                     {
                         addonProduct.setSeq(++seq);
                     }
@@ -428,10 +471,11 @@ public class AddonDetailsWindow extends Window {
                     {
                         seq = addons.size()+1;
                         addonProduct.setSeq(seq);
-                    }*/
+                    }
                     addonProduct.setFromVersion(proposalVersion.getVersion());
                     addonProduct.setCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
                     addonProduct.setProductType(this.productTypeBeanContainer.getItem(this.productType.getValue()).getBean().getProductTypeCode());
+                    addonProduct.setProductSubTypeCode(this.productSubtypeBeanContainer.getItem(this.productSubtype.getValue()).getBean().getProductSubtypeCode());
                     addonProduct.setBrand(this.brandBeanContainer.getItem(this.brand.getValue()).getBean().getBrandCode());
                     addonProduct.setCode(this.catalogueCodeBeanContainer.getItem(this.catalogueCode.getValue()).getBean().getCode());
                     LOG.debug("Addon product Class :" + addonProduct.toString());

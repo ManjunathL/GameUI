@@ -24,6 +24,7 @@ public class ProposalVersion implements Cloneable {
 
     private String version;
     private int proposalId;
+    private int oldProposalId;
     private String title;
     private double finalAmount;
     private String status;
@@ -186,6 +187,14 @@ public class ProposalVersion implements Cloneable {
 
     public void setToVersion(String toVersion) {
         this.toVersion = toVersion;
+    }
+
+    public int getOldProposalId() {
+        return oldProposalId;
+    }
+
+    public void setOldProposalId(int oldProposalId) {
+        this.oldProposalId = oldProposalId;
     }
 }
 

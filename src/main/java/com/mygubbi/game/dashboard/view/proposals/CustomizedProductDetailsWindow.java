@@ -1095,7 +1095,6 @@ public class CustomizedProductDetailsWindow extends Window {
                 LOG.debug("cwa :" + product.getCostWoAccessories());
                 List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
                 proposal.setProducts(getAllVersionProducts);
-                LOG.debug("Product Get Seq :"+ product.getSeq());
                 if (product.getSeq() == 0)
                 {
                     int size = getAllVersionProducts.size();

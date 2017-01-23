@@ -29,6 +29,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.vaadin.gridutil.renderer.ViewButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditButtonValueRenderer;
 
 import java.math.BigDecimal;
@@ -246,7 +247,7 @@ public class CreateProposalsView extends Panel implements View {
         versionsGrid = new Grid(genContainer);
         versionsGrid.setSizeFull();
         versionsGrid.setColumns(ProposalVersion.VERSION, ProposalVersion.FROM_VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
-                ProposalVersion.REMARKS, "actions");
+                ProposalVersion.REMARKS, "actions","CNC");
 
 
         versionContainer.addAll(proposalVersionList);
@@ -330,6 +331,7 @@ public class CreateProposalsView extends Panel implements View {
                 copyVersion.setDiscountAmount(pVersion.getDiscountAmount());
                 copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
                 copyVersion.setAmount(pVersion.getAmount());
+                copyVersion.setProposalId(pVersion.getProposalId());
 
 
                 proposalDataProvider.createProposalVersion(copyVersion);
@@ -354,6 +356,50 @@ public class CreateProposalsView extends Panel implements View {
                 ProductAndAddons.open(proposalHeader, proposal, proposalVersion.getVersion(), proposalVersion);
             }
         }));
+        columns.get(idx++).setHeaderCaption("CNC").setRenderer(new ViewButtonValueRenderer((ViewButtonValueRenderer.RendererClickListener) rendererClickEvent -> {
+
+            if(("Deleted").equals(proposalHeader.getStatus())) {
+                NotificationUtil.showNotification("Validation Error, please save the quote before proceeding", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+
+            ProposalVersion pVersion = (ProposalVersion) rendererClickEvent.getItemId();
+
+            proposalHeader = new ProposalHeader();
+            proposalHeader = proposalDataProvider.createProposal();
+
+            ProposalVersion copyVersion = new ProposalVersion();
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date();
+
+            copyVersion.setVersion("0.1");
+            copyVersion.setFromVersion("0.0");
+            copyVersion.setProposalId(proposalHeader.getId());
+            copyVersion.setTitle(pVersion.getTitle());
+            copyVersion.setFinalAmount(pVersion.getFinalAmount());
+            copyVersion.setDate(dateFormat.format(date));
+            copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
+            copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
+            copyVersion.setRemarks(pVersion.getRemarks());
+            copyVersion.setToVersion(pVersion.getVersion());
+            copyVersion.setDiscountAmount(pVersion.getDiscountAmount());
+            copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
+            copyVersion.setAmount(pVersion.getAmount());
+            copyVersion.setOldProposalId(pVersion.getProposalId());
+
+            proposalDataProvider.createProposalVersion(copyVersion);
+
+            proposalDataProvider.createNewProductFromOldProposal(copyVersion);
+
+            int proposalId = proposalHeader.getId();
+            UI.getCurrent().getNavigator()
+                    .navigateTo("New Quotation/" + proposalId);
+            DashboardEventBus.unregister(this);
+
+
+        }));
+
 
         versionContainer.addAll(proposalVersionList);
         versionsGrid.setContainerDataSource(createGeneratedVersionPropertyContainer());
@@ -374,7 +420,7 @@ public class CreateProposalsView extends Panel implements View {
     private GeneratedPropertyContainer createGeneratedVersionPropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(versionContainer);
         genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
-        //genContainer.addGeneratedProperty("CNC", getEmptyActionTextGenerator());
+        genContainer.addGeneratedProperty("CNC", getEmptyActionTextGenerator());
         //genContainer.addGeneratedProperty("Copy", getEmptyActionTextGenerator());
         return genContainer;
     }
@@ -619,11 +665,8 @@ public class CreateProposalsView extends Panel implements View {
 
     private void cancel(Button.ClickEvent clickEvent) {
         try {
-            if (StringUtils.isEmpty(proposalHeader.getTitle()) || StringUtils.isEmpty(proposalHeader.getCrmId()) || StringUtils.isEmpty(proposalHeader.getCname()) || StringUtils.isEmpty(proposalHeader.getQuoteNo())) {
-                List<Product> listOfProducts = proposalDataProvider.getProposalProducts(proposalHeader.getId());
-                if (!(listOfProducts.size() == 0)) {
-                    NotificationUtil.showNotification("Cannot cancel proposal after adding products!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                } else {
+            if (StringUtils.isEmpty(proposalHeader.getTitle()) || StringUtils.isEmpty(proposalHeader.getCrmId()) || StringUtils.isEmpty(proposalHeader.getCname()) || StringUtils.isEmpty(proposalHeader.getQuoteNo()) || StringUtils.isEmpty(proposalHeader.getQuoteNoNew())) {
+
                     boolean success = proposalDataProvider.deleteProposal(proposalHeader.getId());
 
                     if (!success) {
@@ -633,7 +676,7 @@ public class CreateProposalsView extends Panel implements View {
                     } else {
                         NotificationUtil.showNotification("Couldn't cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     }
-                }
+
             } else {
                 NotificationUtil.showNotification("Couldn't Cancel Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }

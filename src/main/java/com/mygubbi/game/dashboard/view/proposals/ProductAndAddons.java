@@ -22,10 +22,11 @@ import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.SelectionEvent;
-import com.vaadin.server.*;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -112,7 +113,7 @@ public class ProductAndAddons extends Window
         this.vid=vid;
 
         this.proposal.setProducts(proposalDataProvider.getVersionProducts(proposalHeader.getId(),vid));
-//        this.proposal.setAddons(proposalDataProvider.getVersionAddons(proposalHeader.getId(),vid));
+        this.proposal.setAddons(proposalDataProvider.getVersionAddons(proposalHeader.getId(),vid));
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
         this.productAndAddonSelection.setFromVersion(this.proposalVersion.getVersion());
@@ -394,62 +395,6 @@ public class ProductAndAddons extends Window
     }
 
 
-    private Component getVersionLayout()
-    {
-        HorizontalLayout hlayout=new HorizontalLayout();
-        hlayout.setSizeFull();
-        hlayout.setMargin(new MarginInfo(true,true,true,true));
-
-        Panel amountsPanel=new Panel("Version Details");
-        amountsPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
-        amountsPanel.setSizeFull();
-
-        HorizontalLayout amountsLayout = new HorizontalLayout();
-        setSizeFull();
-
-        amountsLayout.setMargin(new MarginInfo(true,true,true,true));
-
-        Label vnum = new Label("<b>Version #: </b>", ContentMode.HTML);
-        amountsLayout.addComponent(vnum);
-        amountsLayout.setSpacing(true);
-        vnum.addStyleName("amount-text-label");
-        vnum.addStyleName("v-label-amount-text-label");
-        vnum.addStyleName("margin-top-18");
-
-        this.versionNum=new Label("</b>",ContentMode.HTML);
-        this.versionNum.addStyleName("amount-text");
-        this.versionNum.addStyleName("margin-top-18");
-        this.versionNum.addStyleName("v-label-amount-text-label");
-        this.versionNum.setReadOnly(true);
-        this.versionNum.setValue(vid);
-        amountsLayout.addComponent(versionNum);
-        amountsLayout.setSpacing(true);
-
-        Label vstatus = new Label("<b>Status: </b>",ContentMode.HTML);
-        amountsLayout.addComponent(vstatus);
-        //amountsLayout.setSpacing(true);
-        vstatus.addStyleName("amount-text-label");
-        vstatus.addStyleName("v-label-amount-text-label");
-        vstatus.addStyleName("margin-top-18");
-
-        this.versionStatus= new Label("</b>",ContentMode.HTML);
-        versionStatus.addStyleName("amount-text-label");
-        versionStatus.addStyleName("v-label-amount-text-label");
-        versionStatus.addStyleName("margin-top-18");
-        versionStatus.setReadOnly(true);
-        versionStatus.setValue(proposalVersion.getStatus());
-        amountsLayout.addComponent(versionStatus);
-        amountsLayout.setSpacing(true);
-
-
-
-
-        amountsPanel.setContent(amountsLayout);
-        hlayout.addComponent(amountsPanel);
-
-        return hlayout;
-    }
-
     private Component buildOptionLayout()
     {
         VerticalLayout verticalLayout =new VerticalLayout();
@@ -671,16 +616,6 @@ public class ProductAndAddons extends Window
 
         Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal;
         double res=grandTotal-grandTotal%10;
-        /*Double rem=grandTotal%10;
-
-        if(rem<5)
-        {
-            grandTotal=grandTotal-rem;
-        }
-        else
-        {
-            grandTotal=grandTotal+(10-rem);
-        }*/
 
         this.discountTotal.setReadOnly(false);
         this.discountTotal.setValue(String.valueOf(res));
@@ -695,6 +630,10 @@ public class ProductAndAddons extends Window
 
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
+
+        proposalVersion.setFinalAmount(res);
+
+        proposalDataProvider.updateVersion(proposalVersion);
 
     }
     private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -1022,11 +961,9 @@ public class ProductAndAddons extends Window
                                 if (dialog.isConfirmed()) {
                                     AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                                     proposalDataProvider.removeProposalAddon(addon.getId());
-/*
                                     List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalHeader.getId(),proposalVersion.getVersion());
-*/
 
-                                  /*  int seq = addon.getSeq();
+                                    int seq = addon.getSeq();
                                     addonsContainer.removeAllItems();
 
                                     for (AddonProduct addonProduct : addons) {
@@ -1034,7 +971,7 @@ public class ProductAndAddons extends Window
                                             addonProduct.setSeq(addonProduct.getSeq() - 1);
                                         }
                                     }
-                                    addonsContainer.addAll(addons);*/
+                                    addonsContainer.addAll(addons);
                                     addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
                                 }
                             });
@@ -1659,7 +1596,7 @@ public class ProductAndAddons extends Window
         productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
     }
 
-  /*  @Subscribe
+    @Subscribe
     public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
         AddonProduct eventAddonProduct = event.getAddonProduct();
         persistAddon(eventAddonProduct);
@@ -1669,7 +1606,7 @@ public class ProductAndAddons extends Window
         addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
         addonsGrid.sort(AddonProduct.SEQ, SortDirection.ASCENDING);
         updateTotal();
-    }*/
+    }
 
     private void persistAddon(AddonProduct eventAddonProduct) {
         if (eventAddonProduct.getId() == 0) {
