@@ -139,7 +139,7 @@ public class AddonDetailsWindow extends Window {
 
         this.productSubtype = getProductSubtypeCombo();
         this.productSubtype.setRequired(true);
-        binder.bind(this.productSubtype, AddonProduct.PRODUCT_SUB_TYPE_CODE);
+        binder.bind(this.productSubtype, AddonProduct.PRODUCT_SUBTYPE_CODE);
         this.productSubtype.addValueChangeListener(this::productSubtypeChanged);
         formLayoutLeft.addComponent(this.productSubtype);
 
@@ -355,13 +355,14 @@ public class AddonDetailsWindow extends Window {
     }
 
    private ComboBox getProductSubtypeCombo() {
-        List<AddonProductSubtype> list = proposalDataProvider.getAddonProductSubTypes( (String) this.category.getValue(),(String) this.productType.getValue());
 
+        List<AddonProductSubtype> list = proposalDataProvider.getAddonProductSubTypes((String) this.category.getValue(),(String) this.productType.getValue());
         productSubtypeBeanContainer = new BeanContainer<>(AddonProductSubtype.class);
         productSubtypeBeanContainer.setBeanIdProperty(AddonProductSubtype.PRODUCT_SUBTYPE_CODE);
         productSubtypeBeanContainer.addAll(list);
 
-        ComboBox select = new ComboBox("Product Subtype");
+
+       ComboBox select = new ComboBox("Product Subtype");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(productSubtypeBeanContainer);
         select.setItemCaptionPropertyId(AddonProductSubtype.PRODUCT_SUBTYPE_CODE);
@@ -475,7 +476,7 @@ public class AddonDetailsWindow extends Window {
                     addonProduct.setFromVersion(proposalVersion.getVersion());
                     addonProduct.setCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
                     addonProduct.setProductType(this.productTypeBeanContainer.getItem(this.productType.getValue()).getBean().getProductTypeCode());
-                    addonProduct.setProductSubTypeCode(this.productSubtypeBeanContainer.getItem(this.productSubtype.getValue()).getBean().getProductSubtypeCode());
+                    addonProduct.setProductSubTypeCode(this.productSubtypeBeanContainer.getItem(this.productSubtype.getValue()).getBean().getProductSubTypeCode());
                     addonProduct.setBrand(this.brandBeanContainer.getItem(this.brand.getValue()).getBean().getBrandCode());
                     addonProduct.setCode(this.catalogueCodeBeanContainer.getItem(this.catalogueCode.getValue()).getBean().getCode());
                     LOG.debug("Addon product Class :" + addonProduct.toString());

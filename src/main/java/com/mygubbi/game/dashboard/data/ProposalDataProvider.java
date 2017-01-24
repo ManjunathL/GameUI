@@ -958,7 +958,7 @@ public class ProposalDataProvider {
     public List<AddonProductType> getAddonProductTypes( String addonCategoryCode) {
         JSONArray array = dataProviderMode.getResourceArray("addon/productTypes", new HashMap<String, String>() {
             {
-                put("categoryCode", addonCategoryCode);
+                put("categoryCode", urlEncode(addonCategoryCode));
             }
         });
         try {
@@ -974,10 +974,11 @@ public class ProposalDataProvider {
     public List<AddonProductSubtype> getAddonProductSubTypes(String addonCategoryCode, String addonProductTypeCode) {
         JSONArray array = dataProviderMode.getResourceArray("addon/productSubTypes", new HashMap<String, String>() {
             {
-                put("categoryCode", addonCategoryCode);
-                put("productCategoryType", addonProductTypeCode);
+                put("categoryCode", urlEncode(addonCategoryCode));
+                put("productTypeCode", urlEncode(addonProductTypeCode));
             }
         });
+        LOG.debug("Array :" + array.toString());
         try {
             AddonProductSubtype[] items = this.mapper.readValue(array.toString(), AddonProductSubtype[].class);
             return new ArrayList<>(Arrays.asList(items));

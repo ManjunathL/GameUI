@@ -22,7 +22,7 @@ public class AddonProduct implements Cloneable {
     public static final String UOM = "uom";
     public static final String ADDON_CATEGORY_CODE = "categoryCode";
     public static final String PRODUCT_TYPE_CODE = "productTypeCode";
-    public static final String PRODUCT_SUB_TYPE_CODE = "productSubTypeCode";
+    public static final String PRODUCT_SUBTYPE_CODE = "productSubTypeCode";
     public static final String BRAND_CODE = "brandCode";
     public static final String ADDON_CATEGORY = "category";
     public static final String PRODUCT_TYPE = "productType";
