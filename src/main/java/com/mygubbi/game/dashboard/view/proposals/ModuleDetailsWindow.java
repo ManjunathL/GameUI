@@ -293,17 +293,17 @@ public class ModuleDetailsWindow extends Window {
 
     private void updateValues() {
 
-        if (StringUtils.isNotEmpty(module.getFixedCarcassCode())) {
-            carcassMaterialSelection.setValue(module.getFixedCarcassCode());
-            carcassMaterialSelection.setReadOnly(true);
-        } else {
-            if (module.getCarcass().contains(Module.DEFAULT)) {
-                carcassMaterialSelection.setValue(DEF_CODE_PREFIX + module.getCarcassCode());
+            if (StringUtils.isNotEmpty(module.getFixedCarcassCode())) {
+                carcassMaterialSelection.setValue(module.getFixedCarcassCode());
+                carcassMaterialSelection.setReadOnly(true);
             } else {
-                carcassMaterialSelection.setValue(module.getCarcassCode());
-                defaultsOverridden.setVisible(true);
+                if (module.getCarcass().contains(Module.DEFAULT)) {
+                    carcassMaterialSelection.setValue(DEF_CODE_PREFIX + module.getCarcassCode());
+                } else {
+                    carcassMaterialSelection.setValue(module.getCarcassCode());
+                    defaultsOverridden.setVisible(true);
+                }
             }
-        }
         if (module.getFinishType().contains(Module.DEFAULT)) {
             finishTypeSelection.setValue(DEF_CODE_PREFIX + module.getFinishTypeCode());
         } else {
@@ -329,8 +329,8 @@ public class ModuleDetailsWindow extends Window {
         if (!module.getExposedBack().equals(false)) exposedBack.setValue(module.getExposedBack());
         if (!module.getExposedOpen().equals(false)) exposedOpen.setValue(module.getExposedOpen());
 
-        checkDefaultsOverridden();
-    }
+            checkDefaultsOverridden();
+        }
 
     private void updateAccessoryPack(int i, ComboBox accessoryPack, ComboBox addons1, ComboBox addons2, ComboBox addons3) {
         if (module.getAccessoryPacks().size() > i) {
@@ -369,9 +369,9 @@ public class ModuleDetailsWindow extends Window {
         if (module.getModuleType() == null)
             module.setModuleType("S");
 
-        if (module.getCarcass().contains(Module.DEFAULT)) {
-            module.setCarcassCodeBasedOnUnitType(product);
-        }
+            if (module.getCarcass().contains(Module.DEFAULT)) {
+                module.setCarcassCodeBasedOnUnitType(product);
+            }
         if (module.getFinishType().contains(Module.DEFAULT)) {
             module.setFinishTypeCode(product.getFinishTypeCode());
         }

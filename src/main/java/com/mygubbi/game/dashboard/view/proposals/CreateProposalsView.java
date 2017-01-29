@@ -278,6 +278,11 @@ public class CreateProposalsView extends Panel implements View {
                     return;
                 }
 
+                if(("Deleted").equals(proposalHeader.getStatus())) {
+                    NotificationUtil.showNotification("Validation Error, please save the quote before proceeding", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+
                 if (("Locked").equals(pVersion.getInternalStatus())) {
                     Notification.show("Cannot copy on Locked version");
                     return;
