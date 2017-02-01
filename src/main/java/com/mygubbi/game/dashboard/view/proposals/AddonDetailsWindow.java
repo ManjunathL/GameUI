@@ -42,7 +42,7 @@ public class AddonDetailsWindow extends Window {
     private ComboBox productSubtype;
     private ComboBox brand;
     private ComboBox catalogueCode;
-    private TextField title;
+    private TextArea title;
     private TextField uom;
     private TextField rate;
     private TextField quantity;
@@ -64,16 +64,15 @@ public class AddonDetailsWindow extends Window {
     private static final Logger LOG = LogManager.getLogger(AddonProduct.class);
 
 
-    public AddonDetailsWindow(AddonProduct addonProduct, boolean readOnly, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
+    public AddonDetailsWindow(AddonProduct addonProduct, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
         this.addonProduct = addonProduct;
-        this.readOnly = readOnly;
         this.isProposalAddon = isProposalAddon;
         this.originalImagePath = this.addonProduct.getImagePath();
         this.proposalVersion = proposalVersion;
         this.binder.setItemDataSource(this.addonProduct);
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("80%");
+        setWidth("90%");
         setClosable(false);
         setCaption("Addon Configuration for " + title);
 
@@ -124,6 +123,8 @@ public class AddonDetailsWindow extends Window {
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         horizontalLayout.addComponent(formLayoutLeft);
+        horizontalLayout.setExpandRatio(formLayoutLeft,0.4f);
+
 
         this.category = getCategoryCombo();
         this.category.setRequired(true);
@@ -160,10 +161,13 @@ public class AddonDetailsWindow extends Window {
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         horizontalLayout.addComponent(formLayoutRight);
+        horizontalLayout.setExpandRatio(formLayoutRight,0.4f);
 
-        this.title = new TextField("Specification");
-        this.title.setHeightUndefined();
+
+        this.title = new TextArea("Specification");
+        this.title.setHeight("45px");
         this.title.setRequired(true);
+        this.title.setReadOnly(true);
         this.title.setNullRepresentation("");
         binder.bind(this.title, AddonProductItem.TITLE);
         formLayoutRight.addComponent(this.title);
@@ -208,6 +212,8 @@ public class AddonDetailsWindow extends Window {
         addonImage.setWidth("180px");
         horizontalLayout.addComponent(addonImage);
         horizontalLayout.setComponentAlignment(addonImage, Alignment.MIDDLE_CENTER);
+        horizontalLayout.setExpandRatio(addonImage,0.2f);
+
 
         return verticalLayout;
     }
@@ -510,8 +516,8 @@ public class AddonDetailsWindow extends Window {
         }
     }
 
-    public static void open(AddonProduct addon, boolean readOnly, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
-        Window w = new AddonDetailsWindow(addon, readOnly, title, isProposalAddon,proposalVersion);
+    public static void open(AddonProduct addon, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
+        Window w = new AddonDetailsWindow(addon, title, isProposalAddon,proposalVersion);
         UI.getCurrent().addWindow(w);
         w.focus();
 

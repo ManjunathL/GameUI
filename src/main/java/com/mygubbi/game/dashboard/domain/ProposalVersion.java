@@ -15,6 +15,9 @@ public class ProposalVersion implements Cloneable {
     public static final String STATUS = "status";
     public static final String INTERNAL_STATUS = "internalStatus";
     public static final String DATE = "date";
+    public static final String CONFIRM_DATE = "confirmDate";
+    public static final String DSO_DATE = "dsoDate";
+    public static final String PSO_DATE = "psoDate";
     public static final String REMARKS = "remarks";
     public static final String PRODUCTS = "products";
     public static final String DISCOUNT_AMOUNT="discountAmount";
@@ -30,6 +33,9 @@ public class ProposalVersion implements Cloneable {
     private String status;
     private String internalStatus;
     private String date;
+    private String confrimDate;
+    private String dsoDate;
+    private String psoDate;
     private String remarks;
     private String fromVersion;
     private String toVersion;
@@ -71,17 +77,21 @@ public class ProposalVersion implements Cloneable {
         return "ProposalVersion{" +
                 "version='" + version + '\'' +
                 ", proposalId=" + proposalId +
+                ", oldProposalId=" + oldProposalId +
                 ", title='" + title + '\'' +
-                ", finalAmount='" + finalAmount + '\'' +
+                ", finalAmount=" + finalAmount +
                 ", status='" + status + '\'' +
                 ", internalStatus='" + internalStatus + '\'' +
-                ", date=" + date +
+                ", date='" + date + '\'' +
+                ", confrimDate='" + confrimDate + '\'' +
+                ", dsoDate='" + dsoDate + '\'' +
+                ", psoDate='" + psoDate + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", fromVersion='" + fromVersion + '\'' +
                 ", toVersion='" + toVersion + '\'' +
-                ", discountAmount='" + discountAmount + '\'' +
-                ", discountPercentage='" + discountPercentage + '\'' +
-                ", amount='" + amount + '\'' +
+                ", discountAmount=" + discountAmount +
+                ", discountPercentage=" + discountPercentage +
+                ", amount=" + amount +
                 '}';
     }
 
@@ -163,6 +173,30 @@ public class ProposalVersion implements Cloneable {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getConfrimDate() {
+        return confrimDate;
+    }
+
+    public void setConfrimDate(String confrimDate) {
+        this.confrimDate = confrimDate;
+    }
+
+    public String getDsoDate() {
+        return dsoDate;
+    }
+
+    public void setDsoDate(String dsoDate) {
+        this.dsoDate = dsoDate;
+    }
+
+    public String getPsoDate() {
+        return psoDate;
+    }
+
+    public void setPsoDate(String psoDate) {
+        this.psoDate = psoDate;
     }
 
     public String getRemarks() {

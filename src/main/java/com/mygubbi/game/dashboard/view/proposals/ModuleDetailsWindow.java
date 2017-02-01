@@ -253,6 +253,9 @@ public class ModuleDetailsWindow extends Window {
                     case Locked:
                         setComponentsReadOnly();
                         break;
+                    case DSO:
+                        setComponentsReadOnly();
+                        break;
                     default:
                         throw new RuntimeException("Unknown State");
                 }

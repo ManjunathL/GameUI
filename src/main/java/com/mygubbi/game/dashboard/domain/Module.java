@@ -20,7 +20,7 @@ public class Module implements Cloneable {
 
     public enum ImportStatusType {m, d, n}
 
-    public enum UnitTypes {base, wall, accessory}
+    public enum UnitTypes {base, wall, accessory,loft,tall}
 
     public enum ModuleSource {file, button}
 
@@ -70,6 +70,7 @@ public class Module implements Cloneable {
     private String extText;
     private String mgCode;
     private String carcass;
+    private String wallcasscode;
     private String carcassCode;
     private String fixedCarcassCode;
     private String finishType;
@@ -120,9 +121,6 @@ public class Module implements Cloneable {
     public void setExpBottom(String expBottom) {
         this.expBottom = expBottom;
     }
-
-
-
 
     public Boolean getExposedRight() {
         return exposedRight;
@@ -194,6 +192,14 @@ public class Module implements Cloneable {
 
     public void setModuleCategory(String moduleCategory) {
         this.moduleCategory = moduleCategory;
+    }
+
+    public String getWallcasscode() {
+        return wallcasscode;
+    }
+
+    public void setWallcasscode(String wallcasscode) {
+        this.wallcasscode = wallcasscode;
     }
 
     public String getModuleType() {

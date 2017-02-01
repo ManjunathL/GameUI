@@ -833,10 +833,6 @@ public class ProductAndAddons extends Window
                     return;
                 }
 
-                if (isProposalReadonly()) {
-                    NotificationUtil.showNotification("This operation is allowed only in 'Draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-                } else {
-
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Product?",
                             "Yes", "No", dialog -> {
                                 if (dialog.isConfirmed()) {
@@ -868,7 +864,6 @@ public class ProductAndAddons extends Window
                                     NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                                 }
                             });
-                }
 
             }
         }));
@@ -953,9 +948,7 @@ public class ProductAndAddons extends Window
 
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
-                if (isProposalReadonly()) {
-                    NotificationUtil.showNotification("This operation is allowed only in 'Draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-                } else {
+
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
                             "Yes", "No", dialog -> {
                                 if (dialog.isConfirmed()) {
@@ -975,7 +968,7 @@ public class ProductAndAddons extends Window
                                     addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
                                 }
                             });
-                }
+
             }
         }));
 
@@ -1238,6 +1231,7 @@ public class ProductAndAddons extends Window
             proposalVersion.setDate(dateFormat.format(date));
 
 
+
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1258,9 +1252,11 @@ public class ProductAndAddons extends Window
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("1.0");
+                        proposalVersion.setConfrimDate(dateFormat.format(date));
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+                        proposalDataProvider.updateVersion(proposalVersion);
 
                     }
                     else if (versionNew.startsWith("1."))
@@ -1268,20 +1264,25 @@ public class ProductAndAddons extends Window
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("2.0");
+                        proposalVersion.setDsoDate(dateFormat.format(date));
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+                        proposalDataProvider.updateVersion(proposalVersion);
+
 
                     }
                     else if (versionNew.startsWith("2."))
                     {
                         proposalVersion.setToVersion(proposalVersion.getVersion());
+                        proposalVersion.setPsoDate(dateFormat.format(date));
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Locked.name());
                         proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
+                        proposalDataProvider.updateVersion(proposalVersion);
                     }
 
 
@@ -1599,6 +1600,7 @@ public class ProductAndAddons extends Window
     @Subscribe
     public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
         AddonProduct eventAddonProduct = event.getAddonProduct();
+        LOG.debug("Product :"  + eventAddonProduct.toString());
         persistAddon(eventAddonProduct);
         List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalHeader.getId(),proposalVersion.getVersion());
         addonsContainer.removeAllItems();
