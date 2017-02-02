@@ -25,6 +25,7 @@ import com.vaadin.event.SelectionEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
@@ -63,6 +64,7 @@ public class ProductAndAddons extends Window
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     int disAmount;
+    TextField tvnum;
     private ProductAndAddonSelection productAndAddonSelection;
     private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
@@ -86,8 +88,6 @@ public class ProductAndAddons extends Window
     private BeanItemContainer<Product> productContainer;
     private Label grandTotal;
 
-    private Label versionNum;
-    private Label versionStatus;
     private TextArea remarksTextArea;
 
     private String status=null;
@@ -241,6 +241,28 @@ public class ProductAndAddons extends Window
         right.addComponent(downloadButton);
         right.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
 
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+        if ((("admin").equals(role) || ("finance").equals(role))) {
+            Button margin = new Button("Margin&nbsp;&nbsp;");
+            margin.setCaptionAsHtml(true);
+            margin.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+            margin.addStyleName(ValoTheme.BUTTON_PRIMARY);
+            margin.addStyleName(ValoTheme.BUTTON_SMALL);
+            margin.addStyleName("margin-top-for-headerlevelbutton");
+            margin.addStyleName("margin-right-10-for-headerlevelbutton");
+            margin.setWidth("120px");
+            right.addComponent(margin);
+            right.setComponentAlignment(margin, Alignment.MIDDLE_RIGHT);
+            margin.addClickListener(
+                    clickEvent -> {
+                        //MarginComputationWindow.open(proposalVersion);
+                        MarginDetailsWindow.open(proposalVersion);
+
+                    }
+            );
+        }
+        //margin.addClickListener();
+
         horizontalLayout.addComponent(right);
         horizontalLayout.setComponentAlignment(right, Alignment.MIDDLE_RIGHT);
 
@@ -312,7 +334,7 @@ public class ProductAndAddons extends Window
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        TextField tvnum=new TextField("Version # :");
+        tvnum=new TextField("Version # :");
         tvnum.addStyleName(ValoTheme.TEXTFIELD_HUGE);
         tvnum.setValue(String.valueOf(proposalVersion.getVersion()));
         formLayoutLeft.addComponent(tvnum);
@@ -1182,6 +1204,9 @@ public class ProductAndAddons extends Window
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setDate(dateFormat.format(date));
+            LOG.info("Status "+proposalVersion.getStatus());
+            proposalHeader.setStatus(proposalVersion.getStatus());
+            proposalHeader.setVersion(tvnum.getValue());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1237,8 +1262,9 @@ public class ProductAndAddons extends Window
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setDate(dateFormat.format(date));
-
-
+            LOG.info("Status "+proposalVersion.getStatus());
+            proposalHeader.setStatus(proposalVersion.getStatus());
+            proposalHeader.setVersion(String.valueOf(tvnum));
 
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
@@ -1260,6 +1286,8 @@ public class ProductAndAddons extends Window
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("1.0");
+                        proposalHeader.setStatus(proposalVersion.getStatus());
+                        boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
@@ -1273,6 +1301,8 @@ public class ProductAndAddons extends Window
                         proposalVersion.setVersion("2.0");
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
+                        proposalHeader.setStatus(proposalVersion.getStatus());
+                        boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
@@ -1285,6 +1315,8 @@ public class ProductAndAddons extends Window
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Locked.name());
+                        proposalHeader.setStatus(proposalVersion.getStatus());
+                        boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                         proposalDataProvider.updateVersion(proposalVersion);

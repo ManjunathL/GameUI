@@ -342,6 +342,24 @@ public class CreateProposalsView extends Panel implements View {
                 proposalDataProvider.createProposalVersion(copyVersion);
                 proposalDataProvider.createNewProduct(copyVersion);
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(copyVersion));
+                List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
+                for (ProposalVersion getLatestVersion : proposalVersionLatest)
+                {
+                    LOG.info("version number" +getLatestVersion.getVersion());
+                    proposalHeader.setStatus(getLatestVersion.getStatus());
+                    proposalHeader.setVersion(getLatestVersion.getVersion());
+                }
+                boolean success = proposalDataProvider.saveProposal(proposalHeader);
+                /*cancelButton.setVisible(false);
+                saveAndCloseButton.setVisible(true);
+
+                if (success) {
+
+                    *//*NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    cityLockedForSave();*//*
+                } else {
+                    //NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                }*/
                 DashboardEventBus.unregister(this);
             }
 

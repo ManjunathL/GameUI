@@ -336,6 +336,25 @@
    	    margin-left: 0px ! important;
 		margin-top: 25px !important;
   }
+  .margin-label-style
+  {
+   font-size: 18px;
+   width: 260px !important;
+   font-weight: bold !important;
+  }
+
+  .margin-label-style1
+    {
+     font-size: 20px;
+     font-weight: bold !important;
+    }
+
+    .margin-label-style2
+        {
+         font-size: 18px;
+         font-weight: none !important;
+        }
+
   .text-area-size{
   width: 300%;
   display:block;
@@ -355,6 +374,10 @@
   .amount-text-value {
 		font-size: 22.4px !important;
   }
+
+  .heighttext{
+   height:25px
+   }
 
 
   .v-button-value-cell .v-cell-value {
