@@ -903,7 +903,7 @@ public class ProductAndAddons extends Window
         addonAddButton.addClickListener(clickEvent -> {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setAdd(true);
-            AddonDetailsWindow.open(addonProduct, false, "Add Addon", true, proposalVersion);
+            AddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion);
         });
 
         horizontalLayout.addComponent(addonAddButton);
@@ -920,17 +920,17 @@ public class ProductAndAddons extends Window
         /*addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         addonsGrid.addSelectionListener(this::updateTotal);*/
         addonsGrid.setColumnReorderingAllowed(true);
-        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.BRAND_CODE,
-                AddonProduct.TITLE, AddonProduct.CATALOGUE_CODE, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
+        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.PRODUCT_SUBTYPE_CODE, AddonProduct.BRAND_CODE,
+                AddonProduct.PRODUCT, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Category");
         columns.get(idx++).setHeaderCaption("Product Type");
+        columns.get(idx++).setHeaderCaption("Product Sub-Type");
         columns.get(idx++).setHeaderCaption("Brand");
         columns.get(idx++).setHeaderCaption("Product Name");
-        columns.get(idx++).setHeaderCaption("Product Code");
         columns.get(idx++).setHeaderCaption("UOM");
         columns.get(idx++).setHeaderCaption("Rate");
         columns.get(idx++).setHeaderCaption("Qty");
@@ -942,12 +942,18 @@ public class ProductAndAddons extends Window
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                 addon.setAdd(false);
-                boolean readOnly = isProposalReadonly();
-                AddonDetailsWindow.open(addon, readOnly, "Edit Addon", true,proposalVersion);
+
+                AddonDetailsWindow.open(addon, "Edit Addon", true,proposalVersion);
             }
 
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+
+                if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()) || ("DSO").equals(proposalVersion.getInternalStatus()) || ("PSO").equals(proposalVersion.getInternalStatus()))
+                {
+                    Notification.show("Cannot delete addons on Published, Confirmed and Locked versions");
+                    return;
+                }
 
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
                             "Yes", "No", dialog -> {
@@ -962,10 +968,12 @@ public class ProductAndAddons extends Window
                                     for (AddonProduct addonProduct : addons) {
                                         if (addonProduct.getSeq() > seq) {
                                             addonProduct.setSeq(addonProduct.getSeq() - 1);
+                                            proposalDataProvider.updateProposalAddon(proposalHeader.getId(),addonProduct);
                                         }
                                     }
                                     addonsContainer.addAll(addons);
                                     addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
+                                    updateTotal();
                                 }
                             });
 
@@ -1252,7 +1260,6 @@ public class ProductAndAddons extends Window
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("1.0");
-                        proposalVersion.setConfrimDate(dateFormat.format(date));
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
@@ -1264,7 +1271,6 @@ public class ProductAndAddons extends Window
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("2.0");
-                        proposalVersion.setDsoDate(dateFormat.format(date));
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
@@ -1277,7 +1283,6 @@ public class ProductAndAddons extends Window
                     else if (versionNew.startsWith("2."))
                     {
                         proposalVersion.setToVersion(proposalVersion.getVersion());
-                        proposalVersion.setPsoDate(dateFormat.format(date));
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Locked.name());
                         proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
@@ -1405,9 +1410,6 @@ public class ProductAndAddons extends Window
         }
     }
 
-    private boolean isProposalReadonly() {
-        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.Draft.name());
-    }
 
     private void close(Button.ClickEvent clickEvent) {
 
@@ -1423,9 +1425,6 @@ public class ProductAndAddons extends Window
     }
 
     private void handleState() {
-        if (proposalHeader.isReadonly()) {
-            setComponentsReadonly();
-        } else {
             ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getInternalStatus());
             switch (proposalStage) {
                 case Draft:
@@ -1505,7 +1504,6 @@ public class ProductAndAddons extends Window
                 default:
                     throw new RuntimeException("Unknown State");
             }
-        }
     }
 
     private PropertyValueGenerator<String> getEmptyActionTextGenerator() {

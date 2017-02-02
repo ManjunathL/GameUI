@@ -22,7 +22,8 @@ public class AddonProduct implements Cloneable {
     public static final String UOM = "uom";
     public static final String ADDON_CATEGORY_CODE = "categoryCode";
     public static final String PRODUCT_TYPE_CODE = "productTypeCode";
-    public static final String PRODUCT_SUBTYPE_CODE = "productSubTypeCode";
+    public static final String PRODUCT_SUBTYPE_CODE = "productSubtypeCode";
+    public static final String PRODUCT = "product";
     public static final String BRAND_CODE = "brandCode";
     public static final String ADDON_CATEGORY = "category";
     public static final String PRODUCT_TYPE = "productType";
@@ -39,8 +40,9 @@ public class AddonProduct implements Cloneable {
     private String title;
     private String categoryCode;
     private String category;
+    private String product;
     private String productTypeCode;
-    private String productSubTypeCode;
+    private String productSubtypeCode;
     private String productType;
     private String brandCode;
     private String brand;
@@ -144,6 +146,14 @@ public class AddonProduct implements Cloneable {
         this.categoryCode = categoryCode;
     }
 
+    public String getProduct() {
+        return product;
+    }
+
+    public void setProduct(String product) {
+        this.product = product;
+    }
+
     public String getProductTypeCode() {
         return productTypeCode;
     }
@@ -232,12 +242,12 @@ public class AddonProduct implements Cloneable {
         this.description = description;
     }
 
-    public String getProductSubTypeCode() {
-        return productSubTypeCode;
+    public String getProductSubtypeCode() {
+        return productSubtypeCode;
     }
 
-    public void setProductSubTypeCode(String productSubTypeCode) {
-        this.productSubTypeCode = productSubTypeCode;
+    public void setProductSubtypeCode(String productSubtypeCode) {
+        this.productSubtypeCode = productSubtypeCode;
     }
 
     @Override
@@ -278,7 +288,7 @@ public class AddonProduct implements Cloneable {
                 ", categoryCode='" + categoryCode + '\'' +
                 ", category='" + category + '\'' +
                 ", productTypeCode='" + productTypeCode + '\'' +
-                ", productSubTypeCode='" + productSubTypeCode + '\'' +
+                ", productSubtypeCode='" + productSubtypeCode + '\'' +
                 ", productType='" + productType + '\'' +
                 ", brandCode='" + brandCode + '\'' +
                 ", brand='" + brand + '\'' +

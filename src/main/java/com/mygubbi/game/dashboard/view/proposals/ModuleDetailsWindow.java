@@ -112,12 +112,11 @@ public class ModuleDetailsWindow extends Window {
     private double calculatedAmountWOAccessories = -1;
     private boolean dontCalculatePriceNow = true;
 
-    private ModuleDetailsWindow(Module module, Product product, boolean readOnly, int moduleIndex, ProposalVersion proposalVersion) {
+    private ModuleDetailsWindow(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion) {
         this.dontCalculatePriceNow = true;
 
         this.product = product;
         this.module = module;
-        this.readOnly = readOnly;
         this.proposalVersion = proposalVersion;
         this.moduleIndex = moduleIndex;
         initModule();
@@ -1398,9 +1397,9 @@ public class ModuleDetailsWindow extends Window {
         return defaultIndex == -1 ? title : title.substring(0, defaultIndex);
     }
 
-    public static void open(Module module, Product product, boolean readOnly, int moduleIndex, ProposalVersion proposalVersion) {
+    public static void open(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion) {
         Module clonedModule = module.clone();
-        Window w = new ModuleDetailsWindow(clonedModule, product, readOnly, moduleIndex, proposalVersion);
+        Window w = new ModuleDetailsWindow(clonedModule, product, moduleIndex, proposalVersion);
         UI.getCurrent().addWindow(w);
         w.focus();
     }

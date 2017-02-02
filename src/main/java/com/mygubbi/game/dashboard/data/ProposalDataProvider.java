@@ -994,8 +994,8 @@ public class ProposalDataProvider {
         JSONArray array = dataProviderMode.getResourceArray("addon/brands", new HashMap<String, String>() {
             {
                 put("categoryCode", urlEncode(category));
-                put("productSubTypeCode", urlEncode(addonProductSubType));
                 put("productTypeCode", urlEncode(addonProductTypeCode));
+                put("productSubtypeCode", urlEncode(addonProductSubType));
             }
         });
         try {
@@ -1022,7 +1022,7 @@ public class ProposalDataProvider {
             {
                 put("categoryCode", urlEncode(categoryCode));
                 put("productTypeCode", urlEncode(addonProductTypeCode));
-                put("productSubTypeCode", urlEncode(addonProductSubTypeCode));
+                put("productSubtypeCode", urlEncode(addonProductSubTypeCode));
                 put("brandCode", urlEncode(brandCode));
             }
         });

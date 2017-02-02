@@ -482,7 +482,6 @@ public class CustomizedProductDetailsWindow extends Window {
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (!commitValues()) return;
                 Module module = new Module();
-                boolean readOnly = isProposalReadonly();
                 product.setType(TYPES.CUSTOMIZED.name());
                 module.setModuleType("N");
                 module.setProductCategory(product.getProductCategoryCode());
@@ -503,7 +502,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 module.setCarcassCodeBasedOnUnitType(product);
                 module.setFinishTypeCode(product.getFinishTypeCode());
                 module.setFinishCode(product.getFinishCode());
-                ModuleDetailsWindow.open(module,product,readOnly,0,proposalVersion);
+                ModuleDetailsWindow.open(module,product,0,proposalVersion);
             }
         });
 
@@ -797,9 +796,8 @@ public class CustomizedProductDetailsWindow extends Window {
                 boolean unmappableModulePresent = isAnyModuleUnmappable();
                 if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
                     //if (!unmappableModulePresent) {
-                    boolean readOnly = isProposalReadonly();
                     int index = modulesGrid.getContainerDataSource().indexOfId(module);
-                    ModuleDetailsWindow.open(module, createProductFromUI(), readOnly, index + 1,proposalVersion);
+                    ModuleDetailsWindow.open(module, createProductFromUI(), index + 1,proposalVersion);
                 } else {
                     NotificationUtil.showNotification("Cannot proceed as this module is not setup.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
@@ -813,9 +811,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     Notification.show("Cannot delete modules on Published, Confirmed amd Locked versions");
                     return;
                 }
-                if (isProposalReadonly()) {
-                    NotificationUtil.showNotification("This operation is allowed only in 'Draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-                } else {
+
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Module?",
                             "Yes", "No", dialog -> {
                                 if (dialog.isConfirmed()) {
@@ -840,7 +836,7 @@ public class CustomizedProductDetailsWindow extends Window {
                                 }
                             });
                 }
-            }
+
         }));
 
         hLayout.addComponent(modulesGrid);
@@ -858,9 +854,6 @@ public class CustomizedProductDetailsWindow extends Window {
         return product.getModules().stream().filter(module1 -> module1.getImportStatus().equals(ImportStatusType.n.name())).findAny().isPresent();
     }
 
-    private boolean isProposalReadonly() {
-        return !proposal.getProposalHeader().getStatus().equals(ProposalHeader.ProposalState.Draft.name()) || proposal.getProposalHeader().isReadonly();
-    }
 
     private GeneratedPropertyContainer createGeneratedModulePropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(moduleContainer);
@@ -940,7 +933,7 @@ public class CustomizedProductDetailsWindow extends Window {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setSeq(addons.size() + 1);
             addonProduct.setAdd(true);
-            AddonDetailsWindow.open(addonProduct, false, itemTitleField.getValue(), false,proposalVersion);
+            AddonDetailsWindow.open(addonProduct, itemTitleField.getValue(), false,proposalVersion);
         });
 
         verticalLayout.addComponent(addonAddButton);
@@ -955,17 +948,17 @@ public class CustomizedProductDetailsWindow extends Window {
         addonsGrid.setSizeFull();
         addonsGrid.setHeight("325px");
         addonsGrid.setColumnReorderingAllowed(true);
-        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY, AddonProduct.PRODUCT_TYPE, AddonProduct.BRAND,
-                AddonProduct.TITLE, AddonProduct.CATALOGUE_CODE, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
+        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY, AddonProduct.PRODUCT_TYPE,AddonProduct.PRODUCT_SUBTYPE_CODE, AddonProduct.BRAND,
+                AddonProduct.CATALOGUE_CODE, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Category");
         columns.get(idx++).setHeaderCaption("Product Type");
+        columns.get(idx++).setHeaderCaption("Product Sub-Type");
         columns.get(idx++).setHeaderCaption("Brand");
         columns.get(idx++).setHeaderCaption("Product Name");
-        columns.get(idx++).setHeaderCaption("Product Code");
         columns.get(idx++).setHeaderCaption("UOM");
         columns.get(idx++).setHeaderCaption("Rate");
         columns.get(idx++).setHeaderCaption("Qty");
@@ -977,15 +970,12 @@ public class CustomizedProductDetailsWindow extends Window {
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                 addon.setAdd(false);
-                boolean readOnly = isProposalReadonly();
-                AddonDetailsWindow.open(addon, readOnly, itemTitleField.getValue(), false,proposalVersion);
+                AddonDetailsWindow.open(addon, itemTitleField.getValue(), false,proposalVersion);
             }
 
             @Override
             public void onDelete(ClickableRenderer.RendererClickEvent rendererClickEvent) {
-                if (isProposalReadonly()) {
-                    NotificationUtil.showNotification("This operation is allowed only in 'Draft' state.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-                } else {
+
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
                             "Yes", "No", dialog -> {
                                 if (dialog.isConfirmed()) {
@@ -1009,7 +999,7 @@ public class CustomizedProductDetailsWindow extends Window {
                                 }
                             });
                 }
-            }
+
         }));
 
         verticalLayout.addComponent(addonsGrid);
@@ -1052,10 +1042,6 @@ public class CustomizedProductDetailsWindow extends Window {
         closeBtn = new Button(caption);
         closeBtn.addClickListener((Button.ClickListener) clickEvent -> {
 
-            if (isProposalReadonly()) {
-                DashboardEventBus.unregister(this);
-                close();
-            } else {
                 ConfirmDialog.show(UI.getCurrent(), "",
                         deleteNotRequired ?
                                 "Are you sure? Unsaved data will be lost."
@@ -1075,7 +1061,7 @@ public class CustomizedProductDetailsWindow extends Window {
                                 close();
                             }
                         });
-            }
+
         });
         closeBtn.focus();
         footer.addComponent(closeBtn);
@@ -1434,13 +1420,13 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void loadNextModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex);
-        ModuleDetailsWindow.open(module, createProductFromUI(), isProposalReadonly(), currentModuleIndex + 1,proposalVersion);
+        ModuleDetailsWindow.open(module, createProductFromUI(),  currentModuleIndex + 1,proposalVersion);
     }
 
     private void loadPreviousModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex-2);
         int newModuleIndex = currentModuleIndex - 1;
-        ModuleDetailsWindow.open(module, createProductFromUI(), isProposalReadonly(), newModuleIndex,proposalVersion);
+        ModuleDetailsWindow.open(module, createProductFromUI(), newModuleIndex,proposalVersion);
     }
 
     @Subscribe
