@@ -1365,7 +1365,6 @@ public class ProductAndAddons extends Window
     private void save(Button.ClickEvent clickEvent)
     {
 
-
         remarksTextArea.setValidationVisible(false);
         try
         {
@@ -1405,6 +1404,11 @@ public class ProductAndAddons extends Window
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
                 proposalVersion.setRemarks(remarksTextArea.getValue());
                 proposalVersion.setTitle(this.ttitle.getValue());
+
+               proposalHeader.setStatus(proposalVersion.getStatus());
+               proposalHeader.setVersion(String.valueOf(tvnum));
+
+                boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
                 /*LOG.debug("Proposal Version" + proposalVersion.toString());*/
 
