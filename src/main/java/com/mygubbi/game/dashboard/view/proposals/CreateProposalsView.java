@@ -341,6 +341,7 @@ public class CreateProposalsView extends Panel implements View {
 
                 proposalDataProvider.createProposalVersion(copyVersion);
                 proposalDataProvider.createNewProduct(copyVersion);
+                proposalDataProvider.createNewAddons(copyVersion);
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(copyVersion));
                 List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
                 for (ProposalVersion getLatestVersion : proposalVersionLatest)
@@ -414,6 +415,7 @@ public class CreateProposalsView extends Panel implements View {
             proposalDataProvider.createProposalVersion(copyVersion);
 
             proposalDataProvider.createNewProductFromOldProposal(copyVersion);
+            proposalDataProvider.createNewAddonFromOldProposal(copyVersion);
 
             int proposalId = proposalHeader.getId();
             UI.getCurrent().getNavigator()

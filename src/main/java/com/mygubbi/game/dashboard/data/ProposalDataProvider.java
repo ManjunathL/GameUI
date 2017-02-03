@@ -697,11 +697,37 @@ public class ProposalDataProvider {
 
     }
 
+    public ProposalVersion createNewAddons(ProposalVersion proposalVersion ) {
+        try {
+            String productJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "addon/createnew", productJson);
+
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
+
+    }
+
     public ProposalVersion createNewProductFromOldProposal(ProposalVersion proposalVersion ) {
         try {
             String productJson = this.mapper.writeValueAsString(proposalVersion);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/createnewfromoldproposal", productJson);
+
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
+
+    }
+
+    public ProposalVersion createNewAddonFromOldProposal(ProposalVersion proposalVersion ) {
+        try {
+            String productJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "addon/createnewfromoldproposal", productJson);
 
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         } catch (IOException e) {

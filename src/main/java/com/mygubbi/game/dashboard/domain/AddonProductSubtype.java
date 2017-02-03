@@ -5,14 +5,21 @@ package com.mygubbi.game.dashboard.domain;
  */
 public class AddonProductSubtype {
 
-    public static final String PRODUCT_SUBTYPE_CODE = "productSubTypeCode";
-    private String productSubTypeCode;
+    public static final String PRODUCT_SUBTYPE_CODE = "productSubtypeCode";
+    private String productSubtypeCode;
 
-    public String getProductSubTypeCode() {
-        return productSubTypeCode;
+    public String getProductSubtypeCode() {
+        return productSubtypeCode;
     }
 
-    public void setProductSubTypeCode(String productSubTypeCode) {
-        this.productSubTypeCode = productSubTypeCode;
+    public void setProductSubtypeCode(String productSubtypeCode) {
+        this.productSubtypeCode = productSubtypeCode;
+    }
+
+    @Override
+    public String toString() {
+        return "AddonProductSubtype{" +
+                "productSubtypeCode='" + productSubtypeCode + '\'' +
+                '}';
     }
 }

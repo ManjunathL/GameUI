@@ -16,4 +16,10 @@ public class AddonProductType {
         this.productTypeCode = productTypeCode;
     }
 
+    @Override
+    public String toString() {
+        return "AddonProductType{" +
+                "productTypeCode='" + productTypeCode + '\'' +
+                '}';
+    }
 }
