@@ -2,9 +2,6 @@ package com.mygubbi.game.dashboard.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
-
-import static java.lang.StrictMath.round;
 
 /**
  * Created by nitinpuri on 19-05-2016.
@@ -15,6 +12,7 @@ public class MGModule {
     public static final String CONCAT = "concat";
     public static final String MODULE_TYPE = "moduleType";
     public static final String MODULE_CATEGORY = "moduleCategory";
+    public static final String UNIT_TYPE = "unitType";
     public static final String ACCESSORYPACKDEFAULT = "accessoryPackDefault";
 
     private String code;
@@ -25,6 +23,7 @@ public class MGModule {
     private int depth;
     private int height;
     private String imagePath;
+    private String unitType;
     private String moduleCategory;
     private String productCategory;
     private String moduleType;
@@ -138,6 +137,14 @@ public class MGModule {
 
     public void setModuleType(String moduleType) {
         this.moduleType = moduleType;
+    }
+
+    public String getUnitType() {
+        return unitType;
+    }
+
+    public void setUnitType(String unitType) {
+        this.unitType = unitType;
     }
 
     public String getAccessoryPackDefault() {

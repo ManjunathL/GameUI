@@ -1304,7 +1304,7 @@ public class ModuleDetailsWindow extends Window {
             if (("AP-GENERIC").equals(accPack3)) {
 
                 if (StringUtils.isEmpty(addon31))
-                {    NotificationUtil.showNotification("Please select atleast one addons", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                {    NotificationUtil.showNotification("Please select at least one addons", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
             }
@@ -1354,6 +1354,12 @@ public class ModuleDetailsWindow extends Window {
 
             LOG.debug("this.calculatedArea:" + this.calculatedArea + " | this.calculatedAmountWOAccessories:" + this.calculatedAmountWOAccessories);
 
+            if (module.getAmount() == 0)
+            {
+                NotificationUtil.showNotification("Module Price cannot be zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+
             LOG.debug("Module being updated:" + this.module.toString());
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
             close();
@@ -1388,6 +1394,10 @@ public class ModuleDetailsWindow extends Window {
 
 
     private String getCarcassCodeBasedOnType() {
+        if (Objects.equals(module.getUnitType(), "NA"))
+        {
+            return null;
+        }
         return module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name()) ? product.getWallCarcassCode() : product.getBaseCarcassCode();
     }
 

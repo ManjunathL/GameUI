@@ -242,7 +242,7 @@ public class ProductAndAddons extends Window
         right.setComponentAlignment(downloadButton, Alignment.MIDDLE_RIGHT);
 
         String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-        if ((("admin").equals(role) || ("finance").equals(role))) {
+        if (("admin").equals(role) || ("finance").equals(role) || ("departmenthead").equals(role)) {
             Button margin = new Button("Margin&nbsp;&nbsp;");
             margin.setCaptionAsHtml(true);
             margin.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
