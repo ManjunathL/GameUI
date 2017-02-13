@@ -499,6 +499,7 @@ public class CustomizedProductDetailsWindow extends Window {
                                 : getSelectedItemText(baseCarcassSelection))));
                 module.setFinishType(getDefaultText(getSelectedItemText(finishTypeSelection)));
                 module.setFinish(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
+                module.setCarcassCodeBasedOnUnitType(product);
                 module.setFinishTypeCode(product.getFinishTypeCode());
                 module.setFinishCode(product.getFinishCode());
                 ModuleDetailsWindow.open(module,product,0,proposalVersion);
