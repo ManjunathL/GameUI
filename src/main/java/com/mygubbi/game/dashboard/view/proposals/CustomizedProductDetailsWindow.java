@@ -492,14 +492,13 @@ public class CustomizedProductDetailsWindow extends Window {
                 module.setExposedBottom(false);
                 module.setExposedTop(false);
                 module.setExposedOpen(false);
-                module.setUnitType("Non-Standard");
+                module.setUnitType("Base Unit");
                 module.setCarcass(getDefaultText(
                         (module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
                                 ? getSelectedItemText(wallCarcassSelection)
                                 : getSelectedItemText(baseCarcassSelection))));
                 module.setFinishType(getDefaultText(getSelectedItemText(finishTypeSelection)));
                 module.setFinish(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
-                module.setCarcassCodeBasedOnUnitType(product);
                 module.setFinishTypeCode(product.getFinishTypeCode());
                 module.setFinishCode(product.getFinishCode());
                 ModuleDetailsWindow.open(module,product,0,proposalVersion);

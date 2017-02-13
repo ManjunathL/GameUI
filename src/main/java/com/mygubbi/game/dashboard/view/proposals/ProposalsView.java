@@ -18,6 +18,7 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.logging.log4j.LogManager;
@@ -70,6 +71,8 @@ public final class ProposalsView extends TabSheet implements View {
         BeanItemContainer<ProposalHeader> container = buildDataContainer(proposalHeaders);
         grid = new Grid(container);
         grid.setSizeFull();
+        grid.setHeightByRows(14);
+        grid.setHeightMode(HeightMode.ROW);
         grid.setColumnReorderingAllowed(true);
         grid.setColumns(ProposalHeader.QUOTE_NO_NEW,ProposalHeader.QUOTE_NO,ProposalHeader.CRM_ID, ProposalHeader.VERSION,  ProposalHeader.TITLE, ProposalHeader.STATUS,
                 ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.DESIGN_PARTNER_NAME, ProposalHeader.CREATED_ON,

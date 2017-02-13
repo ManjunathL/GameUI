@@ -154,19 +154,25 @@ public class MGModule {
     {
         this.accessoryPackDefault=accessoryPackDefault;
     }
+
     @Override
     public String toString() {
         return "MGModule{" +
                 "code='" + code + '\'' +
+                ", title='" + title + '\'' +
                 ", carcassCode='" + carcassCode + '\'' +
                 ", description='" + description + '\'' +
                 ", width=" + width +
                 ", depth=" + depth +
                 ", height=" + height +
                 ", imagePath='" + imagePath + '\'' +
+                ", unitType='" + unitType + '\'' +
                 ", moduleCategory='" + moduleCategory + '\'' +
                 ", productCategory='" + productCategory + '\'' +
                 ", moduleType='" + moduleType + '\'' +
+                ", accessoryPackDefault='" + accessoryPackDefault + '\'' +
+                ", concat='" + concat + '\'' +
+                ", accessories=" + accessories +
                 '}';
     }
 }

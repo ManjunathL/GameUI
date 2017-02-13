@@ -73,6 +73,7 @@ public class ProductAndAddons extends Window
     private TextField discountAmount;
     private Label discountTotal;
     private Button addonAddButton;
+    private Button customAddonAddButton;
     private TextField ttitle;
     private BeanItemContainer<AddonProduct> addonsContainer;
     private Grid addonsGrid;
@@ -594,9 +595,9 @@ public class ProductAndAddons extends Window
 
 
 
-        refreshDiscount(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal);
+        refreshDiscount(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal,productsTotal);
     }
-    private void refreshDiscount(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
+    private void refreshDiscount(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal, Double productsTotal)
     {
         LOG.debug("TW"+ totalWoAccessories+ "TA" +totalAmount + "CA" + costOfAccessories +"Addon" + addonsTotal);
 
@@ -634,9 +635,9 @@ public class ProductAndAddons extends Window
                 return;
             }
         }
-        Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
+        Double totalAfterDiscount = this.round((productsTotal - discountAmount), 0);
 
-        Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal;
+        Double grandTotal = totalAfterDiscount + addonsTotal;
         double res=grandTotal-grandTotal%10;
 
         this.discountTotal.setReadOnly(false);
@@ -921,15 +922,27 @@ public class ProductAndAddons extends Window
 
         addonAddButton = new Button("Add");
         addonAddButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        addonAddButton.setStyleName("add-addon-btn");
+
         addonAddButton.addClickListener(clickEvent -> {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setAdd(true);
             AddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion);
         });
 
+        customAddonAddButton = new Button("Custom Addon");
+        customAddonAddButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        addonAddButton.setStyleName("add-addon-btn");
+        customAddonAddButton.addClickListener(clickEvent -> {
+            AddonProduct addonProduct = new AddonProduct();
+            addonProduct.setAdd(true);
+            CustomAddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion);
+        });
+
         horizontalLayout.addComponent(addonAddButton);
         horizontalLayout.setComponentAlignment(addonAddButton, Alignment.MIDDLE_RIGHT);
+        horizontalLayout.setSpacing(true);
+        horizontalLayout.addComponent(customAddonAddButton);
+        horizontalLayout.setComponentAlignment(customAddonAddButton, Alignment.MIDDLE_LEFT);
 
         verticalLayout.addComponent(horizontalLayout);
 
@@ -964,6 +977,11 @@ public class ProductAndAddons extends Window
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                 addon.setAdd(false);
+
+                if (("Custom Addon").equals(addon.getCategoryCode()))
+                {
+                    CustomAddonDetailsWindow.open(addon,"Edit Addon",true,proposalVersion);
+                }
 
                 AddonDetailsWindow.open(addon, "Edit Addon", true,proposalVersion);
             }
@@ -1136,56 +1154,12 @@ public class ProductAndAddons extends Window
         return new StreamResource(source, "Quotation.xlsx");
     }
 
-    private void checkSingleProductSelection(Button.ClickEvent clickEvent) {
-        if (this.productAndAddonSelection.getProductIds().size() != 1) {
-            NotificationUtil.showNotification("Please select a single product to download its Job Card.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-        }
-    }
-
     private double round(double value, int places)
     {
         if (places < 0) throw new IllegalArgumentException();
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
-    }
-
-    private StreamResource createJobcardResource() {
-        StreamResource.StreamSource source = () -> {
-
-            if (this.productAndAddonSelection.getProductIds().size() == 1) {
-                String jobcardFile = proposalDataProvider.getJobCardFile(this.productAndAddonSelection);
-                InputStream input = null;
-                try {
-                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return input;
-            } else {
-                return null;
-            }
-        };
-        return new StreamResource(source, "JobCard.xlsx");
-    }
-
-    private StreamResource createMarginSheetResource() {
-        StreamResource.StreamSource source = () -> {
-
-            if (this.productAndAddonSelection.getProductIds().size() == 1) {
-                String jobcardFile = proposalDataProvider.getMarginSheet(this.productAndAddonSelection);
-                InputStream input = null;
-                try {
-                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return input;
-            } else {
-                return null;
-            }
-        };
-        return new StreamResource(source, "MarginSheet.xlsx");
     }
 
 

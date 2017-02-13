@@ -53,7 +53,6 @@ public class MarginDetailsWindow extends Window
     Double TotalCost = 0.0;
     Double NSWoodWorkCost=0.0;
     Double SWoodWorkCost=0.0;
-    Double ModuleArea=0.0;
     Double ShutterCost=0.0;
     Double CarcassCost=0.0;
     Double AccessoryCost=0.0;
@@ -61,7 +60,6 @@ public class MarginDetailsWindow extends Window
     Double LabourCost=0.0;
 
     Double productsTotal=0.0;
-    Double Addonamount=0.0;
     Double totalWoAccessories = 0.0;
     Double addonsTotal=0.0;
     Double totalAmount=0.0;

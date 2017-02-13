@@ -295,6 +295,7 @@ public class ModuleDetailsWindow extends Window {
 
     private void updateValues() {
 
+
             if (StringUtils.isNotEmpty(module.getFixedCarcassCode())) {
                 carcassMaterialSelection.setValue(module.getFixedCarcassCode());
                 carcassMaterialSelection.setReadOnly(true);
@@ -319,7 +320,6 @@ public class ModuleDetailsWindow extends Window {
             shutterFinishSelection.setValue(module.getFinishCode());
             defaultsOverridden.setVisible(true);
         }
-
         updateAccessoryPack(0, accessoryPack1, addons11, addons12, addons13);
         updateAccessoryPack(1, accessoryPack2, addons21, addons22, addons23);
         updateAccessoryPack(2, accessoryPack3, addons31, addons32, addons33);
@@ -331,7 +331,7 @@ public class ModuleDetailsWindow extends Window {
         if (!module.getExposedBack().equals(false)) exposedBack.setValue(module.getExposedBack());
         if (!module.getExposedOpen().equals(false)) exposedOpen.setValue(module.getExposedOpen());
 
-            checkDefaultsOverridden();
+            /*checkDefaultsOverridden();*/
         }
 
     private void updateAccessoryPack(int i, ComboBox accessoryPack, ComboBox addons1, ComboBox addons2, ComboBox addons3) {
@@ -371,15 +371,18 @@ public class ModuleDetailsWindow extends Window {
         if (module.getModuleType() == null)
             module.setModuleType("S");
 
+
             if (module.getCarcass().contains(Module.DEFAULT)) {
                 module.setCarcassCodeBasedOnUnitType(product);
             }
-        if (module.getFinishType().contains(Module.DEFAULT)) {
-            module.setFinishTypeCode(product.getFinishTypeCode());
-        }
-        if (module.getFinish().contains(Module.DEFAULT)) {
-            module.setFinishCode(product.getFinishCode());
-        }
+
+            if (module.getFinishType().contains(Module.DEFAULT)) {
+                module.setFinishTypeCode(product.getFinishTypeCode());
+            }
+
+            if (module.getFinish().contains(Module.DEFAULT)) {
+                module.setFinishCode(product.getFinishCode());
+            }
     }
 
     private void addListenerstoDimensionCheckBoxes() {
@@ -440,6 +443,7 @@ public class ModuleDetailsWindow extends Window {
 
         this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", ProposalDataProvider.CARCASS_LOOKUP, null, getCarcassCodeBasedOnType());
         binder.bind(carcassMaterialSelection, Module.CARCASS_MATERIAL_CODE);
+        carcassMaterialSelection.setRequired(true);
         carcassMaterialSelection.addValueChangeListener(this::refreshPrice);
         formLayout.addComponent(this.carcassMaterialSelection);
 
@@ -611,7 +615,7 @@ public class ModuleDetailsWindow extends Window {
         this.remarks.setValue(description);
 
         module.setImportStatus(Module.ImportStatusType.m.name());
-        module.setUnitType(module.getModuleCategory());
+        module.setUnitType(mgModule.getUnitType());
 
         this.allowDimensionChangesForModule();
         LOG.debug("Module b4 price calc :" + module.toString());
@@ -1014,7 +1018,7 @@ public class ModuleDetailsWindow extends Window {
             this.showPricingErrors();
         }
 
-        checkDefaultsOverridden();
+        /*checkDefaultsOverridden();*/
     }
 
     private void showPricingErrors()
@@ -1200,7 +1204,9 @@ public class ModuleDetailsWindow extends Window {
                 shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
             }
         }
+/*
         checkDefaultsOverridden();
+*/
     }
 
     private void disableApply() {
@@ -1267,6 +1273,7 @@ public class ModuleDetailsWindow extends Window {
             }
 
             if (("Yes").equals(module.getAccessoryPackDefault())) {
+                LOG.debug("module.getAccessoryPackDefault() :" + module.getAccessoryPackDefault());
                 if (module.getAccessoryPacks().size() == 0) {
                     NotificationUtil.showNotification("Please select accessories", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -1443,7 +1450,6 @@ public class ModuleDetailsWindow extends Window {
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(LookupItem.TITLE);
         if (listener != null) select.addValueChangeListener(listener);
-        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
     }
 
