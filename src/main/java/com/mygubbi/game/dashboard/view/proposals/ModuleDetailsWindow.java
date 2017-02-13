@@ -331,7 +331,7 @@ public class ModuleDetailsWindow extends Window {
         if (!module.getExposedBack().equals(false)) exposedBack.setValue(module.getExposedBack());
         if (!module.getExposedOpen().equals(false)) exposedOpen.setValue(module.getExposedOpen());
 
-            /*checkDefaultsOverridden();*/
+            checkDefaultsOverridden();
         }
 
     private void updateAccessoryPack(int i, ComboBox accessoryPack, ComboBox addons1, ComboBox addons2, ComboBox addons3) {
@@ -1018,7 +1018,7 @@ public class ModuleDetailsWindow extends Window {
             this.showPricingErrors();
         }
 
-        /*checkDefaultsOverridden();*/
+        checkDefaultsOverridden();
     }
 
     private void showPricingErrors()
@@ -1204,9 +1204,7 @@ public class ModuleDetailsWindow extends Window {
                 shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
             }
         }
-/*
         checkDefaultsOverridden();
-*/
     }
 
     private void disableApply() {
