@@ -64,7 +64,7 @@ public class ProductAndAddons extends Window
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     int disAmount;
-    TextField tvnum;
+    private TextField versionNum;
     private ProductAndAddonSelection productAndAddonSelection;
     private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
@@ -285,35 +285,6 @@ public class ProductAndAddons extends Window
 
     private Component buildMainFormLayoutLeft()
     {
-        /*VerticalLayout verticalLayout =new VerticalLayout();
-        //verticalLayout.setMargin(new MarginInfo(false,true,false,true));
-
-        HorizontalLayout vlayout  = new HorizontalLayout();
-        vlayout.addStyleName("label-style");
-        FormLayout left = new FormLayout();
-        left.setSizeFull();
-
-        Label titleLabel=new Label("Title:");
-        titleLabel.addStyleName("label-style");
-        left.addStyleName("label-style");
-        //titleLabel.addStyleName(ValoTheme.TEXTFIELD_HUGE);
-        left.addComponent(titleLabel);
-        vlayout.addComponent(left);
-
-        FormLayout formLayoutRight = new FormLayout();
-        formLayoutRight.setSizeFull();
-        formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        ttitle=new TextField();
-        ttitle.addStyleName("textfield-background-color");
-        ttitle.addStyleName(ValoTheme.LABEL_COLORED);
-        ttitle.addStyleName(ValoTheme.TEXTFIELD_HUGE);
-        formLayoutRight.addComponent(ttitle);
-        ttitle.setValue(proposalVersion.getTitle());
-        vlayout.addComponent(formLayoutRight);
-
-        verticalLayout.addComponent(vlayout);
-*/
 
         FormLayout formLayoutLeft = new FormLayout();
         formLayoutLeft.setSizeFull();
@@ -335,11 +306,11 @@ public class ProductAndAddons extends Window
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        tvnum=new TextField("Version # :");
-        tvnum.addStyleName(ValoTheme.TEXTFIELD_HUGE);
-        tvnum.setValue(String.valueOf(proposalVersion.getVersion()));
-        formLayoutLeft.addComponent(tvnum);
-        tvnum.setReadOnly(true);
+        versionNum =new TextField("Version # :");
+        versionNum.addStyleName(ValoTheme.TEXTFIELD_HUGE);
+        versionNum.setValue(String.valueOf(proposalVersion.getVersion()));
+        formLayoutLeft.addComponent(versionNum);
+        versionNum.setReadOnly(true);
 
         return formLayoutLeft;
     }
@@ -599,8 +570,6 @@ public class ProductAndAddons extends Window
     }
     private void refreshDiscount(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal, Double productsTotal)
     {
-        LOG.debug("TW"+ totalWoAccessories+ "TA" +totalAmount + "CA" + costOfAccessories +"Addon" + addonsTotal);
-
         Double discountPercent=0.0,discountAmount=0.0;
         if("DP".equals(status))
         {
@@ -610,7 +579,7 @@ public class ProductAndAddons extends Window
                     discountPercent = 0.0;
                 }
 
-                discountAmount = totalWoAccessories * discountPercent / 100.0;
+                discountAmount = productsTotal * discountPercent / 100.0;
                 //double res = discountAmount - discountAmount % 100;
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
                 disAmount=discountAmount.intValue();
@@ -731,7 +700,7 @@ public class ProductAndAddons extends Window
                     CatalogueProduct newProduct = new CatalogueProduct();
                     newProduct.setType(CatalogueProduct.TYPES.CATALOGUE.name());
                     newProduct.setProposalId(this.proposalHeader.getId());
-                    CatalogItemDetailsWindow.open(ProductAndAddons.this.proposal, newProduct);
+                    CatalogItemDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
                 }
         );
 
@@ -843,7 +812,7 @@ public class ProductAndAddons extends Window
                 } else {
                     CatalogueProduct catalogueProduct = new CatalogueProduct();
                     catalogueProduct.populateFromProduct(product);
-                    CatalogItemDetailsWindow.open(proposal, catalogueProduct);
+                    CatalogItemDetailsWindow.open(proposal, catalogueProduct, proposalVersion, proposalHeader);
                 }
             }
 
@@ -914,37 +883,42 @@ public class ProductAndAddons extends Window
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
+        horizontalLayout.setStyleName("v-has-width-forLabel");
 
         Label addonTitle = new Label("Addon Details");
-        addonTitle.setStyleName("amount-text");
-        addonTitle.addStyleName("margin-top-18");
+        addonTitle.setStyleName("products-and-addons-label-text");
         horizontalLayout.addComponent(addonTitle);
+        horizontalLayout.setComponentAlignment(addonTitle,Alignment.TOP_LEFT);
+        verticalLayout.setSpacing(true);
+
+        HorizontalLayout hLayoutInner = new HorizontalLayout();
 
         addonAddButton = new Button("Add");
         addonAddButton.setIcon(FontAwesome.PLUS_CIRCLE);
-
+        addonAddButton.addStyleName(ValoTheme.BUTTON_SMALL);
         addonAddButton.addClickListener(clickEvent -> {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setAdd(true);
             AddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion);
         });
+        hLayoutInner.addComponent(addonAddButton);
+        hLayoutInner.setComponentAlignment(addonAddButton,Alignment.TOP_RIGHT);
+        hLayoutInner.setSpacing(true);
+
 
         customAddonAddButton = new Button("Custom Addon");
         customAddonAddButton.setIcon(FontAwesome.PLUS_CIRCLE);
-        addonAddButton.setStyleName("add-addon-btn");
+        customAddonAddButton.addStyleName(ValoTheme.BUTTON_SMALL);
         customAddonAddButton.addClickListener(clickEvent -> {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setAdd(true);
             CustomAddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion);
         });
+        hLayoutInner.addComponent(customAddonAddButton);
+        hLayoutInner.setComponentAlignment(customAddonAddButton,Alignment.TOP_RIGHT);
 
-        horizontalLayout.addComponent(addonAddButton);
-        horizontalLayout.setComponentAlignment(addonAddButton, Alignment.MIDDLE_RIGHT);
-        horizontalLayout.setSpacing(true);
-        horizontalLayout.addComponent(customAddonAddButton);
-        horizontalLayout.setComponentAlignment(customAddonAddButton, Alignment.MIDDLE_LEFT);
-
-        verticalLayout.addComponent(horizontalLayout);
+        horizontalLayout.addComponent(hLayoutInner);
+        horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
 
         addonsContainer = new BeanItemContainer<>(AddonProduct.class);
 
@@ -1019,6 +993,9 @@ public class ProductAndAddons extends Window
 
             }
         }));
+
+        verticalLayout.addComponent(horizontalLayout);
+        verticalLayout.setSpacing(true);
 
         verticalLayout.addComponent(addonsGrid);
 
@@ -1180,7 +1157,7 @@ public class ProductAndAddons extends Window
             proposalVersion.setDate(dateFormat.format(date));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
-            proposalHeader.setVersion(tvnum.getValue());
+            proposalHeader.setVersion(versionNum.getValue());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1238,7 +1215,7 @@ public class ProductAndAddons extends Window
             proposalVersion.setDate(dateFormat.format(date));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
-            proposalHeader.setVersion(String.valueOf(tvnum));
+            proposalHeader.setVersion(String.valueOf(versionNum));
 
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
@@ -1380,7 +1357,7 @@ public class ProductAndAddons extends Window
                 proposalVersion.setTitle(this.ttitle.getValue());
 
                proposalHeader.setStatus(proposalVersion.getStatus());
-               proposalHeader.setVersion(String.valueOf(tvnum));
+               proposalHeader.setVersion(String.valueOf(versionNum));
 
                 boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
