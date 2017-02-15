@@ -8,6 +8,7 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.AddonMaster;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.server.FileResource;
@@ -1287,5 +1288,21 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<AddonMaster> getAddondDetails(String code) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("addon/addondetails", new HashMap<String, String>() {
+            {
+                put("code", code + "");
+            }
+        });
+        try
+        {
+            AddonMaster[] items = this.mapper.readValue(jsonArray.toString(), AddonMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
 }

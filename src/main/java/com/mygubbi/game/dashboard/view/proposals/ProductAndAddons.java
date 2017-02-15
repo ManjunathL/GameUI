@@ -257,7 +257,7 @@ public class ProductAndAddons extends Window
             margin.addClickListener(
                     clickEvent -> {
                         //MarginComputationWindow.open(proposalVersion);
-                        MarginDetailsWindow.open(proposalVersion);
+                        MarginDetailsWindow1.open(proposalVersion);
 
                     }
             );

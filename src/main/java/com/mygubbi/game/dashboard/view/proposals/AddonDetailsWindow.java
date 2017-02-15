@@ -423,7 +423,6 @@ public class AddonDetailsWindow extends Window {
         productSubtypeBeanContainer.setBeanIdProperty(AddonProductSubtype.PRODUCT_SUBTYPE_CODE);
         productSubtypeBeanContainer.addAll(list);
 
-
        ComboBox select = new ComboBox("Product Subtype");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(productSubtypeBeanContainer);

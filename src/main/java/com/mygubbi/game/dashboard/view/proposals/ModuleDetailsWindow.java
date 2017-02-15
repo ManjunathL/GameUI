@@ -985,17 +985,10 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void refreshPrice() {
-
-
         if (this.dontCalculatePriceNow) return;
-
         if (StringUtils.isEmpty(this.module.getMgCode())) return;
-
-//        if (StringUtils.isEmpty(this.module.getModuleCategory())) return;
-
-
+        //if (StringUtils.isEmpty(this.module.getModuleCategory())) return;
         isDimensionsEmpty();
-
 
         ModulePrice modulePrice = this.recalculatePriceForModule();
 
@@ -1017,14 +1010,14 @@ public class ModuleDetailsWindow extends Window {
             this.calculatedAmountWOAccessories = 0;
             this.showPricingErrors();
         }
-
         checkDefaultsOverridden();
     }
 
     private void showPricingErrors()
     {
         disableApply();
-        //NotificationUtil.showNotification("Module pricing has errors!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        //Not
+        // ificationUtil.showNotification("Module pricing has errors!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
     }
 
     private void noPricingErrors()
@@ -1035,7 +1028,6 @@ public class ModuleDetailsWindow extends Window {
     private ModulePrice recalculatePriceForModule() {
         this.module.setCarcassCode(removeDefaultPrefix((String) carcassMaterialSelection.getValue()));
         this.module.setFinishCode(removeDefaultPrefix((String) shutterFinishSelection.getValue()));
-
 
         int integerValueHeight = getIntegerValue(this.height.getValue());
         this.module.setHeight(integerValueHeight);
@@ -1095,11 +1087,15 @@ public class ModuleDetailsWindow extends Window {
 
     private ModuleAccessoryPack getModuleAccessoryPack(ComboBox accPackCombo, ComboBox addon1Combo, ComboBox addons2Combo, ComboBox addons3Combo) {
         String value = (String) accPackCombo.getValue();
+        LOG.info("Pack Value" +value);
+
         if (StringUtils.isEmpty(value)) {
             return null;
         }
         ModuleAccessoryPack accPack = new ModuleAccessoryPack();
         accPack.setCode(value);
+        LOG.info("caption" +accPackCombo.getItemCaptionPropertyId().toString());
+       //accPack.setPacktitle();
 
         List<String> addons = new ArrayList<>();
 
@@ -1328,6 +1324,10 @@ public class ModuleDetailsWindow extends Window {
             module.setFinishTypeCode(removeDefaultPrefix(module.getFinishTypeCode()));
             module.setFinishCode(removeDefaultPrefix(module.getFinishCode()));
             module.setAccessoryPacks(getModuleAccessoryPacks());
+
+            List<ModuleAccessoryPack> accessoryPacks=getModuleAccessoryPacks();
+            LOG.info("Accessory pack" +accessoryPacks);
+
             if (carcassMaterialSelection.isReadOnly()) {
                 module.setFixedCarcassCode((String) carcassMaterialSelection.getValue());
             }
