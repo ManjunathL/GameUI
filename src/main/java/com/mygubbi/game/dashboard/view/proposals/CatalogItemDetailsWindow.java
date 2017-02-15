@@ -15,7 +15,6 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
@@ -26,7 +25,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,16 +48,20 @@ public class CatalogItemDetailsWindow extends Window {
     private Button saveBtn;
 
     private final CatalogueProduct product;
+    private ProposalVersion proposalVersion;
+    private ProposalHeader proposalHeader;
     private final Proposal proposal;
     private final BeanFieldGroup<CatalogueProduct> binder = new BeanFieldGroup<>(CatalogueProduct.class);
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final List<CatalogueProductCategory> categories;
 
-    private CatalogItemDetailsWindow(Proposal proposal, CatalogueProduct product) {
+    private CatalogItemDetailsWindow(Proposal proposal, CatalogueProduct product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
 
         this.proposal = proposal;
         this.product = product;
+        this.proposalVersion = proposalVersion;
+        this.proposalHeader = proposalHeader;
         this.binder.setItemDataSource(this.product);
         categories = proposalDataProvider.getCatalogueProductCategories();
 
@@ -206,6 +208,7 @@ public class CatalogItemDetailsWindow extends Window {
                     product.setRoomCode(product.getRoom());
                     product.setProductCategory(((BeanContainer<String, CatalogueProductSubCategory>) this.subCategoryCombo.getContainerDataSource())
                             .getItem(this.subCategoryCombo.getValue()).getBean().getName());
+                    product.setFromVersion(proposalVersion.getVersion());
 
                     boolean success = proposalDataProvider.updateProduct(product);
                     if (success) {
@@ -412,9 +415,9 @@ public class CatalogItemDetailsWindow extends Window {
                 .get(0);
     }
 
-    public static void open(Proposal proposal, CatalogueProduct product) {
+    public static void open(Proposal proposal, CatalogueProduct product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-        Window w = new CatalogItemDetailsWindow(proposal, product);
+        Window w = new CatalogItemDetailsWindow(proposal, product, proposalVersion, proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
     }
