@@ -594,7 +594,7 @@ public class ProductAndAddons extends Window
         else if("DA".equals(status))
         {
             discountAmount = (Double) this.discountAmount.getConvertedValue();
-            discountPercent=(discountAmount/totalWoAccessories)*100;
+            discountPercent=(discountAmount/productsTotal)*100;
             if(discountPercent<=30) {
                 this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
             }
