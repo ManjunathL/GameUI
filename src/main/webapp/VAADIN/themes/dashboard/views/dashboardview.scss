@@ -360,9 +360,14 @@
   display:block;
   }
 
-    .optiongroupstyle {
+    .optiongroupstyle{
         display: inline-block !important;
     }
+
+    .optiongroupstylediv v-slot v-slot-optiongroupstyle{
+    display: inline-block !important;
+    }
+
   .label-style{
       padding-bottom: 0px;
           padding-top: 0px;

@@ -700,6 +700,7 @@ public class ProductAndAddons extends Window
                     CatalogueProduct newProduct = new CatalogueProduct();
                     newProduct.setType(CatalogueProduct.TYPES.CATALOGUE.name());
                     newProduct.setProposalId(this.proposalHeader.getId());
+                    newProduct.setFromVersion(this.vid);
                     CatalogItemDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
                 }
         );

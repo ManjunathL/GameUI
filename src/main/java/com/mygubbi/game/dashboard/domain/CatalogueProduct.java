@@ -92,4 +92,16 @@ public class CatalogueProduct extends Product {
         this.setAmount(product.getAmount());
         this.setType(product.getType());
     }
+
+    @Override
+    public String toString() {
+        return "CatalogueProduct{" +
+                "id='" + id + '\'' +
+                ", productId='" + productId + '\'' +
+                ", name='" + name + '\'' +
+                ", desc='" + desc + '\'' +
+                ", mf=" + mf +
+                ", images=" + images +
+                '}';
+    }
 }

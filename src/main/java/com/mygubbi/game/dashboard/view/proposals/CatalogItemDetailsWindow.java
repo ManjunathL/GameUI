@@ -23,6 +23,8 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import java.util.List;
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class CatalogItemDetailsWindow extends Window {
-
+    private static final Logger LOG = LogManager.getLogger(CatalogItemDetailsWindow.class);
     private static final String COMBO_WIDTH = "300px";
     private ComboBox categoryCombo;
     private ComboBox subCategoryCombo;
@@ -209,8 +211,18 @@ public class CatalogItemDetailsWindow extends Window {
                     product.setProductCategory(((BeanContainer<String, CatalogueProductSubCategory>) this.subCategoryCombo.getContainerDataSource())
                             .getItem(this.subCategoryCombo.getValue()).getBean().getName());
                     product.setFromVersion(proposalVersion.getVersion());
+                    List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
 
+                    proposal.setProducts(getAllVersionProducts);
+
+                    if (product.getSeq() == 0)
+                    {
+                        int size = getAllVersionProducts.size();
+                        size++;
+                        product.setSeq(size);
+                    }
                     boolean success = proposalDataProvider.updateProduct(product);
+
                     if (success) {
                         NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                         DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
@@ -416,7 +428,7 @@ public class CatalogItemDetailsWindow extends Window {
     }
 
     public static void open(Proposal proposal, CatalogueProduct product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
-        DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
+        /*DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());*/
         Window w = new CatalogItemDetailsWindow(proposal, product, proposalVersion, proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();

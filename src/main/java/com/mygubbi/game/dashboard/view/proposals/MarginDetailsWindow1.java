@@ -183,11 +183,11 @@ public class MarginDetailsWindow1 extends Window
 
     private Component buildCheckBox()
     {
-        VerticalLayout horizontalLayout = new VerticalLayout();
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setMargin(new MarginInfo(true,true,true,true));
         horizontalLayout.setSizeFull();
 
-        checkProduct=new OptionGroup("Select");
+        checkProduct=new OptionGroup();
         checkProduct.addItems("Product","Addon","Product&Addon");
         checkProduct.setValue("Product&Addon");
         checkProduct.addStyleName("optiongroupstyle");
@@ -234,13 +234,26 @@ public class MarginDetailsWindow1 extends Window
 
     private void updateTotal()
     {
+        Double Amount=0.0;
         List<Product> products;
         products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
+
+        LOG.info("products size" +products.size());
+
         for(Product product:products)
         {
+            LOG.info("products" +product);
+        }
+
+        for(Product product:products)
+        {
+            LOG.info("product amount" +product.getAmount());
+            Amount+=product.getAmount();
+
             List<Module> modules=product.getModules();
             for(Module module:modules)
             {
+                LOG.info("module entered");
                 ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
                 TotalCost+=modulePrice.getTotalCost();
 
@@ -302,7 +315,6 @@ public class MarginDetailsWindow1 extends Window
         LOG.info("Addon Total" +addonsTotal);
         LOG.info("Addon total wo tax" +addonsTotalWOtax);
         LOG.info("Addonprofit" +addonsProfit);
-
 
         LOG.info("TSP " + totalSalesPrice + "totalSalesPriceWOtax" + totalSalesPriceWOtax + "m std " + stdModuleManufacturingCost + "non std " + nonStdModuleManufacturingCost + "labour " + manufacturingLabourCost + "Hardware "+ manufacturingHardwareCost + "Macc" + manufacturingAccessoryCost);
         obj1=calculateSalesPriceWithDiscount(obj1,ProductTotal-addonsTotal);
@@ -539,28 +551,28 @@ public class MarginDetailsWindow1 extends Window
         discountedSalesPrice.setReadOnly(true);
 //        LOG.info("final value" +String.valueOf(round(obj2.getTsp(),2)).toString());
         //LOG.info(obj2.getTsp());
-        discountedSalesPrice.setValue(String.valueOf(round(obj2.getProductaddonTsp(),2)).toString());
+        discountedSalesPrice.setValue(String.valueOf(round(obj2.getTsp(),2)).toString());
 
         verticalLayout.addComponent(discountedSalesPrice);
         verticalLayout.setComponentAlignment(discountedSalesPrice,Alignment.MIDDLE_CENTER);
 
         discountedSalesPriceWOtax = new Label();
         discountedSalesPriceWOtax.addStyleName("margin-label-style2");
-        discountedSalesPriceWOtax.setValue(String.valueOf(round(obj2.getProductaddontspwt(),2)).toString());
+        discountedSalesPriceWOtax.setValue(String.valueOf(round(obj2.getTspWt(),2)).toString());
         discountedSalesPriceWOtax.setReadOnly(true);
         verticalLayout.addComponent(discountedSalesPriceWOtax);
         verticalLayout.setComponentAlignment(discountedSalesPriceWOtax,Alignment.MIDDLE_CENTER);
 
         discountedProfit = new Label();
         discountedProfit.addStyleName("margin-label-style2");
-        discountedProfit.setValue(String.valueOf(round(obj2.getProductaddonProfit(),2)).toString());
+        discountedProfit.setValue(String.valueOf(round(obj2.getMprofit(),2)).toString());
         discountedProfit.setReadOnly(true);
         verticalLayout.addComponent(discountedProfit);
         verticalLayout.setComponentAlignment(discountedProfit,Alignment.MIDDLE_CENTER);
 
         discountedSalesMargin = new Label();
         discountedSalesMargin.addStyleName("margin-label-style2");
-        discountedSalesMargin.setValue(String.valueOf(round(obj2.getProductaddonMargin(),2)).toString()+ "%");
+        discountedSalesMargin.setValue(String.valueOf(round(obj2.getMArginCompute(),2)).toString()+ "%");
         discountedSalesMargin.setReadOnly(true);
         verticalLayout.addComponent(discountedSalesMargin);
         verticalLayout.setComponentAlignment(discountedSalesMargin,Alignment.MIDDLE_CENTER);
@@ -616,26 +628,26 @@ public class MarginDetailsWindow1 extends Window
 
         manualInputSalesPrice = new Label();
         manualInputSalesPrice.addStyleName("margin-label-style2");
-        manualInputSalesPrice.setValue(String.valueOf(round(obj3.getProductaddonTsp(),2)).toString());
+        manualInputSalesPrice.setValue(String.valueOf(round(obj3.getTsp(),2)).toString());
         //manualInputSalesPrice.addValueChangeListener(this::calculateSalesPrice);
         verticalLayout.addComponent(manualInputSalesPrice);
         verticalLayout.setComponentAlignment(manualInputSalesPrice,Alignment.MIDDLE_CENTER);
 
         manualInputSalesPriceWOtax = new Label();
         manualInputSalesPriceWOtax.addStyleName("margin-label-style2");
-        manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getProductaddontspwt(),2)).toString());
+        manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getTspWt(),2)).toString());
         verticalLayout.addComponent(manualInputSalesPriceWOtax);
         verticalLayout.setComponentAlignment(manualInputSalesPriceWOtax,Alignment.MIDDLE_CENTER);
 
         manualInputProfitPercentage = new Label();
         manualInputProfitPercentage.addStyleName("margin-label-style2");
-        manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getProductaddonProfit(),2)).toString());
+        manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getMprofit(),2)).toString());
         verticalLayout.addComponent(manualInputProfitPercentage);
         verticalLayout.setComponentAlignment(manualInputProfitPercentage,Alignment.MIDDLE_CENTER);
 
         manualInputMargin = new Label();
         manualInputMargin.addStyleName("margin-label-style2");
-        manualInputMargin.setValue(String.valueOf(round(obj3.getProductaddonMargin(),2)).toString() + "%");
+        manualInputMargin.setValue(String.valueOf(round(obj3.getMArginCompute(),2)).toString() + "%");
         verticalLayout.addComponent(manualInputMargin);
         verticalLayout.setComponentAlignment(manualInputMargin,Alignment.MIDDLE_CENTER);
 
