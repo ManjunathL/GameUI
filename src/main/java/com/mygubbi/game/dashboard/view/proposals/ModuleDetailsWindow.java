@@ -312,14 +312,17 @@ public class ModuleDetailsWindow extends Window {
         } else {
             finishTypeSelection.setValue(module.getFinishTypeCode());
             defaultsOverridden.setVisible(true);
+            defaultsOverridden.setVisible(true);
         }
 
         if (module.getFinish().contains(Module.DEFAULT)) {
             shutterFinishSelection.setValue(DEF_CODE_PREFIX + module.getFinishCode());
-        } else {
+        }
+        else {
             shutterFinishSelection.setValue(module.getFinishCode());
             defaultsOverridden.setVisible(true);
         }
+
         updateAccessoryPack(0, accessoryPack1, addons11, addons12, addons13);
         updateAccessoryPack(1, accessoryPack2, addons21, addons22, addons23);
         updateAccessoryPack(2, accessoryPack3, addons31, addons32, addons33);
@@ -992,6 +995,7 @@ public class ModuleDetailsWindow extends Window {
 
         ModulePrice modulePrice = this.recalculatePriceForModule();
 
+        LOG.info("module price in Module Details Window " +modulePrice);
         if (modulePrice != null)
         {
             totalAmount.setReadOnly(false);

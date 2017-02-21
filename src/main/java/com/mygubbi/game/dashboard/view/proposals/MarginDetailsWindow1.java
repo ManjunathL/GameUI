@@ -120,7 +120,7 @@ public class MarginDetailsWindow1 extends Window
         updateTotal();
 
         VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setMargin(new MarginInfo(true, true, true, true));
+        //verticalLayout.setMargin(new MarginInfo(true, true, true, true));
         Responsive.makeResponsive(this);
 
         HorizontalLayout mainhorizontalLayout= new HorizontalLayout();
@@ -132,7 +132,7 @@ public class MarginDetailsWindow1 extends Window
         //mainhorizontalLayout.setHeightUndefined();
 
         HorizontalLayout checkboxlayout= new HorizontalLayout();
-        checkboxlayout.setMargin(new MarginInfo(false, false, false, false));
+        checkboxlayout.setMargin(new MarginInfo(false,false,false,false));
         checkboxlayout.setSizeFull();
         checkboxlayout.addComponent(buildCheckBox());
         verticalLayout.addComponent(checkboxlayout);
@@ -190,7 +190,7 @@ public class MarginDetailsWindow1 extends Window
         checkProduct=new OptionGroup();
         checkProduct.addItems("Product","Addon","Product&Addon");
         checkProduct.setValue("Product&Addon");
-        checkProduct.addStyleName("optiongroupstyle");
+        checkProduct.addStyleName("horizontal");
         checkProduct.addValueChangeListener(this::checkSelectedValue);
         horizontalLayout.addComponent(checkProduct);
 
@@ -214,7 +214,7 @@ public class MarginDetailsWindow1 extends Window
     private Component buildCloseButton()
     {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.setMargin(new MarginInfo(true,true,true,true));
+        horizontalLayout.setMargin(new MarginInfo(false,true,true,true));
         horizontalLayout.setSizeFull();
 
         closeButton = new Button("Close");
@@ -348,6 +348,13 @@ public class MarginDetailsWindow1 extends Window
         Double AddonTotalWOtax=addonsTotalWOtax;
         Double AddonsProfit=addonsProfit;
         Double addonsMargin=(addonsProfit / AddonTotalWOtax)*100;
+        if(Double.isNaN(addonsMargin))
+        {
+            addonsMargin=0.0;
+        }
+
+        LOG.info("Addon total" +addonsTotal + "tax" +addonsTotalWOtax +"Profit" +AddonsProfit +"margin" +addonsMargin);
+        LOG.info("AddonsMArgin" +addonsMargin);
 
         Double total=Tsp+AddonTotal;
         Double totalwt=Tspwt+AddonTotalWOtax;
@@ -385,7 +392,7 @@ public class MarginDetailsWindow1 extends Window
     public Component buildTsp()
     {
         HorizontalLayout horizontalLayout=new HorizontalLayout();
-        horizontalLayout.setMargin(new MarginInfo(true,true,false,true));
+        horizontalLayout.setMargin(new MarginInfo(false,true,false,true));
         horizontalLayout.setSpacing(true);
         productsCost=new Label("Products Price:   " + round(totalSalesPrice,2));
         productsCost.addStyleName("margin-label-style1");
@@ -408,7 +415,7 @@ public class MarginDetailsWindow1 extends Window
         verticalLayout.setSpacing(true);
         verticalLayout.setSpacing(true);
         verticalLayout.setSpacing(true);
-        verticalLayout.setMargin(new MarginInfo(true,true,true,true));
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
         Label label=new Label();
         verticalLayout.addComponent(label);
@@ -451,7 +458,7 @@ public class MarginDetailsWindow1 extends Window
     {
         VerticalLayout verticalLayout=new VerticalLayout();
         verticalLayout.setSpacing(true);
-        verticalLayout.setMargin(new MarginInfo(true,true,true,true));
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
         wodiscount=new Label("W/O Discount");
         wodiscount.addStyleName("margin-label-style");
@@ -530,7 +537,7 @@ public class MarginDetailsWindow1 extends Window
     {
         VerticalLayout verticalLayout=new VerticalLayout();
         verticalLayout.setSpacing(true);
-        verticalLayout.setMargin(new MarginInfo(true,true,true,true));
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
         withDiscount=new Label("With Discount");
         withDiscount.addStyleName("margin-label-style");
@@ -608,7 +615,7 @@ public class MarginDetailsWindow1 extends Window
     {
         VerticalLayout verticalLayout=new VerticalLayout();
         verticalLayout.setSpacing(true);
-        verticalLayout.setMargin(new MarginInfo(true,true,true,true));
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
         whatIf=new Label("What If");
         whatIf.addStyleName("margin-label-style");

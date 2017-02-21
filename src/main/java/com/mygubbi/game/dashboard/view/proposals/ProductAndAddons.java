@@ -161,7 +161,7 @@ public class ProductAndAddons extends Window
         Component componentactionbutton=buildActionButtons();
         verticalLayout.addComponent(componentactionbutton);
 
-        updateTotal();
+        //updateTotal();
         handleState();
     }
 
@@ -596,7 +596,7 @@ public class ProductAndAddons extends Window
             discountAmount = (Double) this.discountAmount.getConvertedValue();
             discountPercent=(discountAmount/productsTotal)*100;
             if(discountPercent<=30) {
-                this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
+                this.discountPercentage.setValue(String.valueOf(round(discountPercent, 4)));
             }
             else
             {
