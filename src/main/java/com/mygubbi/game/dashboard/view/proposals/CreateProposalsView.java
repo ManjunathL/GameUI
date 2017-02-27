@@ -453,8 +453,6 @@ public class CreateProposalsView extends Panel implements View {
         versionsGrid.setContainerDataSource(createGeneratedVersionPropertyContainer());
         versionsGrid.getSelectionModel().reset();
     }
-
-
     private GeneratedPropertyContainer createGeneratedVersionPropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(versionContainer);
         genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
