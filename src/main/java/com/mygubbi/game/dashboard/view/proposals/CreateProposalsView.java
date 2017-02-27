@@ -311,9 +311,9 @@ public class CreateProposalsView extends Panel implements View {
 
                     String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
-                    if (!("planning").equals(role))
+                    if (!(("planning").equals(role) || ("admin").equals(role)))
                     {
-                        NotificationUtil.showNotification("You are authorized to create more versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        NotificationUtil.showNotification("You are not authorized to create more versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                     }
 

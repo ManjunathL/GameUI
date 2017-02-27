@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -561,11 +562,17 @@ public class ProductAndAddons extends Window
         Double totalAmount = addonsTotal + productsTotal;
         Double costOfAccessories = productsTotal - totalWoAccessories;
 
+        java.util.Date date = proposalHeader.getCreatedOn();
+        java.util.Date currentDate = new Date(2017,2,29,0,0,20);
+        if (date.after(currentDate))
+        {
+            refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
+        }
+        refreshDiscountForOldProposals(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal);
 
-
-        refreshDiscount(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal,productsTotal);
     }
-    private void refreshDiscount(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal, Double productsTotal)
+
+    private void refreshDiscountForNewProposals(Double totalAmount, Double addonsTotal, Double productsTotal)
     {
         Double discountPercent=0.0,discountAmount=0.0;
         if("DP".equals(status))
@@ -604,6 +611,67 @@ public class ProductAndAddons extends Window
         Double totalAfterDiscount = this.round((productsTotal - discountAmount), 0);
 
         Double grandTotal = totalAfterDiscount + addonsTotal;
+        double res=grandTotal-grandTotal%10;
+
+        this.discountTotal.setReadOnly(false);
+        this.discountTotal.setValue(String.valueOf(res));
+
+        this.grandTotal.setReadOnly(false);
+        this.grandTotal.setValue(totalAmount.intValue() + "");
+        this.grandTotal.setReadOnly(true);
+
+        //this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
+       /* productAndAddonSelection.setDiscountPercentage(discountPercent);
+        productAndAddonSelection.setDiscountAmount(discountAmount);*/
+
+        productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
+        productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
+
+        proposalVersion.setFinalAmount(res);
+
+        proposalDataProvider.updateVersion(proposalVersion);
+
+    }
+
+    private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
+    {
+        Double discountPercent=0.0,discountAmount=0.0;
+        if("DP".equals(status))
+        {
+            discountPercent = (Double) this.discountPercentage.getConvertedValue();
+            if(discountPercent<=30) {
+                if (discountPercent == null) {
+                    discountPercent = 0.0;
+                }
+
+                discountAmount = totalWoAccessories * discountPercent / 100.0;
+                //double res = discountAmount - discountAmount % 100;
+                this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                disAmount=discountAmount.intValue();
+                //this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
+            }
+            else
+            {
+                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+        }
+        else if("DA".equals(status))
+        {
+            discountAmount = (Double) this.discountAmount.getConvertedValue();
+            discountPercent=(discountAmount/totalWoAccessories)*100;
+            if(discountPercent<=30) {
+                this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
+            }
+            else
+            {
+                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+        }
+        Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
+
+        Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal ;
         double res=grandTotal-grandTotal%10;
 
         this.discountTotal.setReadOnly(false);
@@ -1552,6 +1620,7 @@ public class ProductAndAddons extends Window
         addKitchenOrWardrobeButton.setEnabled(false);
         addFromCatalogueButton.setEnabled(false);
         addonAddButton.setEnabled(false);
+        customAddonAddButton.setEnabled(false);
     }
 
     @Subscribe

@@ -29,7 +29,7 @@ public class ProposalVersion implements Cloneable {
     private double finalAmount;
     private String status;
     private String internalStatus;
-    private String date;
+    private java.util.Date date;
     private String remarks;
     private String fromVersion;
     private String toVersion;
@@ -158,11 +158,11 @@ public class ProposalVersion implements Cloneable {
         this.internalStatus = internalStatus;
     }
 
-    public String getDate() {
+    public java.util.Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(java.util.Date date) {
         this.date = date;
     }
 

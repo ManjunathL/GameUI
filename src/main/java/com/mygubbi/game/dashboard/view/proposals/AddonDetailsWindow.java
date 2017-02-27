@@ -196,7 +196,6 @@ public class AddonDetailsWindow extends Window {
 
         this.title = new TextArea("Specification");
         this.title.setHeight("45px");
-
         binder.bind(this.title, AddonProductItem.TITLE);
         formLayoutRight.addComponent(this.title);
 
@@ -208,6 +207,7 @@ public class AddonDetailsWindow extends Window {
 
         this.rate = new TextField("Rate");
         this.rate.setRequired(true);
+        binder.bind(this.rate, AddonProductItem.RATE);
         this.rate.addValueChangeListener(this::rateChanged);
         formLayoutRight.addComponent(this.rate);
 
