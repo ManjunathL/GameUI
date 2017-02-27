@@ -41,6 +41,10 @@ public class Product implements FileAttachmentsHolder {
     public static final String ADDONS = "addons";
     public static final String FILE_ATTACHMENT_LIST = "fileAttachmentList";
     public static final String COST_WO_ACCESSORIES = "costWoAccessories";
+    public static final String PROFIT="profit";
+    public static final String MARGIN="margin";
+    public static final String AMOUNTWOTAX="amountWoTax";
+    public static final String MANUFACTUREAMOUNT="manufactureAmount";
 
     private int id;
     private int proposalId;
@@ -114,6 +118,10 @@ public class Product implements FileAttachmentsHolder {
     private Date updatedOn;
     private double costWoAccessories;
     private String updatedBy;
+    private  double profit;
+    private double margin;
+    private double amountWoTax;
+    private double manufactureAmount;
     private List<Module> modules = new ArrayList<>();
 
     public double getCostWoAccessories() {
@@ -387,6 +395,38 @@ public class Product implements FileAttachmentsHolder {
 
     public void setShutterDesignCode(String shutterDesignCode) {
         this.shutterDesignCode = shutterDesignCode;
+    }
+
+    public double getMargin() {
+        return margin;
+    }
+
+    public void setMargin(double margin) {
+        this.margin = margin;
+    }
+
+    public double getProfit() {
+        return profit;
+    }
+
+    public void setProfit(double profit) {
+        this.profit = profit;
+    }
+
+    public double getAmountWoTax() {
+        return amountWoTax;
+    }
+
+    public void setAmountWoTax(double amountWoTax) {
+        this.amountWoTax = amountWoTax;
+    }
+
+    public double getManufactureAmount() {
+        return manufactureAmount;
+    }
+
+    public void setManufactureAmount(double manufactureAmount) {
+        this.manufactureAmount = manufactureAmount;
     }
 
     @Override
