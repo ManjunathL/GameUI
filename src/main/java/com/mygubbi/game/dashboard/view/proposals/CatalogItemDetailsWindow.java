@@ -23,6 +23,8 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import java.util.List;
@@ -55,6 +57,9 @@ public class CatalogItemDetailsWindow extends Window {
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final List<CatalogueProductCategory> categories;
+
+    private static final Logger LOG = LogManager.getLogger(CatalogItemDetailsWindow.class);
+
 
     private CatalogItemDetailsWindow(Proposal proposal, CatalogueProduct product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
 
@@ -262,6 +267,7 @@ public class CatalogItemDetailsWindow extends Window {
         this.descriptionField.setValue(catalogueProduct.getDesc());
         this.descriptionField.setReadOnly(true);
         String imageBasePath = ConfigHolder.getInstance().getCatalogueImageBasePath();
+        LOG.debug("image base path :" + imageBasePath);
         this.productImage.setSource(new ExternalResource(imageBasePath + catalogueProduct.getImages().get(0)));
         Object prevMaterial = this.materialCombo.getValue();
         this.materialCombo.getContainerDataSource().removeAllItems();

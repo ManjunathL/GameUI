@@ -123,7 +123,7 @@ public class CustomAddonDetailsWindow extends Window {
         verticalLayout.addComponent(formLayout);
 
 
-        this.title = new TextArea("Title");
+        this.title = new TextArea("Product");
         this.title.setNullRepresentation("");
         this.title.setHeight("45px");
 

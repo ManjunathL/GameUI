@@ -3,7 +3,6 @@ package com.mygubbi.game.dashboard.data;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**

@@ -45,6 +45,7 @@ public class ProposalHeader {
     public static final String CREATED_BY = "createdBy";
     public static final String UPDATED_ON = "updatedOn";
     public static final String UPDATED_BY = "updatedBy";
+    public static final String PRICE_DATE = "priceDate";
 
     private int id;
     private String quoteNoNew;
@@ -82,6 +83,7 @@ public class ProposalHeader {
     private Date updatedOn;
     private String updatedBy;
     private String editFlag = EDIT.R.name();
+    private java.sql.Date priceDate;
 
     public int getId() {
         return id;
@@ -376,4 +378,11 @@ public class ProposalHeader {
         return getEditFlag().equals(EDIT.R.name());
     }
 
+    public java.sql.Date getPriceDate() {
+        return priceDate;
+    }
+
+    public void setPriceDate(java.sql.Date priceDate) {
+        this.priceDate = priceDate;
+    }
 }

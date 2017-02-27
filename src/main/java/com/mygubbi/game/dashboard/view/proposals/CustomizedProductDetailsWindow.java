@@ -74,6 +74,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private Proposal proposal;
 
     private Product product;
+    ModuleForPrice moduleForPrice;
     private Module module;
     private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
@@ -158,7 +159,20 @@ public class CustomizedProductDetailsWindow extends Window {
         vLayout.setExpandRatio(footerLayOut, 0.08f);
 
         handleState();
-        refreshPrice(null);
+        refreshTotalAmounts();
+
+
+    }
+
+    private void refreshTotalAmounts() {
+
+        List<Module> modules = product.getModules();
+
+        for (Module module : modules)
+        {
+
+        }
+
 
     }
 
@@ -308,12 +322,25 @@ public class CustomizedProductDetailsWindow extends Window {
                     double areainsft = 0;
                     double costwoaccessories = 0;
                     try {
-                        ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
+                        if (proposalHeader.getPriceDate() == null) {
+                            java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
+                            moduleForPrice.setPriceDate( date);
+                        }
+                        else
+                        {
+                            moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
+                        }
+
+                        moduleForPrice.setCity(proposalHeader.getPcity());
+
+                        moduleForPrice.setModule(module);
+                        ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
                         amount = round(modulePrice.getTotalCost());
                         areainsft = modulePrice.getModuleArea();
                         costwoaccessories = round(modulePrice.getWoodworkCost());
                     } catch (Exception e)
                     {
+                        LOG.debug(e.getMessage());
                         this.showPricingErrors();
                     }
 
@@ -321,9 +348,6 @@ public class CustomizedProductDetailsWindow extends Window {
                     boundModules.get(boundModules.indexOf(module)).setAmountWOAccessories(costwoaccessories);
                     boundModules.get(boundModules.indexOf(module)).setArea(areainsft);
                     moduleContainer.getItem(module).getItemProperty(Module.AMOUNT).setValue(amount);
-                } else
-                {
-                    //total += module.getAmount();
                 }
             }
         }
@@ -502,7 +526,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 module.setCarcassCodeBasedOnUnitType(product);
                 module.setFinishTypeCode(product.getFinishTypeCode());
                 module.setFinishCode(product.getFinishCode());
-                ModuleDetailsWindow.open(module,product,0,proposalVersion);
+                ModuleDetailsWindow.open(module,product,0,proposalVersion,proposalHeader);
             }
         });
 
@@ -797,7 +821,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
                     //if (!unmappableModulePresent) {
                     int index = modulesGrid.getContainerDataSource().indexOfId(module);
-                    ModuleDetailsWindow.open(module, createProductFromUI(), index + 1,proposalVersion);
+                    ModuleDetailsWindow.open(module, createProductFromUI(), index + 1,proposalVersion,proposalHeader);
                 } else {
                     NotificationUtil.showNotification("Cannot proceed as this module is not setup.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
@@ -933,7 +957,7 @@ public class CustomizedProductDetailsWindow extends Window {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setSeq(addons.size() + 1);
             addonProduct.setAdd(true);
-            AddonDetailsWindow.open(addonProduct, itemTitleField.getValue(), false,proposalVersion);
+            AddonDetailsWindow.open(addonProduct, itemTitleField.getValue(), false,proposalVersion,this.proposalHeader);
         });
 
         verticalLayout.addComponent(addonAddButton);
@@ -970,7 +994,7 @@ public class CustomizedProductDetailsWindow extends Window {
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                 addon.setAdd(false);
-                AddonDetailsWindow.open(addon, itemTitleField.getValue(), false,proposalVersion);
+                AddonDetailsWindow.open(addon, itemTitleField.getValue(), false,proposalVersion,proposalHeader);
             }
 
             @Override
@@ -1420,13 +1444,13 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void loadNextModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex);
-        ModuleDetailsWindow.open(module, createProductFromUI(),  currentModuleIndex + 1,proposalVersion);
+        ModuleDetailsWindow.open(module, createProductFromUI(),  currentModuleIndex + 1,proposalVersion,proposalHeader);
     }
 
     private void loadPreviousModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex-2);
         int newModuleIndex = currentModuleIndex - 1;
-        ModuleDetailsWindow.open(module, createProductFromUI(), newModuleIndex,proposalVersion);
+        ModuleDetailsWindow.open(module, createProductFromUI(), newModuleIndex,proposalVersion,proposalHeader);
     }
 
     @Subscribe

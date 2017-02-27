@@ -20,6 +20,7 @@ import com.vaadin.data.util.*;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -310,6 +311,15 @@ public class CreateProposalsView extends Panel implements View {
                     versionNew = Float.valueOf(str);
 
                 } else if (pVersion.getVersion().startsWith("2.")) {
+
+                    String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
+                    if (!("planning").equals(role))
+                    {
+                        NotificationUtil.showNotification("You are authorized to create more versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+
                     List<ProposalVersion> proposalVersionProduction = proposalDataProvider.getProposalVersionProduction(proposalHeader.getId());
                     int size = proposalVersionProduction.size();
                     if (size == 9) {
@@ -346,11 +356,14 @@ public class CreateProposalsView extends Panel implements View {
                 List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
                 for (ProposalVersion getLatestVersion : proposalVersionLatest)
                 {
-                    LOG.info("version number" +getLatestVersion.getVersion());
                     proposalHeader.setStatus(getLatestVersion.getStatus());
                     proposalHeader.setVersion(getLatestVersion.getVersion());
                 }
-                boolean success = proposalDataProvider.saveProposal(proposalHeader);
+                if ((proposalHeader.getPriceDate() == null))
+                {
+                    proposalHeader.setPriceDate(null);
+                }
+               proposalDataProvider.saveProposal(proposalHeader);
                 /*cancelButton.setVisible(false);
                 saveAndCloseButton.setVisible(true);
 
