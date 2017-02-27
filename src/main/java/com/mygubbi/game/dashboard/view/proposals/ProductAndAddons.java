@@ -45,10 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -257,7 +254,7 @@ public class ProductAndAddons extends Window
             margin.addClickListener(
                     clickEvent -> {
                         //MarginComputationWindow.open(proposalVersion);
-                        MarginDetailsWindow1.open(proposalVersion,this.proposalHeader);
+                        MarginDetailsWindow.open(proposalVersion,this.proposalHeader);
 
                     }
             );
@@ -1151,11 +1148,8 @@ public class ProductAndAddons extends Window
                 return;
             }
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
-           // proposalVersion.setDate(dateFormat.format(date));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(versionNum.getValue());
@@ -1209,11 +1203,8 @@ public class ProductAndAddons extends Window
                 return;
             }
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
-           // proposalVersion.setDate(dateFormat.format(date));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(String.valueOf(versionNum));
@@ -1346,12 +1337,10 @@ public class ProductAndAddons extends Window
     private void saveProposalVersion() {
         try
         {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
+
                 String disAmount=discountAmount.getValue();
                 proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
                 proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
-               // proposalVersion.setDate(dateFormat.format(date));
                 proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
                 proposalVersion.setRemarks(remarksTextArea.getValue());
@@ -1361,10 +1350,19 @@ public class ProductAndAddons extends Window
                proposalHeader.setVersion(String.valueOf(versionNum));
 
                 boolean success = proposalDataProvider.saveProposal(proposalHeader);
+            if (success)
+            {
+                NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
 
-                /*LOG.debug("Proposal Version" + proposalVersion.toString());*/
+            }
+            else
+            {
+                NotificationUtil.showNotification("Cannot Save Proposal!!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
 
-                proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
+            }
+
+            proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             close();
@@ -1379,11 +1377,9 @@ public class ProductAndAddons extends Window
     private void saveWithoutClose(Button.ClickEvent clickEvent)
     {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
+
         try {
-                String disAmount=discountAmount.getValue();
-               // proposalVersion.setDate(dateFormat.format(date));
+
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
 

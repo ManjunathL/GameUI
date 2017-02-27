@@ -24,9 +24,9 @@ import java.util.List;
 /**
  * Created by shruthi on 14-Feb-17.
  */
-public class MarginDetailsWindow1 extends Window
+public class MarginDetailsWindow extends Window
 {
-    private static final Logger LOG = LogManager.getLogger(MarginDetailsWindow1.class);
+    private static final Logger LOG = LogManager.getLogger(MarginDetailsWindow.class);
     private String status=null;
     private String checkstatus;
 
@@ -104,16 +104,15 @@ public class MarginDetailsWindow1 extends Window
 
     public static void open(ProposalVersion proposalVersion, ProposalHeader proposalHeader)
     {
-        MarginDetailsWindow1 w=new MarginDetailsWindow1(proposalVersion,proposalHeader);
+        MarginDetailsWindow w=new MarginDetailsWindow(proposalVersion,proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
     }
-    public MarginDetailsWindow1(ProposalVersion proposalVersion, ProposalHeader proposalHeader)
+    public MarginDetailsWindow(ProposalVersion proposalVersion, ProposalHeader proposalHeader)
     {
         DashboardEventBus.register(this);
         this.proposalVersion=proposalVersion;
         this.proposalHeader = proposalHeader;
-
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("60%");

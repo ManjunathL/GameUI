@@ -315,10 +315,10 @@ public class ProposalDataProvider {
         }
     }
 
-    public ProposalVersion createDraft(int pid, String title, String date) {
+    public ProposalVersion createDraft(int pid, String title) {
         try {
 
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/createdraft", "{\"proposalId\": " + pid + "," + "\"fromVersion\" : \"0.0\"" + "," + "\"title\" : " + "\"" + title + "\"" + "," + "\"date\" : " + "\"" + date + "\"" + "}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/createdraft", "{\"proposalId\": " + pid + "," + "\"fromVersion\" : \"0.0\"" + "," + "\"title\" : " + "\"" + title + "\"" + "}");
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);

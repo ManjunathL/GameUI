@@ -35,7 +35,6 @@ import org.vaadin.gridutil.renderer.ViewEditButtonValueRenderer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
@@ -161,9 +160,7 @@ public class CreateProposalsView extends Panel implements View {
                 this.proposal = new Proposal();
                 this.proposal.setProposalHeader(proposalHeader);
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date();
-                proposalVersion = proposalDataProvider.createDraft(proposalHeader.getId(), NEW_DRAFT_TITLE, dateFormat.format(date));
+                proposalVersion = proposalDataProvider.createDraft(proposalHeader.getId(), NEW_DRAFT_TITLE);
 
             }
 
@@ -330,15 +327,11 @@ public class CreateProposalsView extends Panel implements View {
                     versionNew = Float.valueOf(str);
                 }
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date();
-
                 copyVersion.setVersion(String.valueOf(versionNew));
                 copyVersion.setFromVersion(pVersion.getVersion());
                 copyVersion.setProposalId(pVersion.getProposalId());
                 copyVersion.setTitle(pVersion.getTitle());
                 copyVersion.setFinalAmount(pVersion.getFinalAmount());
-                copyVersion.setDate(dateFormat.format(date));
                 copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
                 copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
                 copyVersion.setRemarks(pVersion.getRemarks());
@@ -407,15 +400,11 @@ public class CreateProposalsView extends Panel implements View {
 
             ProposalVersion copyVersion = new ProposalVersion();
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
-
             copyVersion.setVersion("0.1");
             copyVersion.setFromVersion("0.0");
             copyVersion.setProposalId(proposalHeader.getId());
             copyVersion.setTitle(pVersion.getTitle());
             copyVersion.setFinalAmount(pVersion.getFinalAmount());
-            copyVersion.setDate(dateFormat.format(date));
             copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
             copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
             copyVersion.setRemarks(pVersion.getRemarks());
