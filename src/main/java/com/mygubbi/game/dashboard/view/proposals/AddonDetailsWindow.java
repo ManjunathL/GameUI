@@ -472,7 +472,6 @@ public class AddonDetailsWindow extends Window {
         productCodeBeanContainer.addAll(list);
 
 
-
         ComboBox select = new ComboBox("Product");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(productCodeBeanContainer);

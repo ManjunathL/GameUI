@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -98,18 +99,20 @@ public class MarginDetailsWindow1 extends Window
     Label per;
     Label wodiscount,whatIf,withDiscount;
     OptionGroup checkProduct;
+    ProposalHeader proposalHeader;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
-    public static void open(ProposalVersion proposalVersion)
+    public static void open(ProposalVersion proposalVersion, ProposalHeader proposalHeader)
     {
-        MarginDetailsWindow1 w=new MarginDetailsWindow1(proposalVersion);
+        MarginDetailsWindow1 w=new MarginDetailsWindow1(proposalVersion,proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
     }
-    public MarginDetailsWindow1(ProposalVersion proposalVersion)
+    public MarginDetailsWindow1(ProposalVersion proposalVersion, ProposalHeader proposalHeader)
     {
         DashboardEventBus.register(this);
         this.proposalVersion=proposalVersion;
+        this.proposalHeader = proposalHeader;
 
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
@@ -253,8 +256,19 @@ public class MarginDetailsWindow1 extends Window
             List<Module> modules=product.getModules();
             for(Module module:modules)
             {
-                LOG.info("module entered");
-                ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
+                ModuleForPrice moduleForPrice = new ModuleForPrice();
+                moduleForPrice.setCity(proposalHeader.getPcity());
+               moduleForPrice.setModule(module);
+                if (proposalHeader.getPriceDate() == null)
+                {
+                    Date dateToBeUsed = new Date(System.currentTimeMillis());
+                    moduleForPrice.setPriceDate(dateToBeUsed);
+                }
+                else {
+                    moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
+
+                }
+                ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
                 TotalCost+=modulePrice.getTotalCost();
 
                 if (module.getMgCode().startsWith("MG-NS"))

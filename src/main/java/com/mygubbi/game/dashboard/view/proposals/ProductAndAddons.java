@@ -257,7 +257,7 @@ public class ProductAndAddons extends Window
             margin.addClickListener(
                     clickEvent -> {
                         //MarginComputationWindow.open(proposalVersion);
-                        MarginDetailsWindow1.open(proposalVersion);
+                        MarginDetailsWindow1.open(proposalVersion,this.proposalHeader);
 
                     }
             );
@@ -700,6 +700,7 @@ public class ProductAndAddons extends Window
                     CatalogueProduct newProduct = new CatalogueProduct();
                     newProduct.setType(CatalogueProduct.TYPES.CATALOGUE.name());
                     newProduct.setProposalId(this.proposalHeader.getId());
+                    newProduct.setFromVersion(this.vid);
                     CatalogItemDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
                 }
         );
@@ -899,7 +900,7 @@ public class ProductAndAddons extends Window
         addonAddButton.addClickListener(clickEvent -> {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setAdd(true);
-            AddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion);
+            AddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion,proposalHeader);
         });
         hLayoutInner.addComponent(addonAddButton);
         hLayoutInner.setComponentAlignment(addonAddButton,Alignment.TOP_RIGHT);
@@ -957,7 +958,7 @@ public class ProductAndAddons extends Window
                     CustomAddonDetailsWindow.open(addon,"Edit Addon",true,proposalVersion);
                 }
 
-                AddonDetailsWindow.open(addon, "Edit Addon", true,proposalVersion);
+                AddonDetailsWindow.open(addon, "Edit Addon", true,proposalVersion,proposalHeader);
             }
 
             @Override
@@ -1154,7 +1155,7 @@ public class ProductAndAddons extends Window
             Date date = new Date();
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
-            proposalVersion.setDate(dateFormat.format(date));
+           // proposalVersion.setDate(dateFormat.format(date));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(versionNum.getValue());
@@ -1212,7 +1213,7 @@ public class ProductAndAddons extends Window
             Date date = new Date();
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
-            proposalVersion.setDate(dateFormat.format(date));
+           // proposalVersion.setDate(dateFormat.format(date));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(String.valueOf(versionNum));
@@ -1240,7 +1241,7 @@ public class ProductAndAddons extends Window
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
+                        success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
 
@@ -1255,7 +1256,7 @@ public class ProductAndAddons extends Window
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
+                        success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
 
@@ -1269,7 +1270,7 @@ public class ProductAndAddons extends Window
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
+                        success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                     }
 
@@ -1350,7 +1351,7 @@ public class ProductAndAddons extends Window
                 String disAmount=discountAmount.getValue();
                 proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
                 proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
-                proposalVersion.setDate(dateFormat.format(date));
+               // proposalVersion.setDate(dateFormat.format(date));
                 proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
                 proposalVersion.setRemarks(remarksTextArea.getValue());
@@ -1382,7 +1383,7 @@ public class ProductAndAddons extends Window
         Date date = new Date();
         try {
                 String disAmount=discountAmount.getValue();
-                proposalVersion.setDate(dateFormat.format(date));
+               // proposalVersion.setDate(dateFormat.format(date));
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
 

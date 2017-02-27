@@ -374,18 +374,18 @@ public class ProposalDataProvider {
         return !jsonObject.has("error");
     }
 
-    public boolean confirmVersion(String version, int proposalId, String fromVersion, String toVersion, String date) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/confirm", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "," + "\"date\": " + "\"" + date + "\"" + "}");
+    public boolean confirmVersion(String version, int proposalId, String fromVersion, String toVersion) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/confirm", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "}");
         return !jsonObject.has("error");
     }
 
-    public boolean versionDesignSignOff(String version, int proposalId, String fromVersion, String toVersion, String date) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/designsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "," + "\"date\": " + "\"" + date + "\"" + "}");
+    public boolean versionDesignSignOff(String version, int proposalId, String fromVersion, String toVersion) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/designsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion +  "}");
         return !jsonObject.has("error");
     }
 
-    public boolean versionProductionSignOff(String version, int proposalId, String fromVersion, String toVersion, String date) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/productionsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "," + "\"date\": " + "\"" + date + "\"" + "}");
+    public boolean versionProductionSignOff(String version, int proposalId, String fromVersion, String toVersion) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/productionsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion +  "}");
         LOG.debug("JSON OBJECT :" + jsonObject.toString());
         return !jsonObject.has("error");
     }
