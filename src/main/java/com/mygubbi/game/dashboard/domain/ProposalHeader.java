@@ -1,7 +1,5 @@
 package com.mygubbi.game.dashboard.domain;
 
-import java.util.Date;
-
 /**
  * Created by nitinpuri on 01-05-2016.
  */
@@ -78,9 +76,9 @@ public class ProposalHeader {
     private String designPartnerPhone;
     private double amount;
     private String folderPath;
-    private Date createdOn;
+    private java.sql.Date createdOn;
     private String createdBy;
-    private Date updatedOn;
+    private java.sql.Date updatedOn;
     private String updatedBy;
     private String editFlag = EDIT.R.name();
     private java.sql.Date priceDate;
@@ -150,11 +148,11 @@ public class ProposalHeader {
         this.status = status;
     }
 
-    public Date getCreatedOn() {
+    public java.sql.Date getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(Date createdOn) {
+    public void setCreatedOn(java.sql.Date createdOn) {
         this.createdOn = createdOn;
     }
 
@@ -350,11 +348,11 @@ public class ProposalHeader {
         this.folderPath = folderPath;
     }
 
-    public Date getUpdatedOn() {
+    public java.sql.Date getUpdatedOn() {
         return updatedOn;
     }
 
-    public void setUpdatedOn(Date updatedOn) {
+    public void setUpdatedOn(java.sql.Date updatedOn) {
         this.updatedOn = updatedOn;
     }
 
@@ -384,5 +382,48 @@ public class ProposalHeader {
 
     public void setPriceDate(java.sql.Date priceDate) {
         this.priceDate = priceDate;
+    }
+
+    @Override
+    public String toString() {
+        return "ProposalHeader{" +
+                "id=" + id +
+                ", quoteNoNew='" + quoteNoNew + '\'' +
+                ", status='" + status + '\'' +
+                ", title='" + title + '\'' +
+                ", version='" + version + '\'' +
+                ", crmId='" + crmId + '\'' +
+                ", quoteNo='" + quoteNo + '\'' +
+                ", customerId='" + customerId + '\'' +
+                ", cname='" + cname + '\'' +
+                ", caddress1='" + caddress1 + '\'' +
+                ", caddress2='" + caddress2 + '\'' +
+                ", caddress3='" + caddress3 + '\'' +
+                ", ccity='" + ccity + '\'' +
+                ", cemail='" + cemail + '\'' +
+                ", cphone1='" + cphone1 + '\'' +
+                ", cphone2='" + cphone2 + '\'' +
+                ", projectName='" + projectName + '\'' +
+                ", paddress1='" + paddress1 + '\'' +
+                ", paddress2='" + paddress2 + '\'' +
+                ", pcity='" + pcity + '\'' +
+                ", salesName='" + salesName + '\'' +
+                ", salesEmail='" + salesEmail + '\'' +
+                ", salesPhone='" + salesPhone + '\'' +
+                ", designerName='" + designerName + '\'' +
+                ", designerEmail='" + designerEmail + '\'' +
+                ", designerPhone='" + designerPhone + '\'' +
+                ", designPartnerName='" + designPartnerName + '\'' +
+                ", designPartnerEmail='" + designPartnerEmail + '\'' +
+                ", designPartnerPhone='" + designPartnerPhone + '\'' +
+                ", amount=" + amount +
+                ", folderPath='" + folderPath + '\'' +
+                ", createdOn=" + createdOn +
+                ", createdBy='" + createdBy + '\'' +
+                ", updatedOn=" + updatedOn +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", editFlag='" + editFlag + '\'' +
+                ", priceDate=" + priceDate +
+                '}';
     }
 }

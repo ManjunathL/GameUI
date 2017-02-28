@@ -159,6 +159,8 @@ public class ProductAndAddons extends Window
         Component componentactionbutton=buildActionButtons();
         verticalLayout.addComponent(componentactionbutton);
 
+        LOG.debug("Proposal Header :" + proposalHeader.toString());
+
         updateTotal();
         handleState();
     }
@@ -562,8 +564,10 @@ public class ProductAndAddons extends Window
         Double totalAmount = addonsTotal + productsTotal;
         Double costOfAccessories = productsTotal - totalWoAccessories;
 
-        java.util.Date date = proposalHeader.getCreatedOn();
-        java.util.Date currentDate = new Date(2017,2,29,0,0,20);
+        ProposalHeader proposalHeaderCreateDate = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
+
+        java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
+        java.util.Date currentDate = new Date(2017,2,28,0,0,20);
         if (date.after(currentDate))
         {
             refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
@@ -578,7 +582,7 @@ public class ProductAndAddons extends Window
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
-            if(discountPercent<=30) {
+            if(discountPercent<=40) {
                 if (discountPercent == null) {
                     discountPercent = 0.0;
                 }
@@ -599,7 +603,7 @@ public class ProductAndAddons extends Window
         {
             discountAmount = (Double) this.discountAmount.getConvertedValue();
             discountPercent=(discountAmount/productsTotal)*100;
-            if(discountPercent<=30) {
+            if(discountPercent<=40) {
                 this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
             }
             else
@@ -639,7 +643,7 @@ public class ProductAndAddons extends Window
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
-            if(discountPercent<=30) {
+            if(discountPercent<=40) {
                 if (discountPercent == null) {
                     discountPercent = 0.0;
                 }
@@ -660,7 +664,7 @@ public class ProductAndAddons extends Window
         {
             discountAmount = (Double) this.discountAmount.getConvertedValue();
             discountPercent=(discountAmount/totalWoAccessories)*100;
-            if(discountPercent<=30) {
+            if(discountPercent<=40) {
                 this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
             }
             else
@@ -1298,10 +1302,12 @@ public class ProductAndAddons extends Window
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("1.0");
                         proposalHeader.setStatus(proposalVersion.getStatus());
+                        proposalHeader.setPriceDate(new java.sql.Date(System.currentTimeMillis()));
                         boolean success1 = proposalDataProvider.saveProposalOnConfirm(proposalHeader);
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
-                        proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+                        proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+                        proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
 
                     }
@@ -1316,7 +1322,8 @@ public class ProductAndAddons extends Window
                         boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
-                        proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+                        proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+                        proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
 
 

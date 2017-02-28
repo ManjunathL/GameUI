@@ -1157,10 +1157,20 @@ public class ProposalDataProvider {
     }
 
 
-    public ProposalVersion updateVersionOnConfirm(String version, int proposalId, String fromVersion) {
+    public ProposalVersion updateProposalProductOnConfirm(String version, int proposalId, String fromVersion) {
 
         try {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/updateVersionOnConfirm", "{\"version\": " + "\"" + version + "\"" + "," + "\"proposalId\" : " + proposalId + "," + "\"fromVersion\" : " + "\"" + fromVersion + "\"" + "}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/product/updateVersionOnConfirm", "{\"version\": " + "\"" + version + "\"" + "," + "\"proposalId\" : " + proposalId + "," + "\"fromVersion\" : " + "\"" + fromVersion + "\"" + "}");
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't update proposal", e);
+        }
+    }
+
+    public ProposalVersion updateProposalAddonOnConfirm(String version, int proposalId, String fromVersion) {
+
+        try {
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/addon/updateVersionOnConfirm", "{\"version\": " + "\"" + version + "\"" + "," + "\"proposalId\" : " + proposalId + "," + "\"fromVersion\" : " + "\"" + fromVersion + "\"" + "}");
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't update proposal", e);
