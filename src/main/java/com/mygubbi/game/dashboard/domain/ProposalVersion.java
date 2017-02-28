@@ -21,6 +21,11 @@ public class ProposalVersion implements Cloneable {
     public static final String DISCOUNT_PERCENTAGE="discountPercentage";
     public static final String TOTAL="total";
     public static final String TOTAL_AFTER_DISCOUNT="amount";
+    public static final String PROFIT="profit";
+    public static final String MARGIN="margin";
+    public static final String AMOUNTWOTAX="amountWotax";
+    public static final String MANUFACTUREAMOUNT="manufactureAmount";
+
 
     private String version;
     private int proposalId;
@@ -36,6 +41,10 @@ public class ProposalVersion implements Cloneable {
     private double discountAmount;
     private double discountPercentage;
     private double amount;
+    private double profit;
+    private double margin;
+    private double amountWotax;
+    private double manufactureAmount;
 
     @Override
     public Object clone()  {
@@ -196,6 +205,38 @@ public class ProposalVersion implements Cloneable {
 
     public void setOldProposalId(int oldProposalId) {
         this.oldProposalId = oldProposalId;
+    }
+
+    public double getAmountWotax() {
+        return amountWotax;
+    }
+
+    public void setAmountWotax(double amountWotax) {
+        this.amountWotax = amountWotax;
+    }
+
+    public double getManufactureAmount() {
+        return manufactureAmount;
+    }
+
+    public void setManufactureAmount(double manufactureAmount) {
+        this.manufactureAmount = manufactureAmount;
+    }
+
+    public double getMargin() {
+        return margin;
+    }
+
+    public void setMargin(double margin) {
+        this.margin = margin;
+    }
+
+    public double getProfit() {
+        return profit;
+    }
+
+    public void setProfit(double profit) {
+        this.profit = profit;
     }
 }
 

@@ -3,6 +3,8 @@ package com.mygubbi.game.dashboard.view.proposals;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.AccesoryHardwareMaster;
+import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AddonMaster;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.vaadin.data.Property;
@@ -66,6 +68,7 @@ public class MarginDetailsWindow1 extends Window
     Double AccessoryCost=0.0;
     Double HardwareCost=0.0;
     Double LabourCost=0.0;
+    Double hikeCost=0.0;
 
     Double productsTotal=0.0;
     Double totalWoAccessories = 0.0;
@@ -237,9 +240,6 @@ public class MarginDetailsWindow1 extends Window
         Double Amount=0.0;
         List<Product> products;
         products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
-
-        LOG.info("products size" +products.size());
-
         for(Product product:products)
         {
             LOG.info("products" +product);
@@ -247,21 +247,30 @@ public class MarginDetailsWindow1 extends Window
 
         for(Product product:products)
         {
-            LOG.info("product amount" +product.getAmount());
             Amount+=product.getAmount();
+
+            List<Module> modulesList=product.getModules();
+            for(Module module:modulesList)
+            {
+                ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
+                if(module.getMgCode().equals("MG-NS-H-001"))
+                {
+                    hikeCost+=modulePrice.getLabourCost();
+                }
+            }
 
             List<Module> modules=product.getModules();
             for(Module module:modules)
             {
-                LOG.info("module entered");
                 ModulePrice modulePrice = proposalDataProvider.getModulePrice(module);
                 TotalCost+=modulePrice.getTotalCost();
-
                 if (module.getMgCode().startsWith("MG-NS"))
                 {
-                    nonStdModuleCount++;
-                    NSWoodWorkCost+=modulePrice.getCarcassCost()+modulePrice.getShutterCost();
-                    LOG.info("NSWoodWorkCost " +NSWoodWorkCost);
+                    {
+                        nonStdModuleCount++;
+                        NSWoodWorkCost += modulePrice.getCarcassCost() + modulePrice.getShutterCost();
+                        LOG.info("NSWoodWorkCost " + NSWoodWorkCost);
+                    }
                 }
                 else
                 {
@@ -269,36 +278,80 @@ public class MarginDetailsWindow1 extends Window
                     SWoodWorkCost+=modulePrice.getCarcassCost()+modulePrice.getShutterCost();
                     LOG.info("SWoodWorkCost" +SWoodWorkCost);
                 }
+                LOG.info("hike cost" +hikeCost);
                 ShutterCost+=modulePrice.getShutterCost();
                 CarcassCost+=modulePrice.getCarcassCost();
-                AccessoryCost+=modulePrice.getAccessoryCost();
+                List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
+                for(ModuleAccessoryPack moduleAccessoryPack:moduleaccpack)
+                {
+                    LOG.info("Acc code" +moduleAccessoryPack.getCode());
+                    AccessoryCost += modulePrice.getAccessoryCost();//msp
+                    List <AccessoryDetails>  accesoryHardwareMasters =proposalDataProvider.getAccessoryDetails(moduleAccessoryPack.getCode());
+                    for(AccessoryDetails acc: accesoryHardwareMasters)
+                    {
+                        LOG.info("acc code" +acc.getCode());
+                        List<AccesoryHardwareMaster> accesoryHardwareMaster=proposalDataProvider.getAccessoryrateDetails(acc.getCode());
+                        for(AccesoryHardwareMaster acchw :accesoryHardwareMaster)
+                        {
+                            LOG.info(acchw);
+                            manufacturingAccessoryCost+=acchw.getMrp();
+                            //AccessoryCost += acchw.getMrp();
+                        }
+                        LOG.info(acc);
+                    }
+
+                    List<AccessoryDetails> accessoryDetailshardware=proposalDataProvider.getAccessoryhwDetails(moduleAccessoryPack.getCode());
+                    for(AccessoryDetails acchwdetails: accessoryDetailshardware)
+                    {
+                        LOG.info(acchwdetails);
+                        List<AccesoryHardwareMaster> accesoryHardwareMaster=proposalDataProvider.getAccessoryrateDetails(acchwdetails.getCode());
+                        {
+                            for(AccesoryHardwareMaster hardwareMaster :accesoryHardwareMaster)
+                            {
+                                manufacturingHardwareCost += hardwareMaster.getMrp();
+                            }
+                        }
+                    }
+
+                }
                 HardwareCost+=modulePrice.getHardwareCost();
                 LabourCost+=modulePrice.getLabourCost();
-                LOG.info("module name" +module.getMgCode() + "module shutter cost" +modulePrice.getShutterCost() +"carcass cost" + modulePrice.getCarcassCost() + "Accessory Cost" +modulePrice.getAccessoryCost() + "Harware cost" +modulePrice.getHardwareCost()+ "Labour cost" +modulePrice.getLabourCost());
             }
         }
         LOG.info("Non std" +NSWoodWorkCost);
         LOG.info("Std " +SWoodWorkCost);
-        LOG.info("Shutter Cost" +ShutterCost);
-        LOG.info("Carcass Cost" +CarcassCost);
         LOG.info("Accessory Cost" +AccessoryCost);
         LOG.info("Hardware Cost" +HardwareCost);
         LOG.info("Labour Cost" +LabourCost);
+        LOG.info("hike cost" +hikeCost);
         totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost;
+        LOG.info("totalsalesprice" +totalSalesPrice);
 
-        totalSalesPriceWOtax = totalSalesPrice *0.8558;
+        totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
+        totalSalesPriceWOtax=totalSalesPriceWOtax + hikeCost;
+
+        LOG.info("wo tax" +totalSalesPriceWOtax);
+        LOG.info(totalSalesPriceWOtax + hikeCost);
+
         stdModuleManufacturingCost =SWoodWorkCost/2.46;
         nonStdModuleManufacturingCost =NSWoodWorkCost/1.288;
-        manufacturingLabourCost =LabourCost/1.288;
-        manufacturingHardwareCost =HardwareCost/1.546;
-        manufacturingAccessoryCost =AccessoryCost/1.546;
+        manufacturingLabourCost =(LabourCost-hikeCost)/1.288;
+        //manufacturingHardwareCost =HardwareCost/1.546;
+        //manufacturingAccessoryCost =AccessoryCost/1.546;
 
-        manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + manufacturingAccessoryCost;
+        LOG.info("manf Non std" +stdModuleManufacturingCost);
+        LOG.info("manf Std " +nonStdModuleManufacturingCost);
+        LOG.info("mnf Accessory Cost" +manufacturingAccessoryCost);
+        LOG.info("mnf Hardware Cost" +manufacturingHardwareCost);
+        LOG.info("mnf Labour Cost" +manufacturingLabourCost);
+
+        manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + manufacturingAccessoryCost+hikeCost;
+        LOG.info("Manufact cost" +manufacturingTotalSalesPrice);
 
         List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (AddonProduct addonProduct:addonProducts)
         {
-            addonsTotal+=addonProduct.getAmount();//total
+            addonsTotal+=addonProduct.getAmount();
             addonsTotalWOtax+=addonProduct.getAmount()*0.8558;
             LOG.info("addon code" +addonProduct.getCode());
             List<AddonMaster> addonMasters=proposalDataProvider.getAddondDetails(addonProduct.getCode());
@@ -309,8 +362,9 @@ public class MarginDetailsWindow1 extends Window
                 addonsProfit+=addonsTotalWOtax-Double.valueOf(addonMaster.getDealerPrice());*/
             }
         }
+
         addonsProfit=addonsTotalWOtax-addonDealerPrice;
-        ProductTotal=totalSalesPrice+addonsTotal;
+        ProductTotal=(totalSalesPrice)+addonsTotal;
 
         LOG.info("Addon Total" +addonsTotal);
         LOG.info("Addon total wo tax" +addonsTotalWOtax);
@@ -322,15 +376,16 @@ public class MarginDetailsWindow1 extends Window
         obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
         obj3=obj2;
 
-
         /*LOG.info("totalSalesPrice " + totalSalesPrice + "Discount Amount" +proposalVersion.getDiscountAmount());
         obj2=calculateSalesPriceWithDiscount(obj2, ProductTotal-proposalVersion.getDiscountAmount(),addonsTotal,addonsTotalWOtax,addonsProfit);
         obj3=obj2;*/
+
         manufacturingProfit = totalSalesPriceWOtax - manufacturingTotalSalesPrice;
         marginCompute=(manufacturingProfit / totalSalesPriceWOtax)*100;
 
         LOG.info("addon amount" +addonsTotal);
         LOG.info("Addon amount WO Tax" +addonsTotalWOtax);
+        LOG.info("Manufacturing profit" +manufacturingProfit);
 
         totalAmount = addonsTotal + productsTotal;
         costOfAccessories = productsTotal - totalWoAccessories;
@@ -339,8 +394,15 @@ public class MarginDetailsWindow1 extends Window
     private margin calculateSalesPriceWithDiscount(margin margin,Double Tsp)
     {
         LOG.info("Total sales price" +Tsp);
+        LOG.info("hike amt in fun" +hikeCost);
+        //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
 
-        Double Tspwt=Tsp*0.8558;
+        Double Tspwt=(Tsp-hikeCost )*0.8558;
+        LOG.info("Tspwt" +Tspwt);
+        Tspwt=Tspwt+hikeCost;
+        LOG.info("TSP wo tax in func" +Tspwt);
+        LOG.info("manutsp" +manufacturingTotalSalesPrice);
+
         Double MProfit=Tspwt- manufacturingTotalSalesPrice;
         Double marginCompute=(MProfit/Tspwt)*100;
 

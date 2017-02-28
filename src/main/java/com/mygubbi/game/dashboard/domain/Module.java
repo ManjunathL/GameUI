@@ -104,6 +104,14 @@ public class Module implements Cloneable {
     private String expSides;
     private String expBottom;
     private String accessoryPackDefault;
+    private double woodworkCost;
+    private double hardwareCost;
+    private double shutterCost;
+    private double carcassCost;
+    private double accessoryCost;
+    private double labourCost;
+
+
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
 
     public String getExpSides() {
@@ -487,16 +495,66 @@ public class Module implements Cloneable {
         this.amountWOAccessories = amountWOAccessories;
     }
 
+    public double getAccessoryCost() {
+        return accessoryCost;
+    }
+
+    public void setAccessoryCost(double accessoryCost) {
+        this.accessoryCost = accessoryCost;
+    }
+
+    public double getCarcassCost() {
+        return carcassCost;
+    }
+
+    public void setCarcassCost(double carcassCost) {
+        this.carcassCost = carcassCost;
+    }
+
+    public double getHardwareCost() {
+        return hardwareCost;
+    }
+
+    public void setHardwareCost(double hardwareCost) {
+        this.hardwareCost = hardwareCost;
+    }
+
+    public double getLabourCost() {
+        return labourCost;
+    }
+
+    public void setLabourCost(double labourCost) {
+        this.labourCost = labourCost;
+    }
+
+    public double getShutterCost() {
+        return shutterCost;
+    }
+
+    public void setShutterCost(double shutterCost) {
+        this.shutterCost = shutterCost;
+    }
+
+    public double getWoodworkCost() {
+        return woodworkCost;
+    }
+
+    public void setWoodworkCost(double woodworkCost) {
+        this.woodworkCost = woodworkCost;
+    }
+
     @Override
     public String toString() {
         return "Module{" +
-                "seq=" + seq +
+                "accessoryCost=" + accessoryCost +
+                ", seq=" + seq +
                 ", moduleSequence=" + moduleSequence +
                 ", unitType='" + unitType + '\'' +
                 ", extCode='" + extCode + '\'' +
                 ", extText='" + extText + '\'' +
                 ", mgCode='" + mgCode + '\'' +
                 ", carcass='" + carcass + '\'' +
+                ", wallcasscode='" + wallcasscode + '\'' +
                 ", carcassCode='" + carcassCode + '\'' +
                 ", fixedCarcassCode='" + fixedCarcassCode + '\'' +
                 ", finishType='" + finishType + '\'' +
@@ -529,9 +587,16 @@ public class Module implements Cloneable {
                 ", moduleSource='" + moduleSource + '\'' +
                 ", expSides='" + expSides + '\'' +
                 ", expBottom='" + expBottom + '\'' +
+                ", accessoryPackDefault='" + accessoryPackDefault + '\'' +
+                ", woodworkCost=" + woodworkCost +
+                ", hardwareCost=" + hardwareCost +
+                ", shutterCost=" + shutterCost +
+                ", carcassCost=" + carcassCost +
+                ", labourCost=" + labourCost +
                 ", accessoryPacks=" + accessoryPacks +
                 '}';
     }
+
     public void clearAcessorryPacks() {
         this.accessoryPacks.clear();
 
@@ -547,4 +612,5 @@ public class Module implements Cloneable {
         Module clone = (Module) origin.clone();
         System.out.println("Original:" + origin.getMgCode() + " | Cloned:" + clone.getMgCode());
     }
+
 }

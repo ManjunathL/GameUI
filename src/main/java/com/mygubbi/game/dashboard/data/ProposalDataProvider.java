@@ -8,9 +8,12 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.AccesoryHardwareMaster;
+import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AddonMaster;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
+import com.mygubbi.game.dashboard.view.editMasterComponents.AccessoryHardwareMaster;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
 import org.apache.logging.log4j.LogManager;
@@ -620,7 +623,6 @@ public class ProposalDataProvider {
         }
     }
 
-
     public List<AccessoryPack> getAccessoryPacks(String mgCode)
     {
         JSONArray array = dataProviderMode.getResourceArray("module/accpacks", new HashMap<String, String>(){
@@ -837,6 +839,7 @@ public class ProposalDataProvider {
 
     public List<MGModule> getModules(String productCategory,String moduleCategory) {
         try {
+
             JSONArray jsonArray = dataProviderMode.getResourceArray(
                     "module/modulesByCategory", new HashMap<String, String>() {
                         {
@@ -1305,4 +1308,64 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<AccessoryDetails> getAccessoryDetails(String apcode)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/accdetails", new HashMap<String, String>(){
+            {
+                put("apcode", apcode);
+            }
+        });
+        try {
+            AccessoryDetails[] items = this.mapper.readValue(array.toString(), AccessoryDetails[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+    public List<AccessoryDetails> getAccessoryhwDetails(String apcode)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/acchwdetails", new HashMap<String, String>(){
+            {
+                put("apcode", apcode);
+            }
+        });
+        try {
+            AccessoryDetails[] items = this.mapper.readValue(array.toString(), AccessoryDetails[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+    public List<AccesoryHardwareMaster> getAccessoryrateDetails(String code)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/accratedetails", new HashMap<String, String>(){
+            {
+                put("code", code);
+            }
+        });
+        try {
+            AccesoryHardwareMaster[] items = this.mapper.readValue(array.toString(), AccesoryHardwareMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+    /*public List<AccesoryHardwareMaster> getAccessoryhwrateDetails(String code)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/accratedetails", new HashMap<String, String>(){
+            {
+                put("code", code);
+            }
+        });
+        try {
+            AccesoryHardwareMaster[] items = this.mapper.readValue(array.toString(), AccesoryHardwareMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }*/
 }

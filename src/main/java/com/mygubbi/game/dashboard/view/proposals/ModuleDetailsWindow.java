@@ -111,6 +111,12 @@ public class ModuleDetailsWindow extends Window {
     private double calculatedArea = -1;
     private double calculatedAmountWOAccessories = -1;
     private boolean dontCalculatePriceNow = true;
+    private double woodworkCost=-1;
+    private double hardwareCost=-1;
+    private double shutterCost=-1;
+    private double carcassCost=-1;
+    private double accessoryCost=-1;
+    private double labourCost=-1;
 
     private ModuleDetailsWindow(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion) {
         this.dontCalculatePriceNow = true;
@@ -483,7 +489,6 @@ public class ModuleDetailsWindow extends Window {
         formLayout.setHeight("30%");
         formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         formLayout.addStyleName("no-bottom-margin-normal");
-
 
 
 
@@ -1003,6 +1008,12 @@ public class ModuleDetailsWindow extends Window {
             totalAmount.setReadOnly(true);
             this.calculatedArea = modulePrice.getModuleArea();
             this.calculatedAmountWOAccessories = modulePrice.getWoodworkCost();
+            this.woodworkCost=modulePrice.getWoodworkCost();
+            this.hardwareCost=modulePrice.getHardwareCost();
+            this.shutterCost=modulePrice.getShutterCost();
+            this.carcassCost=modulePrice.getCarcassCost();
+            this.accessoryCost=modulePrice.getAccessoryCost();
+            this.labourCost=modulePrice.getLabourCost();
             this.noPricingErrors();
         }
         else
@@ -1012,6 +1023,12 @@ public class ModuleDetailsWindow extends Window {
             totalAmount.setReadOnly(true);
             this.calculatedArea = 0;
             this.calculatedAmountWOAccessories = 0;
+            this.woodworkCost=0;
+            this.hardwareCost=0;
+            this.shutterCost=0;
+            this.carcassCost=0;
+            this.accessoryCost=0;
+            this.labourCost=0;
             this.showPricingErrors();
         }
         checkDefaultsOverridden();
@@ -1359,9 +1376,18 @@ public class ModuleDetailsWindow extends Window {
             }
 
             if (this.calculatedArea != -1) module.setArea(this.calculatedArea);
-            if (this.calculatedAmountWOAccessories != -1) module.setAmountWOAccessories(this.calculatedAmountWOAccessories);
+            if (this.calculatedAmountWOAccessories != -1)
+            {
+                module.setAmountWOAccessories(this.calculatedAmountWOAccessories);
+                module.setWoodworkCost(this.woodworkCost);
+                module.setHardwareCost(this.hardwareCost);
+                module.setShutterCost(this.shutterCost);
+                module.setCarcassCost(this.carcassCost);
+                module.setAccessoryCost(this.accessoryCost);
+                module.setLabourCost(this.labourCost);
+            }
 
-            LOG.debug("this.calculatedArea:" + this.calculatedArea + " | this.calculatedAmountWOAccessories:" + this.calculatedAmountWOAccessories);
+            LOG.debug("this.calculatedArea:" + this.calculatedArea + " | this.calculatedAmountWOAccessories:" + this.calculatedAmountWOAccessories + " | WoodworkCost: " +this.woodworkCost+ " | HardwareCost: " +this.hardwareCost+ " | carcasscost " +this.carcassCost + " | Accessory Cost: " +this.accessoryCost+ " | Labour Cost: " +this.accessoryCost);
 
             if (module.getAmount() == 0)
             {

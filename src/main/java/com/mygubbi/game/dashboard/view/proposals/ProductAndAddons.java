@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import static com.mygubbi.game.dashboard.domain.Product.PRODUCT_CATEGORY_CODE;
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
 
 /**
@@ -96,6 +97,9 @@ public class ProductAndAddons extends Window
     private Button confirmButton;
     private Button designSignOffButton;
     private Button productionSignOffButton;
+
+
+
 
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
@@ -522,21 +526,46 @@ public class ProductAndAddons extends Window
         this.productAndAddonSelection.getProductIds().clear();
         this.productAndAddonSelection.getAddonIds().clear();
 
+        double productsTotal = 0;
+        double ProductsTotalWoTax=0;
+        double ProdutsMargin=0;
+        double ProductsProfit=0;
+        double ProductsManufactureAmount=0;
+
         if (productObjects.size() == 0) {
             anythingSelected = false;
             productObjects = this.productsGrid.getContainerDataSource().getItemIds();
         }
-
-        double productsTotal = 0;
+        LOG.info("length" +productObjects);
 
         for (Object object : productObjects) {
             Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
             productsTotal += amount;
+
+            Double amountWotax=(Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNTWOTAX).getValue();
+            ProductsTotalWoTax +=amountWotax;
+
+            Double manufactureAmount= (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.MANUFACTUREAMOUNT).getValue();
+            ProductsManufactureAmount +=manufactureAmount;
+
+            Double profit= (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.PROFIT).getValue();
+            ProductsProfit +=profit;
+
             Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
-            if (anythingSelected) {
+            if (anythingSelected)
+            {
                 this.productAndAddonSelection.getProductIds().add(id);
             }
         }
+
+        ProdutsMargin=(ProductsManufactureAmount / ProductsTotalWoTax)*100;
+        LOG.info(" productsTotal" +productsTotal+ "ProductsTotalWoTax"  +ProductsTotalWoTax+ "Margin" +ProdutsMargin+ "profit" +ProductsProfit + "ProductsManufactureAmount" +ProductsManufactureAmount);
+
+
+        proposalVersion.setProfit(ProductsProfit);
+        proposalVersion.setMargin(ProdutsMargin);
+        proposalVersion.setAmountWotax(ProductsTotalWoTax);
+        proposalVersion.setManufactureAmount(ProductsManufactureAmount);
 
         if (addonObjects.size() == 0) {
             anythingSelected = false;
@@ -563,8 +592,6 @@ public class ProductAndAddons extends Window
 
         Double totalAmount = addonsTotal + productsTotal;
         Double costOfAccessories = productsTotal - totalWoAccessories;
-
-
 
         refreshDiscount(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal,productsTotal);
     }
@@ -613,6 +640,7 @@ public class ProductAndAddons extends Window
         this.discountTotal.setValue(String.valueOf(res));
 
         this.grandTotal.setReadOnly(false);
+        LOG.info("Total amount" +totalAmount);
         this.grandTotal.setValue(totalAmount.intValue() + "");
         this.grandTotal.setReadOnly(true);
 
@@ -1258,7 +1286,7 @@ public class ProductAndAddons extends Window
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
-                        proposalDataProvider.updateVersion(proposalVersion);
+                        proposalDataProvider.updateVersion(proposalVersion );
 
 
                     }
@@ -1357,8 +1385,8 @@ public class ProductAndAddons extends Window
                 proposalVersion.setRemarks(remarksTextArea.getValue());
                 proposalVersion.setTitle(this.ttitle.getValue());
 
-               proposalHeader.setStatus(proposalVersion.getStatus());
-               proposalHeader.setVersion(String.valueOf(versionNum));
+                proposalHeader.setStatus(proposalVersion.getStatus());
+                proposalHeader.setVersion(String.valueOf(versionNum));
 
                 boolean success = proposalDataProvider.saveProposal(proposalHeader);
 
@@ -1384,12 +1412,12 @@ public class ProductAndAddons extends Window
         try {
                 String disAmount=discountAmount.getValue();
                 proposalVersion.setDate(dateFormat.format(date));
-            proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
-            proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
+                proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+                proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
 
-            proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
-            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-            close();
+                proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
+                DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+                close();
         }
         catch (Exception e)
         {
