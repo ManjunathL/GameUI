@@ -211,7 +211,7 @@ public class ItemDetailsWindow extends Window {
         componentGrid.setHeight("200px");
         componentGrid.setWidth("1000px");
         
-        componentGrid.setRows(getModules(""));
+        componentGrid.setRows(getModule(""));
         componentGrid.setDetailsGenerator(new ModulesDetailGenerator());
         
         componentGrid.addComponentColumn("importStatus", module -> createModuleStatus(componentGrid.getComponentGridDecorator(), module));
@@ -359,7 +359,7 @@ public class ItemDetailsWindow extends Window {
         return select;
     }
     
-    private List<Module> getModules(String string) 
+    private List<Module> getModule(String string)
     {
         mgModuleMap.put("K2DU4572", "http://ecx.images-amazon.com/images/I/5182QOOr2oL._SS40_.jpg");
         mgModuleMap.put("K2DU4571", "http://ecx.images-amazon.com/images/I/41n4ib0WvdL._SS36_.jpg");

@@ -45,15 +45,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static com.mygubbi.game.dashboard.domain.Product.PRODUCT_CATEGORY_CODE;
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
 
 /**
@@ -97,9 +94,6 @@ public class ProductAndAddons extends Window
     private Button confirmButton;
     private Button designSignOffButton;
     private Button productionSignOffButton;
-
-
-
 
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
@@ -165,7 +159,7 @@ public class ProductAndAddons extends Window
         Component componentactionbutton=buildActionButtons();
         verticalLayout.addComponent(componentactionbutton);
 
-        //updateTotal();
+        updateTotal();
         handleState();
     }
 
@@ -261,7 +255,7 @@ public class ProductAndAddons extends Window
             margin.addClickListener(
                     clickEvent -> {
                         //MarginComputationWindow.open(proposalVersion);
-                        MarginDetailsWindow1.open(proposalVersion);
+                        MarginDetailsWindow.open(proposalVersion,this.proposalHeader);
 
                     }
             );
@@ -526,46 +520,21 @@ public class ProductAndAddons extends Window
         this.productAndAddonSelection.getProductIds().clear();
         this.productAndAddonSelection.getAddonIds().clear();
 
-        double productsTotal = 0;
-        double ProductsTotalWoTax=0;
-        double ProdutsMargin=0;
-        double ProductsProfit=0;
-        double ProductsManufactureAmount=0;
-
         if (productObjects.size() == 0) {
             anythingSelected = false;
             productObjects = this.productsGrid.getContainerDataSource().getItemIds();
         }
-        LOG.info("length" +productObjects);
+
+        double productsTotal = 0;
 
         for (Object object : productObjects) {
             Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
             productsTotal += amount;
-
-            Double amountWotax=(Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNTWOTAX).getValue();
-            ProductsTotalWoTax +=amountWotax;
-
-            Double manufactureAmount= (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.MANUFACTUREAMOUNT).getValue();
-            ProductsManufactureAmount +=manufactureAmount;
-
-            Double profit= (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.PROFIT).getValue();
-            ProductsProfit +=profit;
-
             Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
-            if (anythingSelected)
-            {
+            if (anythingSelected) {
                 this.productAndAddonSelection.getProductIds().add(id);
             }
         }
-
-        ProdutsMargin=(ProductsManufactureAmount / ProductsTotalWoTax)*100;
-        LOG.info(" productsTotal" +productsTotal+ "ProductsTotalWoTax"  +ProductsTotalWoTax+ "Margin" +ProdutsMargin+ "profit" +ProductsProfit + "ProductsManufactureAmount" +ProductsManufactureAmount);
-
-
-        proposalVersion.setProfit(ProductsProfit);
-        proposalVersion.setMargin(ProdutsMargin);
-        proposalVersion.setAmountWotax(ProductsTotalWoTax);
-        proposalVersion.setManufactureAmount(ProductsManufactureAmount);
 
         if (addonObjects.size() == 0) {
             anythingSelected = false;
@@ -593,9 +562,17 @@ public class ProductAndAddons extends Window
         Double totalAmount = addonsTotal + productsTotal;
         Double costOfAccessories = productsTotal - totalWoAccessories;
 
-        refreshDiscount(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal,productsTotal);
+        java.util.Date date = proposalHeader.getCreatedOn();
+        java.util.Date currentDate = new Date(2017,2,29,0,0,20);
+        if (date.after(currentDate))
+        {
+            refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
+        }
+        refreshDiscountForOldProposals(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal);
+
     }
-    private void refreshDiscount(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal, Double productsTotal)
+
+    private void refreshDiscountForNewProposals(Double totalAmount, Double addonsTotal, Double productsTotal)
     {
         Double discountPercent=0.0,discountAmount=0.0;
         if("DP".equals(status))
@@ -623,7 +600,7 @@ public class ProductAndAddons extends Window
             discountAmount = (Double) this.discountAmount.getConvertedValue();
             discountPercent=(discountAmount/productsTotal)*100;
             if(discountPercent<=30) {
-                this.discountPercentage.setValue(String.valueOf(round(discountPercent, 4)));
+                this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
             }
             else
             {
@@ -640,7 +617,67 @@ public class ProductAndAddons extends Window
         this.discountTotal.setValue(String.valueOf(res));
 
         this.grandTotal.setReadOnly(false);
-        LOG.info("Total amount" +totalAmount);
+        this.grandTotal.setValue(totalAmount.intValue() + "");
+        this.grandTotal.setReadOnly(true);
+
+        //this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
+       /* productAndAddonSelection.setDiscountPercentage(discountPercent);
+        productAndAddonSelection.setDiscountAmount(discountAmount);*/
+
+        productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
+        productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
+
+        proposalVersion.setFinalAmount(res);
+
+        proposalDataProvider.updateVersion(proposalVersion);
+
+    }
+
+    private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
+    {
+        Double discountPercent=0.0,discountAmount=0.0;
+        if("DP".equals(status))
+        {
+            discountPercent = (Double) this.discountPercentage.getConvertedValue();
+            if(discountPercent<=30) {
+                if (discountPercent == null) {
+                    discountPercent = 0.0;
+                }
+
+                discountAmount = totalWoAccessories * discountPercent / 100.0;
+                //double res = discountAmount - discountAmount % 100;
+                this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                disAmount=discountAmount.intValue();
+                //this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
+            }
+            else
+            {
+                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+        }
+        else if("DA".equals(status))
+        {
+            discountAmount = (Double) this.discountAmount.getConvertedValue();
+            discountPercent=(discountAmount/totalWoAccessories)*100;
+            if(discountPercent<=30) {
+                this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
+            }
+            else
+            {
+                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+        }
+        Double totalAfterDiscount = this.round((totalWoAccessories - discountAmount), 0);
+
+        Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal ;
+        double res=grandTotal-grandTotal%10;
+
+        this.discountTotal.setReadOnly(false);
+        this.discountTotal.setValue(String.valueOf(res));
+
+        this.grandTotal.setReadOnly(false);
         this.grandTotal.setValue(totalAmount.intValue() + "");
         this.grandTotal.setReadOnly(true);
 
@@ -928,7 +965,7 @@ public class ProductAndAddons extends Window
         addonAddButton.addClickListener(clickEvent -> {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setAdd(true);
-            AddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion);
+            AddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion,proposalHeader);
         });
         hLayoutInner.addComponent(addonAddButton);
         hLayoutInner.setComponentAlignment(addonAddButton,Alignment.TOP_RIGHT);
@@ -986,7 +1023,7 @@ public class ProductAndAddons extends Window
                     CustomAddonDetailsWindow.open(addon,"Edit Addon",true,proposalVersion);
                 }
 
-                AddonDetailsWindow.open(addon, "Edit Addon", true,proposalVersion);
+                AddonDetailsWindow.open(addon, "Edit Addon", true,proposalVersion,proposalHeader);
             }
 
             @Override
@@ -1179,11 +1216,8 @@ public class ProductAndAddons extends Window
                 return;
             }
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
-            proposalVersion.setDate(dateFormat.format(date));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(versionNum.getValue());
@@ -1237,11 +1271,8 @@ public class ProductAndAddons extends Window
                 return;
             }
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
-            proposalVersion.setDate(dateFormat.format(date));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(String.valueOf(versionNum));
@@ -1267,9 +1298,9 @@ public class ProductAndAddons extends Window
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("1.0");
                         proposalHeader.setStatus(proposalVersion.getStatus());
-                        boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
+                        boolean success1 = proposalDataProvider.saveProposalOnConfirm(proposalHeader);
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
+                        success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
 
@@ -1284,9 +1315,9 @@ public class ProductAndAddons extends Window
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
+                        success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                         proposalDataProvider.updateVersionOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
-                        proposalDataProvider.updateVersion(proposalVersion );
+                        proposalDataProvider.updateVersion(proposalVersion);
 
 
                     }
@@ -1298,7 +1329,7 @@ public class ProductAndAddons extends Window
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion(),proposalVersion.getDate());
+                        success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                     }
 
@@ -1374,25 +1405,32 @@ public class ProductAndAddons extends Window
     private void saveProposalVersion() {
         try
         {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
+
                 String disAmount=discountAmount.getValue();
                 proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
                 proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
-                proposalVersion.setDate(dateFormat.format(date));
                 proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
                 proposalVersion.setRemarks(remarksTextArea.getValue());
                 proposalVersion.setTitle(this.ttitle.getValue());
 
-                proposalHeader.setStatus(proposalVersion.getStatus());
-                proposalHeader.setVersion(String.valueOf(versionNum));
+               proposalHeader.setStatus(proposalVersion.getStatus());
+               proposalHeader.setVersion(String.valueOf(versionNum));
 
                 boolean success = proposalDataProvider.saveProposal(proposalHeader);
+            if (success)
+            {
+                NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
 
-                /*LOG.debug("Proposal Version" + proposalVersion.toString());*/
+            }
+            else
+            {
+                NotificationUtil.showNotification("Cannot Save Proposal!!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
 
-                proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
+            }
+
+            proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             close();
@@ -1407,17 +1445,15 @@ public class ProductAndAddons extends Window
     private void saveWithoutClose(Button.ClickEvent clickEvent)
     {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
-        try {
-                String disAmount=discountAmount.getValue();
-                proposalVersion.setDate(dateFormat.format(date));
-                proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
-                proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
 
-                proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
-                DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-                close();
+        try {
+
+            proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+            proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
+
+            proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
+            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+            close();
         }
         catch (Exception e)
         {
@@ -1584,6 +1620,7 @@ public class ProductAndAddons extends Window
         addKitchenOrWardrobeButton.setEnabled(false);
         addFromCatalogueButton.setEnabled(false);
         addonAddButton.setEnabled(false);
+        customAddonAddButton.setEnabled(false);
     }
 
     @Subscribe

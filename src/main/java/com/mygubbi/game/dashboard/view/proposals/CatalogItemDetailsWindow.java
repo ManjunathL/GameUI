@@ -5,7 +5,6 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
-import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
@@ -32,7 +31,6 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class CatalogItemDetailsWindow extends Window {
-    private static final Logger LOG = LogManager.getLogger(CatalogItemDetailsWindow.class);
     private static final String COMBO_WIDTH = "300px";
     private ComboBox categoryCombo;
     private ComboBox subCategoryCombo;
@@ -57,6 +55,9 @@ public class CatalogItemDetailsWindow extends Window {
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final List<CatalogueProductCategory> categories;
+
+    private static final Logger LOG = LogManager.getLogger(CatalogItemDetailsWindow.class);
+
 
     private CatalogItemDetailsWindow(Proposal proposal, CatalogueProduct product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
 
@@ -274,6 +275,7 @@ public class CatalogItemDetailsWindow extends Window {
         this.descriptionField.setValue(catalogueProduct.getDesc());
         this.descriptionField.setReadOnly(true);
         String imageBasePath = ConfigHolder.getInstance().getCatalogueImageBasePath();
+        LOG.debug("image base path :" + imageBasePath);
         this.productImage.setSource(new ExternalResource(imageBasePath + catalogueProduct.getImages().get(0)));
         Object prevMaterial = this.materialCombo.getValue();
         this.materialCombo.getContainerDataSource().removeAllItems();

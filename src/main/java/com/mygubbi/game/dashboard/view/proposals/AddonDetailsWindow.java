@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -60,14 +61,18 @@ public class AddonDetailsWindow extends Window {
     private BeanContainer<String, AddonCategory> categoryBeanContainer;
     private boolean readOnly;
     private ProposalVersion proposalVersion;
+    private Date priceDate;
+    private String city;
+    Double rateToBeUsed;
 
     private static final Logger LOG = LogManager.getLogger(AddonProduct.class);
 
 
-    public AddonDetailsWindow(AddonProduct addonProduct, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
+    public AddonDetailsWindow(AddonProduct addonProduct, String title, boolean isProposalAddon, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         this.addonProduct = addonProduct;
         this.isProposalAddon = isProposalAddon;
         this.originalImagePath = this.addonProduct.getImagePath();
+        this.city = proposalHeader.getPcity();
         this.proposalVersion = proposalVersion;
         this.binder.setItemDataSource(this.addonProduct);
         setModal(true);
@@ -191,7 +196,6 @@ public class AddonDetailsWindow extends Window {
 
         this.title = new TextArea("Specification");
         this.title.setHeight("45px");
-
         binder.bind(this.title, AddonProductItem.TITLE);
         formLayoutRight.addComponent(this.title);
 
@@ -203,10 +207,7 @@ public class AddonDetailsWindow extends Window {
 
         this.rate = new TextField("Rate");
         this.rate.setRequired(true);
-        binder.bind(this.rate, AddonProduct.RATE);
-        if (category.getValue() == null || (Boolean) category.getItem(category.getValue()).getItemProperty(AddonCategory.RATE_READ_ONLY).getValue()) {
-            this.rate.setReadOnly(true);
-        }
+        binder.bind(this.rate, AddonProductItem.RATE);
         this.rate.addValueChangeListener(this::rateChanged);
         formLayoutRight.addComponent(this.rate);
 
@@ -276,27 +277,37 @@ public class AddonDetailsWindow extends Window {
             LOG.debug("Addon ProductType :" + addonProductType.toString());
         }
         Object next = this.productType.getItemIds().iterator().next();
-        LOG.debug("Log next :" + next.toString());
         productType.setValue(next);
 
 
         if (next.equals(prevCode)) {
-            LOG.debug("hey");
             this.productTypeChanged(null);
         }
 
+/*
 
         if ((Boolean) category.getItem(category.getValue()).getItemProperty(AddonCategory.RATE_READ_ONLY).getValue()) {
 
             if (product.getValue() != null) {
-                Double rate = (Double) product.getItem(product.getValue()).getItemProperty(AddonProductItem.RATE).getValue();
+
+                if (this.priceDate == null)
+                {
+                    this.priceDate = new Date(System.currentTimeMillis());
+                }
+                List<PriceMaster> rate = proposalDataProvider.getAddonRate(this.addonProduct.getCode(),this.priceDate,this.city);
+                for (PriceMaster priceMaster : rate)
+                {
+                   rateToBeUsed = String.valueOf(priceMaster.getPrice());
+                }
+
                 this.rate.setReadOnly(false);
-                this.rate.setValue(rate + "");
+                this.rate.setValue(this.rateToBeUsed + "");
                 this.rate.setReadOnly(true);
             }
         } else {
             this.rate.setReadOnly(false);
         }
+*/
 
         checkApply();
     }
@@ -373,6 +384,8 @@ public class AddonDetailsWindow extends Window {
 
         AddonProductItem addonProductItem = ((BeanItem<AddonProductItem>) this.product.getItem(product.getValue())).getBean();
 
+        LOG.debug("Addon product item : " + addonProductItem.toString());
+
         this.uom.setReadOnly(false);
         this.uom.setValue(addonProductItem.getUom());
         this.uom.setReadOnly(true);
@@ -384,9 +397,23 @@ public class AddonDetailsWindow extends Window {
         this.addonProduct.setImagePath(addonProductItem.getImagePath());
         this.addonImage.setSource(new FileResource(new File(imageBasePath + addonProductItem.getImagePath())));
 
+        if (this.priceDate == null)
+        {
+            this.priceDate = new Date(System.currentTimeMillis());
+        }
+        PriceMaster rate = proposalDataProvider.getAddonRate(addonProductItem.getCode(),this.priceDate,this.city);
+       if (rate != null)
+        {
+            this.rateToBeUsed = rate.getPrice();
+        }
+        else {
+           NotificationUtil.showNotification("Error in Addon pricing",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+           return;
+       }
+
         boolean wasReadOnly = this.rate.isReadOnly();
         this.rate.setReadOnly(false);
-        this.rate.setValue(addonProductItem.getRate() + "");
+        this.rate.setValue(this.rateToBeUsed + "");
         this.rate.setReadOnly(wasReadOnly);
 
         if (StringUtils.isEmpty(this.quantity.getValue()) || Double.parseDouble(this.quantity.getValue().replaceAll(",", "")) <= 0) {
@@ -443,7 +470,6 @@ public class AddonDetailsWindow extends Window {
         productCodeBeanContainer = new BeanContainer<>(AddonProductItem.class);
         productCodeBeanContainer.setBeanIdProperty(AddonProductItem.PRODUCT);
         productCodeBeanContainer.addAll(list);
-
 
 
         ComboBox select = new ComboBox("Product");
@@ -577,8 +603,8 @@ public class AddonDetailsWindow extends Window {
         }
     }
 
-    public static void open(AddonProduct addon, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
-        Window w = new AddonDetailsWindow(addon, title, isProposalAddon,proposalVersion);
+    public static void open(AddonProduct addon, String title, boolean isProposalAddon, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
+        Window w = new AddonDetailsWindow(addon, title, isProposalAddon,proposalVersion, proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
 

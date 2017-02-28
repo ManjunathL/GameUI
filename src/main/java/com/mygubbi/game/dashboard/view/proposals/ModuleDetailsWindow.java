@@ -30,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -97,6 +98,7 @@ public class ModuleDetailsWindow extends Window {
 
     private Module module;
     private ProposalVersion proposalVersion;
+    private ProposalHeader proposalHeader;
 
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final BeanFieldGroup<Module> binder = new BeanFieldGroup<>(Module.class);
@@ -118,13 +120,14 @@ public class ModuleDetailsWindow extends Window {
     private double accessoryCost=-1;
     private double labourCost=-1;
 
-    private ModuleDetailsWindow(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion) {
+    private ModuleDetailsWindow(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         this.dontCalculatePriceNow = true;
 
         this.product = product;
         this.module = module;
         this.proposalVersion = proposalVersion;
         this.moduleIndex = moduleIndex;
+        this.proposalHeader = proposalHeader;
         initModule();
         this.binder.setItemDataSource(this.module);
 
@@ -1047,6 +1050,9 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private ModulePrice recalculatePriceForModule() {
+
+        ModuleForPrice moduleForPrice = new ModuleForPrice();
+
         this.module.setCarcassCode(removeDefaultPrefix((String) carcassMaterialSelection.getValue()));
         this.module.setFinishCode(removeDefaultPrefix((String) shutterFinishSelection.getValue()));
 
@@ -1067,6 +1073,17 @@ public class ModuleDetailsWindow extends Window {
         this.module.setExposedBottom(exposedBottom.getValue());
         this.module.setExposedBack(exposedBack.getValue());
         this.module.setExposedOpen(exposedOpen.getValue());
+        moduleForPrice.setModule(module);
+        if (proposalHeader.getPriceDate() == null) {
+         Date date = new Date(System.currentTimeMillis());
+            moduleForPrice.setPriceDate( date);
+        }
+        else
+        {
+            moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
+        }
+        moduleForPrice.setCity(proposalHeader.getPcity());
+        moduleForPrice.setModule(this.module);
 
         if (this.module.getHeight() == 0 || this.module.getDepth() == 0 || this.module.getWidth() == 0)
         {
@@ -1076,7 +1093,7 @@ public class ModuleDetailsWindow extends Window {
         LOG.info("Asking for module price - " + this.module.toString());
         try
         {
-            return proposalDataProvider.getModulePrice(this.module);
+            return proposalDataProvider.getModulePrice(moduleForPrice);
         }
         catch (Exception e)
         {
@@ -1288,7 +1305,6 @@ public class ModuleDetailsWindow extends Window {
             }
 
             if (("Yes").equals(module.getAccessoryPackDefault())) {
-                LOG.debug("module.getAccessoryPackDefault() :" + module.getAccessoryPackDefault());
                 if (module.getAccessoryPacks().size() == 0) {
                     NotificationUtil.showNotification("Please select accessories", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -1442,9 +1458,9 @@ public class ModuleDetailsWindow extends Window {
         return defaultIndex == -1 ? title : title.substring(0, defaultIndex);
     }
 
-    public static void open(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion) {
+    public static void open(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         Module clonedModule = module.clone();
-        Window w = new ModuleDetailsWindow(clonedModule, product, moduleIndex, proposalVersion);
+        Window w = new ModuleDetailsWindow(clonedModule, product, moduleIndex, proposalVersion, proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
     }

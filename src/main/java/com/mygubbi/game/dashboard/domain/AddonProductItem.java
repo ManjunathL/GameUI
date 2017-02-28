@@ -8,6 +8,7 @@ public class  AddonProductItem {
     public static final String PRODUCT = "product";
     public static final String TITLE = "title";
     public static final String RATE = "rate";
+    public static final String CODE = "code";
     private String catalogueCode;
     private String product;
     private String title;

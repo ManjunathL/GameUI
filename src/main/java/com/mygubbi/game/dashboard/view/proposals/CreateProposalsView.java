@@ -20,6 +20,7 @@ import com.vaadin.data.util.*;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -34,7 +35,6 @@ import org.vaadin.gridutil.renderer.ViewEditButtonValueRenderer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
@@ -160,9 +160,7 @@ public class CreateProposalsView extends Panel implements View {
                 this.proposal = new Proposal();
                 this.proposal.setProposalHeader(proposalHeader);
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date();
-                proposalVersion = proposalDataProvider.createDraft(proposalHeader.getId(), NEW_DRAFT_TITLE, dateFormat.format(date));
+                proposalVersion = proposalDataProvider.createDraft(proposalHeader.getId(), NEW_DRAFT_TITLE);
 
             }
 
@@ -310,6 +308,15 @@ public class CreateProposalsView extends Panel implements View {
                     versionNew = Float.valueOf(str);
 
                 } else if (pVersion.getVersion().startsWith("2.")) {
+
+                    String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
+                    if (!(("planning").equals(role) || ("admin").equals(role)))
+                    {
+                        NotificationUtil.showNotification("You are not authorized to create more versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+
                     List<ProposalVersion> proposalVersionProduction = proposalDataProvider.getProposalVersionProduction(proposalHeader.getId());
                     int size = proposalVersionProduction.size();
                     if (size == 9) {
@@ -320,15 +327,11 @@ public class CreateProposalsView extends Panel implements View {
                     versionNew = Float.valueOf(str);
                 }
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date();
-
                 copyVersion.setVersion(String.valueOf(versionNew));
                 copyVersion.setFromVersion(pVersion.getVersion());
                 copyVersion.setProposalId(pVersion.getProposalId());
                 copyVersion.setTitle(pVersion.getTitle());
                 copyVersion.setFinalAmount(pVersion.getFinalAmount());
-                copyVersion.setDate(dateFormat.format(date));
                 copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
                 copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
                 copyVersion.setRemarks(pVersion.getRemarks());
@@ -346,11 +349,14 @@ public class CreateProposalsView extends Panel implements View {
                 List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
                 for (ProposalVersion getLatestVersion : proposalVersionLatest)
                 {
-                    LOG.info("version number" +getLatestVersion.getVersion());
                     proposalHeader.setStatus(getLatestVersion.getStatus());
                     proposalHeader.setVersion(getLatestVersion.getVersion());
                 }
-                boolean success = proposalDataProvider.saveProposal(proposalHeader);
+                if ((proposalHeader.getPriceDate() == null))
+                {
+                    proposalHeader.setPriceDate(null);
+                }
+               proposalDataProvider.saveProposal(proposalHeader);
                 /*cancelButton.setVisible(false);
                 saveAndCloseButton.setVisible(true);
 
@@ -394,15 +400,11 @@ public class CreateProposalsView extends Panel implements View {
 
             ProposalVersion copyVersion = new ProposalVersion();
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
-
             copyVersion.setVersion("0.1");
             copyVersion.setFromVersion("0.0");
             copyVersion.setProposalId(proposalHeader.getId());
             copyVersion.setTitle(pVersion.getTitle());
             copyVersion.setFinalAmount(pVersion.getFinalAmount());
-            copyVersion.setDate(dateFormat.format(date));
             copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
             copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
             copyVersion.setRemarks(pVersion.getRemarks());
