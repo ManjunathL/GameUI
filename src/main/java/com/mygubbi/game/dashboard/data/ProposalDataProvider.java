@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lowagie.text.ListItem;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
@@ -1177,33 +1176,18 @@ public class ProposalDataProvider {
         }
     }
 
-  /*  public List getLatestVersion(int proposalId) {
-        JSONObject jsonObject = dataProviderMode.getResource("proposal/version/getlatestversion", new HashMap<String, String>() {
+    public ProposalVersion getLatestVersion(int proposalId) {
+        JSONObject jsonArray = dataProviderMode.getResource("proposal/version/getlatestversion", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId + "");
             }
         });
         try {
-            ProposalVersion items = this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
-            return new ListItem(items);
-        } catch (IOException e) {
-            e.printStackTrace();
-               return new ListItem();
-        }
-    }*/
+           return this.mapper.readValue(jsonArray.toString(), ProposalVersion.class);
 
-    public List<ProposalVersion> getLatestVersion(int proposalId) {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/getlatestversion", new HashMap<String, String>() {
-            {
-                put("proposalId", proposalId + "");
-            }
-        });
-        try {
-            ProposalVersion[] items = this.mapper.readValue(jsonArray.toString(), ProposalVersion[].class);
-            return new ArrayList<>(Arrays.asList(items));
         } catch (IOException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            return null;
         }
     }
 
