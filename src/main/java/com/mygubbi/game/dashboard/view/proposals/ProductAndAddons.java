@@ -567,15 +567,16 @@ public class ProductAndAddons extends Window
         ProposalHeader proposalHeaderCreateDate = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
 
         java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
-        java.util.Date currentDate = new Date(117,01,28);
-        boolean after = date.after(currentDate);
-        if (after)
+        java.util.Date currentDate = new Date(117,1,28,0,0,00);
+        LOG.info("date12"+ date);
+        LOG.info("current date12"+ currentDate);
+        if (date.after(currentDate))
         {
+            System.out.println("date**");
             refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
         }
-        else {
-            refreshDiscountForOldProposals(totalWoAccessories, totalAmount, costOfAccessories, addonsTotal);
-        }
+        System.out.println("current**");
+        refreshDiscountForOldProposals(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal);
 
     }
 
@@ -659,7 +660,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -672,7 +673,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
