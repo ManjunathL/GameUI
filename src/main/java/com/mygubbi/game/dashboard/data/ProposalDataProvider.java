@@ -1180,6 +1180,7 @@ public class ProposalDataProvider {
         JSONObject jsonArray = dataProviderMode.getResource("proposal/version/getlatestversion", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId + "");
+                put("proposalId", proposalId + "");
             }
         });
         try {

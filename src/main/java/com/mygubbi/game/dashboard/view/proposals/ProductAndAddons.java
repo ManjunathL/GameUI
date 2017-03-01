@@ -568,15 +568,17 @@ public class ProductAndAddons extends Window
 
         java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
         java.util.Date currentDate = new Date(117,1,28,0,0,00);
-        LOG.info("date12"+ date);
-        LOG.info("current date12"+ currentDate);
+        LOG.info("date***"+date);
+        LOG.info("curdate***"+currentDate);
         if (date.after(currentDate))
         {
-            System.out.println("date**");
+            LOG.info("if executed");
             refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
         }
-        System.out.println("current**");
-        refreshDiscountForOldProposals(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal);
+        else {
+            refreshDiscountForOldProposals(totalWoAccessories, totalAmount, costOfAccessories, addonsTotal);
+            LOG.info("else executed");
+        }
 
     }
 
@@ -590,8 +592,9 @@ public class ProductAndAddons extends Window
                 if (discountPercent == null) {
                     discountPercent = 0.0;
                 }
-
-                discountAmount = productsTotal * discountPercent / 100.0;
+                LOG.info("****"+productsTotal);
+                discountAmount = (productsTotal * discountPercent) / 100.0;
+                LOG.info("disamount***"+discountAmount);
                 //double res = discountAmount - discountAmount % 100;
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
                 disAmount=discountAmount.intValue();

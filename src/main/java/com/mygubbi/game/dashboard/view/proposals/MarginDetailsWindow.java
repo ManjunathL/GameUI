@@ -367,7 +367,7 @@ public class MarginDetailsWindow extends Window
 
         stdModuleManufacturingCost =SWoodWorkCost/2.46;
         nonStdModuleManufacturingCost =NSWoodWorkCost/1.288;
-        manufacturingLabourCost =(LabourCost-hikeCost)/1.288;
+        manufacturingLabourCost =(LabourCost)/1.288;
         //manufacturingHardwareCost =HardwareCost/1.546;
         //manufacturingAccessoryCost =AccessoryCost/1.546;
 
