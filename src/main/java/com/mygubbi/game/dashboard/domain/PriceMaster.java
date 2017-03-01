@@ -15,11 +15,13 @@ public class PriceMaster {
     public static final String CITY = "city";
     public static final String FROM_DATE = "fromDate";
     public static final String TO_DATE = "toDate";
+    public static final String SOURCE_PRICE = "sourcePrice";
 
     private String rateType;
     private String rateId;
     private String city;
     private double price;
+    private double sourcePrice;
     private Date fromDate;
     private Date toDate;
 
@@ -69,5 +71,13 @@ public class PriceMaster {
 
     public void setToDate(Date toDate) {
         this.toDate = toDate;
+    }
+
+    public double getSourcePrice() {
+        return sourcePrice;
+    }
+
+    public void setSourcePrice(double sourcePrice) {
+        this.sourcePrice = sourcePrice;
     }
 }

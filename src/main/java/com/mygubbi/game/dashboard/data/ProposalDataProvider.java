@@ -8,7 +8,6 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
-import com.mygubbi.game.dashboard.domain.JsonPojo.AccesoryHardwareMaster;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AddonMaster;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
@@ -1340,20 +1339,43 @@ public class ProposalDataProvider {
             throw new RuntimeException(e);
         }
     }
-    public List<AccesoryHardwareMaster> getAccessoryrateDetails(String code)
+    public List<PriceMaster> getAccessoryrateDetails(String rateId,String city)
     {
         JSONArray array = dataProviderMode.getResourceArray("proposal/accratedetails", new HashMap<String, String>(){
             {
-                put("code", code);
+                put("rateId", rateId);
+                put("city",city);
             }
         });
-        try {
-            AccesoryHardwareMaster[] items = this.mapper.readValue(array.toString(), AccesoryHardwareMaster[].class);
+        try
+        {
+            PriceMaster[] items = this.mapper.readValue(array.toString(), PriceMaster[].class);
             return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
             NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             throw new RuntimeException(e);
         }
     }
+    /*public List<PriceMaster> getAddonrateDetails(String rateId,String city,Date fromDate)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/addonratedetails", new HashMap<String, String>(){
+            {
+                put("rateId", rateId);
+                put("city",city);
+                put("fromDate",fromDate);
+            }
+        });
+        try
+        {
+            PriceMaster[] items = this.mapper.readValue(array.toString(), PriceMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }*/
+
+
 }
 
