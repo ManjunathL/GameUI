@@ -1,5 +1,7 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.Date;
+
 /**
  * Created by nitinpuri on 01-05-2016.
  */
@@ -76,7 +78,7 @@ public class ProposalHeader {
     private String designPartnerPhone;
     private double amount;
     private String folderPath;
-    private java.sql.Date createdOn;
+    private Date createdOn;
     private String createdBy;
     private java.sql.Date updatedOn;
     private String updatedBy;
@@ -148,11 +150,11 @@ public class ProposalHeader {
         this.status = status;
     }
 
-    public java.sql.Date getCreatedOn() {
+    public Date getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(java.sql.Date createdOn) {
+    public void setCreatedOn(Date createdOn) {
         this.createdOn = createdOn;
     }
 

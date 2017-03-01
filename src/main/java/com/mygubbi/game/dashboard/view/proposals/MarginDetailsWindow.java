@@ -103,6 +103,8 @@ public class MarginDetailsWindow extends Window
     Label per;
     Label wodiscount,whatIf,withDiscount;
     OptionGroup checkProduct;
+    private String city;
+    private Date priceDate;
 
     //private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
@@ -119,6 +121,12 @@ public class MarginDetailsWindow extends Window
         DashboardEventBus.register(this);
         this.proposalVersion=proposalVersion;
         this.proposalHeader = proposalHeader;
+        this.priceDate = proposalHeader.getPriceDate();
+        this.city = proposalHeader.getPcity();
+        if (this.priceDate == null)
+        {
+            this.priceDate = new Date(System.currentTimeMillis());
+        }
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("60%");
@@ -318,13 +326,9 @@ public class MarginDetailsWindow extends Window
                     for(AccessoryDetails acc: accesoryHardwareMasters)
                     {
                         LOG.info("acc details" +acc);
-                        List<PriceMaster> accesoryHardwareMaster=proposalDataProvider.getAccessoryrateDetails(acc.getCode(),moduleForPrice.getCity());
-                        for(PriceMaster acchw :accesoryHardwareMaster)
+                        PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(acc.getCode(),this.priceDate,this.city);
                         {
-                            LOG.info("Acc cost" +acchw);
-                            //manufacturingAccessoryCost+=acchw.getMrp();
-                            manufacturingAccessoryCost+=acchw.getSourcePrice();
-                            //AccessoryCost += acchw.getMrp();
+                            manufacturingAccessoryCost+=accessoryRateMaster.getSourcePrice();
                         }
                         LOG.info(acc);
                     }
@@ -333,13 +337,10 @@ public class MarginDetailsWindow extends Window
                     for(AccessoryDetails acchwdetails: accessoryDetailshardware)
                     {
                         LOG.info("hardware details" +acchwdetails);
-                        List<PriceMaster> accesoryHardwareMaster=proposalDataProvider.getAccessoryrateDetails(acchwdetails.getCode(),moduleForPrice.getCity());
+                        PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acchwdetails.getCode(),this.priceDate,this.city);
                         {
-                            for(PriceMaster hardwareMaster :accesoryHardwareMaster)
                             {
-                                LOG.info("hardware cost" +hardwareMaster);
-                                //manufacturingHardwareCost += hardwareMaster.getMrp();
-                                manufacturingHardwareCost += hardwareMaster.getSourcePrice();
+                                manufacturingHardwareCost += hardwareRateMaster.getSourcePrice();
                             }
                         }
                     }
@@ -404,13 +405,11 @@ public class MarginDetailsWindow extends Window
                 addonDealerPrice+=addonProduct.getAmount();
             }
 
-            List<PriceMaster> addonMasters=proposalDataProvider.getAccessoryrateDetails(addonProduct.getCode(),moduleForPrice.getCity());
+            PriceMaster addonMasterRate=proposalDataProvider.getAddonRate(addonProduct.getCode(),this.priceDate,this.city);
             //PriceMaster addonMasters=proposalDataProvider.getAddonRate(addonProduct.getCode(),moduleForPrice.getPriceDate(),moduleForPrice.getCity());
-            for(PriceMaster addonMaster:addonMasters)
             {
 
-                LOG.info("price master" +addonMaster);
-                addonDealerPrice+=Double.valueOf(addonMaster.getSourcePrice());
+                addonDealerPrice+=Double.valueOf(addonMasterRate.getSourcePrice());
                 LOG.info("Deler price" +addonDealerPrice);
                 /*//without tax
                 //addonsTotalWOtax+=Double.valueOf(addonMaster.getDealerPrice());

@@ -159,22 +159,11 @@ public class CustomizedProductDetailsWindow extends Window {
         vLayout.setExpandRatio(footerLayOut, 0.08f);
 
         handleState();
-        refreshTotalAmounts();
-
-
-    }
-
-    private void refreshTotalAmounts() {
-
-        List<Module> modules = product.getModules();
-
-        for (Module module : modules)
-        {
-
-        }
-
+        updatePsftCosts();
+        updateTotalAmount();
 
     }
+
 
     private void cloneModules() {
         this.modulesCopy = new ArrayList<>();

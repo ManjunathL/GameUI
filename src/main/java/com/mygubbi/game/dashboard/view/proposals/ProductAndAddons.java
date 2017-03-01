@@ -567,12 +567,15 @@ public class ProductAndAddons extends Window
         ProposalHeader proposalHeaderCreateDate = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
 
         java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
-        java.util.Date currentDate = new Date(2017,2,28,0,0,20);
-        if (date.after(currentDate))
+        java.util.Date currentDate = new Date(117,01,28);
+        boolean after = date.after(currentDate);
+        if (after)
         {
             refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
         }
-        refreshDiscountForOldProposals(totalWoAccessories,totalAmount,costOfAccessories,addonsTotal);
+        else {
+            refreshDiscountForOldProposals(totalWoAccessories, totalAmount, costOfAccessories, addonsTotal);
+        }
 
     }
 
