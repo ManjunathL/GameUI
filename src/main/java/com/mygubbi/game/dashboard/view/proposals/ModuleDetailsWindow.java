@@ -1148,7 +1148,6 @@ public class ModuleDetailsWindow extends Window {
 
         accPack.setAccessories(addons);
         return accPack;
-
     }
 
 
@@ -1322,7 +1321,7 @@ public class ModuleDetailsWindow extends Window {
             if (("AP-GENERIC").equals(accPack1)) {
 
                 if (StringUtils.isEmpty(addon11))
-                {    NotificationUtil.showNotification("Please select atleast one addons", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                {    NotificationUtil.showNotification("Please select at least one addons", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
             }
@@ -1332,7 +1331,7 @@ public class ModuleDetailsWindow extends Window {
             if (("AP-GENERIC").equals(accPack2)) {
 
                 if (StringUtils.isEmpty(addon21))
-                {    NotificationUtil.showNotification("Please select atleast one addons", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                {    NotificationUtil.showNotification("Please select at least one addons", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
             }

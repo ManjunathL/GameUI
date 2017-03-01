@@ -8,7 +8,6 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
-import com.mygubbi.game.dashboard.domain.JsonPojo.AccesoryHardwareMaster;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AddonMaster;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
@@ -1157,28 +1156,39 @@ public class ProposalDataProvider {
     }
 
 
-    public ProposalVersion updateVersionOnConfirm(String version, int proposalId, String fromVersion) {
+    public ProposalVersion updateProposalProductOnConfirm(String version, int proposalId, String fromVersion) {
 
         try {
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/updateVersionOnConfirm", "{\"version\": " + "\"" + version + "\"" + "," + "\"proposalId\" : " + proposalId + "," + "\"fromVersion\" : " + "\"" + fromVersion + "\"" + "}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/product/updateVersionOnConfirm", "{\"version\": " + "\"" + version + "\"" + "," + "\"proposalId\" : " + proposalId + "," + "\"fromVersion\" : " + "\"" + fromVersion + "\"" + "}");
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't update proposal", e);
         }
     }
 
-    public List<ProposalVersion> getLatestVersion(int proposalId) {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/getlatestversion", new HashMap<String, String>() {
+    public ProposalVersion updateProposalAddonOnConfirm(String version, int proposalId, String fromVersion) {
+
+        try {
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/addon/updateVersionOnConfirm", "{\"version\": " + "\"" + version + "\"" + "," + "\"proposalId\" : " + proposalId + "," + "\"fromVersion\" : " + "\"" + fromVersion + "\"" + "}");
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't update proposal", e);
+        }
+    }
+
+    public ProposalVersion getLatestVersion(int proposalId) {
+        JSONObject jsonArray = dataProviderMode.getResource("proposal/version/getlatestversion", new HashMap<String, String>() {
             {
+                put("proposalId", proposalId + "");
                 put("proposalId", proposalId + "");
             }
         });
         try {
-            ProposalVersion[] items = this.mapper.readValue(jsonArray.toString(), ProposalVersion[].class);
-            return new ArrayList<>(Arrays.asList(items));
+           return this.mapper.readValue(jsonArray.toString(), ProposalVersion.class);
+
         } catch (IOException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            return null;
         }
     }
 
@@ -1282,23 +1292,7 @@ public class ProposalDataProvider {
         }
     }
 
-    public PriceMaster getAddonRate(String code, Date priceDate, String city) {
-        JSONObject jsonObject = dataProviderMode.getResource("addon/getprice", new HashMap<String, String>() {
-            {
-                put("code", code + "" );
-                put("priceDate", priceDate +  "");
-                put("city", city + "" );
-            }
-        });
 
-        try {
-            return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-    }
 
     public List<AccessoryDetails> getAccessoryDetails(String apcode)
     {
@@ -1330,20 +1324,84 @@ public class ProposalDataProvider {
             throw new RuntimeException(e);
         }
     }
-    public List<AccesoryHardwareMaster> getAccessoryrateDetails(String code)
-    {
-        JSONArray array = dataProviderMode.getResourceArray("proposal/accratedetails", new HashMap<String, String>(){
+
+    public PriceMaster getAddonRate(String code, Date priceDate, String city) {
+        JSONObject jsonObject = dataProviderMode.getResource("addon/getprice", new HashMap<String, String>() {
             {
-                put("code", code);
+                put("code", code + "" );
+                put("priceDate", priceDate +  "");
+                put("city", city + "" );
             }
         });
+
         try {
-            AccesoryHardwareMaster[] items = this.mapper.readValue(array.toString(), AccesoryHardwareMaster[].class);
-            return new ArrayList<>(Arrays.asList(items));
+            return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public PriceMaster getAccessoryRateDetails(String rateId, Date priceDate, String city)
+    {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/accratedetails", new HashMap<String, String>(){
+            {
+                put("rateId", rateId + "");
+                put("priceDate", priceDate + "");
+                put("city",city + "");
+            }
+        });
+        try
+        {
+            return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
+
         } catch (Exception e) {
             NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             throw new RuntimeException(e);
         }
     }
+
+    public PriceMaster getHardwareRateDetails(String rateId, Date priceDate, String city)
+    {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/hardwareratedetails", new HashMap<String, String>(){
+            {
+                put("rateId", rateId + "");
+                put("priceDate", priceDate + "");
+                put("city",city + "");
+            }
+        });
+        try
+        {
+            return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
+
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /*public List<PriceMaster> getAddonrateDetails(String rateId,String city,Date fromDate)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/addonratedetails", new HashMap<String, String>(){
+            {
+                put("rateId", rateId);
+                put("city",city);
+                put("fromDate",fromDate);
+            }
+        });
+        try
+        {
+            PriceMaster[] items = this.mapper.readValue(array.toString(), PriceMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }*/
+
+
 }
 

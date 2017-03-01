@@ -346,12 +346,9 @@ public class CreateProposalsView extends Panel implements View {
                 proposalDataProvider.createNewProduct(copyVersion);
                 proposalDataProvider.createNewAddons(copyVersion);
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(copyVersion));
-                List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
-                for (ProposalVersion getLatestVersion : proposalVersionLatest)
-                {
-                    proposalHeader.setStatus(getLatestVersion.getStatus());
-                    proposalHeader.setVersion(getLatestVersion.getVersion());
-                }
+                ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
+                    proposalHeader.setStatus(proposalVersionLatest.getStatus());
+                    proposalHeader.setVersion(proposalVersionLatest.getVersion());
                 if ((proposalHeader.getPriceDate() == null))
                 {
                     proposalHeader.setPriceDate(null);
@@ -571,12 +568,10 @@ public class CreateProposalsView extends Panel implements View {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
-        proposalVersion = new ProposalVersion();
-        List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
-        for (ProposalVersion getLatestVersion : proposalVersionLatest) {
-            proposalHeader.setStatus(getLatestVersion.getStatus());
-            proposalHeader.setVersion(getLatestVersion.getVersion());
-        }
+        ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
+            proposalHeader.setStatus(proposalVersionLatest.getStatus());
+            proposalHeader.setVersion(proposalVersionLatest.getVersion());
+
 
         try {
 
@@ -633,11 +628,11 @@ public class CreateProposalsView extends Panel implements View {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
-        List<ProposalVersion> proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
-        for (ProposalVersion getLatestVersion : proposalVersionLatest) {
-            proposalHeader.setStatus(getLatestVersion.getStatus());
-            proposalHeader.setVersion(getLatestVersion.getVersion());
-        }
+        ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
+
+        proposalHeader.setStatus(proposalVersionLatest.getStatus());
+        proposalHeader.setVersion(proposalVersionLatest.getVersion());
+
 
         try {
 

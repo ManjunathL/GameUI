@@ -8,7 +8,6 @@ import java.util.List;
 public class ModuleAccessoryPack
 {
     private String code;
-    private String title;
     private List<String> accessories;
 
     public String getCode() {
@@ -19,8 +18,6 @@ public class ModuleAccessoryPack
         this.code = code;
     }
 
-    public String getTitle(){ return  title; }
-    public void setTitle(String title) { this.title=title; }
     public List<String> getAccessories() {
         return accessories;
     }
@@ -33,7 +30,6 @@ public class ModuleAccessoryPack
     public String toString() {
         return "ModuleAccessoryPack{" +
                 "code='" + code + '\'' +
-                ", title='" + title + '\'' +
                 ", accessories=" + accessories +
                 '}';
     }
