@@ -1176,18 +1176,18 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<ProposalVersion> getLatestVersion(int proposalId) {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/getlatestversion", new HashMap<String, String>() {
+    public ProposalVersion getLatestVersion(int proposalId) {
+        JSONObject jsonArray = dataProviderMode.getResource("proposal/version/getlatestversion", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId + "");
             }
         });
         try {
-            ProposalVersion[] items = this.mapper.readValue(jsonArray.toString(), ProposalVersion[].class);
-            return new ArrayList<>(Arrays.asList(items));
+           return this.mapper.readValue(jsonArray.toString(), ProposalVersion.class);
+
         } catch (IOException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            return null;
         }
     }
 
