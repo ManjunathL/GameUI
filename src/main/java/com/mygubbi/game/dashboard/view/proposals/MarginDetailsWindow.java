@@ -44,7 +44,7 @@ public class MarginDetailsWindow extends Window
     Label profitPercentage;
     Label profitPercentageAmount;
 
-    Label productsCost,addonsCost,totalPrice;
+    Label productsCost,addonsCost,totalPrice,hikeLabel;
 
     Label discountedSalesPrice;
     Label discountedSalesPriceWOtax;
@@ -129,7 +129,7 @@ public class MarginDetailsWindow extends Window
         }
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("60%");
+        setWidth("75%");
         setClosable(false);
         setCaption("Margin Computation");
 
@@ -204,8 +204,8 @@ public class MarginDetailsWindow extends Window
         horizontalLayout.setSizeFull();
 
         checkProduct=new OptionGroup();
-        checkProduct.addItems("Product","Addon","Product&Addon");
-        checkProduct.setValue("Product&Addon");
+        checkProduct.addItems("Product","Addon","Product & Addon");
+        checkProduct.setValue("Product & Addon");
         checkProduct.addStyleName("horizontal");
         checkProduct.addValueChangeListener(this::checkSelectedValue);
         horizontalLayout.addComponent(checkProduct);
@@ -344,14 +344,13 @@ public class MarginDetailsWindow extends Window
                             }
                         }
                     }
-
                 }
                 HardwareCost+=modulePrice.getHardwareCost();
                 LabourCost+=modulePrice.getLabourCost();
             }
         }
-        LOG.info("Non std" +NSWoodWorkCost);
-        LOG.info("Std " +SWoodWorkCost);
+        LOG.info("Non std WoodCost" +NSWoodWorkCost);
+        LOG.info("Std WoodCost" +SWoodWorkCost);
         LOG.info("Accessory Cost" +AccessoryCost);
         LOG.info("Hardware Cost" +HardwareCost);
         LOG.info("Labour Cost" +LabourCost);
@@ -360,9 +359,9 @@ public class MarginDetailsWindow extends Window
         LOG.info("totalsalesprice" +totalSalesPrice);
 
         totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
-        totalSalesPriceWOtax=totalSalesPriceWOtax + hikeCost;
+        //totalSalesPriceWOtax=totalSalesPriceWOtax + hikeCost;
 
-        LOG.info("wo tax" +totalSalesPriceWOtax);
+        LOG.info("TSP WO Tax" +totalSalesPriceWOtax);
         LOG.info(totalSalesPriceWOtax + hikeCost);
 
         stdModuleManufacturingCost =SWoodWorkCost/2.46;
@@ -371,14 +370,14 @@ public class MarginDetailsWindow extends Window
         //manufacturingHardwareCost =HardwareCost/1.546;
         //manufacturingAccessoryCost =AccessoryCost/1.546;
 
-        LOG.info("manf Non std" +stdModuleManufacturingCost);
+        LOG.info("Manf std" +stdModuleManufacturingCost);
         LOG.info("manf Std " +nonStdModuleManufacturingCost);
         LOG.info("mnf Accessory Cost" +manufacturingAccessoryCost);
         LOG.info("mnf Hardware Cost" +manufacturingHardwareCost);
         LOG.info("mnf Labour Cost" +manufacturingLabourCost);
 
-        manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + manufacturingAccessoryCost+hikeCost;
-        LOG.info("Manufact cost" +manufacturingTotalSalesPrice);
+        manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + manufacturingAccessoryCost;
+        LOG.info("Mnf Total cost" +manufacturingTotalSalesPrice);
 
         List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (AddonProduct addonProduct:addonProducts)
@@ -401,14 +400,15 @@ public class MarginDetailsWindow extends Window
             LOG.info("addon code" +addonProduct.getCode());
             if(addonProduct.getCode().equals("NA"))
             {
-                LOG.info("custom addon ");
-                addonDealerPrice+=addonProduct.getAmount();
+                double addonDiscountedPrice=0;
+                addonDiscountedPrice=0.8*addonProduct.getAmount();
+                addonDealerPrice+=addonDiscountedPrice;
+                LOG.info("custom addon " +addonDealerPrice);
             }
 
             PriceMaster addonMasterRate=proposalDataProvider.getAddonRate(addonProduct.getCode(),this.priceDate,this.city);
             //PriceMaster addonMasters=proposalDataProvider.getAddonRate(addonProduct.getCode(),moduleForPrice.getPriceDate(),moduleForPrice.getCity());
             {
-
                 addonDealerPrice+=Double.valueOf(addonMasterRate.getSourcePrice());
                 LOG.info("Deler price" +addonDealerPrice);
                 /*//without tax
@@ -449,16 +449,21 @@ public class MarginDetailsWindow extends Window
     {
         LOG.info("Total sales price" +Tsp);
         LOG.info("hike amt in fun" +hikeCost);
-        //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
 
-        Double Tspwt=(Tsp-hikeCost )*0.8558;
+        Double Tspwt=(Tsp-hikeCost)*0.8558;
         LOG.info("Tspwt" +Tspwt);
-        Tspwt=Tspwt+hikeCost;
+        //Tspwt=Tspwt+hikeCost;
         LOG.info("TSP wo tax in func" +Tspwt);
         LOG.info("manutsp" +manufacturingTotalSalesPrice);
 
         Double MProfit=Tspwt- manufacturingTotalSalesPrice;
         Double marginCompute=(MProfit/Tspwt)*100;
+        if(Double.isNaN(marginCompute))
+        {
+            LOG.info("infinite");
+            marginCompute=0.0;
+        }
+        LOG.info("margin compute" +marginCompute);
 
         Double AddonTotal=addonsTotal;
         Double AddonTotalWOtax=addonsTotalWOtax;
@@ -476,6 +481,11 @@ public class MarginDetailsWindow extends Window
         Double totalwt=Tspwt+AddonTotalWOtax;
         Double profit=MProfit+AddonsProfit;
         Double finalmargin=(profit/totalwt)*100;
+        if(Double.isNaN(finalmargin))
+        {
+            finalmargin=0.0;
+        }
+
 
         margin.setTsp(Tsp);
         margin.setTspWt(Tspwt);
@@ -520,6 +530,10 @@ public class MarginDetailsWindow extends Window
         totalPrice=new Label("Total Sales Price:   "+round(totalSalesPrice+addonsTotal,2));
         totalPrice.addStyleName("margin-label-style1");
         horizontalLayout.addComponent(totalPrice);
+
+        hikeLabel=new Label("Hike Price:   "+round(hikeCost,2));
+        hikeLabel.addStyleName("margin-label-style1");
+        horizontalLayout.addComponent(hikeLabel);
 
         return horizontalLayout;
     }
@@ -850,7 +864,7 @@ public class MarginDetailsWindow extends Window
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getAddonProfit(),2)).toString());
             manualInputMargin.setValue(String.valueOf(round(obj3.getAddonMargin(),2)).toString() + "%");
         }
-        else if(checkProduct.getValue()=="Product&Addon")
+        else if(checkProduct.getValue()=="Product & Addon")
         {
             obj1=new margin();
             obj2=new margin();
@@ -1089,7 +1103,7 @@ public class MarginDetailsWindow extends Window
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getAddonProfit(), 2)));
             manualInputMargin.setValue(String.valueOf(round(obj3.getAddonMargin(), 2)) + "%");
         }
-        else if(checkProduct.getValue()=="Product&Addon")
+        else if(checkProduct.getValue()=="Product & Addon")
         {
             if("DP".equals(status))
             {

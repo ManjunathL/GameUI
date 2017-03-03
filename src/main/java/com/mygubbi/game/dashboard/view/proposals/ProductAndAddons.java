@@ -94,6 +94,8 @@ public class ProductAndAddons extends Window
     private Button confirmButton;
     private Button designSignOffButton;
     private Button productionSignOffButton;
+    Label totalWithoutDiscount;
+
 
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
@@ -421,7 +423,7 @@ public class ProductAndAddons extends Window
         HorizontalLayout vlayout  = new HorizontalLayout();
 
         FormLayout left = new FormLayout();
-        Label totalWithoutDiscount = new Label("Total Without Discount:");
+        totalWithoutDiscount = new Label("Total Without Discount:");
         left.addComponent(totalWithoutDiscount);
         totalWithoutDiscount.addStyleName("amount-text-label1");
         totalWithoutDiscount.addStyleName("v-label-amount-text-label1");
@@ -1221,9 +1223,15 @@ public class ProductAndAddons extends Window
         try {
             binder.commit();
 
+            LOG.info("value in submit" +totalWithoutDiscount.getValue());
             if (remarksTextArea == null || remarksTextArea.isEmpty())
             {
                 NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+            else if(grandTotal.getValue().equals("0"))
+            {
+                NotificationUtil.showNotification("Please add products",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
 
@@ -1275,10 +1283,15 @@ public class ProductAndAddons extends Window
     private void confirm(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
-
-            if (remarksTextArea == null || remarksTextArea.isEmpty())
+            LOG.info("value in confirm" +totalWithoutDiscount.getValue());
+            if (remarksTextArea == null || remarksTextArea.isEmpty() || totalWithoutDiscount.getValue().equals(null))
             {
                 NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+            else if(grandTotal.getValue().equals("0"))
+            {
+                NotificationUtil.showNotification("Please add products",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
 
