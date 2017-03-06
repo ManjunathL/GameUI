@@ -74,7 +74,6 @@ public class CustomizedProductDetailsWindow extends Window {
     private Proposal proposal;
 
     private Product product;
-    ModuleForPrice moduleForPrice;
     private Module module;
     private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
@@ -265,15 +264,18 @@ public class CustomizedProductDetailsWindow extends Window {
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
         List<Module> modules = product.getModules();
 
+
+
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
         Component component = valueChangeEvent == null ? null : ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
         this.noPricingErrors();
 
         for (Module module : modules) {
+
+            LOG.debug("Inside For loop :");
             if (component == baseCarcassSelection &&
-                     (module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name())
-                             || module.getUnitType().toLowerCase().contains(Module.UnitTypes.accessory.name()))) {
+                     (module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name()))) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).getValue();
                 if (text.contains(Module.DEFAULT)) {
                     moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL_CODE).setValue(baseCarcassSelection.getValue());
@@ -304,13 +306,16 @@ public class CustomizedProductDetailsWindow extends Window {
                 String unitType = module.getUnitType();
 
                 if ((unitType.toLowerCase().contains(Module.UnitTypes.base.name()) && component != wallCarcassSelection)
-                        || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)
-                        || (unitType.toLowerCase().contains(Module.UnitTypes.accessory.name()))) {
-
+                        || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)) {
+                    LOG.debug("Inside the inner loop :");
                     double amount = 0;
                     double areainsft = 0;
                     double costwoaccessories = 0;
+
+                    LOG.debug("before Module for price :" + module.toString());
                     try {
+                        ModuleForPrice moduleForPrice = new ModuleForPrice();
+
                         if (proposalHeader.getPriceDate() == null) {
                             java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
                             moduleForPrice.setPriceDate( date);
@@ -324,26 +329,25 @@ public class CustomizedProductDetailsWindow extends Window {
 
                         moduleForPrice.setModule(module);
                         ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
+
                         amount = round(modulePrice.getTotalCost());
                         areainsft = modulePrice.getModuleArea();
                         costwoaccessories = round(modulePrice.getWoodworkCost());
-                    } catch (Exception e)
-                    {
-                        LOG.debug(e.getMessage());
-                        this.showPricingErrors();
-                    }
 
-                    boundModules.get(boundModules.indexOf(module)).setAmount(amount);
-                    boundModules.get(boundModules.indexOf(module)).setAmountWOAccessories(costwoaccessories);
-                    boundModules.get(boundModules.indexOf(module)).setArea(areainsft);
-                    moduleContainer.getItem(module).getItemProperty(Module.AMOUNT).setValue(amount);
+
+                        boundModules.get(boundModules.indexOf(module)).setAmount(amount);
+                        boundModules.get(boundModules.indexOf(module)).setAmountWOAccessories(costwoaccessories);
+                        boundModules.get(boundModules.indexOf(module)).setArea(areainsft);
+                        moduleContainer.getItem(module).getItemProperty(Module.AMOUNT).setValue(amount);
+                    } catch (Property.ReadOnlyException e) {
+                        LOG.debug(e.getMessage());
+                        return;
+                    }
                 }
             }
         }
-
         updateTotalAmount();
         updatePsftCosts();
-
     }
 
     private void showPricingErrors()

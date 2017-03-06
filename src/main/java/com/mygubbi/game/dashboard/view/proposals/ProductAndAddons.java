@@ -1226,6 +1226,11 @@ public class ProductAndAddons extends Window
                 NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
+            if (this.proposalVersion.getFinalAmount() == 0)
+            {
+                NotificationUtil.showNotification("Cannot publish when price is zero",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
 
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
@@ -1310,7 +1315,7 @@ public class ProductAndAddons extends Window
                         proposalVersion.setVersion("1.0");
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         proposalHeader.setPriceDate(new java.sql.Date(System.currentTimeMillis()));
-                        boolean success1 = proposalDataProvider.saveProposalOnConfirm(proposalHeader);
+                        proposalDataProvider.saveProposalOnConfirm(proposalHeader);
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
                         proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
@@ -1350,7 +1355,7 @@ public class ProductAndAddons extends Window
 
                     if (success) {
                         saveButton.setVisible(false);
-                        NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                        NotificationUtil.showNotification("Confirmed successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                         handleState();
                     } else {
                         NotificationUtil.showNotification("Couldn't Publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);

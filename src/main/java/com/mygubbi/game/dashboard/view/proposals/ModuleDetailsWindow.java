@@ -1053,13 +1053,19 @@ public class ModuleDetailsWindow extends Window {
         this.module.setExposedBack(exposedBack.getValue());
         this.module.setExposedOpen(exposedOpen.getValue());
         moduleForPrice.setModule(module);
-        if (proposalHeader.getPriceDate() == null) {
+
+
+        Date priceDate = proposalHeader.getPriceDate();
+        if (!("Draft").equals(proposalVersion.getStatus()))
+        moduleForPrice.setPriceToBeChanged(true);
+
+        if (priceDate == null) {
          Date date = new Date(System.currentTimeMillis());
             moduleForPrice.setPriceDate( date);
         }
         else
         {
-            moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
+            moduleForPrice.setPriceDate(priceDate);
         }
         moduleForPrice.setCity(proposalHeader.getPcity());
         moduleForPrice.setModule(this.module);

@@ -13,14 +13,11 @@ public class ModuleForPrice implements Cloneable {
      * DO NOT INTRODUCE NEW FIELDS, SPECIALLY FIELDS OF TYPE OBJECT OR COLLECTIONS WITHOUT KNOWING HOW TO CLONE THEM
      */
 
-    public static final String DEFAULT = "default";
-
-    public static final String DATE = "priceDate";
-    public static final String CITY = "city";
 
 
     private Date priceDate;
     private String city;
+    private boolean priceToBeChanged;
     private Module module = new Module();
 
     public Date getPriceDate() {
@@ -37,6 +34,14 @@ public class ModuleForPrice implements Cloneable {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public boolean isPriceToBeChanged() {
+        return priceToBeChanged;
+    }
+
+    public void setPriceToBeChanged(boolean priceToBeChanged) {
+        this.priceToBeChanged = priceToBeChanged;
     }
 
     public Module getModule() {

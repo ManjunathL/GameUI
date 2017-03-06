@@ -20,7 +20,7 @@ public class Module implements Cloneable {
 
     public enum ImportStatusType {m, d, n}
 
-    public enum UnitTypes {base, wall, accessory,loft,tall}
+    public enum UnitTypes {base, wall, loft,tall}
 
     public enum ModuleSource {file, button}
 

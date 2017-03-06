@@ -1382,25 +1382,6 @@ public class ProposalDataProvider {
     }
 
 
-    /*public List<PriceMaster> getAddonrateDetails(String rateId,String city,Date fromDate)
-    {
-        JSONArray array = dataProviderMode.getResourceArray("proposal/addonratedetails", new HashMap<String, String>(){
-            {
-                put("rateId", rateId);
-                put("city",city);
-                put("fromDate",fromDate);
-            }
-        });
-        try
-        {
-            PriceMaster[] items = this.mapper.readValue(array.toString(), PriceMaster[].class);
-            return new ArrayList<>(Arrays.asList(items));
-        }
-        catch (Exception e) {
-            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            throw new RuntimeException(e);
-        }
-    }*/
 
 
 }
