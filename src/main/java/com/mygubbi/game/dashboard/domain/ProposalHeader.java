@@ -3,9 +3,7 @@ package com.mygubbi.game.dashboard.domain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Created by nitinpuri on 01-05-2016.
@@ -160,12 +158,7 @@ public class ProposalHeader {
 
     public Date getCreatedOn() {
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(TimeZone.getTimeZone("IST"));
-        calendar.setTime(createdOn);
-        Date time = calendar.getTime();
-        LOG.debug("Create Date :" + time);
-        return time;
+        return createdOn;
     }
 
     public void setCreatedOn(Date createdOn) {
