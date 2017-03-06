@@ -1284,7 +1284,7 @@ public class ProductAndAddons extends Window
         try {
             binder.commit();
             LOG.info("value in confirm" +totalWithoutDiscount.getValue());
-            if (remarksTextArea == null || remarksTextArea.isEmpty() || totalWithoutDiscount.getValue().equals(null))
+            if (remarksTextArea == null || remarksTextArea.isEmpty())
             {
                 NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
@@ -1294,13 +1294,15 @@ public class ProductAndAddons extends Window
                 NotificationUtil.showNotification("Please add products",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-
+            proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+            proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(String.valueOf(versionNum));
 
+            LOG.info("proposal Header in products and addons screen" +proposalHeader);
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1329,7 +1331,6 @@ public class ProductAndAddons extends Window
                         proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
                         proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
-
                     }
                     else if (versionNew.startsWith("1."))
                     {

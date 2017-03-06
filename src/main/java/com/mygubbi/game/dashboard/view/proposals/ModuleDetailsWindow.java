@@ -284,6 +284,7 @@ public class ModuleDetailsWindow extends Window {
         description.setReadOnly(true);
         exposedBack.setReadOnly(true);
         exposedBottom.setReadOnly(true);
+        exposedOpen.setReadOnly(true);
         exposedLeft.setReadOnly(true);
         exposedRight.setReadOnly(true);
         exposedTop.setReadOnly(true);
