@@ -199,7 +199,8 @@ public class CustomizedProductDetailsWindow extends Window {
             String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
             product.setProductCategory(title);
         });
-        if (productSelection.size() > 0) {
+        if (productSelection.size() > 0)
+        {
             String code = StringUtils.isNotEmpty(product.getProductCategoryCode()) ? product.getProductCategoryCode() : (String) productSelection.getItemIds().iterator().next();
             productSelection.setValue(code);
         }
@@ -241,14 +242,65 @@ public class CustomizedProductDetailsWindow extends Window {
 
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
-        double totalCostWOAccessories = 0;
+
+        Double totalCostWOAccessories = 0.0;
+        Double totalSalesPrice =0.0;
+        Double NonStandardWoodworkCost=0.0;
+        Double StandardWoodworkCost=0.0;
+        Double hardwareCost=0.0;
+        Double carcassCost=0.0;
+        Double accessoryCost=0.0;
+        Double labourCost=0.0;
+        Double totalSalesPriceWOtax =0.0;
+        Double stdModuleManufacturingCost =0.0;
+        Double nonStdModuleManufacturingCost =0.0;
+        Double manufacturingLabourCost =0.0;
+        Double manufacturingHardwareCost =0.0;
+        Double manufacturingAccessoryCost =0.0;
+        Double manufacturingTotalSalesPrice =0.0;
+        Double manufacturingProfit =0.0;
+        Double marginCompute=0.0;
         double totalModuleArea = 0;
 
-        for (Module module : modules) {
+        for (Module module : modules)
+        {
             totalCostWOAccessories += module.getAmountWOAccessories();
             totalModuleArea += module.getArea();
+            if (module.getMgCode().startsWith("MG-NS"))
+            {
+                NonStandardWoodworkCost+=module.getCarcassCost()+module.getShutterCost();
+                LOG.info("NSWoodWorkCost " +NonStandardWoodworkCost);
+            }
+            else
+            {
+                StandardWoodworkCost+=module.getCarcassCost()+module.getShutterCost();
+                LOG.info("SWoodWorkCost" +StandardWoodworkCost);
+            }
+            hardwareCost+=module.getHardwareCost();
+            carcassCost+=module.getCarcassCost();
+            accessoryCost+=module.getAccessoryCost();
+            labourCost+=module.getLabourCost();
+
+            totalSalesPrice =NonStandardWoodworkCost+StandardWoodworkCost+hardwareCost+labourCost+accessoryCost;
+
+            totalSalesPriceWOtax = totalSalesPrice *0.8558;
+            stdModuleManufacturingCost =StandardWoodworkCost/2.46;
+            nonStdModuleManufacturingCost =NonStandardWoodworkCost/1.288;
+            manufacturingLabourCost =labourCost/1.288;
+            manufacturingHardwareCost =hardwareCost/1.546;
+            manufacturingAccessoryCost =accessoryCost/1.546;
+
+            manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + manufacturingAccessoryCost;
+
+            manufacturingProfit = totalSalesPriceWOtax - manufacturingTotalSalesPrice;
+            marginCompute=(manufacturingProfit / totalSalesPriceWOtax)*100;
         }
+        LOG.info("total sales price" +totalSalesPrice);
         product.setCostWoAccessories(totalCostWOAccessories);
+        product.setProfit(manufacturingProfit);
+        product.setMargin(marginCompute);
+        product.setAmountWoTax(totalSalesPriceWOtax);
+        product.setManufactureAmount(manufacturingProfit);
 
         Double cwa=product.getCostWoAccessories();
         if (totalModuleArea != 0) {
@@ -1096,8 +1148,10 @@ public class CustomizedProductDetailsWindow extends Window {
                     return;
                 }
                 LOG.debug("cwa :" + product.getCostWoAccessories());
+
                 List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
                 proposal.setProducts(getAllVersionProducts);
+
                 if (product.getSeq() == 0)
                 {
                     int size = getAllVersionProducts.size();

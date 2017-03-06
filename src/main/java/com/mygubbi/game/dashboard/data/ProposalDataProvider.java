@@ -1177,16 +1177,18 @@ public class ProposalDataProvider {
     }
 
     public ProposalVersion getLatestVersion(int proposalId) {
-        JSONObject jsonArray = dataProviderMode.getResource("proposal/version/getlatestversion", new HashMap<String, String>() {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/getlatestversion", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId + "");
                 put("proposalId", proposalId + "");
             }
         });
         try {
-           return this.mapper.readValue(jsonArray.toString(), ProposalVersion.class);
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            LOG.info(jsonObject);
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

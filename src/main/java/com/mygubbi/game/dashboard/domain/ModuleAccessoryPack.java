@@ -5,7 +5,8 @@ import java.util.List;
 /**
  * Created by test on 15-07-2016.
  */
-public class ModuleAccessoryPack {
+public class ModuleAccessoryPack
+{
     private String code;
     private List<String> accessories;
 

@@ -94,6 +94,8 @@ public class ProductAndAddons extends Window
     private Button confirmButton;
     private Button designSignOffButton;
     private Button productionSignOffButton;
+    Label totalWithoutDiscount;
+
 
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
@@ -421,7 +423,7 @@ public class ProductAndAddons extends Window
         HorizontalLayout vlayout  = new HorizontalLayout();
 
         FormLayout left = new FormLayout();
-        Label totalWithoutDiscount = new Label("Total Without Discount:");
+        totalWithoutDiscount = new Label("Total Without Discount:");
         left.addComponent(totalWithoutDiscount);
         totalWithoutDiscount.addStyleName("amount-text-label1");
         totalWithoutDiscount.addStyleName("v-label-amount-text-label1");
@@ -602,7 +604,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -615,7 +617,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -1221,14 +1223,15 @@ public class ProductAndAddons extends Window
         try {
             binder.commit();
 
+            LOG.info("value in submit" +totalWithoutDiscount.getValue());
             if (remarksTextArea == null || remarksTextArea.isEmpty())
             {
                 NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-            if (this.proposalVersion.getFinalAmount() == 0)
+            else if(grandTotal.getValue().equals("0"))
             {
-                NotificationUtil.showNotification("Cannot publish when price is zero",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Please add products",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
 
@@ -1280,19 +1283,26 @@ public class ProductAndAddons extends Window
     private void confirm(Button.ClickEvent clickEvent) {
         try {
             binder.commit();
-
+            LOG.info("value in confirm" +totalWithoutDiscount.getValue());
             if (remarksTextArea == null || remarksTextArea.isEmpty())
             {
                 NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-
+            else if(grandTotal.getValue().equals("0"))
+            {
+                NotificationUtil.showNotification("Please add products",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+            proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+            proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(String.valueOf(versionNum));
 
+            LOG.info("proposal Header in products and addons screen" +proposalHeader);
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1321,7 +1331,6 @@ public class ProductAndAddons extends Window
                         proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
                         proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
-
                     }
                     else if (versionNew.startsWith("1."))
                     {
