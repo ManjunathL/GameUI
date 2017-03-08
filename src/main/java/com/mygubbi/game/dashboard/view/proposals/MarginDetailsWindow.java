@@ -317,10 +317,24 @@ public class MarginDetailsWindow extends Window
                 LOG.info("hike cost" +hikeCost);
                 ShutterCost+=modulePrice.getShutterCost();
                 CarcassCost+=modulePrice.getCarcassCost();
+                //List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
                 List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
                 for(ModuleAccessoryPack moduleAccessoryPack:moduleaccpack)
                 {
                     LOG.info("Acc code" +moduleAccessoryPack.getCode());
+                    LOG.info("Accessory pack" +moduleAccessoryPack);
+                    List<String> acccode=moduleAccessoryPack.getAccessories();
+                    for(String ZgenericAccessory: acccode)
+                    {
+                        LOG.info("acc details" +ZgenericAccessory);
+                        PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(ZgenericAccessory,this.priceDate,this.city);
+                        {
+                            manufacturingAccessoryCost+=accessoryRateMaster.getSourcePrice();
+                            LOG.info("price" +accessoryRateMaster.getSourcePrice());
+                        }
+                        //LOG.info(acc);
+                    }
+                    LOG.info("acc code in generic" +acccode);
                     AccessoryCost += modulePrice.getAccessoryCost();//msp
                     List <AccessoryDetails>  accesoryHardwareMasters =proposalDataProvider.getAccessoryDetails(moduleAccessoryPack.getCode());
                     for(AccessoryDetails acc: accesoryHardwareMasters)
@@ -330,10 +344,17 @@ public class MarginDetailsWindow extends Window
                         {
                             manufacturingAccessoryCost+=accessoryRateMaster.getSourcePrice();
                         }
+                        PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acc.getCode(),this.priceDate,this.city);
+                        {
+                            {
+                                manufacturingHardwareCost += hardwareRateMaster.getSourcePrice();
+                            }
+                        }
                         LOG.info(acc);
                     }
 
                     List<AccessoryDetails> accessoryDetailshardware=proposalDataProvider.getAccessoryhwDetails(moduleAccessoryPack.getCode());
+                    LOG.info("Hardware details " +accessoryDetailshardware);
                     for(AccessoryDetails acchwdetails: accessoryDetailshardware)
                     {
                         LOG.info("hardware details" +acchwdetails);
@@ -349,7 +370,7 @@ public class MarginDetailsWindow extends Window
                 LabourCost+=modulePrice.getLabourCost();
             }
         }
-        LOG.info("Non std WoodCost" +NSWoodWorkCost);
+        LOG.info("Non std WoodCost " +NSWoodWorkCost);
         LOG.info("Std WoodCost" +SWoodWorkCost);
         LOG.info("Accessory Cost" +AccessoryCost);
         LOG.info("Hardware Cost" +HardwareCost);
@@ -371,13 +392,13 @@ public class MarginDetailsWindow extends Window
         //manufacturingAccessoryCost =AccessoryCost/1.546;
 
         LOG.info("Manf std" +stdModuleManufacturingCost);
-        LOG.info("manf Std " +nonStdModuleManufacturingCost);
-        LOG.info("mnf Accessory Cost" +manufacturingAccessoryCost);
-        LOG.info("mnf Hardware Cost" +manufacturingHardwareCost);
-        LOG.info("mnf Labour Cost" +manufacturingLabourCost);
+        LOG.info("manf NONStd " +nonStdModuleManufacturingCost);
+        LOG.info("mnf Accessory price" +manufacturingAccessoryCost);
+        LOG.info("mnf Hardware price" +manufacturingHardwareCost);
+        LOG.info("mnf Labour price" +manufacturingLabourCost);
 
         manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + manufacturingAccessoryCost;
-        LOG.info("Mnf Total cost" +manufacturingTotalSalesPrice);
+        LOG.info("Mnf Total price" +manufacturingTotalSalesPrice);
 
         List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (AddonProduct addonProduct:addonProducts)
@@ -1130,10 +1151,17 @@ public class MarginDetailsWindow extends Window
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getProductaddonProfit(), 2)));
             manualInputMargin.setValue(String.valueOf(round(obj3.getProductaddonMargin(), 2)) + "%");*/
 
-            manualInputSalesPrice.setValue(String.valueOf(round(obj3.getTsp(), 2)));
+            LOG.info("");
+
+            manualInputSalesPrice.setValue(String.valueOf(round(obj3.getProductaddonTsp(),2)).toString());
+            manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getProductaddontspwt(),2)).toString());
+            manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getProductaddonProfit(),2)).toString());
+            manualInputMargin.setValue(String.valueOf(round(obj3.getProductaddonMargin(),2)).toString() + "%");
+
+            /*manualInputSalesPrice.setValue(String.valueOf(round(obj3.getTsp(), 2)));
             manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getTspWt(), 2)));
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getMprofit(), 2)));
-            manualInputMargin.setValue(String.valueOf(round(obj3.getMArginCompute(), 2)) + "%");
+            manualInputMargin.setValue(String.valueOf(round(obj3.getMArginCompute(), 2)) + "%");*/
         }
         /*T1manualInputAddonTotal.setValue(String.valueOf(round(obj3.getAddonPrice(),2)));
         T1manualInputAddonTotalWOtax.setValue(String.valueOf(round(obj3.getAddonPriceWTtax(),2)));
