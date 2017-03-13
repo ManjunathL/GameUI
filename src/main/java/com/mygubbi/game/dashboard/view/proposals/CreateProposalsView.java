@@ -213,7 +213,6 @@ public class CreateProposalsView extends Panel implements View {
             projectCityField.setReadOnly(true);
             cancelButton.setVisible(false);
             saveAndCloseButton.setVisible(true);
-
         }
         else
         {
