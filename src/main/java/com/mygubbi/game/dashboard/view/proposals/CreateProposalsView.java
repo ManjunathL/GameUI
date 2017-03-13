@@ -134,15 +134,16 @@ public class CreateProposalsView extends Panel implements View {
             this.proposal = new Proposal();
             this.proposal.setProposalHeader(this.proposalHeader);
             this.proposal.setFileAttachments(proposalDataProvider.getProposalDocuments(pid));
-            proposalHeader.setEditFlag(EDIT.W.name());
+            this.proposalHeader.setEditFlag(EDIT.W.name());
             //todo: this has to be removed once server side is fixed
         } else {
-            proposalHeader = proposalDataProvider.createProposal();
-            proposalHeader.setVersion(NEW_VERSION);
-            proposalHeader.setEditFlag(EDIT.W.name());
-            proposalHeader.setStatus(ProposalState.Deleted.name());
+            this.proposalHeader = proposalDataProvider.createProposal();
+            LOG.debug("Proposal Header :" + this.proposalHeader.toString());
+            this.proposalHeader.setVersion(NEW_VERSION);
+            this.proposalHeader.setEditFlag(EDIT.W.name());
+            this.proposalHeader.setStatus(ProposalState.Deleted.name());
             QuoteNum = "";
-            proposalHeader.setQuoteNo(QuoteNum);
+            this.proposalHeader.setQuoteNo(QuoteNum);
             DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(true));
 
 
@@ -158,9 +159,9 @@ public class CreateProposalsView extends Panel implements View {
             QuoteNum=date+"-"+pid ;*/
            /* proposalHeader.setQuoteNo(QuoteNum);*/
                 this.proposal = new Proposal();
-                this.proposal.setProposalHeader(proposalHeader);
+                this.proposal.setProposalHeader(this.proposalHeader);
 
-                proposalVersion = proposalDataProvider.createDraft(proposalHeader.getId(), NEW_DRAFT_TITLE);
+                proposalVersion = proposalDataProvider.createDraft(this.proposalHeader.getId(), NEW_DRAFT_TITLE);
 
             }
 
@@ -169,7 +170,7 @@ public class CreateProposalsView extends Panel implements View {
             this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
 
             DashboardEventBus.register(this);
-            this.binder.setItemDataSource(proposalHeader);
+            this.binder.setItemDataSource(this.proposalHeader);
 
             //proposalCityData = proposalDataProvider.getCityData(proposalHeader.getId());
 
@@ -183,8 +184,8 @@ public class CreateProposalsView extends Panel implements View {
             tabs.addTab(buildForm(), "Header");
             tabs.addTab(buildVersionsGrids(), "Quotation Version");
 //      tabs.addTab(buildProductsAndAddonsPage(), "Products and Addons");
-            fileAttachmentComponent = new FileAttachmentComponent(proposal, proposalHeader.getFolderPath(),
-                    attachmentData -> proposalDataProvider.addProposalDoc(proposalHeader.getId(), attachmentData.getFileAttachment()),
+            fileAttachmentComponent = new FileAttachmentComponent(proposal, this.proposalHeader.getFolderPath(),
+                    attachmentData -> proposalDataProvider.addProposalDoc(this.proposalHeader.getId(), attachmentData.getFileAttachment()),
                     attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId()),
                     true
             );
@@ -197,7 +198,7 @@ public class CreateProposalsView extends Panel implements View {
         }
 
     private void cityLockedForSave() {
-        List<ProposalCity> proposalCityList = proposalDataProvider.checkCity(proposalHeader.getId());
+        List<ProposalCity> proposalCityList = proposalDataProvider.checkCity(this.proposalHeader.getId());
         for (ProposalCity proposalCity : proposalCityList) {
             cityStatus = proposalCity.getCityLocked();
         }
@@ -208,7 +209,7 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void cityLockedForOldProposal() {
-        if (!(proposalHeader.getQuoteNoNew() == null)) {
+        if (!(this.proposalHeader.getQuoteNoNew() == null)) {
             quotenew.setReadOnly(true);
             projectCityField.setReadOnly(true);
             cancelButton.setVisible(false);
@@ -237,7 +238,7 @@ public class CreateProposalsView extends Panel implements View {
 
         versionContainer = new BeanItemContainer<>(ProposalVersion.class);
 
-        List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(proposalHeader.getId());
+        List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(this.proposalHeader.getId());
         this.proposal.setVersions(proposalVersionList);
 
         GeneratedPropertyContainer genContainer = createGeneratedVersionPropertyContainer();
@@ -384,21 +385,21 @@ public class CreateProposalsView extends Panel implements View {
         }));
         columns.get(idx++).setHeaderCaption("CNC").setRenderer(new ViewButtonValueRenderer((ViewButtonValueRenderer.RendererClickListener) rendererClickEvent -> {
 
-            if(("Deleted").equals(proposalHeader.getStatus())) {
+            if(("Deleted").equals(this.proposalHeader.getStatus())) {
                 NotificationUtil.showNotification("Validation Error, please save the quote before proceeding", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
 
             ProposalVersion pVersion = (ProposalVersion) rendererClickEvent.getItemId();
-
-            proposalHeader = new ProposalHeader();
-            proposalHeader = proposalDataProvider.createProposal();
+            ProposalHeader proposalHeaderNew;
+            proposalHeaderNew = new ProposalHeader();
+            proposalHeaderNew = proposalDataProvider.createProposal();
 
             ProposalVersion copyVersion = new ProposalVersion();
 
             copyVersion.setVersion("0.1");
             copyVersion.setFromVersion("0.0");
-            copyVersion.setProposalId(proposalHeader.getId());
+            copyVersion.setProposalId(proposalHeaderNew.getId());
             copyVersion.setTitle(pVersion.getTitle());
             copyVersion.setFinalAmount(pVersion.getFinalAmount());
             copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
@@ -415,7 +416,7 @@ public class CreateProposalsView extends Panel implements View {
             proposalDataProvider.createNewProductFromOldProposal(copyVersion);
             proposalDataProvider.createNewAddonFromOldProposal(copyVersion);
 
-            int proposalId = proposalHeader.getId();
+            int proposalId = proposalHeaderNew.getId();
             UI.getCurrent().getNavigator()
                     .navigateTo("New Quotation/" + proposalId);
             DashboardEventBus.unregister(this);
@@ -490,7 +491,7 @@ public class CreateProposalsView extends Panel implements View {
 
         HorizontalLayout left = new HorizontalLayout();
         horizontalLayout.setMargin(new MarginInfo(false, false, false, true));
-        String title = proposalHeader.getTitle();
+        String title = this.proposalHeader.getTitle();
         if (title == null) title = "";
         proposalTitleLabel = new Label(getFormattedTitle(title) + "&nbsp;", ContentMode.HTML);
         proposalTitleLabel.addStyleName(ValoTheme.LABEL_H2);
@@ -550,6 +551,8 @@ public class CreateProposalsView extends Panel implements View {
 
 
     private void save(Button.ClickEvent clickEvent) {
+
+        LOG.debug("Proposal Header inside save :" + this.proposalHeader.toString());
         boolean duplicateCrm = checkForDuplicateCRM();
 
         LOG.debug("duplicate crm" + duplicateCrm);
@@ -558,8 +561,8 @@ public class CreateProposalsView extends Panel implements View {
             return;
         }
 
-        if (StringUtils.isEmpty(proposalHeader.getTitle())) {
-            proposalHeader.setTitle(NEW_TITLE);
+        if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
+            this.proposalHeader.setTitle(NEW_TITLE);
         }
         try {
             binder.commit();
@@ -567,16 +570,17 @@ public class CreateProposalsView extends Panel implements View {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
-        ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
-            proposalHeader.setStatus(proposalVersionLatest.getStatus());
-            proposalHeader.setVersion(proposalVersionLatest.getVersion());
+        ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
+        this.proposalHeader.setStatus(proposalVersionLatest.getStatus());
+        this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
+
 
 
         try {
 
-            List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(proposalHeader.getId());
+            List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
             if (!(insertCity.size() >= 1)) {
-                proposalDataProvider.createCity(cityCode, month, proposalHeader.getId(), quotenew.getValue());
+                proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
                 LOG.info("success");
             }
         } catch (Exception e) {
@@ -584,8 +588,8 @@ public class CreateProposalsView extends Panel implements View {
         }
 
         checkQuoteNoNew();
-        proposalHeader.setQuoteNoNew(QuoteNumNew);
-        boolean success = proposalDataProvider.saveProposal(proposalHeader);
+        this.proposalHeader.setQuoteNoNew(QuoteNumNew);
+        boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
         cancelButton.setVisible(false);
         saveAndCloseButton.setVisible(true);
 
@@ -599,12 +603,12 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void checkQuoteNoNew() {
-        if (!(proposalHeader.getQuoteNoNew() == null || proposalHeader.getQuoteNoNew().isEmpty()))
+        if (!(this.proposalHeader.getQuoteNoNew() == null || this.proposalHeader.getQuoteNoNew().isEmpty()))
         {
-            QuoteNumNew = proposalHeader.getQuoteNoNew();
+            QuoteNumNew = this.proposalHeader.getQuoteNoNew();
         }
 
-        if (proposalHeader.getQuoteNoNew() == null || proposalHeader.getQuoteNoNew().isEmpty())
+        if (this.proposalHeader.getQuoteNoNew() == null || this.proposalHeader.getQuoteNoNew().isEmpty())
         {
             quotenew.setValue(QuoteNumNew);
         }
@@ -618,8 +622,8 @@ public class CreateProposalsView extends Panel implements View {
             return;
         }
 
-        if (StringUtils.isEmpty(proposalHeader.getTitle())) {
-            proposalHeader.setTitle(NEW_TITLE);
+        if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
+            this.proposalHeader.setTitle(NEW_TITLE);
         }
         try {
             binder.commit();
@@ -627,23 +631,23 @@ public class CreateProposalsView extends Panel implements View {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
-        ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
+        ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
 
-        proposalHeader.setStatus(proposalVersionLatest.getStatus());
-        proposalHeader.setVersion(proposalVersionLatest.getVersion());
+        this.proposalHeader.setStatus(proposalVersionLatest.getStatus());
+        this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
 
 
         try {
 
-            List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(proposalHeader.getId());
+            List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
             if (!(insertCity.size() >= 1)) {
-                proposalDataProvider.createCity(cityCode, month, proposalHeader.getId(), quotenew.getValue());
+                proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
                 LOG.info("success");
             }
         } catch (Exception e) {
             LOG.info(e);
         }
-        boolean success = proposalDataProvider.saveProposal(proposalHeader);
+        boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
         cancelButton.setVisible(false);
         DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(false));
 
@@ -683,9 +687,9 @@ public class CreateProposalsView extends Panel implements View {
 
     private void cancel(Button.ClickEvent clickEvent) {
         try {
-            if (StringUtils.isEmpty(proposalHeader.getTitle()) || StringUtils.isEmpty(proposalHeader.getCrmId()) || StringUtils.isEmpty(proposalHeader.getCname()) || StringUtils.isEmpty(proposalHeader.getQuoteNo()) || StringUtils.isEmpty(proposalHeader.getQuoteNoNew())) {
+            if (StringUtils.isEmpty(this.proposalHeader.getTitle()) || StringUtils.isEmpty(this.proposalHeader.getCrmId()) || StringUtils.isEmpty(this.proposalHeader.getCname()) || StringUtils.isEmpty(proposalHeader.getQuoteNo()) || StringUtils.isEmpty(proposalHeader.getQuoteNoNew())) {
 
-                    boolean success = proposalDataProvider.deleteProposal(proposalHeader.getId());
+                    boolean success = proposalDataProvider.deleteProposal(this.proposalHeader.getId());
 
                     if (!success) {
                         DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(false));
@@ -921,8 +925,8 @@ public class CreateProposalsView extends Panel implements View {
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(User.NAME);
 
-        if (StringUtils.isNotEmpty(proposalHeader.getSalesName())) {
-            select.setValue(proposalHeader.getSalesName());
+        if (StringUtils.isNotEmpty(this.proposalHeader.getSalesName())) {
+            select.setValue(this.proposalHeader.getSalesName());
         } else if (container.size() == 1) {
             select.setValue(select.getItemIds().iterator().next());
             // proposalHeader.setSalesName((String) select.getValue());
@@ -945,8 +949,8 @@ public class CreateProposalsView extends Panel implements View {
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(LookupItem.TITLE);
 
-        if (StringUtils.isNotEmpty(proposalHeader.getPcity())) {
-            select.setValue(proposalHeader.getPcity());
+        if (StringUtils.isNotEmpty(this.proposalHeader.getPcity())) {
+            select.setValue(this.proposalHeader.getPcity());
         } else if (container.size() == 1) {
             select.setValue(select.getItemIds().iterator().next());
         }
@@ -967,8 +971,8 @@ public class CreateProposalsView extends Panel implements View {
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(User.NAME);
 
-        if (StringUtils.isNotEmpty(proposalHeader.getDesignerName())) {
-            select.setValue(proposalHeader.getDesignerName());
+        if (StringUtils.isNotEmpty(this.proposalHeader.getDesignerName())) {
+            select.setValue(this.proposalHeader.getDesignerName());
         } else if (container.size() == 1) {
             select.setValue(select.getItemIds().iterator().next());
             // proposalHeader.setDesignerName((String) select.getValue());
@@ -993,8 +997,8 @@ public class CreateProposalsView extends Panel implements View {
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(User.NAME);
 
-        if (StringUtils.isNotEmpty(proposalHeader.getDesignPartnerName())) {
-            select.setValue(proposalHeader.getDesignPartnerName());
+        if (StringUtils.isNotEmpty(this.proposalHeader.getDesignPartnerName())) {
+            select.setValue(this.proposalHeader.getDesignPartnerName());
         } else if (container.size() == 1) {
             select.setValue(select.getItemIds().iterator().next());
            /* proposalHeader.setDesignerName((String) select.getValue());
@@ -1016,9 +1020,9 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) crmId).setNullRepresentation("");
         formLayoutRight.addComponent(crmId);
         quotenew = new TextField("Quotation #");
-        quotenew.setValue(proposalHeader.getQuoteNo());
+        quotenew.setValue(this.proposalHeader.getQuoteNo());
         quotenew.setRequired(true);
-        quotenew.setValue(proposalHeader.getQuoteNoNew());
+        quotenew.setValue(this.proposalHeader.getQuoteNoNew());
         quotenew.setNullRepresentation("");
         formLayoutRight.addComponent(quotenew);
 
@@ -1174,7 +1178,7 @@ public class CreateProposalsView extends Panel implements View {
 
     @Subscribe
     public void versionCreated(final ProposalEvent.VersionCreated event) {
-        List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(proposalHeader.getId());
+        List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(this.proposalHeader.getId());
         for (ProposalVersion proposalVersionTest : proposalVersionList) {
             LOG.debug("proposal Version list : " + proposalVersionTest.toString());
         }
