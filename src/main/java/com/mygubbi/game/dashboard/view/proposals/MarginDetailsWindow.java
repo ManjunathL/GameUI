@@ -268,47 +268,34 @@ public class MarginDetailsWindow extends Window
         List<Product> products;
 
         List<RateCard> rateCard=proposalDataProvider.getFactorRateCodeDetails("F:PRODWOTAX");
-        LOG.info("code details" +rateCard);
         for (RateCard productwotaxcode : rateCard) {
-            LOG.debug("proposal wo Tax code : " + productwotaxcode.getCode());
             codeForProductWOTax=productwotaxcode.getCode();
         }
 
         List<RateCard> manfstdcostlist=proposalDataProvider.getFactorRateCodeDetails("F:STDMC");
-        LOG.info("code details" +rateCard);
         for (RateCard manfstdcode :manfstdcostlist ) {
-            LOG.debug("manufacturing standard code : " + manfstdcode.getCode());
             codeForStdManfCost=manfstdcode.getCode();
         }
 
         List<RateCard> manfnstdcostlist=proposalDataProvider.getFactorRateCodeDetails("F:NSTDMC");
-        LOG.info("code details" +rateCard);
         for (RateCard manfnstdcode :manfnstdcostlist ) {
-            LOG.debug("manufacturing non standard code : " + manfnstdcode.getCode());
             codeForNStdManfCost=manfnstdcode.getCode();
         }
 
         List<RateCard> labourcostlist=proposalDataProvider.getFactorRateCodeDetails("F:LC");
-        LOG.info("code details" +rateCard);
         for (RateCard labourcostcode : labourcostlist ) {
-            LOG.debug("labourcost code : " + labourcostcode.getCode());
             codeForManfLabourCost=labourcostcode.getCode();
         }
 
         List<RateCard> Addonwotaxlist=proposalDataProvider.getFactorRateCodeDetails("F:ADWOTAX");
-        LOG.info("code details" +rateCard);
         for (RateCard addonWOcode : Addonwotaxlist ) {
-            LOG.debug("labourcost code : " + addonWOcode.getCode());
             codeForAddonWOTax=addonWOcode.getCode();
         }
 
         List<RateCard> Addonsourcepricelist=proposalDataProvider.getFactorRateCodeDetails("F:CASP");
-        LOG.info("code details" +rateCard);
         for (RateCard addonsourceprice : Addonsourcepricelist ) {
-            LOG.debug("labourcost code : " + addonsourceprice.getCode());
             codeForAddonSourcePrice=addonsourceprice.getCode();
         }
-
 
         PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
         rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
@@ -322,13 +309,6 @@ public class MarginDetailsWindow extends Window
         rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
         PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
         rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
-
-        LOG.info("rateForProductWOTax" + rateForProductWOTax);
-        LOG.info("rateForStdManfCost" + rateForStdManfCost);
-        LOG.info("rateForNStdManfCost" + rateForNStdManfCost);
-        LOG.info("rateForManfLabourCost" + rateForManfLabourCost);
-        LOG.info("rateForAddonWOTax" + rateForAddonWOTax);
-        LOG.info("rateForAddonSourcePrice" + rateForAddonSourcePrice);
 
         products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for(Product product:products)
@@ -356,7 +336,7 @@ public class MarginDetailsWindow extends Window
                 ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
                 if(module.getMgCode().equals("MG-NS-H-001"))
                 {
-                    hikeCost+=modulePrice.getLabourCost();
+                    hikeCost+=modulePrice.getWoodworkCost();
                 }
             }
 
@@ -381,41 +361,33 @@ public class MarginDetailsWindow extends Window
                 if (module.getMgCode().startsWith("MG-NS"))
                 {
                     nonStdModuleCount++;
+                    if(!module.getMgCode().equals("MG-NS-H-001"))
+                    {
                     NSWoodWorkCost+=modulePrice.getCarcassCost()+modulePrice.getShutterCost();
-                    LOG.info("NSWoodWorkCost " +NSWoodWorkCost);
+                    }
                 }
                 else
                 {
                     standardModuleCount++;
                     SWoodWorkCost+=modulePrice.getCarcassCost()+modulePrice.getShutterCost();
-                    LOG.info("SWoodWorkCost" +SWoodWorkCost);
                 }
-                LOG.info("hike cost" +hikeCost);
                 ShutterCost+=modulePrice.getShutterCost();
                 CarcassCost+=modulePrice.getCarcassCost();
-                //List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
                 List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
                 for(ModuleAccessoryPack moduleAccessoryPack:moduleaccpack)
                 {
-                    LOG.info("Acc code" +moduleAccessoryPack.getCode());
-                    LOG.info("Accessory pack" +moduleAccessoryPack);
                     List<String> acccode=moduleAccessoryPack.getAccessories();
                     for(String ZgenericAccessory: acccode)
                     {
-                        LOG.info("acc details" +ZgenericAccessory);
                         PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(ZgenericAccessory,this.priceDate,this.city);
                         {
                             manufacturingAccessoryCost+=accessoryRateMaster.getSourcePrice();
-                            LOG.info("price" +accessoryRateMaster.getSourcePrice());
                         }
-                        //LOG.info(acc);
                     }
-                    LOG.info("acc code in generic" +acccode);
                     AccessoryCost += modulePrice.getAccessoryCost();//msp
                     List <AccessoryDetails>  accesoryHardwareMasters =proposalDataProvider.getAccessoryDetails(moduleAccessoryPack.getCode());
                     for(AccessoryDetails acc: accesoryHardwareMasters)
                     {
-                        LOG.info("acc details" +acc);
                         PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(acc.getCode(),this.priceDate,this.city);
                         {
                             manufacturingAccessoryCost+=accessoryRateMaster.getSourcePrice();
@@ -426,14 +398,11 @@ public class MarginDetailsWindow extends Window
                                 manufacturingHardwareCost += hardwareRateMaster.getSourcePrice();
                             }
                         }
-                        LOG.info(acc);
                     }
 
                     List<AccessoryDetails> accessoryDetailshardware=proposalDataProvider.getAccessoryhwDetails(moduleAccessoryPack.getCode());
-                    LOG.info("Hardware details " +accessoryDetailshardware);
                     for(AccessoryDetails acchwdetails: accessoryDetailshardware)
                     {
-                        LOG.info("hardware details" +acchwdetails);
                         PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acchwdetails.getCode(),this.priceDate,this.city);
                         {
                             {
@@ -443,8 +412,11 @@ public class MarginDetailsWindow extends Window
                     }
                 }
                 HardwareCost+=modulePrice.getHardwareCost();
+                if(!module.getMgCode().equals("MG-NS-H-001"))
+                {
                 LabourCost+=modulePrice.getLabourCost();
             }
+        }
         }
         LOG.info("Non std WoodCost " +NSWoodWorkCost);
         LOG.info("Std WoodCost" +SWoodWorkCost);
@@ -452,15 +424,14 @@ public class MarginDetailsWindow extends Window
         LOG.info("Hardware Cost" +HardwareCost);
         LOG.info("Labour Cost" +LabourCost);
         LOG.info("hike cost" +hikeCost);
-        totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost;
+        totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost;
         LOG.info("totalsalesprice" +totalSalesPrice);
 
         //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
-        totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *rateForProductWOTax;
-        //totalSalesPriceWOtax=totalSalesPriceWOtax + hikeCost;
+        totalSalesPriceWOtax = (totalSalesPrice) *rateForProductWOTax;
+
 
         LOG.info("TSP WO Tax" +totalSalesPriceWOtax);
-        LOG.info(totalSalesPriceWOtax + hikeCost);
 
         //stdModuleManufacturingCost =SWoodWorkCost/2.46;
         stdModuleManufacturingCost =SWoodWorkCost/rateForStdManfCost;
@@ -483,7 +454,6 @@ public class MarginDetailsWindow extends Window
         List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (AddonProduct addonProduct:addonProducts)
         {
-            LOG.info("addon product " +addonProduct);
             ModuleForPrice moduleForPrice = new ModuleForPrice();
             moduleForPrice.setCity(proposalHeader.getPcity());
             if (proposalHeader.getPriceDate() == null)
@@ -513,10 +483,8 @@ public class MarginDetailsWindow extends Window
             //PriceMaster addonMasters=proposalDataProvider.getAddonRate(addonProduct.getCode(),moduleForPrice.getPriceDate(),moduleForPrice.getCity());
             {
                 addonDealerPrice+=Double.valueOf(addonMasterRate.getSourcePrice());
-                LOG.info("Deler price" +addonDealerPrice);
-                /*//without tax
                 //addonsTotalWOtax+=Double.valueOf(addonMaster.getDealerPrice());
-                addonsProfit+=addonsTotalWOtax-Double.valueOf(addonMaster.getDealerPrice());*/
+                //addonsProfit+=addonsTotalWOtax-Double.valueOf(addonMaster.getDealerPrice());*/
             }
         }
         addonsProfit=addonsTotalWOtax-addonDealerPrice;
@@ -527,7 +495,6 @@ public class MarginDetailsWindow extends Window
         LOG.info("Addon total wo tax" +addonsTotalWOtax);
         LOG.info("Addonprofit" +addonsProfit);
 
-        LOG.info("TSP " + totalSalesPrice + "totalSalesPriceWOtax" + totalSalesPriceWOtax + "m std " + stdModuleManufacturingCost + "non std " + nonStdModuleManufacturingCost + "labour " + manufacturingLabourCost + "Hardware "+ manufacturingHardwareCost + "Macc" + manufacturingAccessoryCost);
         obj1=calculateSalesPriceWithDiscount(obj1,ProductTotal-addonsTotal);
 
         obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
@@ -550,22 +517,19 @@ public class MarginDetailsWindow extends Window
 
     private margin calculateSalesPriceWithDiscount(margin margin,Double Tsp)
     {
-        LOG.info("Total sales price" +Tsp);
-        LOG.info("hike amt in fun" +hikeCost);
 
-        LOG.info("rateForProductWOTax in method" +rateForProductWOTax);
         //Double Tspwt=(Tsp-hikeCost)*0.8558;
-        Double Tspwt=(Tsp-hikeCost)*rateForProductWOTax;
-        LOG.info("Tspwt" +Tspwt);
+        //Double Tspwt=(Tsp-hikeCost)*rateForProductWOTax;
+        Double Tspwt=(Tsp)*rateForProductWOTax;
+
         //Tspwt=Tspwt+hikeCost;
-        LOG.info("TSP wo tax in func" +Tspwt);
+
         LOG.info("manutsp" +manufacturingTotalSalesPrice);
 
         Double MProfit=Tspwt- manufacturingTotalSalesPrice;
         Double marginCompute=(MProfit/Tspwt)*100;
         if(Double.isNaN(marginCompute))
         {
-            LOG.info("infinite");
             marginCompute=0.0;
         }
         LOG.info("margin compute" +marginCompute);
@@ -579,9 +543,6 @@ public class MarginDetailsWindow extends Window
             addonsMargin=0.0;
         }
 
-        LOG.info("Addon total" +addonsTotal + "tax" +addonsTotalWOtax +"Profit" +AddonsProfit +"margin" +addonsMargin);
-        LOG.info("AddonsMArgin" +addonsMargin);
-
         Double total=Tsp+AddonTotal;
         Double totalwt=Tspwt+AddonTotalWOtax;
         Double profit=MProfit+AddonsProfit;
@@ -591,30 +552,21 @@ public class MarginDetailsWindow extends Window
             finalmargin=0.0;
         }
 
-
         margin.setTsp(Tsp);
         margin.setTspWt(Tspwt);
         margin.setMprofit(MProfit);
         margin.setMArginCompute(marginCompute);
 
         margin.setAddonPrice(AddonTotal);
-        LOG.info("MAring addon" +AddonTotal);
         margin.setAddonPriceWTtax(AddonTotalWOtax);
-        LOG.info("MAring addon" +AddonTotalWOtax);
         margin.setAddonProfit(addonsProfit);
-        LOG.info("MArgin Profit" +addonsProfit);
         margin.setAddonMargin(addonsMargin);
-        LOG.info("MArgin" +addonsMargin);
+
 
         margin.setProductaddonTsp(total);
         margin.setProductaddontspwt(totalwt);
         margin.setProductaddonProfit(profit);
         margin.setProductaddonMargin(finalmargin);
-
-        LOG.info("MAring addon" +total);
-        LOG.info("MAring addon" +totalwt);
-        LOG.info("MAring addon" +profit);
-        LOG.info("MAring addon" +finalmargin);
 
         return margin;
     }
