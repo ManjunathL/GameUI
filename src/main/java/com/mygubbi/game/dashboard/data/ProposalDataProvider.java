@@ -1383,8 +1383,46 @@ public class ProposalDataProvider {
         }
     }
 
+    public boolean updatePriceForDraftProposals(int id) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/updatepricefordraftproposals",  "{\"priceDate\": " + id + "}");
+        return !jsonObject.has("error");
 
+    }
 
+    public PriceMaster getFactorRatePriceDetails(String rateId, Date priceDate, String city)
+    {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/ratefactordetailsfromhandler", new HashMap<String, String>(){
+            {
+                put("rateId", rateId + "");
+                put("priceDate", priceDate + "");
+                put("city",city + "");
+            }
+        });
+        try
+        {
+            return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
+
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<RateCard> getFactorRateCodeDetails(String rateCardId)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/rcodedetails", new HashMap<String, String>(){
+            {
+                put("rateCardId", rateCardId);
+            }
+        });
+        try {
+            RateCard[] items = this.mapper.readValue(array.toString(), RateCard[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
 
 }
 

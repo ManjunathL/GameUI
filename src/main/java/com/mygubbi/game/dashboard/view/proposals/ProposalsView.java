@@ -9,6 +9,7 @@ import com.mygubbi.game.dashboard.domain.User;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
+import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -38,6 +39,7 @@ public final class ProposalsView extends TabSheet implements View {
 
 
     private Grid grid;
+
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
     public ProposalsView() {
@@ -175,6 +177,32 @@ public final class ProposalsView extends TabSheet implements View {
 
         tools.addStyleName("toolbar");
         header.addComponent(tools);
+
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
+        if ("admin".equals(role)) {
+            Button updatePrice = new Button();
+            updatePrice.setCaption("Update Price");
+            updatePrice.addStyleName(ValoTheme.BUTTON_DANGER);
+            updatePrice.addStyleName("update-price-button");
+            updatePrice.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                   boolean success = proposalDataProvider.updatePriceForDraftProposals(1);
+                    if (success){
+                        LOG.info("Proposals are updated according to the latest price");
+                        NotificationUtil.showNotification("Draft proposals prices updated",NotificationUtil.STYLE_BAR_SUCCESS_SMALL );
+                    }
+                    else {
+                        NotificationUtil.showNotification("Error in updating prices",NotificationUtil.STYLE_BAR_ERROR_SMALL );
+                        return;
+                    }
+                }
+            });
+
+            header.addComponent(updatePrice);
+            header.setComponentAlignment(updatePrice, Alignment.MIDDLE_RIGHT);
+        }
 
         return header;
     }

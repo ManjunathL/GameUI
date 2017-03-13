@@ -86,6 +86,8 @@ public class ProductAndAddons extends Window
     private Button closeButton;
     private BeanItemContainer<Product> productContainer;
     private Label grandTotal;
+    private String city;
+
 
     private TextArea remarksTextArea;
 
@@ -95,6 +97,9 @@ public class ProductAndAddons extends Window
     private Button designSignOffButton;
     private Button productionSignOffButton;
     Label totalWithoutDiscount;
+    String codeForDiscount;
+    Double rateForDiscount;
+    java.sql.Date priceDate;
 
 
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
@@ -112,6 +117,13 @@ public class ProductAndAddons extends Window
         this.proposal=proposal;
         this.proposalVersion=proposalVersion;
         this.vid=vid;
+        this.priceDate = proposalHeader.getPriceDate();
+        this.city = proposalHeader.getPcity();
+
+        if (this.priceDate == null)
+        {
+            this.priceDate = new java.sql.Date(System.currentTimeMillis());
+        }
 
         this.proposal.setProducts(proposalDataProvider.getVersionProducts(proposalHeader.getId(),vid));
         this.proposal.setAddons(proposalDataProvider.getVersionAddons(proposalHeader.getId(),vid));
@@ -518,27 +530,68 @@ public class ProductAndAddons extends Window
     }
     private void updateTotal()
     {
+        List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
+        LOG.info("discount percentage details" +discountratecode);
+        for (RateCard discountcode : discountratecode) {
+            LOG.debug("Discount code : " + discountcode.getCode());
+            codeForDiscount=discountcode.getCode();
+        }
+
+        LOG.info("pricedate" +this.priceDate + "city" +this.city);
+        PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,this.city);
+        rateForDiscount=discountpriceMaster.getSourcePrice();
+        LOG.info("Rate for discount" +rateForDiscount);
+
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
         boolean anythingSelected = true;
         this.productAndAddonSelection.getProductIds().clear();
         this.productAndAddonSelection.getAddonIds().clear();
 
+        double productsTotal = 0;
+        double ProductsTotalWoTax=0;
+        double ProdutsMargin=0;
+        double ProductsProfit=0;
+        double ProductsManufactureAmount=0;
+
         if (productObjects.size() == 0) {
             anythingSelected = false;
             productObjects = this.productsGrid.getContainerDataSource().getItemIds();
         }
 
-        double productsTotal = 0;
+
 
         for (Object object : productObjects) {
             Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
             productsTotal += amount;
+
+            Double amountWotax=(Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNTWOTAX).getValue();
+            ProductsTotalWoTax +=amountWotax;
+
+            Double manufactureAmount= (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.MANUFACTUREAMOUNT).getValue();
+            ProductsManufactureAmount +=manufactureAmount;
+
+            Double profit= (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.PROFIT).getValue();
+            ProductsProfit +=profit;
+
             Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
             if (anythingSelected) {
                 this.productAndAddonSelection.getProductIds().add(id);
             }
         }
+
+        ProdutsMargin=(ProductsManufactureAmount / ProductsTotalWoTax)*100;
+        if(Double.isNaN(ProdutsMargin))
+        {
+            LOG.info("infinite");
+            ProdutsMargin=0.0;
+        }
+
+        LOG.info(" productsTotal" +productsTotal+ "ProductsTotalWoTax"  +ProductsTotalWoTax+ "Margin" +ProdutsMargin+ "profit" +ProductsProfit + "ProductsManufactureAmount" +ProductsManufactureAmount);
+        proposalVersion.setProfit(ProductsProfit);
+        proposalVersion.setMargin(ProdutsMargin);
+        proposalVersion.setAmountWotax(ProductsTotalWoTax);
+        proposalVersion.setManufactureAmount(ProductsManufactureAmount);
 
         if (addonObjects.size() == 0) {
             anythingSelected = false;
@@ -569,17 +622,14 @@ public class ProductAndAddons extends Window
         ProposalHeader proposalHeaderCreateDate = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
 
         java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
-        java.util.Date currentDate = new Date(117,1,28,0,0,00);
-        LOG.info("date***"+date);
-        LOG.info("curdate***"+currentDate);
+        java.util.Date currentDate = new Date(200,1,28,0,0,00);
         if (date.after(currentDate))
         {
-            LOG.info("if executed");
             refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
         }
         else {
             refreshDiscountForOldProposals(totalWoAccessories, totalAmount, costOfAccessories, addonsTotal);
-            LOG.info("else executed");
+
         }
 
     }
@@ -587,20 +637,21 @@ public class ProductAndAddons extends Window
     private void refreshDiscountForNewProposals(Double totalAmount, Double addonsTotal, Double productsTotal)
     {
         Double discountPercent=0.0,discountAmount=0.0;
+        rateForDiscount=rateForDiscount*100;
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
-            if(discountPercent<=40) {
+            //if(discountPercent<=40)
+            if(discountPercent<=rateForDiscount)
+            {
                 if (discountPercent == null) {
                     discountPercent = 0.0;
                 }
                 LOG.info("****"+productsTotal);
                 discountAmount = (productsTotal * discountPercent) / 100.0;
                 LOG.info("disamount***"+discountAmount);
-                //double res = discountAmount - discountAmount % 100;
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
                 disAmount=discountAmount.intValue();
-                //this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
             }
             else
             {
@@ -612,7 +663,9 @@ public class ProductAndAddons extends Window
         {
             discountAmount = (Double) this.discountAmount.getConvertedValue();
             discountPercent=(discountAmount/productsTotal)*100;
-            if(discountPercent<=40) {
+            //if(discountPercent<=40)
+            if(discountPercent<=rateForDiscount)
+            {
                 this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
             }
             else
@@ -632,10 +685,6 @@ public class ProductAndAddons extends Window
         this.grandTotal.setReadOnly(false);
         this.grandTotal.setValue(totalAmount.intValue() + "");
         this.grandTotal.setReadOnly(true);
-
-        //this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
-       /* productAndAddonSelection.setDiscountPercentage(discountPercent);
-        productAndAddonSelection.setDiscountAmount(discountAmount);*/
 
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
