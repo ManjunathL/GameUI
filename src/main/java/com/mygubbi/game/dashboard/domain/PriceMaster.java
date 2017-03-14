@@ -80,4 +80,17 @@ public class PriceMaster {
     public void setSourcePrice(double sourcePrice) {
         this.sourcePrice = sourcePrice;
     }
+
+    @Override
+    public String toString() {
+        return "PriceMaster{" +
+                "rateType='" + rateType + '\'' +
+                ", rateId='" + rateId + '\'' +
+                ", city='" + city + '\'' +
+                ", price=" + price +
+                ", sourcePrice=" + sourcePrice +
+                ", fromDate=" + fromDate +
+                ", toDate=" + toDate +
+                '}';
+    }
 }

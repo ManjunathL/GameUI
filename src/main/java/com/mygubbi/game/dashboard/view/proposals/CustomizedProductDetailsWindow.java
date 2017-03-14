@@ -135,7 +135,7 @@ public class CustomizedProductDetailsWindow extends Window {
         tabSheet = new TabSheet();
         tabSheet.setSizeFull();
         tabSheet.addTab(buildModulesGrid(), "Modules");
-        tabSheet.addTab(buildAddonsForm(), "Addons");
+        /*tabSheet.addTab(buildAddonsForm(), "Addons");*/
 
         fileAttachmentComponent = new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(),
                 attachmentData -> proposalDataProvider.addProductDoc(product.getId(), product.getProposalId(), attachmentData.getFileAttachment()),
@@ -146,7 +146,9 @@ public class CustomizedProductDetailsWindow extends Window {
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
         }
 
+/*
         tabSheet.addTab(fileAttachmentComponent, "Attachments");
+*/
         tabSheet.setEnabled(true);
         horizontalLayout1.addComponent(tabSheet);
         horizontalLayout1.setHeightUndefined();
@@ -1558,7 +1560,6 @@ public class CustomizedProductDetailsWindow extends Window {
         finishTypeSelection.setReadOnly(true);
         shutterFinishSelection.setReadOnly(true);
         quoteUploadCtrl.setEnabled(false);
-        addonAddButton.setEnabled(false);
         closeBtn.setCaption(CLOSE);
         fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
         saveBtn.setEnabled(false);
