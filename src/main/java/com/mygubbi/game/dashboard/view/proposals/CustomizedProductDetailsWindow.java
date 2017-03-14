@@ -1164,6 +1164,24 @@ public class CustomizedProductDetailsWindow extends Window {
                 boolean success = proposalDataProvider.updateProduct(product);
 
                 if (success) {
+                    double amountWoDiscount = 0;
+                    double amountWoAccessories = 0;
+                    double discountPercentage = this.proposalVersion.getDiscountPercentage();
+                    List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(),this.proposalVersion.getVersion());
+                    for (Product product : versionProducts)
+                    {
+                        LOG.debug("Product module :" + product.getAmount());
+
+                        amountWoDiscount += product.getAmount();
+                        amountWoAccessories += product.getCostWoAccessories();
+                    }
+                    this.proposalVersion.setAmount(amountWoDiscount);
+                    double discountAmount = amountWoAccessories * (discountPercentage/100);
+                    this.proposalVersion.setDiscountAmount(discountAmount);
+                    this.proposalVersion.setFinalAmount(amountWoDiscount-discountAmount);
+
+                    LOG.debug("Proposal Version inside module :" + this.proposalVersion.toString());
+                    proposalDataProvider.updateVersion(this.proposalVersion);
                     NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                     DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
                     DashboardEventBus.unregister(this);
@@ -1566,5 +1584,7 @@ public class CustomizedProductDetailsWindow extends Window {
         fileAttachmentComponent.setReadOnly(true);
         addModules.setEnabled(false);
     }
+
+
 
 }
