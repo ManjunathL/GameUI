@@ -705,10 +705,11 @@ public class ProductAndAddons extends Window
     private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
     {
         Double discountPercent=0.0,discountAmount=0.0;
+        rateForDiscount=rateForDiscount*100;
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
-            if(discountPercent<=40) {
+            if(discountPercent<=rateForDiscount) {
                 if (discountPercent == null) {
                     discountPercent = 0.0;
                 }
@@ -729,7 +730,7 @@ public class ProductAndAddons extends Window
         {
             discountAmount = (Double) this.discountAmount.getConvertedValue();
             discountPercent=(discountAmount/totalWoAccessories)*100;
-            if(discountPercent<=40) {
+            if(discountPercent<=rateForDiscount) {
                 this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
             }
             else

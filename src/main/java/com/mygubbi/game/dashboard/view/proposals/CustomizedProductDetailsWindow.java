@@ -135,7 +135,7 @@ public class CustomizedProductDetailsWindow extends Window {
         tabSheet = new TabSheet();
         tabSheet.setSizeFull();
         tabSheet.addTab(buildModulesGrid(), "Modules");
-        tabSheet.addTab(buildAddonsForm(), "Addons");
+        /*tabSheet.addTab(buildAddonsForm(), "Addons");*/
 
         fileAttachmentComponent = new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(),
                 attachmentData -> proposalDataProvider.addProductDoc(product.getId(), product.getProposalId(), attachmentData.getFileAttachment()),
@@ -146,7 +146,9 @@ public class CustomizedProductDetailsWindow extends Window {
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
         }
 
+/*
         tabSheet.addTab(fileAttachmentComponent, "Attachments");
+*/
         tabSheet.setEnabled(true);
         horizontalLayout1.addComponent(tabSheet);
         horizontalLayout1.setHeightUndefined();
@@ -1162,6 +1164,24 @@ public class CustomizedProductDetailsWindow extends Window {
                 boolean success = proposalDataProvider.updateProduct(product);
 
                 if (success) {
+                    double amountWoDiscount = 0;
+                    double amountWoAccessories = 0;
+                    double discountPercentage = this.proposalVersion.getDiscountPercentage();
+                    List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(),this.proposalVersion.getVersion());
+                    for (Product product : versionProducts)
+                    {
+                        LOG.debug("Product module :" + product.getAmount());
+
+                        amountWoDiscount += product.getAmount();
+                        amountWoAccessories += product.getCostWoAccessories();
+                    }
+                    this.proposalVersion.setAmount(amountWoDiscount);
+                    double discountAmount = amountWoAccessories * (discountPercentage/100);
+                    this.proposalVersion.setDiscountAmount(discountAmount);
+                    this.proposalVersion.setFinalAmount(amountWoDiscount-discountAmount);
+
+                    LOG.debug("Proposal Version inside module :" + this.proposalVersion.toString());
+                    proposalDataProvider.updateVersion(this.proposalVersion);
                     NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                     DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
                     DashboardEventBus.unregister(this);
@@ -1558,12 +1578,13 @@ public class CustomizedProductDetailsWindow extends Window {
         finishTypeSelection.setReadOnly(true);
         shutterFinishSelection.setReadOnly(true);
         quoteUploadCtrl.setEnabled(false);
-        addonAddButton.setEnabled(false);
         closeBtn.setCaption(CLOSE);
         fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
         saveBtn.setEnabled(false);
         fileAttachmentComponent.setReadOnly(true);
         addModules.setEnabled(false);
     }
+
+
 
 }

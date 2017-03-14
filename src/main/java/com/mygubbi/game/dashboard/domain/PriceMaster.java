@@ -84,9 +84,9 @@ public class PriceMaster {
     @Override
     public String toString() {
         return "PriceMaster{" +
-                "city='" + city + '\'' +
-                ", rateType='" + rateType + '\'' +
+                "rateType='" + rateType + '\'' +
                 ", rateId='" + rateId + '\'' +
+                ", city='" + city + '\'' +
                 ", price=" + price +
                 ", sourcePrice=" + sourcePrice +
                 ", fromDate=" + fromDate +
