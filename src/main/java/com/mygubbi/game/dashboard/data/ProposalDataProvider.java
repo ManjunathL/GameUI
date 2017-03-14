@@ -1424,5 +1424,21 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<ModuleComponent> getModuleAccessoryhwDetails(String modulecode)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/moduleacchwdetails", new HashMap<String, String>(){
+            {
+                put("modulecode", modulecode);
+            }
+        });
+        try {
+            ModuleComponent[] items = this.mapper.readValue(array.toString(), ModuleComponent[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
 }
 
