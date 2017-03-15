@@ -1365,6 +1365,8 @@ public class ProductAndAddons extends Window
                 return;
             }
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+            proposalVersion.setDiscountAmount(Double.parseDouble(discountTotal.getValue()));
+            proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
