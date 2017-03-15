@@ -175,7 +175,8 @@ public class ProductAndAddons extends Window
 
         LOG.debug("Proposal Header :" + proposalHeader.toString());
 
-        updateTotal();
+        //updateTotal();
+        calculateTotal();
         handleState();
     }
 
@@ -631,9 +632,7 @@ public class ProductAndAddons extends Window
             refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
         }
         else {
-
             refreshDiscountForOldProposals(totalWoAccessories, totalAmount, costOfAccessories, addonsTotal);
-
         }
 
     }
@@ -693,13 +692,14 @@ public class ProductAndAddons extends Window
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
 
+        String replace = this.discountAmount.getValue().replace(",", "");
         proposalVersion.setFinalAmount(res);
-        proposalVersion.setDiscountPercentage(Double.valueOf(discountPercentage.getValue()));
-        proposalVersion.setDiscountAmount(Double.valueOf(this.discountAmount.getValue()));
-
+        proposalVersion.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
+        proposalVersion.setDiscountAmount(Double.valueOf(replace));
+        LOG.info("new discount" +round(discountPercent,2) + round(discountAmount.intValue(),2));
+        LOG.info("version in new" +proposalVersion);
         proposalDataProvider.updateVersion(proposalVersion);
         LOG.info("prposal version changed" +proposalVersion);
-
     }
 
     private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
@@ -722,7 +722,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -759,8 +759,14 @@ public class ProductAndAddons extends Window
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
 
         proposalVersion.setFinalAmount(res);
-        proposalVersion.setDiscountPercentage(Double.valueOf(round(discountPercent,2)));
-        proposalVersion.setDiscountAmount(Double.valueOf(discountAmount.intValue()));
+        /*proposalVersion.setDiscountPercentage(Double.valueOf(round(discountPercent,2)));
+        proposalVersion.setDiscountAmount(Double.valueOf(round(discountAmount.intValue(),2)));*/
+        String replace = this.discountAmount.getValue().replace(",", "");
+        proposalVersion.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
+        proposalVersion.setDiscountAmount(Double.valueOf(replace));
+        LOG.info("old discount" +round(discountPercent,2) +" " +round(discountAmount.intValue(),2));
+        LOG.info("old discount txt value" +this.discountAmount.getValue() +" " +this.discountPercentage.getValue());
+        LOG.info("version in old" +proposalVersion);
         proposalDataProvider.updateVersion(proposalVersion);
 
     }
@@ -783,7 +789,45 @@ public class ProductAndAddons extends Window
         status="DP";
         updateTotal();
     }
+    private void calculateTotal()
+    {
+        Collection<?> productObjects = productsGrid.getSelectedRows();
+        Collection<?> addonObjects = addonsGrid.getSelectedRows();
+        double productsTotal = 0;
+        double addonsTotal = 0;
+        double TotalAmount=0;
 
+        boolean anythingSelected = true;
+
+        if (productObjects.size() == 0) {
+            anythingSelected = false;
+            productObjects = this.productsGrid.getContainerDataSource().getItemIds();
+        }
+        for (Object object : productObjects) {
+            Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
+            productsTotal += amount;
+
+            Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
+            if (anythingSelected) {
+                this.productAndAddonSelection.getProductIds().add(id);
+            }
+        }
+
+        ///double addonsTotal = 0;
+
+        for (Object object : addonObjects) {
+            Double amount = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT).getValue();
+            addonsTotal += amount;
+            Integer id = (Integer) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.ID).getValue();
+
+            if (anythingSelected) {
+                this.productAndAddonSelection.getAddonIds().add(id);
+            }
+        }
+        TotalAmount=productsTotal+addonsTotal;
+        this.grandTotal.setValue(String.valueOf(TotalAmount));
+        LOG.info("new product total" + productsTotal + "new addons " +addonsTotal);
+    }
     private Component buildProductDetails() {
 
         VerticalLayout verticalLayout = new VerticalLayout();
@@ -1503,7 +1547,6 @@ public class ProductAndAddons extends Window
     private void saveProposalVersion() {
         try
         {
-
                 String disAmount=discountAmount.getValue();
                 LOG.info("disocunt amount in save" +disAmount);
                 proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
