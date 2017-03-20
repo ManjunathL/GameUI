@@ -531,7 +531,7 @@ public class ProductAndAddons extends Window
     }
     private void updateTotal()
     {
-        List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
+        /*List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
         LOG.info("discount percentage details" +discountratecode);
         for (RateCard discountcode : discountratecode) {
             LOG.debug("Discount code : " + discountcode.getCode());
@@ -541,7 +541,7 @@ public class ProductAndAddons extends Window
         LOG.info("pricedate" +this.priceDate + "city" +this.city);
         PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,this.city);
         rateForDiscount=discountpriceMaster.getSourcePrice();
-        LOG.info("Rate for discount" +rateForDiscount);
+        LOG.info("Rate for discount" +rateForDiscount);*/
 
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
@@ -639,8 +639,10 @@ public class ProductAndAddons extends Window
 
     private void refreshDiscountForNewProposals(Double totalAmount, Double addonsTotal, Double productsTotal)
     {
+
         Double discountPercent=0.0,discountAmount=0.0;
-        rateForDiscount=rateForDiscount*100;
+        //rateForDiscount=rateForDiscount*100;
+        rateForDiscount=proposalHeader.getMaxDiscountPercentage();
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
@@ -658,7 +660,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -673,7 +675,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -705,7 +707,8 @@ public class ProductAndAddons extends Window
     private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
     {
         Double discountPercent=0.0,discountAmount=0.0;
-        rateForDiscount=rateForDiscount*100;
+        //rateForDiscount=rateForDiscount*100;
+        rateForDiscount=proposalHeader.getMaxDiscountPercentage();
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
@@ -722,7 +725,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -735,7 +738,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
