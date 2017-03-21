@@ -543,6 +543,10 @@ public class ProductAndAddons extends Window
         rateForDiscount=discountpriceMaster.getSourcePrice();
         LOG.info("Rate for discount" +rateForDiscount);*/
 
+
+        productsGrid.setSelectionMode(Grid.SelectionMode.NONE);
+        addonsGrid.setSelectionMode(Grid.SelectionMode.NONE);
+
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
         boolean anythingSelected = true;
@@ -717,7 +721,7 @@ public class ProductAndAddons extends Window
                     discountPercent = 0.0;
                 }
 
-                discountAmount = totalWoAccessories * discountPercent / 100.0;
+                discountAmount = totalWoAccessories * (discountPercent / 100) ;
                 //double res = discountAmount - discountAmount % 100;
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
                 disAmount=discountAmount.intValue();
@@ -1288,6 +1292,7 @@ public class ProductAndAddons extends Window
                 LOG.info("header value" +proposalVersion.getDiscountAmount() + "discount amount" +discountAmount.getValue());
                 String replace = discountAmount.getValue().replace(",", "");
                 double discountamount= Double.valueOf(replace);
+
                     return getInputStreamPdf();
 
 
@@ -1299,7 +1304,14 @@ public class ProductAndAddons extends Window
     }
 
     private InputStream getInputStreamPdf() {
+        String replace = discountAmount.getValue().replace(",", "");
+        double discountamount= Double.valueOf(replace);
+
+        productAndAddonSelection.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
+        productAndAddonSelection.setDiscountAmount(discountamount);
+
         String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
+
         InputStream input = null;
         try {
             input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
@@ -1310,8 +1322,13 @@ public class ProductAndAddons extends Window
     }
 
     private StreamResource createQuoteResource() {
+
         StreamResource.StreamSource source = () -> {
             if (!proposal.getProducts().isEmpty()) {
+                String replace = discountAmount.getValue().replace(",", "");
+                double discountamount= Double.valueOf(replace);
+                productAndAddonSelection.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
+                productAndAddonSelection.setDiscountAmount(discountamount);
                 String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productAndAddonSelection);
                 InputStream input = null;
                 try {

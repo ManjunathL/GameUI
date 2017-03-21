@@ -51,6 +51,8 @@ public class CreateProposalsView extends Panel implements View {
 
     private static final Logger LOG = LogManager.getLogger(CreateProposalsView.class);
 
+    String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
     private final String NEW_TITLE = "New Quotation";
     private final String NEW_DRAFT_TITLE = "Provide Option Description";
     private final String NEW_VERSION = "1.0";
@@ -150,9 +152,6 @@ public class CreateProposalsView extends Panel implements View {
             QuoteNum = "";
             this.proposalHeader.setQuoteNo(QuoteNum);
             DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(true));
-
-
-
 
            /* List<ProposalHeader> id=proposalDataProvider.getProposalId();
             for(ProposalHeader val: id) {
@@ -334,7 +333,6 @@ public class CreateProposalsView extends Panel implements View {
 
                 } else if (pVersion.getVersion().startsWith("2.")) {
 
-                    String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
                     if (!(("planning").equals(role) || ("admin").equals(role)))
                     {
@@ -581,6 +579,7 @@ public class CreateProposalsView extends Panel implements View {
         boolean duplicateCrm = checkForDuplicateCRM();
 
         LOG.debug("duplicate crm" + duplicateCrm);
+
         if (duplicateCrm) {
             NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
@@ -617,10 +616,20 @@ public class CreateProposalsView extends Panel implements View {
 
         setMaxDiscountPercentange();
         if(proposalHeader.getMaxDiscountPercentage()==0 ) {
+            maxDiscountPercentage.setReadOnly(false);
             maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
             proposalDataProvider.saveProposal(this.proposalHeader);
+            if(!(("admin").equals(role))) {
+                maxDiscountPercentage.setReadOnly(true);
+            }
         }
+
+        /*String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+        if(!(("admin").equals(role)) && !(("Deleted").equals(proposalHeader.getStatus())))
+        {
+            maxDiscountPercentage.setReadOnly(true);
+        }*/
 
         cancelButton.setVisible(false);
         saveAndCloseButton.setVisible(true);
@@ -1104,13 +1113,15 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.addComponent(projectCityField);
         projectCityField.addValueChangeListener(this::cityChanged);
 
-        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-        if((("admin").equals(role)))
+        maxDiscountPercentage = new TextField("Max Discount Percentage");
+        maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()));
+        formLayoutLeft.addComponent(maxDiscountPercentage);
+
+        if(!(("admin").equals(role)) )
         {
-            maxDiscountPercentage = new TextField("Max Discount Percentage");
-            maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()*100));
-            formLayoutLeft.addComponent(maxDiscountPercentage);
+            maxDiscountPercentage.setReadOnly(true);
         }
+
 
         return formLayoutLeft;
     }
