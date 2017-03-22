@@ -897,6 +897,7 @@ public class ProductAndAddons extends Window
         GeneratedPropertyContainer genContainer = createGeneratedProductPropertyContainer();
 
         productsGrid = new Grid(genContainer);
+        productsGrid.setSelectionMode(Grid.SelectionMode.NONE);
         productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
@@ -1113,6 +1114,7 @@ public class ProductAndAddons extends Window
         GeneratedPropertyContainer genContainer = createGeneratedAddonsPropertyContainer();
 
         addonsGrid = new Grid(genContainer);
+        addonsGrid.setSelectionMode(Grid.SelectionMode.NONE);
         addonsGrid.setSizeFull();
         /*addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         addonsGrid.addSelectionListener(this::updateTotal);*/
