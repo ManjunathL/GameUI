@@ -49,6 +49,7 @@ public class ProposalHeader {
     public static final String UPDATED_ON = "updatedOn";
     public static final String UPDATED_BY = "updatedBy";
     public static final String PRICE_DATE = "priceDate";
+    public static final String MAX_DISCOUNTPERCENTAGE="maxDiscountPercentage";
 
     private int id;
     private String quoteNoNew;
@@ -87,6 +88,7 @@ public class ProposalHeader {
     private String updatedBy;
     private String editFlag = EDIT.R.name();
     private java.sql.Date priceDate;
+    private double maxDiscountPercentage;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -393,10 +395,19 @@ public class ProposalHeader {
         this.priceDate = priceDate;
     }
 
+    public double getMaxDiscountPercentage() {
+        return maxDiscountPercentage;
+    }
+
+    public void setMaxDiscountPercentage(double maxDiscountPercentage) {
+        this.maxDiscountPercentage = maxDiscountPercentage;
+    }
+
     @Override
     public String toString() {
         return "ProposalHeader{" +
-                "id=" + id +
+                "amount=" + amount +
+                ", id=" + id +
                 ", quoteNoNew='" + quoteNoNew + '\'' +
                 ", status='" + status + '\'' +
                 ", title='" + title + '\'' +
@@ -425,7 +436,6 @@ public class ProposalHeader {
                 ", designPartnerName='" + designPartnerName + '\'' +
                 ", designPartnerEmail='" + designPartnerEmail + '\'' +
                 ", designPartnerPhone='" + designPartnerPhone + '\'' +
-                ", amount=" + amount +
                 ", folderPath='" + folderPath + '\'' +
                 ", createdOn=" + createdOn +
                 ", createdBy='" + createdBy + '\'' +
@@ -433,6 +443,7 @@ public class ProposalHeader {
                 ", updatedBy='" + updatedBy + '\'' +
                 ", editFlag='" + editFlag + '\'' +
                 ", priceDate=" + priceDate +
+                ", maxDiscountPercentage=" + maxDiscountPercentage +
                 '}';
     }
 }

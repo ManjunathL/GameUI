@@ -51,6 +51,8 @@ public class CreateProposalsView extends Panel implements View {
 
     private static final Logger LOG = LogManager.getLogger(CreateProposalsView.class);
 
+    String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
     private final String NEW_TITLE = "New Quotation";
     private final String NEW_DRAFT_TITLE = "Provide Option Description";
     private final String NEW_VERSION = "1.0";
@@ -60,6 +62,7 @@ public class CreateProposalsView extends Panel implements View {
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
     private Field<?> proposalTitleField;
+    private TextField maxDiscountPercentage;
     private Field<?> crmId;
     private Field<?> proposalVersionField;
     private Field<?> quotationField;
@@ -108,6 +111,10 @@ public class CreateProposalsView extends Panel implements View {
     String cityCode= "";
     String cityStatus= "";
     int month;
+    java.sql.Date priceDate;
+    String codeForDiscount;
+    Double rateForDiscount;
+
     private DashboardMenu dashboardMenu;
 
 
@@ -145,9 +152,6 @@ public class CreateProposalsView extends Panel implements View {
             QuoteNum = "";
             this.proposalHeader.setQuoteNo(QuoteNum);
             DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(true));
-
-
-
 
            /* List<ProposalHeader> id=proposalDataProvider.getProposalId();
             for(ProposalHeader val: id) {
@@ -195,7 +199,27 @@ public class CreateProposalsView extends Panel implements View {
             setContent(vLayout);
             Responsive.makeResponsive(tabs);
             cityLockedForOldProposal();
+    }
+
+    private void setMaxDiscountPercentange() {
+        List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
+        LOG.info("discount percentage details" +discountratecode);
+        for (RateCard discountcode : discountratecode) {
+            LOG.debug("Discount code : " + discountcode.getCode());
+            codeForDiscount=discountcode.getCode();
         }
+        if (this.proposalHeader.getPriceDate() == null)
+        {
+            this.priceDate = new java.sql.Date(System.currentTimeMillis());
+        }
+        else {
+            this.priceDate = this.proposalHeader.getPriceDate();
+        }
+        LOG.info("Price date value" +priceDate);
+        PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,proposalHeader.getPcity());
+        rateForDiscount=discountpriceMaster.getSourcePrice();
+        LOG.info("Rate for discount" +rateForDiscount);
+    }
 
     private void cityLockedForSave() {
         List<ProposalCity> proposalCityList = proposalDataProvider.checkCity(this.proposalHeader.getId());
@@ -309,7 +333,6 @@ public class CreateProposalsView extends Panel implements View {
 
                 } else if (pVersion.getVersion().startsWith("2.")) {
 
-                    String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
                     if (!(("planning").equals(role) || ("admin").equals(role)))
                     {
@@ -334,7 +357,6 @@ public class CreateProposalsView extends Panel implements View {
                 copyVersion.setFinalAmount(pVersion.getFinalAmount());
                 copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
                 copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
-                copyVersion.setRemarks(pVersion.getRemarks());
                 copyVersion.setToVersion(String.valueOf(versionNew));
                 copyVersion.setDiscountAmount(pVersion.getDiscountAmount());
                 copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
@@ -404,7 +426,6 @@ public class CreateProposalsView extends Panel implements View {
             copyVersion.setFinalAmount(pVersion.getFinalAmount());
             copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
             copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
-            copyVersion.setRemarks(pVersion.getRemarks());
             copyVersion.setToVersion(pVersion.getVersion());
             copyVersion.setDiscountAmount(pVersion.getDiscountAmount());
             copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
@@ -420,8 +441,6 @@ public class CreateProposalsView extends Panel implements View {
             UI.getCurrent().getNavigator()
                     .navigateTo("New Quotation/" + proposalId);
             DashboardEventBus.unregister(this);
-
-
         }));
 
 
@@ -556,6 +575,7 @@ public class CreateProposalsView extends Panel implements View {
         boolean duplicateCrm = checkForDuplicateCRM();
 
         LOG.debug("duplicate crm" + duplicateCrm);
+
         if (duplicateCrm) {
             NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
@@ -573,8 +593,7 @@ public class CreateProposalsView extends Panel implements View {
         ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
         this.proposalHeader.setStatus(proposalVersionLatest.getStatus());
         this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
-
-
+        this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
 
         try {
 
@@ -590,6 +609,24 @@ public class CreateProposalsView extends Panel implements View {
         checkQuoteNoNew();
         this.proposalHeader.setQuoteNoNew(QuoteNumNew);
         boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
+
+        setMaxDiscountPercentange();
+        if(proposalHeader.getMaxDiscountPercentage()==0 ) {
+            maxDiscountPercentage.setReadOnly(false);
+            maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
+            this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
+            proposalDataProvider.saveProposal(this.proposalHeader);
+            if(!(("admin").equals(role))) {
+                maxDiscountPercentage.setReadOnly(true);
+            }
+        }
+
+        /*String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+        if(!(("admin").equals(role)) && !(("Deleted").equals(proposalHeader.getStatus())))
+        {
+            maxDiscountPercentage.setReadOnly(true);
+        }*/
+
         cancelButton.setVisible(false);
         saveAndCloseButton.setVisible(true);
 
@@ -1071,6 +1108,15 @@ public class CreateProposalsView extends Panel implements View {
         projectCityField.setRequired(true);
         formLayoutLeft.addComponent(projectCityField);
         projectCityField.addValueChangeListener(this::cityChanged);
+
+        maxDiscountPercentage = new TextField("Max Discount Percentage");
+        maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()));
+        formLayoutLeft.addComponent(maxDiscountPercentage);
+
+        if(!(("admin").equals(role)) )
+        {
+            maxDiscountPercentage.setReadOnly(true);
+        }
 
 
         return formLayoutLeft;

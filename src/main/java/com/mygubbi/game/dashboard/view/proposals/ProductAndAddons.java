@@ -531,7 +531,7 @@ public class ProductAndAddons extends Window
     }
     private void updateTotal()
     {
-        List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
+        /*List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
         LOG.info("discount percentage details" +discountratecode);
         for (RateCard discountcode : discountratecode) {
             LOG.debug("Discount code : " + discountcode.getCode());
@@ -541,7 +541,8 @@ public class ProductAndAddons extends Window
         LOG.info("pricedate" +this.priceDate + "city" +this.city);
         PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,this.city);
         rateForDiscount=discountpriceMaster.getSourcePrice();
-        LOG.info("Rate for discount" +rateForDiscount);
+        LOG.info("Rate for discount" +rateForDiscount);*/
+
 
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
@@ -639,8 +640,10 @@ public class ProductAndAddons extends Window
 
     private void refreshDiscountForNewProposals(Double totalAmount, Double addonsTotal, Double productsTotal)
     {
+
         Double discountPercent=0.0,discountAmount=0.0;
-        rateForDiscount=rateForDiscount*100;
+        //rateForDiscount=rateForDiscount*100;
+        rateForDiscount=proposalHeader.getMaxDiscountPercentage();
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
@@ -658,7 +661,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -673,7 +676,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -705,7 +708,8 @@ public class ProductAndAddons extends Window
     private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
     {
         Double discountPercent=0.0,discountAmount=0.0;
-        rateForDiscount=rateForDiscount*100;
+        //rateForDiscount=rateForDiscount*100;
+        rateForDiscount=proposalHeader.getMaxDiscountPercentage();
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
@@ -714,7 +718,7 @@ public class ProductAndAddons extends Window
                     discountPercent = 0.0;
                 }
 
-                discountAmount = totalWoAccessories * discountPercent / 100.0;
+                discountAmount = totalWoAccessories * (discountPercent / 100) ;
                 //double res = discountAmount - discountAmount % 100;
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
                 disAmount=discountAmount.intValue();
@@ -722,7 +726,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -735,7 +739,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -890,6 +894,7 @@ public class ProductAndAddons extends Window
         GeneratedPropertyContainer genContainer = createGeneratedProductPropertyContainer();
 
         productsGrid = new Grid(genContainer);
+        productsGrid.setSelectionMode(Grid.SelectionMode.NONE);
         productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
@@ -1107,6 +1112,7 @@ public class ProductAndAddons extends Window
         GeneratedPropertyContainer genContainer = createGeneratedAddonsPropertyContainer();
 
         addonsGrid = new Grid(genContainer);
+        addonsGrid.setSelectionMode(Grid.SelectionMode.NONE);
         addonsGrid.setSizeFull();
         /*addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         addonsGrid.addSelectionListener(this::updateTotal);*/
@@ -1132,7 +1138,6 @@ public class ProductAndAddons extends Window
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
-                addon.setAdd(false);
 
                 if (("Custom Addon").equals(addon.getCategoryCode()))
                 {
@@ -1295,6 +1300,8 @@ public class ProductAndAddons extends Window
     }
 
     private InputStream getInputStreamPdf() {
+        productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
+        productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
         String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
         InputStream input = null;
         try {
@@ -1308,6 +1315,9 @@ public class ProductAndAddons extends Window
     private StreamResource createQuoteResource() {
         StreamResource.StreamSource source = () -> {
             if (!proposal.getProducts().isEmpty()) {
+                LOG.info("products and addon selection " +productAndAddonSelection);
+                productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
+                productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
                 String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productAndAddonSelection);
                 InputStream input = null;
                 try {
@@ -1350,6 +1360,8 @@ public class ProductAndAddons extends Window
 
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
+            proposalVersion.setDiscountAmount(Double.parseDouble(discountAmount.getValue().replace(",","")));
+            proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(versionNum.getValue());
@@ -1408,7 +1420,7 @@ public class ProductAndAddons extends Window
                 return;
             }
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
-            proposalVersion.setDiscountAmount(Double.parseDouble(discountTotal.getValue()));
+            proposalVersion.setDiscountAmount(Double.parseDouble(discountAmount.getValue().replace(",","")));
             proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
