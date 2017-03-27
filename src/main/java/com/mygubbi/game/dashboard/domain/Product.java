@@ -17,6 +17,9 @@ public class Product implements FileAttachmentsHolder {
     public static final String FROM_VERSION = "fromVersion";
     public static final String ID = "id";
     public static final String SEQ = "seq";
+
+
+    public static final String MANUAL_SEQ = "manualSeq";
     public static final String TITLE = "title";
     public static final String PRODUCT_CATEGORY = "productCategory";
     public static final String PRODUCT_CATEGORY_CODE = "productCategoryCode";
@@ -45,12 +48,14 @@ public class Product implements FileAttachmentsHolder {
     public static final String MARGIN="margin";
     public static final String AMOUNTWOTAX="amountWoTax";
     public static final String MANUFACTUREAMOUNT="manufactureAmount";
+    public static final String SOURCE = "source";
 
     private int id;
     private int proposalId;
     private String fromVersion;
     private String title;
     private int seq;
+    private int manualSeq;
     private String productCategory;
     private String productCategoryCode;
     private String room;
@@ -59,6 +64,7 @@ public class Product implements FileAttachmentsHolder {
     private String shutterDesignCode;
     private String catalogueName;
     private String catalogueId;
+    private String source;
 
     @Override
     public String toString() {
@@ -68,6 +74,7 @@ public class Product implements FileAttachmentsHolder {
                 ", fromVersion=" + fromVersion +
                 ", title='" + title + '\'' +
                 ", seq=" + seq +
+                ", manualSeq=" + manualSeq +
                 ", productCategory='" + productCategory + '\'' +
                 ", productCategoryCode='" + productCategoryCode + '\'' +
                 ", room='" + room + '\'' +
@@ -97,6 +104,7 @@ public class Product implements FileAttachmentsHolder {
                 ", modules=" + modules +
                 ", addons=" + addons +
                 ", fileAttachmentList=" + fileAttachmentList +
+                ", source='" + source + '\'' +
                 '}';
     }
 
@@ -427,6 +435,22 @@ public class Product implements FileAttachmentsHolder {
 
     public void setManufactureAmount(double manufactureAmount) {
         this.manufactureAmount = manufactureAmount;
+    }
+
+    public int getManualSeq() {
+        return manualSeq;
+    }
+
+    public void setManualSeq(int manualSeq) {
+        this.manualSeq = manualSeq;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override

@@ -893,12 +893,13 @@ public class ProductAndAddons extends Window
         productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
-        productsGrid.setColumns(Product.SEQ, Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
+        productsGrid.setColumns(Product.MANUAL_SEQ, Product.SOURCE, Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
 
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
 
-        columns.get(idx++).setHeaderCaption("#");
+        columns.get(idx++).setHeaderCaption("Manual Seq");
+        columns.get(idx++).setHeaderCaption("Source");
         columns.get(idx++).setHeaderCaption("Room");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Category");
@@ -926,7 +927,7 @@ public class ProductAndAddons extends Window
                 LOG.debug("modules:"+modulesFromOldProduct);
                 Product copyProduct = new Product();
                 copyProduct.setType(Product.TYPES.CUSTOMIZED.name());
-                copyProduct.setSeq(length);
+                copyProduct.setSeq(0);
                 copyProduct.setProposalId(proposalHeader.getId());
                 copyProduct.setFromVersion(p.getFromVersion());
                 copyProduct.setTitle(p.getTitle());
@@ -1043,7 +1044,7 @@ public class ProductAndAddons extends Window
 
         if (!proposal.getProducts().isEmpty()) {
             productContainer.addAll(proposal.getProducts());
-            productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
+            productsGrid.sort(Product.MANUAL_SEQ, SortDirection.ASCENDING);
         }
         Label label = new Label("Select Products and click Download Quote/Job Card button to generate output for only the selected Products.");
         label.setStyleName("font-italics");
@@ -1280,13 +1281,11 @@ public class ProductAndAddons extends Window
     private StreamResource createQuoteResourcePdf() {
 
         StreamResource.StreamSource source = () -> {
-            if (!proposal.getProducts().isEmpty())
-            {
-                LOG.info("header value" +proposalVersion.getDiscountAmount() + "discount amount" +discountAmount.getValue());
+            if (!proposal.getProducts().isEmpty()) {
+                LOG.info("header value" + proposalVersion.getDiscountAmount() + "discount amount" + discountAmount.getValue());
                 String replace = discountAmount.getValue().replace(",", "");
-                double discountamount= Double.valueOf(replace);
-                    return getInputStreamPdf();
-
+                double discountamount = Double.valueOf(replace);
+                return getInputStreamPdf();
 
             } else {
                 return null;
@@ -1777,7 +1776,7 @@ public class ProductAndAddons extends Window
             productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
             productsGrid.getSelectionModel().reset();
             updateTotal();
-            productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
+            productsGrid.sort(Product.MANUAL_SEQ, SortDirection.ASCENDING);
         }
     }
 
@@ -1789,7 +1788,7 @@ public class ProductAndAddons extends Window
         productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
         productsGrid.getSelectionModel().reset();
         updateTotal();
-        productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
+        productsGrid.sort(Product.MANUAL_SEQ, SortDirection.ASCENDING);
     }
 
     @Subscribe

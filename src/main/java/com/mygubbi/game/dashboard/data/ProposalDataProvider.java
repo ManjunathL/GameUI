@@ -275,6 +275,27 @@ public class ProposalDataProvider {
         }
     }
 
+    public List <Product> getProposalProductManualSeq(int proposalId, String proposalVersion) {
+
+        JSONArray jsonArray = dataProviderMode.getResourceArray("product/manualSeq", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId + "");
+                put("fromVersion", proposalVersion + "");
+            }
+        });
+        try {
+            Product[] items = this.mapper.readValue(jsonArray.toString(), Product[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
+
+
+
     public List<FileAttachment> getProposalProductDocuments(int productId) {
         JSONArray jsonArray = dataProviderMode.getResourceArray("product/documents", new HashMap<String, String>() {
             {

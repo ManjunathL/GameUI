@@ -63,6 +63,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox shutterFinishSelection;
     private ComboBox shutterDesign;
     private ComboBox finishTypeSelection;
+    private TextField manualSeq;
 
     private Upload quoteUploadCtrl;
     private File uploadedQuoteFile;
@@ -237,9 +238,38 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutLeft.setSpacing(true);
         formLayoutLeft.addComponent(costWithoutAccessories);
 
+        manualSeq = (TextField) binder.buildAndBind("Manual Sequence", MANUAL_SEQ);
+        manualSeq.setRequired(true);
+        manualSeq.setNullSettingAllowed(false);
+        manualSeq.addValueChangeListener(this :: checkForDuplicateSeq);
+        formLayoutLeft.addComponent(manualSeq);
+
         return formLayoutLeft;
     }
 
+    private void checkForDuplicateSeq(Property.ValueChangeEvent valueChangeEvent) {
+        Boolean value=checkForDuplicatefunction();
+        if(value==false)
+        {
+            manualSeq.setValue("0");
+        }
+    }
+    private boolean checkForDuplicatefunction()
+    {
+        LOG.info("@@@");
+        String manualSeqStr = manualSeq.getValue();
+        int manualSeq = Integer.parseInt(manualSeqStr);
+        List <Product> getManualSeq =  proposalDataProvider.getProposalProductManualSeq(proposalHeader.getId(),proposalVersion.getVersion());
+        for(Product product : getManualSeq) {
+            if (manualSeq == product.getManualSeq())
+            {
+                NotificationUtil.showNotification("Product Sequence already exists!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return false;
+            }
+
+        }
+        return true;
+    }
     public void updatePsftCosts() {
 
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
@@ -360,7 +390,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 String unitType = module.getUnitType();
 
                 if ((unitType.toLowerCase().contains(Module.UnitTypes.base.name()) && component != wallCarcassSelection)
-                        || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)) {
+                        || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)){
                     LOG.debug("Inside the inner loop :");
                     double amount = 0;
                     double areainsft = 0;
@@ -551,30 +581,34 @@ public class CustomizedProductDetailsWindow extends Window {
         addModules.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                if (!commitValues()) return;
-                Module module = new Module();
-                product.setType(TYPES.CUSTOMIZED.name());
-                module.setModuleType("N");
-                module.setProductCategory(product.getProductCategoryCode());
-                module.setModuleSource("button");
-                module.setExposedLeft(false);
-                module.setExposedRight(false);
-                module.setExposedBack(false);
-                module.setExposedBottom(false);
-                module.setExposedTop(false);
-                module.setExposedOpen(false);
-                module.setUnitType("Base Unit");
-                module.setCarcass(getDefaultText(
-                        (module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
-                                ? getSelectedItemText(wallCarcassSelection)
-                                : getSelectedItemText(baseCarcassSelection))));
-                module.setFinishType(getDefaultText(getSelectedItemText(finishTypeSelection)));
-                module.setFinish(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
-                module.setCarcassCodeBasedOnUnitType(product);
-                module.setFinishTypeCode(product.getFinishTypeCode());
-                module.setFinishCode(product.getFinishCode());
-                ModuleDetailsWindow.open(module,product,0,proposalVersion,proposalHeader);
-            }
+
+                    if (!commitValues()) return;
+                    Module module = new Module();
+                    product.setType(TYPES.CUSTOMIZED.name());
+                    product.setSource("GAME");
+                    module.setModuleType("N");
+                    module.setProductCategory(product.getProductCategoryCode());
+                    module.setModuleSource("button");
+                    module.setExposedLeft(false);
+                    module.setExposedRight(false);
+                    module.setExposedBack(false);
+                    module.setExposedBottom(false);
+                    module.setExposedTop(false);
+                    module.setExposedOpen(false);
+                    module.setUnitType("Base Unit");
+                    module.setCarcass(getDefaultText(
+                            (module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
+                                    ? getSelectedItemText(wallCarcassSelection)
+                                    : getSelectedItemText(baseCarcassSelection))));
+                    module.setFinishType(getDefaultText(getSelectedItemText(finishTypeSelection)));
+                    module.setFinish(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
+                    module.setCarcassCodeBasedOnUnitType(product);
+                    module.setFinishTypeCode(product.getFinishTypeCode());
+                    module.setFinishCode(product.getFinishCode());
+                    ModuleDetailsWindow.open(module, product, 0, proposalVersion, proposalHeader);
+                }
+
+
         });
 
         verticalLayout.addComponent(addModules);
@@ -649,6 +683,7 @@ public class CustomizedProductDetailsWindow extends Window {
             String filename = event.getFilename();
             String quoteFilePath = getUploadBasePath() + "/" + filename;
             product.setQuoteFilePath(quoteFilePath);
+            product.setSource("KDMax");
             Product productResult = proposalDataProvider.loadAndUpdateProduct(product);
             product.setId(productResult.getId());
             product.setModules(productResult.getModules());
@@ -1142,57 +1177,66 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
         saveBtn.addClickListener(event -> {
             try {
-
-                try {
-                    binder.commit();
-                } catch (FieldGroup.CommitException e) {
-                    NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                if ("0".equals(manualSeq.getValue())) {
+                    NotificationUtil.showNotification("Product Sequence cannot be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                } else {
+                    //Boolean checkManualSeq = checkForDuplicatefunction();
+                /*LOG.info("check value " +checkForDuplicatefunction());
+                if ("false".equals(checkManualSeq)) {
+                    NotificationUtil.showNotification("Product Sequence already exists!!!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
-                LOG.debug("cwa :" + product.getCostWoAccessories());
-
-                List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
-                proposal.setProducts(getAllVersionProducts);
-
-                if (product.getSeq() == 0)
-                {
-                    int size = getAllVersionProducts.size();
-                    size++;
-                    product.setSeq(size);
-                }
-
-                boolean success = proposalDataProvider.updateProduct(product);
-
-                if (success) {
-                    double amountWoDiscount = 0;
-                    double amountWoAccessories = 0;
-                    double discountPercentage = this.proposalVersion.getDiscountPercentage();
-                    List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(),this.proposalVersion.getVersion());
-                    for (Product product : versionProducts)
-                    {
-                        LOG.debug("Product module :" + product.getAmount());
-
-                        amountWoDiscount += product.getAmount();
-                        amountWoAccessories += product.getCostWoAccessories();
+*/
+                    try {
+                        binder.commit();
+                    } catch (FieldGroup.CommitException e) {
+                        NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
                     }
-                    this.proposalVersion.setAmount(amountWoDiscount);
-                    double discountAmount = amountWoAccessories * (discountPercentage/100);
-                    this.proposalVersion.setDiscountAmount(discountAmount);
-                    this.proposalVersion.setFinalAmount(amountWoDiscount-discountAmount);
+                    LOG.debug("cwa :" + product.getCostWoAccessories());
 
-                    LOG.debug("Proposal Version inside module :" + this.proposalVersion.toString());
-                    proposalDataProvider.updateVersion(this.proposalVersion);
-                    NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                    DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
-                    DashboardEventBus.unregister(this);
-                    close();
-                } else {
-                    NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
+                    proposal.setProducts(getAllVersionProducts);
+
+                    if (product.getSeq() == 0) {
+                        int size = getAllVersionProducts.size();
+                        size++;
+                        product.setSeq(size);
+                    }
+
+                    boolean success = proposalDataProvider.updateProduct(product);
+
+                    if (success) {
+                        double amountWoDiscount = 0;
+                        double amountWoAccessories = 0;
+                        double discountPercentage = this.proposalVersion.getDiscountPercentage();
+                        List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(), this.proposalVersion.getVersion());
+                        for (Product product : versionProducts) {
+                            LOG.debug("Product module :" + product.getAmount());
+
+                            amountWoDiscount += product.getAmount();
+                            amountWoAccessories += product.getCostWoAccessories();
+                        }
+                        this.proposalVersion.setAmount(amountWoDiscount);
+                        double discountAmount = amountWoAccessories * (discountPercentage / 100);
+                        this.proposalVersion.setDiscountAmount(discountAmount);
+                        this.proposalVersion.setFinalAmount(amountWoDiscount - discountAmount);
+
+                        LOG.debug("Proposal Version inside module :" + this.proposalVersion.toString());
+                        proposalDataProvider.updateVersion(this.proposalVersion);
+                        NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                        DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
+                        DashboardEventBus.unregister(this);
+                        close();
+                    } else {
+                        NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    }}
+                } catch(Exception e){
+                    Notification.show("Error while saving Item details",
+                            Type.ERROR_MESSAGE);
                 }
-            } catch (Exception e) {
-                Notification.show("Error while saving Item details",
-                        Type.ERROR_MESSAGE);
-            }
+
         });
         saveBtn.focus();
         saveBtn.setVisible(true);
@@ -1572,6 +1616,7 @@ public class CustomizedProductDetailsWindow extends Window {
         itemTitleField.setReadOnly(true);
         productSelection.setReadOnly(true);
         roomText.setReadOnly(true);
+        manualSeq.setReadOnly(true);
         shutterDesign.setReadOnly(true);
         baseCarcassSelection.setReadOnly(true);
         wallCarcassSelection.setReadOnly(true);
