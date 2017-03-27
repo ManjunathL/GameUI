@@ -544,9 +544,6 @@ public class ProductAndAddons extends Window
         LOG.info("Rate for discount" +rateForDiscount);*/
 
 
-        productsGrid.setSelectionMode(Grid.SelectionMode.NONE);
-        addonsGrid.setSelectionMode(Grid.SelectionMode.NONE);
-
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
         boolean anythingSelected = true;
@@ -1140,7 +1137,6 @@ public class ProductAndAddons extends Window
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
-                addon.setAdd(false);
 
                 if (("Custom Addon").equals(addon.getCategoryCode()))
                 {
@@ -1294,7 +1290,6 @@ public class ProductAndAddons extends Window
                 LOG.info("header value" +proposalVersion.getDiscountAmount() + "discount amount" +discountAmount.getValue());
                 String replace = discountAmount.getValue().replace(",", "");
                 double discountamount= Double.valueOf(replace);
-
                     return getInputStreamPdf();
 
 
@@ -1306,14 +1301,9 @@ public class ProductAndAddons extends Window
     }
 
     private InputStream getInputStreamPdf() {
-        String replace = discountAmount.getValue().replace(",", "");
-        double discountamount= Double.valueOf(replace);
-
-        productAndAddonSelection.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
-        productAndAddonSelection.setDiscountAmount(discountamount);
-
+        productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
+        productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
         String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
-
         InputStream input = null;
         try {
             input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
@@ -1324,13 +1314,11 @@ public class ProductAndAddons extends Window
     }
 
     private StreamResource createQuoteResource() {
-
         StreamResource.StreamSource source = () -> {
             if (!proposal.getProducts().isEmpty()) {
-                String replace = discountAmount.getValue().replace(",", "");
-                double discountamount= Double.valueOf(replace);
-                productAndAddonSelection.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
-                productAndAddonSelection.setDiscountAmount(discountamount);
+                LOG.info("products and addon selection " +productAndAddonSelection);
+                productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
+                productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
                 String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productAndAddonSelection);
                 InputStream input = null;
                 try {
@@ -1373,6 +1361,8 @@ public class ProductAndAddons extends Window
 
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
+            proposalVersion.setDiscountAmount(Double.parseDouble(discountAmount.getValue().replace(",","")));
+            proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(versionNum.getValue());
@@ -1431,7 +1421,7 @@ public class ProductAndAddons extends Window
                 return;
             }
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
-            proposalVersion.setDiscountAmount(Double.parseDouble(discountTotal.getValue()));
+            proposalVersion.setDiscountAmount(Double.parseDouble(discountAmount.getValue().replace(",","")));
             proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
