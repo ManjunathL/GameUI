@@ -1370,6 +1370,14 @@ public class ModuleDetailsWindow extends Window {
 
             List<ModuleAccessoryPack> accessoryPacks=getModuleAccessoryPacks();
             LOG.info("Accessory pack" +accessoryPacks);
+            LOG.info("acc pack size" +accessoryPacks.size());
+            if(accessoryPacks.size()!=0)
+            {
+                module.setAccessoryflag("Y");
+            }else
+            {
+                module.setAccessoryflag("N");
+            }
 
             if (carcassMaterialSelection.isReadOnly()) {
                 module.setFixedCarcassCode((String) carcassMaterialSelection.getValue());

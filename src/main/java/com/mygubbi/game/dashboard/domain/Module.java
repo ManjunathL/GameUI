@@ -61,6 +61,7 @@ public class Module implements Cloneable {
     public static final String MODULE_CATEGORY = "moduleCategory";
     public static final String PRODUCT_CATEGORY = "productCategory";
     public static final String ACCESSORYPACKDEFAULT = "accessoryPackDefault";
+    public static final String ACCESSORY_FLAG="accessoryflag";
 
 
     private int seq;
@@ -110,7 +111,7 @@ public class Module implements Cloneable {
     private double carcassCost;
     private double accessoryCost;
     private double labourCost;
-
+    private String accessoryflag;
 
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
 
@@ -541,6 +542,14 @@ public class Module implements Cloneable {
 
     public void setWoodworkCost(double woodworkCost) {
         this.woodworkCost = woodworkCost;
+    }
+
+    public String getAccessoryflag() {
+        return accessoryflag;
+    }
+
+    public void setAccessoryflag(String accessoryflag) {
+        this.accessoryflag = accessoryflag;
     }
 
     @Override

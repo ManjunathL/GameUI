@@ -30,6 +30,11 @@ public class AddonProduct implements Cloneable {
     public static final String BRAND = "brand";
     public static final String CATALOGUE_CODE = "catalogueCode";
     public static final String DESCRIPTION = "description";
+    public static final String REMARKS="remarks";
+    public static final String PROFIT="profit";
+    public static final String MARGIN="margin";
+    public static final String SOURCE_PRICE="sourcePrice";
+    public static final String AMOUNT_WO_TAX="amountWOTax";
 
     private int seq;
     private int id;
@@ -53,6 +58,11 @@ public class AddonProduct implements Cloneable {
     private double rate;
     private String updatedBy;
     private String description;
+    private String remarks;
+    private double profit;
+    private double margin;
+    private double sourcePrice;
+    private double amountWOTax;
 
     private boolean add = false;
 
@@ -248,6 +258,46 @@ public class AddonProduct implements Cloneable {
 
     public void setProductSubtypeCode(String productSubtypeCode) {
         this.productSubtypeCode = productSubtypeCode;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public double getMargin() {
+        return margin;
+    }
+
+    public void setMargin(double margin) {
+        this.margin = margin;
+    }
+
+    public double getProfit() {
+        return profit;
+    }
+
+    public void setProfit(double profit) {
+        this.profit = profit;
+    }
+
+    public double getAmountWOTax() {
+        return amountWOTax;
+    }
+
+    public void setAmountWOTax(double amountWOTax) {
+        this.amountWOTax = amountWOTax;
+    }
+
+    public double getSourcePrice() {
+        return sourcePrice;
+    }
+
+    public void setSourcePrice(double sourcePrice) {
+        this.sourcePrice = sourcePrice;
     }
 
     @Override

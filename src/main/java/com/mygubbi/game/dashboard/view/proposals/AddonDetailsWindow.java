@@ -28,6 +28,8 @@ import java.io.File;
 import java.sql.Date;
 import java.util.List;
 
+import static java.lang.StrictMath.round;
+
 /**
  * Created by nitinpuri on 02-06-2016.
  */
@@ -40,6 +42,7 @@ public class AddonDetailsWindow extends Window {
     private final BeanFieldGroup<AddonProduct> binder = new BeanFieldGroup<>(AddonProduct.class);
     private ComboBox category;
     private ComboBox productType;
+    private ProposalHeader proposalHeader;
     private ComboBox productSubtype;
     private ComboBox brand;
     private ComboBox product;
@@ -51,6 +54,7 @@ public class AddonDetailsWindow extends Window {
     private TextField description;
     private Button applyButton;
     private Image addonImage;
+    private TextField remarks;
     private String imageBasePath = ConfigHolder.getInstance().getImageBasePath();
 
     private String originalImagePath;
@@ -64,6 +68,17 @@ public class AddonDetailsWindow extends Window {
     private Date priceDate;
     private String city;
     Double rateToBeUsed;
+    Double addonsTotal=0.0;
+    Double addonsTotalWOtax=0.0;
+    Double addonsProfit=0.0;
+    Double addonsMargin=0.0;
+
+    String codeForAddonWOTax;
+    String codeForAddonSourcePrice;
+    double rateForAddonWOTax;
+    double rateForAddonSourcePrice;
+    Double addonDealerPrice=0.0;
+
 
     private static final Logger LOG = LogManager.getLogger(AddonProduct.class);
 
@@ -71,6 +86,7 @@ public class AddonDetailsWindow extends Window {
     public AddonDetailsWindow(AddonProduct addonProduct, String title, boolean isProposalAddon, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         this.addonProduct = addonProduct;
         this.isProposalAddon = isProposalAddon;
+        this.proposalHeader=proposalHeader;
         this.originalImagePath = this.addonProduct.getImagePath();
         this.city = proposalHeader.getPcity();
         this.proposalVersion = proposalVersion;
@@ -186,6 +202,11 @@ public class AddonDetailsWindow extends Window {
         binder.bind(this.product, AddonProduct.PRODUCT);
         this.product.addValueChangeListener(this::productCodeChanged);
         formLayoutLeft.addComponent(this.product);
+
+        this.remarks=new TextField("Remarks");
+        this.remarks.setNullRepresentation(" ");
+        binder.bind(this.remarks, AddonProduct.REMARKS);
+        formLayoutLeft.addComponent(remarks);
 
         FormLayout formLayoutRight = new FormLayout();
         formLayoutRight.setSizeFull();
@@ -572,8 +593,57 @@ public class AddonDetailsWindow extends Window {
                     addonProduct.setProduct(this.productCodeBeanContainer.getItem(this.product.getValue()).getBean().getProduct());
                     addonProduct.setBrand(this.brandBeanContainer.getItem(this.brand.getValue()).getBean().getBrandCode());
                     addonProduct.setCode(this.productCodeBeanContainer.getItem(this.product.getValue()).getBean().getCode());
+                    addonProduct.setRemarks(this.remarks.getValue());
+
                     LOG.debug("Addon product Class :" + addonProduct.toString());
 
+                    ModuleForPrice moduleForPrice = new ModuleForPrice();
+                    moduleForPrice.setCity(proposalHeader.getPcity());
+                    /*if (proposalHeader.getPriceDate() == null)
+                    {
+                        Date dateToBeUsed = new Date(System.currentTimeMillis());
+                        moduleForPrice.setPriceDate(dateToBeUsed);
+                    }
+                    else
+                    {
+                        moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
+                    }*/
+
+                    if (this.priceDate == null)
+                    {
+                        this.priceDate = new Date(System.currentTimeMillis());
+                    }
+
+                    List<RateCard> Addonwotaxlist=proposalDataProvider.getFactorRateCodeDetails("F:ADWOTAX");
+                    for (RateCard addonWOcode : Addonwotaxlist ) {
+                        codeForAddonWOTax=addonWOcode.getCode();
+                    }
+                    LOG.info("parameters" +codeForAddonWOTax+ " " +this.priceDate+ " " +this.city);
+                    PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
+                    rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
+                    LOG.info("Addon wo tax" +addonwotaxpriceMaster);
+                    PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
+                    rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
+
+                    LOG.info("rate for addon" +rateForAddonWOTax);
+                    addonsTotalWOtax+=addonProduct.getAmount()*rateForAddonWOTax;
+                    if(addonProduct.getCode().equals("NA"))
+                    {
+                        double addonDiscountedPrice=0;
+                        addonDiscountedPrice=rateForAddonSourcePrice*addonProduct.getAmount();
+                        addonDealerPrice+=addonDiscountedPrice;
+                    }
+
+                    PriceMaster addonMasterRate=proposalDataProvider.getAddonRate(addonProduct.getCode(),this.priceDate,this.city);
+                    {
+                        addonDealerPrice+=Double.valueOf(addonMasterRate.getSourcePrice());
+                    }
+                    addonsProfit=addonsTotalWOtax-addonDealerPrice;
+                    addonsMargin=(addonsProfit / addonsTotalWOtax)*100;
+                    addonProduct.setAmountWOTax(round(addonsTotalWOtax));
+                    addonProduct.setSourcePrice(round(addonDealerPrice));
+                    addonProduct.setMargin(round(addonsMargin));
+                    addonProduct.setProfit(round(addonsProfit));
 
                         if (isProposalAddon) {
                             DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));
@@ -607,6 +677,46 @@ public class AddonDetailsWindow extends Window {
         Window w = new AddonDetailsWindow(addon, title, isProposalAddon,proposalVersion, proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
+
+    }
+
+    public void saveMargin()
+    {
+
+        PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
+        rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
+        PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
+        rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
+
+       /* List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());
+        for (AddonProduct addonProduct:addonProducts)
+        {
+            ModuleForPrice moduleForPrice = new ModuleForPrice();
+            moduleForPrice.setCity(proposalHeader.getPcity());
+            if (proposalHeader.getPriceDate() == null)
+            {
+                Date dateToBeUsed = new Date(System.currentTimeMillis());
+                moduleForPrice.setPriceDate(dateToBeUsed);
+            }
+            else
+            {
+                moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
+            }
+
+            addonsTotal+=addonProduct.getAmount();
+            addonsTotalWOtax+=addonProduct.getAmount()*rateForAddonWOTax;
+            if(addonProduct.getCode().equals("NA"))
+            {
+                double addonDiscountedPrice=0;
+                addonDiscountedPrice=rateForAddonSourcePrice*addonProduct.getAmount();
+                addonDealerPrice+=addonDiscountedPrice;
+            }
+
+            PriceMaster addonMasterRate=proposalDataProvider.getAddonRate(addonProduct.getCode(),this.priceDate,this.city);
+            {
+                addonDealerPrice+=Double.valueOf(addonMasterRate.getSourcePrice());
+            }
+        }*/
 
     }
 }

@@ -52,6 +52,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
+import static java.lang.StrictMath.round;
 
 /**
  * Created by shruthi on 12-Dec-16.
@@ -531,7 +532,7 @@ public class ProductAndAddons extends Window
     }
     private void updateTotal()
     {
-        List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
+        /*List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
         LOG.info("discount percentage details" +discountratecode);
         for (RateCard discountcode : discountratecode) {
             LOG.debug("Discount code : " + discountcode.getCode());
@@ -541,7 +542,7 @@ public class ProductAndAddons extends Window
         LOG.info("pricedate" +this.priceDate + "city" +this.city);
         PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,this.city);
         rateForDiscount=discountpriceMaster.getSourcePrice();
-        LOG.info("Rate for discount" +rateForDiscount);
+        LOG.info("Rate for discount" +rateForDiscount);*/
 
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
@@ -554,6 +555,11 @@ public class ProductAndAddons extends Window
         double ProdutsMargin=0;
         double ProductsProfit=0;
         double ProductsManufactureAmount=0;
+
+        double addonsTotalWOTax=0;
+        double addonsMargin=0;
+        double addonsProfit=0;
+        double addonsManufactureAmount=0;
 
         if (productObjects.size() == 0) {
             anythingSelected = false;
@@ -581,7 +587,7 @@ public class ProductAndAddons extends Window
             }
         }
 
-        ProdutsMargin=(ProductsManufactureAmount / ProductsTotalWoTax)*100;
+        ProdutsMargin=(ProductsProfit / ProductsTotalWoTax)*100;
         if(Double.isNaN(ProdutsMargin))
         {
             LOG.info("infinite");
@@ -589,10 +595,7 @@ public class ProductAndAddons extends Window
         }
 
         LOG.info(" productsTotal" +productsTotal+ "ProductsTotalWoTax"  +ProductsTotalWoTax+ "Margin" +ProdutsMargin+ "profit" +ProductsProfit + "ProductsManufactureAmount" +ProductsManufactureAmount);
-        proposalVersion.setProfit(ProductsProfit);
-        proposalVersion.setMargin(ProdutsMargin);
-        proposalVersion.setAmountWotax(ProductsTotalWoTax);
-        proposalVersion.setManufactureAmount(ProductsManufactureAmount);
+        //product.setCostWoAccessories(round(totalCostWOAccessories));
 
         if (addonObjects.size() == 0) {
             anythingSelected = false;
@@ -604,12 +607,49 @@ public class ProductAndAddons extends Window
         for (Object object : addonObjects) {
             Double amount = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT).getValue();
             addonsTotal += amount;
+
+            Double amountwotax=(Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT_WO_TAX).getValue();
+            addonsTotalWOTax +=amountwotax;
+
+            Double manufactureamount=(Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.SOURCE_PRICE).getValue();
+            addonsManufactureAmount+=manufactureamount;
+
+            Double profit=(Double)this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.PROFIT).getValue();
+            addonsProfit+=profit;
+
             Integer id = (Integer) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.ID).getValue();
 
             if (anythingSelected) {
                 this.productAndAddonSelection.getAddonIds().add(id);
             }
         }
+
+        addonsMargin=(addonsProfit/addonsTotalWOTax)*100;
+        if(Double.isNaN(addonsMargin))
+        {
+            LOG.info("infinite addons margin");
+            addonsMargin=0.0;
+        }
+        LOG.info("Addons Total" +addonsTotal+ "AddonsTotalWoTax"  +addonsTotalWOTax+ "profit" +addonsProfit + "AddonsManufactureAmount" +addonsManufactureAmount + "Addons Margin" +addonsMargin);
+
+        //Double total=productsTotal+addonsTotal;
+        Double totalWT=ProductsTotalWoTax+addonsTotalWOTax;
+        Double profit=ProductsProfit+addonsProfit;
+        Double totalmanufactureamount=ProductsManufactureAmount+addonsManufactureAmount;
+        Double finalmargin=(profit/totalWT)*100;
+        if(Double.isNaN(finalmargin))
+        {
+            finalmargin=0.0;
+        }
+        /*if(Double.isNaN(fin))
+        Double finalmargin=(profit/totalWT)*100;*/
+
+        LOG.info("TotalWoTax"  +totalWT+ "profit" +profit + "ManufactureAmount" +totalmanufactureamount +"Margin" +finalmargin);
+
+        proposalVersion.setProfit(round(profit,2));
+        proposalVersion.setMargin(round(finalmargin,2));
+        proposalVersion.setAmountWotax(round(totalWT,2));
+        proposalVersion.setManufactureAmount(round(totalmanufactureamount,2));
 
         Double totalWoAccessories = 0.0;
         List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
@@ -640,7 +680,9 @@ public class ProductAndAddons extends Window
     private void refreshDiscountForNewProposals(Double totalAmount, Double addonsTotal, Double productsTotal)
     {
         Double discountPercent=0.0,discountAmount=0.0;
-        rateForDiscount=rateForDiscount*100;
+        //rateForDiscount=rateForDiscount*100;
+        rateForDiscount=proposalHeader.getMaxDiscountPercentage();
+        LOG.info("*****" +rateForDiscount);
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
@@ -658,14 +700,14 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
         else if("DA".equals(status))
         {
             discountAmount = (Double) this.discountAmount.getConvertedValue();
-            discountPercent=(discountAmount/productsTotal)*100;
+            discountPercent=(discountAmount/productsTotal);
             //if(discountPercent<=40)
             if(discountPercent<=rateForDiscount)
             {
@@ -673,7 +715,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -705,7 +747,9 @@ public class ProductAndAddons extends Window
     private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
     {
         Double discountPercent=0.0,discountAmount=0.0;
-        rateForDiscount=rateForDiscount*100;
+        //rateForDiscount=rateForDiscount*100;
+        rateForDiscount=proposalHeader.getMaxDiscountPercentage();
+        LOG.info("&&&&&&&&" +rateForDiscount);
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
@@ -722,7 +766,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 30%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -735,7 +779,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("Discount should not exceed 40%", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
         }
@@ -752,7 +796,7 @@ public class ProductAndAddons extends Window
         this.grandTotal.setReadOnly(true);
 
         //this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
-       /* productAndAddonSelection.setDiscountPercentage(discountPercent);
+       /*productAndAddonSelection.setDiscountPercentage(discountPercent);
         productAndAddonSelection.setDiscountAmount(discountAmount);*/
 
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
@@ -953,7 +997,10 @@ public class ProductAndAddons extends Window
                 copyProduct.setQuoteFilePath(p.getQuoteFilePath());
                 copyProduct.setCreatedBy(p.getCreatedBy());
                 copyProduct.setCostWoAccessories(p.getCostWoAccessories());
-
+                copyProduct.setProfit(p.getProfit());
+                copyProduct.setMargin(p.getMargin());
+                copyProduct.setManufactureAmount(p.getManufactureAmount());
+                copyProduct.setAmountWoTax(p.getAmountWoTax());
                 copyProduct.setModules(modulesFromOldProduct);
                 LOG.debug("COPIED@"+ copyProduct);
 
@@ -1136,9 +1183,9 @@ public class ProductAndAddons extends Window
                 if (("Custom Addon").equals(addon.getCategoryCode()))
                 {
                     CustomAddonDetailsWindow.open(addon,"Edit Addon",true,proposalVersion);
+                }else {
+                    AddonDetailsWindow.open(addon, "Edit Addon", true, proposalVersion, proposalHeader);
                 }
-
-                AddonDetailsWindow.open(addon, "Edit Addon", true,proposalVersion,proposalHeader);
             }
 
             @Override
