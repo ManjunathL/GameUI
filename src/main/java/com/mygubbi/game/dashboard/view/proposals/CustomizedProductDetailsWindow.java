@@ -1182,13 +1182,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     NotificationUtil.showNotification("Product Sequence cannot be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 } else {
-                    //Boolean checkManualSeq = checkForDuplicatefunction();
-                /*LOG.info("check value " +checkForDuplicatefunction());
-                if ("false".equals(checkManualSeq)) {
-                    NotificationUtil.showNotification("Product Sequence already exists!!!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return;
-                }
-*/
+
                     try {
                         binder.commit();
                     } catch (FieldGroup.CommitException e) {
