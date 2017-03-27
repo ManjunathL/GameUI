@@ -980,6 +980,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 copyModule.setCarcassCost(m.getCarcassCost());
                 copyModule.setAccessoryCost(m.getAccessoryCost());
                 copyModule.setLabourCost(m.getLabourCost());
+                copyModule.setAccessoryflag(m.getAccessoryflag());
 
                 DashboardEventBus.post(new ProposalEvent.ModuleUpdated(copyModule,false,false,product.getModules().size(),CustomizedProductDetailsWindow.this));
                 DashboardEventBus.unregister(this);
