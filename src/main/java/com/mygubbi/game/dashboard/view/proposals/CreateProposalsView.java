@@ -358,7 +358,6 @@ public class CreateProposalsView extends Panel implements View {
                 copyVersion.setFinalAmount(pVersion.getFinalAmount());
                 copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
                 copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
-                copyVersion.setRemarks(pVersion.getRemarks());
                 copyVersion.setToVersion(String.valueOf(versionNew));
                 copyVersion.setDiscountAmount(pVersion.getDiscountAmount());
                 copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
@@ -428,7 +427,6 @@ public class CreateProposalsView extends Panel implements View {
             copyVersion.setFinalAmount(pVersion.getFinalAmount());
             copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
             copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
-            copyVersion.setRemarks(pVersion.getRemarks());
             copyVersion.setToVersion(pVersion.getVersion());
             copyVersion.setDiscountAmount(pVersion.getDiscountAmount());
             copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
@@ -444,8 +442,6 @@ public class CreateProposalsView extends Panel implements View {
             UI.getCurrent().getNavigator()
                     .navigateTo("New Quotation/" + proposalId);
             DashboardEventBus.unregister(this);
-
-
         }));
 
 

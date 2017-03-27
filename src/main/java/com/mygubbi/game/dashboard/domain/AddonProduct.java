@@ -340,6 +340,7 @@ public class AddonProduct implements Cloneable {
                 ", productTypeCode='" + productTypeCode + '\'' +
                 ", productSubtypeCode='" + productSubtypeCode + '\'' +
                 ", productType='" + productType + '\'' +
+                ", product='" + product + '\'' +
                 ", brandCode='" + brandCode + '\'' +
                 ", brand='" + brand + '\'' +
                 ", uom='" + uom + '\'' +
