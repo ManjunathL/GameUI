@@ -52,7 +52,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.TYPE;
-import static java.lang.StrictMath.round;
 
 /**
  * Created by shruthi on 12-Dec-16.
@@ -544,6 +543,10 @@ public class ProductAndAddons extends Window
         rateForDiscount=discountpriceMaster.getSourcePrice();
         LOG.info("Rate for discount" +rateForDiscount);*/
 
+
+        productsGrid.setSelectionMode(Grid.SelectionMode.NONE);
+        addonsGrid.setSelectionMode(Grid.SelectionMode.NONE);
+
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
         boolean anythingSelected = true;
@@ -587,7 +590,7 @@ public class ProductAndAddons extends Window
             }
         }
 
-        ProdutsMargin=(ProductsProfit / ProductsTotalWoTax)*100;
+        ProdutsMargin=(ProductsManufactureAmount / ProductsTotalWoTax)*100;
         if(Double.isNaN(ProdutsMargin))
         {
             LOG.info("infinite");
@@ -595,7 +598,10 @@ public class ProductAndAddons extends Window
         }
 
         LOG.info(" productsTotal" +productsTotal+ "ProductsTotalWoTax"  +ProductsTotalWoTax+ "Margin" +ProdutsMargin+ "profit" +ProductsProfit + "ProductsManufactureAmount" +ProductsManufactureAmount);
-        //product.setCostWoAccessories(round(totalCostWOAccessories));
+        proposalVersion.setProfit(ProductsProfit);
+        proposalVersion.setMargin(ProdutsMargin);
+        proposalVersion.setAmountWotax(ProductsTotalWoTax);
+        proposalVersion.setManufactureAmount(ProductsManufactureAmount);
 
         if (addonObjects.size() == 0) {
             anythingSelected = false;
@@ -679,10 +685,10 @@ public class ProductAndAddons extends Window
 
     private void refreshDiscountForNewProposals(Double totalAmount, Double addonsTotal, Double productsTotal)
     {
+
         Double discountPercent=0.0,discountAmount=0.0;
         //rateForDiscount=rateForDiscount*100;
         rateForDiscount=proposalHeader.getMaxDiscountPercentage();
-        LOG.info("*****" +rateForDiscount);
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
@@ -750,6 +756,8 @@ public class ProductAndAddons extends Window
         //rateForDiscount=rateForDiscount*100;
         rateForDiscount=proposalHeader.getMaxDiscountPercentage();
         LOG.info("&&&&&&&&" +rateForDiscount);
+        //rateForDiscount=rateForDiscount*100;
+        rateForDiscount=proposalHeader.getMaxDiscountPercentage();
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
@@ -758,7 +766,7 @@ public class ProductAndAddons extends Window
                     discountPercent = 0.0;
                 }
 
-                discountAmount = totalWoAccessories * discountPercent / 100.0;
+                discountAmount = totalWoAccessories * (discountPercent / 100) ;
                 //double res = discountAmount - discountAmount % 100;
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
                 disAmount=discountAmount.intValue();
@@ -934,6 +942,7 @@ public class ProductAndAddons extends Window
         GeneratedPropertyContainer genContainer = createGeneratedProductPropertyContainer();
 
         productsGrid = new Grid(genContainer);
+        productsGrid.setSelectionMode(Grid.SelectionMode.NONE);
         productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
@@ -1153,6 +1162,7 @@ public class ProductAndAddons extends Window
         GeneratedPropertyContainer genContainer = createGeneratedAddonsPropertyContainer();
 
         addonsGrid = new Grid(genContainer);
+        addonsGrid.setSelectionMode(Grid.SelectionMode.NONE);
         addonsGrid.setSizeFull();
         /*addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         addonsGrid.addSelectionListener(this::updateTotal);*/
@@ -1456,6 +1466,8 @@ public class ProductAndAddons extends Window
                 return;
             }
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+            proposalVersion.setDiscountAmount(Double.parseDouble(discountTotal.getValue()));
+            proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());

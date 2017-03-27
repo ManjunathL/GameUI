@@ -877,6 +877,7 @@ public class CustomizedProductDetailsWindow extends Window {
         GeneratedPropertyContainer genContainer = createGeneratedModulePropertyContainer();
 
         modulesGrid = new Grid(genContainer);
+        modulesGrid.setSelectionMode(Grid.SelectionMode.NONE);
         modulesGrid.setStyleName("modules-grid");
         modulesGrid.setSizeFull();
         modulesGrid.setResponsive(true);
