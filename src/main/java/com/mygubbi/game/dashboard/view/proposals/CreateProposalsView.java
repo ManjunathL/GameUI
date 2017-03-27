@@ -333,6 +333,7 @@ public class CreateProposalsView extends Panel implements View {
 
                 } else if (pVersion.getVersion().startsWith("2.")) {
 
+                    String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
                     if (!(("planning").equals(role) || ("admin").equals(role)))
                     {

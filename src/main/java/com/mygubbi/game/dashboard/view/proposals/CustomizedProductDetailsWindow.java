@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.domain.JsonPojo.ShutterDesign;
 import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
@@ -39,6 +40,8 @@ import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
 import java.io.*;
+import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,11 +97,33 @@ public class CustomizedProductDetailsWindow extends Window {
     private static Set<CustomizedProductDetailsWindow> previousInstances = new HashSet<>();
     private ProposalVersion proposalVersion;
 
+    String codeForProductWOTax;
+    String codeForStdManfCost;
+    String codeForNStdManfCost;
+    String codeForManfLabourCost;
+    String codeForAddonWOTax;
+    String codeForAddonSourcePrice;
+
+    double rateForProductWOTax;
+    double rateForStdManfCost;
+    double rateForNStdManfCost;
+    double rateForManfLabourCost;
+    double rateForAddonWOTax;
+    double rateForAddonSourcePrice;
+    private java.sql.Date priceDate;
+    private String city;
+
     public CustomizedProductDetailsWindow(Proposal proposal, Product product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         this.proposal = proposal;
         this.product = product;
         this.proposalVersion = proposalVersion;
         this.proposalHeader = proposalHeader;
+        this.priceDate = proposalHeader.getPriceDate();
+        this.city = proposalHeader.getPcity();
+        if (this.priceDate == null)
+        {
+            this.priceDate = new Date(System.currentTimeMillis());
+        }
 
         this.cloneModules();
         this.cloneAddons();
@@ -278,6 +303,7 @@ public class CustomizedProductDetailsWindow extends Window {
         Double totalCostWOAccessories = 0.0;
         Double totalSalesPrice =0.0;
         Double NonStandardWoodworkCost=0.0;
+        Double hikeCost=0.0;
         Double StandardWoodworkCost=0.0;
         Double hardwareCost=0.0;
         Double carcassCost=0.0;
@@ -289,50 +315,156 @@ public class CustomizedProductDetailsWindow extends Window {
         Double manufacturingLabourCost =0.0;
         Double manufacturingHardwareCost =0.0;
         Double manufacturingAccessoryCost =0.0;
+        Double manufacturingAccessoryCostForZgeneric=0.0;
         Double manufacturingTotalSalesPrice =0.0;
         Double manufacturingProfit =0.0;
         Double marginCompute=0.0;
+        Double FinalmanufacturingAccoryCost=0.0;
         double totalModuleArea = 0;
+
+        List<RateCard> rateCard=proposalDataProvider.getFactorRateCodeDetails("F:PRODWOTAX");
+        for (RateCard productwotaxcode : rateCard) {
+            codeForProductWOTax=productwotaxcode.getCode();
+        }
+
+        List<RateCard> manfstdcostlist=proposalDataProvider.getFactorRateCodeDetails("F:STDMC");
+        for (RateCard manfstdcode :manfstdcostlist ) {
+            codeForStdManfCost=manfstdcode.getCode();
+        }
+
+        List<RateCard> manfnstdcostlist=proposalDataProvider.getFactorRateCodeDetails("F:NSTDMC");
+        for (RateCard manfnstdcode :manfnstdcostlist ) {
+            codeForNStdManfCost=manfnstdcode.getCode();
+        }
+
+        List<RateCard> labourcostlist=proposalDataProvider.getFactorRateCodeDetails("F:LC");
+        for (RateCard labourcostcode : labourcostlist ) {
+            codeForManfLabourCost=labourcostcode.getCode();
+        }
+
+        List<RateCard> Addonwotaxlist=proposalDataProvider.getFactorRateCodeDetails("F:ADWOTAX");
+        for (RateCard addonWOcode : Addonwotaxlist ) {
+            codeForAddonWOTax=addonWOcode.getCode();
+        }
+
+        List<RateCard> Addonsourcepricelist=proposalDataProvider.getFactorRateCodeDetails("F:CASP");
+        for (RateCard addonsourceprice : Addonsourcepricelist ) {
+            codeForAddonSourcePrice=addonsourceprice.getCode();
+        }
+
+        PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
+        rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
+        PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
+        rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
+        PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
+        rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
+        PriceMaster labourcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForManfLabourCost,this.priceDate,this.city);
+        rateForManfLabourCost=labourcostpriceMaster.getSourcePrice();
+        PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
+        rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
+        PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
+        rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
 
         for (Module module : modules)
         {
+            LOG.info("module " +module);
             totalCostWOAccessories += module.getAmountWOAccessories();
             totalModuleArea += module.getArea();
             if (module.getMgCode().startsWith("MG-NS"))
             {
-                NonStandardWoodworkCost+=module.getCarcassCost()+module.getShutterCost();
-                LOG.info("NSWoodWorkCost " +NonStandardWoodworkCost);
+                if(!module.getMgCode().equals("MG-NS-H-001"))
+                {
+                    NonStandardWoodworkCost+=module.getCarcassCost()+module.getShutterCost();
+                }
+                else
+                {
+                    hikeCost+=module.getWoodworkCost();
+                }
             }
             else
             {
                 StandardWoodworkCost+=module.getCarcassCost()+module.getShutterCost();
-                LOG.info("SWoodWorkCost" +StandardWoodworkCost);
             }
             hardwareCost+=module.getHardwareCost();
             carcassCost+=module.getCarcassCost();
             accessoryCost+=module.getAccessoryCost();
-            labourCost+=module.getLabourCost();
+            if(!module.getMgCode().equals("MG-NS-H-001"))
+            {
+                labourCost+=module.getLabourCost();
+            }
+
+            List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
+            for(ModuleAccessoryPack moduleAccessoryPack:moduleaccpack)
+            {
+                List<String> acccode=moduleAccessoryPack.getAccessories();
+                for(String ZgenericAccessory: acccode)
+                {
+                    PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(ZgenericAccessory,this.priceDate,this.city);
+                    {
+                        manufacturingAccessoryCost+=accessoryRateMaster.getSourcePrice();
+                    }
+                }
+
+                List <AccessoryDetails>  accesoryHardwareMasters =proposalDataProvider.getAccessoryDetails(moduleAccessoryPack.getCode());
+                for(AccessoryDetails acc: accesoryHardwareMasters)
+                {
+                    PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(acc.getCode(),this.priceDate,this.city);
+                    {
+                        manufacturingAccessoryCostForZgeneric+=accessoryRateMaster.getSourcePrice();
+                    }
+                    PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acc.getCode(),this.priceDate,this.city);
+                    {
+                        {
+                            manufacturingHardwareCost += hardwareRateMaster.getSourcePrice();
+                        }
+                    }
+                }
+
+            }
+
+            List<ModuleComponent> modulehardwaredetails=proposalDataProvider.getModuleAccessoryhwDetails(module.getMgCode());
+            for(ModuleComponent acchwdetails: modulehardwaredetails)
+            {
+                PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acchwdetails.getCompcode(),this.priceDate,this.city);
+                {
+                    {
+                        manufacturingHardwareCost += hardwareRateMaster.getSourcePrice() * acchwdetails.getQuantity();
+                    }
+                }
+            }
 
             totalSalesPrice =NonStandardWoodworkCost+StandardWoodworkCost+hardwareCost+labourCost+accessoryCost;
-
-            totalSalesPriceWOtax = totalSalesPrice *0.8558;
-            stdModuleManufacturingCost =StandardWoodworkCost/2.46;
-            nonStdModuleManufacturingCost =NonStandardWoodworkCost/1.288;
-            manufacturingLabourCost =labourCost/1.288;
-            manufacturingHardwareCost =hardwareCost/1.546;
-            manufacturingAccessoryCost =accessoryCost/1.546;
-
-            manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + manufacturingAccessoryCost;
+            totalSalesPriceWOtax = totalSalesPrice *rateForProductWOTax;
+            stdModuleManufacturingCost =StandardWoodworkCost/rateForStdManfCost;
+            nonStdModuleManufacturingCost =NonStandardWoodworkCost/rateForNStdManfCost;
+            manufacturingLabourCost =labourCost/rateForManfLabourCost;
+            FinalmanufacturingAccoryCost = manufacturingAccessoryCost + manufacturingAccessoryCostForZgeneric;
+            manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + FinalmanufacturingAccoryCost;
 
             manufacturingProfit = totalSalesPriceWOtax - manufacturingTotalSalesPrice;
             marginCompute=(manufacturingProfit / totalSalesPriceWOtax)*100;
         }
-        LOG.info("total sales price" +totalSalesPrice);
-        product.setCostWoAccessories(totalCostWOAccessories);
-        product.setProfit(manufacturingProfit);
-        product.setMargin(marginCompute);
-        product.setAmountWoTax(totalSalesPriceWOtax);
-        product.setManufactureAmount(manufacturingProfit);
+        product.setCostWoAccessories(round(totalCostWOAccessories));
+        product.setProfit(round(manufacturingProfit));
+        product.setMargin(round(marginCompute));
+        product.setAmountWoTax(round(totalSalesPriceWOtax));
+        product.setManufactureAmount(round(manufacturingTotalSalesPrice));
+
+        LOG.info("Non std WoodCost " +NonStandardWoodworkCost);
+        LOG.info("Std WoodCost" +StandardWoodworkCost);
+        LOG.info("Accessory Cost" +accessoryCost);
+        LOG.info("Hardware Cost" +hardwareCost);
+        LOG.info("Labour Cost" +labourCost);
+        LOG.info("hike cost" +hikeCost);
+        LOG.info("Total Sales Price" +totalSalesPrice);
+        LOG.info("TSP WO Tax" +totalSalesPriceWOtax);
+
+        LOG.info("Manf std" +stdModuleManufacturingCost);
+        LOG.info("manf NONStd " +nonStdModuleManufacturingCost);
+        LOG.info("mnf Accessory price" +FinalmanufacturingAccoryCost);
+        LOG.info("mnf Hardware price" +manufacturingHardwareCost);
+        LOG.info("mnf Labour price" +manufacturingLabourCost);
+        LOG.info("Mnf Total price" +manufacturingTotalSalesPrice);
 
         Double cwa=product.getCostWoAccessories();
         if (totalModuleArea != 0) {
@@ -785,7 +917,7 @@ public class CustomizedProductDetailsWindow extends Window {
         modulesGrid.setSizeFull();
         modulesGrid.setResponsive(true);
         modulesGrid.setColumnReorderingAllowed(true);
-        modulesGrid.setColumns(Module.IMPORT_STATUS,Module.MODULE_SEQUENCE, Module.UNIT_TYPE, Module.MG_MODULE_CODE,Module.REMARKS ,Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT, "action");
+        modulesGrid.setColumns(Module.IMPORT_STATUS,Module.MODULE_SEQUENCE, Module.UNIT_TYPE, Module.MG_MODULE_CODE,Module.REMARKS ,Module.CARCASS_MATERIAL, Module.FINISH_TYPE, Module.SHUTTER_FINISH, Module.COLOR_CODE, Module.AMOUNT,Module.ACCESSORY_FLAG, "action");
 
         modulesGrid.setCellStyleGenerator(cell -> {
             if (cell.getPropertyId().equals(Module.CARCASS_MATERIAL)
@@ -812,6 +944,7 @@ public class CustomizedProductDetailsWindow extends Window {
         columns.get(idx++).setHeaderCaption("Shutter Finish");
         columns.get(idx++).setHeaderCaption("Color");
         columns.get(idx++).setHeaderCaption("Amount");
+        columns.get(idx++).setHeaderCaption("Accessory Flag");
         Grid.Column actionColumn = columns.get(idx++);
         actionColumn.setHeaderCaption("Actions");
 
@@ -876,6 +1009,13 @@ public class CustomizedProductDetailsWindow extends Window {
                 copyModule.setExpBottom(m.getExpBottom());
                 copyModule.setAccessoryPackDefault(m.getAccessoryPackDefault());
                 copyModule.setAccessoryPacks(m.getAccessoryPacks());
+                copyModule.setHardwareCost(m.getHardwareCost());
+                copyModule.setWoodworkCost(m.getWoodworkCost());
+                copyModule.setShutterCost(m.getShutterCost());
+                copyModule.setCarcassCost(m.getCarcassCost());
+                copyModule.setAccessoryCost(m.getAccessoryCost());
+                copyModule.setLabourCost(m.getLabourCost());
+                copyModule.setAccessoryflag(m.getAccessoryflag());
 
                 DashboardEventBus.post(new ProposalEvent.ModuleUpdated(copyModule,false,false,product.getModules().size(),CustomizedProductDetailsWindow.this));
                 DashboardEventBus.unregister(this);
@@ -1235,7 +1375,7 @@ public class CustomizedProductDetailsWindow extends Window {
         });
         saveBtn.focus();
         saveBtn.setVisible(true);
-
+        updatePsftCosts();
         footer.addComponent(saveBtn);
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 

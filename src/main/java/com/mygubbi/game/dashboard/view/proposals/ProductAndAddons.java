@@ -544,6 +544,9 @@ public class ProductAndAddons extends Window
         LOG.info("Rate for discount" +rateForDiscount);*/
 
 
+        productsGrid.setSelectionMode(Grid.SelectionMode.NONE);
+        addonsGrid.setSelectionMode(Grid.SelectionMode.NONE);
+
         Collection<?> productObjects = productsGrid.getSelectedRows();
         Collection<?> addonObjects = addonsGrid.getSelectedRows();
         boolean anythingSelected = true;
@@ -555,6 +558,11 @@ public class ProductAndAddons extends Window
         double ProdutsMargin=0;
         double ProductsProfit=0;
         double ProductsManufactureAmount=0;
+
+        double addonsTotalWOTax=0;
+        double addonsMargin=0;
+        double addonsProfit=0;
+        double addonsManufactureAmount=0;
 
         if (productObjects.size() == 0) {
             anythingSelected = false;
@@ -605,12 +613,49 @@ public class ProductAndAddons extends Window
         for (Object object : addonObjects) {
             Double amount = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT).getValue();
             addonsTotal += amount;
+
+            Double amountwotax=(Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT_WO_TAX).getValue();
+            addonsTotalWOTax +=amountwotax;
+
+            Double manufactureamount=(Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.SOURCE_PRICE).getValue();
+            addonsManufactureAmount+=manufactureamount;
+
+            Double profit=(Double)this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.PROFIT).getValue();
+            addonsProfit+=profit;
+
             Integer id = (Integer) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.ID).getValue();
 
             if (anythingSelected) {
                 this.productAndAddonSelection.getAddonIds().add(id);
             }
         }
+
+        addonsMargin=(addonsProfit/addonsTotalWOTax)*100;
+        if(Double.isNaN(addonsMargin))
+        {
+            LOG.info("infinite addons margin");
+            addonsMargin=0.0;
+        }
+        LOG.info("Addons Total" +addonsTotal+ "AddonsTotalWoTax"  +addonsTotalWOTax+ "profit" +addonsProfit + "AddonsManufactureAmount" +addonsManufactureAmount + "Addons Margin" +addonsMargin);
+
+        //Double total=productsTotal+addonsTotal;
+        Double totalWT=ProductsTotalWoTax+addonsTotalWOTax;
+        Double profit=ProductsProfit+addonsProfit;
+        Double totalmanufactureamount=ProductsManufactureAmount+addonsManufactureAmount;
+        Double finalmargin=(profit/totalWT)*100;
+        if(Double.isNaN(finalmargin))
+        {
+            finalmargin=0.0;
+        }
+        /*if(Double.isNaN(fin))
+        Double finalmargin=(profit/totalWT)*100;*/
+
+        LOG.info("TotalWoTax"  +totalWT+ "profit" +profit + "ManufactureAmount" +totalmanufactureamount +"Margin" +finalmargin);
+
+        proposalVersion.setProfit(round(profit,2));
+        proposalVersion.setMargin(round(finalmargin,2));
+        proposalVersion.setAmountWotax(round(totalWT,2));
+        proposalVersion.setManufactureAmount(round(totalmanufactureamount,2));
 
         Double totalWoAccessories = 0.0;
         List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
@@ -959,7 +1004,10 @@ public class ProductAndAddons extends Window
                 copyProduct.setQuoteFilePath(p.getQuoteFilePath());
                 copyProduct.setCreatedBy(p.getCreatedBy());
                 copyProduct.setCostWoAccessories(p.getCostWoAccessories());
-
+                copyProduct.setProfit(p.getProfit());
+                copyProduct.setMargin(p.getMargin());
+                copyProduct.setManufactureAmount(p.getManufactureAmount());
+                copyProduct.setAmountWoTax(p.getAmountWoTax());
                 copyProduct.setModules(modulesFromOldProduct);
                 LOG.debug("COPIED@"+ copyProduct);
 
@@ -1138,13 +1186,14 @@ public class ProductAndAddons extends Window
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
+                addon.setAdd(false);
 
                 if (("Custom Addon").equals(addon.getCategoryCode()))
                 {
                     CustomAddonDetailsWindow.open(addon,"Edit Addon",true,proposalVersion);
+                }else {
+                    AddonDetailsWindow.open(addon, "Edit Addon", true, proposalVersion, proposalHeader);
                 }
-
-                AddonDetailsWindow.open(addon, "Edit Addon", true,proposalVersion,proposalHeader);
             }
 
             @Override
@@ -1300,9 +1349,14 @@ public class ProductAndAddons extends Window
     }
 
     private InputStream getInputStreamPdf() {
-        productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
-        productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
+        String replace = discountAmount.getValue().replace(",", "");
+        double discountamount= Double.valueOf(replace);
+
+        productAndAddonSelection.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
+        productAndAddonSelection.setDiscountAmount(discountamount);
+
         String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
+
         InputStream input = null;
         try {
             input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
@@ -1313,11 +1367,13 @@ public class ProductAndAddons extends Window
     }
 
     private StreamResource createQuoteResource() {
+
         StreamResource.StreamSource source = () -> {
             if (!proposal.getProducts().isEmpty()) {
-                LOG.info("products and addon selection " +productAndAddonSelection);
-                productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
-                productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
+                String replace = discountAmount.getValue().replace(",", "");
+                double discountamount= Double.valueOf(replace);
+                productAndAddonSelection.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
+                productAndAddonSelection.setDiscountAmount(discountamount);
                 String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productAndAddonSelection);
                 InputStream input = null;
                 try {
@@ -1360,8 +1416,6 @@ public class ProductAndAddons extends Window
 
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
-            proposalVersion.setDiscountAmount(Double.parseDouble(discountAmount.getValue().replace(",","")));
-            proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             LOG.info("Status "+proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(versionNum.getValue());
@@ -1420,7 +1474,7 @@ public class ProductAndAddons extends Window
                 return;
             }
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
-            proposalVersion.setDiscountAmount(Double.parseDouble(discountAmount.getValue().replace(",","")));
+            proposalVersion.setDiscountAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
