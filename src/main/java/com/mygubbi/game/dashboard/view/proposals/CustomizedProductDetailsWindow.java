@@ -263,11 +263,11 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutLeft.setSpacing(true);
         formLayoutLeft.addComponent(costWithoutAccessories);
 
-        manualSeq = (TextField) binder.buildAndBind("Manual Sequence", MANUAL_SEQ);
+       /* manualSeq = (TextField) binder.buildAndBind("Manual Sequence", MANUAL_SEQ);
         manualSeq.setRequired(true);
         manualSeq.setNullSettingAllowed(false);
         manualSeq.addValueChangeListener(this :: checkForDuplicateSeq);
-        formLayoutLeft.addComponent(manualSeq);
+        formLayoutLeft.addComponent(manualSeq);*/
 
         return formLayoutLeft;
     }
@@ -1318,10 +1318,10 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
         saveBtn.addClickListener(event -> {
             try {
-                if ("0".equals(manualSeq.getValue())) {
+               /* if ("0".equals(manualSeq.getValue())) {
                     NotificationUtil.showNotification("Product Sequence cannot be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
-                } else {
+                } else {*/
 
                     try {
                         binder.commit();
@@ -1366,7 +1366,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         close();
                     } else {
                         NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    }}
+                    }
                 } catch(Exception e){
                     Notification.show("Error while saving Item details",
                             Type.ERROR_MESSAGE);
@@ -1751,7 +1751,7 @@ public class CustomizedProductDetailsWindow extends Window {
         itemTitleField.setReadOnly(true);
         productSelection.setReadOnly(true);
         roomText.setReadOnly(true);
-        manualSeq.setReadOnly(true);
+       // manualSeq.setReadOnly(true);
         shutterDesign.setReadOnly(true);
         baseCarcassSelection.setReadOnly(true);
         wallCarcassSelection.setReadOnly(true);

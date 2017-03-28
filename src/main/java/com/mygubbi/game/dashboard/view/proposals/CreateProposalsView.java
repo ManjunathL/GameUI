@@ -1110,13 +1110,13 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.addComponent(projectCityField);
         projectCityField.addValueChangeListener(this::cityChanged);
 
-        maxDiscountPercentage = new TextField("Max Discount Percentage");
-        maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()));
-        formLayoutLeft.addComponent(maxDiscountPercentage);
+            maxDiscountPercentage = new TextField("Max Discount Percentage");
+            maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()));
+            formLayoutLeft.addComponent(maxDiscountPercentage);
 
         if(!(("admin").equals(role)) )
         {
-            maxDiscountPercentage.setReadOnly(true);
+            maxDiscountPercentage.setVisible(false);
         }
 
 

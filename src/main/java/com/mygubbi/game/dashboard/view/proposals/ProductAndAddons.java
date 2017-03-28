@@ -943,13 +943,12 @@ public class ProductAndAddons extends Window
         productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
-        productsGrid.setColumns(Product.MANUAL_SEQ, Product.SOURCE, Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
+        productsGrid.setColumns(Product.SEQ,Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
 
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
 
-        columns.get(idx++).setHeaderCaption("Manual Seq");
-        columns.get(idx++).setHeaderCaption("Source");
+        columns.get(idx++).setHeaderCaption("Seq");
         columns.get(idx++).setHeaderCaption("Room");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Category");
@@ -977,7 +976,7 @@ public class ProductAndAddons extends Window
                 LOG.debug("modules:"+modulesFromOldProduct);
                 Product copyProduct = new Product();
                 copyProduct.setType(Product.TYPES.CUSTOMIZED.name());
-                copyProduct.setSeq(0);
+                copyProduct.setSeq(length);
                 copyProduct.setProposalId(proposalHeader.getId());
                 copyProduct.setFromVersion(p.getFromVersion());
                 copyProduct.setTitle(p.getTitle());
@@ -1098,7 +1097,7 @@ public class ProductAndAddons extends Window
 
         if (!proposal.getProducts().isEmpty()) {
             productContainer.addAll(proposal.getProducts());
-            productsGrid.sort(Product.MANUAL_SEQ, SortDirection.ASCENDING);
+            productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
         Label label = new Label("Select Products and click Download Quote/Job Card button to generate output for only the selected Products.");
         label.setStyleName("font-italics");
@@ -1309,12 +1308,40 @@ public class ProductAndAddons extends Window
         };
         return new StreamResource(source, "so-initial.xlsx");
     }*/
-
+    private boolean checkModuleSeq()
+    {
+        List<Product> product=proposal.getProducts();
+        for(Product product1:product)
+        {
+            LOG.info("product" +product1);
+            if(product1.getManualSeq()==0)
+            {
+                NotificationUtil.showNotification("Manual sequence cannot be zero", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                return false;
+            }
+        }
+        return true;
+    }
     private void checkProductsAndAddonsAvailable(Button.ClickEvent clickEvent) {
 
-            if (proposal.getProducts().isEmpty() ) {
+            if (proposal.getProducts().isEmpty() )
+            {
                 NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
             }
+           /* else
+            {
+                LOG.info("else part");
+                List<Product> product=proposal.getProducts();
+                for(Product product1:product)
+                {
+                    LOG.info("product" +product1);
+                    if(product1.getManualSeq()==0)
+                    {
+                        NotificationUtil.showNotification("Manual sequence cannot be zero", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                        return false;
+                    }
+                }
+            }*/
             if (proposal.getAddons().isEmpty()) {
                 NotificationUtil.showNotification("No Addons found.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
             }
@@ -1369,8 +1396,10 @@ public class ProductAndAddons extends Window
 
     private StreamResource createQuoteResource() {
 
-        StreamResource.StreamSource source = () -> {
-            if (!proposal.getProducts().isEmpty()) {
+        StreamResource.StreamSource source = () ->
+        {
+            if (!proposal.getProducts().isEmpty())
+            {
                 String replace = discountAmount.getValue().replace(",", "");
                 double discountamount= Double.valueOf(replace);
                 productAndAddonSelection.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
@@ -1384,7 +1413,9 @@ public class ProductAndAddons extends Window
                     e.printStackTrace();
                 }
                 return input;
-            } else {
+            }
+            else
+            {
                 return null;
             }
         };
@@ -1401,96 +1432,100 @@ public class ProductAndAddons extends Window
 
 
     private void submit(Button.ClickEvent clickEvent) {
-        try {
-            binder.commit();
+        if(proposalHeader.getMaxDiscountPercentage()>=Double.valueOf(discountPercentage.getValue())) {
+            try {
+                binder.commit();
 
-            LOG.info("value in submit" +totalWithoutDiscount.getValue());
-            if (remarksTextArea == null || remarksTextArea.isEmpty())
-            {
-                NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                return;
-            }
-            else if(grandTotal.getValue().equals("0"))
-            {
-                NotificationUtil.showNotification("Please add products",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                return;
-            }
+                LOG.info("value in submit" + totalWithoutDiscount.getValue());
+                if (remarksTextArea == null || remarksTextArea.isEmpty()) {
+                    NotificationUtil.showNotification("Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                } else if (grandTotal.getValue().equals("0")) {
+                    NotificationUtil.showNotification("Please add products", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
 
-            proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
-            proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
-            LOG.info("Status "+proposalVersion.getStatus());
-            proposalHeader.setStatus(proposalVersion.getStatus());
-            proposalHeader.setVersion(versionNum.getValue());
-            boolean success = proposalDataProvider.saveProposal(proposalHeader);
-            if (success) {
-                boolean mapped = true;
-                for (Product product : proposal.getProducts()) {
-                    Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId(),product.getFromVersion());
-                    mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (!populatedProduct.getModules().isEmpty());
+                proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
+                proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
+                LOG.info("Status " + proposalVersion.getStatus());
+                proposalHeader.setStatus(proposalVersion.getStatus());
+                proposalHeader.setVersion(versionNum.getValue());
+                boolean success = proposalDataProvider.saveProposal(proposalHeader);
+                if (success) {
+                    boolean mapped = true;
+                    for (Product product : proposal.getProducts()) {
+                        Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId(), product.getFromVersion());
+                        mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (!populatedProduct.getModules().isEmpty());
+                        if (!mapped) {
+                            break;
+                        }
+                    }
+
                     if (!mapped) {
-                        break;
-                    }
-                }
-
-                if (!mapped) {
-                    NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                } else {
-                    saveProposalVersion();
-                    success = proposalDataProvider.publishVersion(proposalVersion.getVersion(),proposalHeader.getId());
-                    if (success) {
-                        saveButton.setVisible(false);
-                        addKitchenOrWardrobeButton.setVisible(false);
-                        addFromCatalogueButton.setVisible(false);
-                        addonAddButton.setVisible(false);
-                        /*versionStatus.setValue("Published");*/
-                        NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                        handleState();
+                        NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     } else {
-                        NotificationUtil.showNotification("Couldn't Publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        saveProposalVersion();
+                        success = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId());
+                        if (success) {
+                            saveButton.setVisible(false);
+                            addKitchenOrWardrobeButton.setVisible(false);
+                            addFromCatalogueButton.setVisible(false);
+                            addonAddButton.setVisible(false);
+                        /*versionStatus.setValue("Published");*/
+                            NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                            handleState();
+                        } else {
+                            NotificationUtil.showNotification("Couldn't Publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        }
                     }
+                } else {
+                    NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
-            } else {
-                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            } catch (FieldGroup.CommitException e) {
+                NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
-        } catch (FieldGroup.CommitException e) {
-            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            proposalDataProvider.updateVersion(proposalVersion);
+            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+            DashboardEventBus.unregister(this);
+            close();
         }
-        proposalDataProvider.updateVersion(proposalVersion);
-        DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-        DashboardEventBus.unregister(this);
-        close();
+        else {
+            NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            discountAmount.setValue("0.0");
+            discountPercentage.setValue("0.0");
+        }
     }
 
     private void confirm(Button.ClickEvent clickEvent) {
-        try {
+        if(proposalHeader.getMaxDiscountPercentage()>=Double.valueOf(discountPercentage.getValue()))
+        {
+            try {
             binder.commit();
-            LOG.info("value in confirm" +totalWithoutDiscount.getValue());
-            if (remarksTextArea == null || remarksTextArea.isEmpty())
-            {
-                NotificationUtil.showNotification("Remarks cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            LOG.info("value in confirm" + totalWithoutDiscount.getValue());
+            if (remarksTextArea == null || remarksTextArea.isEmpty()) {
+                NotificationUtil.showNotification("Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            } else if (grandTotal.getValue().equals("0")) {
+                NotificationUtil.showNotification("Please add products", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-            else if(grandTotal.getValue().equals("0"))
-            {
-                NotificationUtil.showNotification("Please add products",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                return;
-            }
+                String disAmount=discountAmount.getValue();
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
-            proposalVersion.setDiscountAmount(Double.parseDouble(discountTotal.getValue()));
+            proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
             proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
-            LOG.info("Status "+proposalVersion.getStatus());
+            LOG.info("Status " + proposalVersion.getStatus());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(String.valueOf(versionNum));
 
-            LOG.info("proposal Header in products and addons screen" +proposalHeader);
+            LOG.info("proposal Header in products and addons screen" + proposalHeader);
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
                 for (Product product : proposal.getProducts()) {
-                    Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId(),product.getFromVersion());
+                    Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId(), product.getFromVersion());
                     mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (!populatedProduct.getModules().isEmpty());
                     if (!mapped) {
                         break;
@@ -1501,22 +1536,19 @@ public class ProductAndAddons extends Window
                     NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 } else {
                     String versionNew = String.valueOf(proposalVersion.getVersion());
-                    if (versionNew.startsWith("0."))
-                    {
+                    if (versionNew.startsWith("0.")) {
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("1.0");
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         proposalHeader.setPriceDate(new java.sql.Date(System.currentTimeMillis()));
                         proposalDataProvider.saveProposalOnConfirm(proposalHeader);
-                        proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
-                        proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
-                        proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+                        proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
+                        success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
+                        proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
+                        proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
-                    }
-                    else if (versionNew.startsWith("1."))
-                    {
+                    } else if (versionNew.startsWith("1.")) {
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("2.0");
@@ -1524,23 +1556,21 @@ public class ProductAndAddons extends Window
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
-                        proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
-                        proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
-                        proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(),proposalVersion.getProposalId(),proposalVersion.getFromVersion());
+                        proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
+                        success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
+                        proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
+                        proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
 
 
-                    }
-                    else if (versionNew.startsWith("2."))
-                    {
+                    } else if (versionNew.startsWith("2.")) {
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Locked.name());
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
-                        proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(),proposalHeader.getId());
-                        success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(),proposalHeader.getId(),proposalVersion.getFromVersion(),proposalVersion.getToVersion());
+                        proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
+                        success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                     }
 
@@ -1563,6 +1593,14 @@ public class ProductAndAddons extends Window
         ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
         DashboardEventBus.post(event1);
         close();
+        }
+        else
+        {
+            NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            discountAmount.setValue("0.0");
+            discountPercentage.setValue("0.0");
+        }
+
     }
 
 
@@ -1586,31 +1624,24 @@ public class ProductAndAddons extends Window
 
     private void save(Button.ClickEvent clickEvent)
     {
-
-        remarksTextArea.setValidationVisible(false);
-        try
+        LOG.info("proposal header " +proposalHeader.getMaxDiscountPercentage());
+        if(proposalHeader.getMaxDiscountPercentage()>=Double.valueOf(discountPercentage.getValue()))
         {
-            remarksTextArea.validate();
-        }
-        catch (Exception e)
-        {
-            NotificationUtil.showNotification("Validation Error, please fill remarks fields and remarks should not exceed 255 characters", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             remarksTextArea.setValidationVisible(false);
-            return;
+            try {
+                remarksTextArea.validate();
+            }
+            catch (Exception e) {
+                NotificationUtil.showNotification("Validation Error, please fill remarks fields and remarks should not exceed 255 characters", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                remarksTextArea.setValidationVisible(false);
+                return;
+            }
+            saveProposalVersion();
+        }else {
+            NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            discountAmount.setValue("0.0");
+            discountPercentage.setValue("0.0");
         }
-        /*if(remarksTextArea.getValue().equals(""))
-        {
-            LOG.info("remarks text true" );
-            NotificationUtil.showNotification("Validation Error, please fill remarks fields", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            return;
-        }
-        else
-        {
-            LOG.info("remarks text false" );
-        }*/
-
-        saveProposalVersion();
-
     }
 
     private void saveProposalVersion() {
@@ -1655,21 +1686,24 @@ public class ProductAndAddons extends Window
 
     private void saveWithoutClose(Button.ClickEvent clickEvent)
     {
+        if(proposalHeader.getMaxDiscountPercentage()>=Double.valueOf(discountPercentage.getValue())) {
+            try {
 
+                proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+                proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
 
-        try {
-
-            proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
-            proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
-
-            proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
-            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-            close();
+                proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
+                DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+                close();
+            } catch (Exception e) {
+                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                LOG.info("Exception :" + e.toString());
+            }
         }
-        catch (Exception e)
-        {
-            NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            LOG.info("Exception :" + e.toString());
+        else {
+            NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            discountAmount.setValue("0.0");
+            discountPercentage.setValue("0.0");
         }
     }
 
@@ -1844,7 +1878,7 @@ public class ProductAndAddons extends Window
             productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
             productsGrid.getSelectionModel().reset();
             updateTotal();
-            productsGrid.sort(Product.MANUAL_SEQ, SortDirection.ASCENDING);
+            productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
         }
     }
 
@@ -1856,7 +1890,7 @@ public class ProductAndAddons extends Window
         productsGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
         productsGrid.getSelectionModel().reset();
         updateTotal();
-        productsGrid.sort(Product.MANUAL_SEQ, SortDirection.ASCENDING);
+        productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);
     }
 
     @Subscribe
