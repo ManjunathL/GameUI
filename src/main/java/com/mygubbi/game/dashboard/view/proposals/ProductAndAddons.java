@@ -116,6 +116,7 @@ public class ProductAndAddons extends Window
         this.proposalHeader=proposalHeader;
         this.proposal=proposal;
         this.proposalVersion=proposalVersion;
+        rateForDiscount=proposalHeader.getMaxDiscountPercentage();
         this.vid=vid;
         this.priceDate = proposalHeader.getPriceDate();
         this.city = proposalHeader.getPcity();
@@ -1637,7 +1638,8 @@ public class ProductAndAddons extends Window
                 return;
             }
             saveProposalVersion();
-        }else {
+        }else
+        {
             NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
             discountAmount.setValue("0.0");
             discountPercentage.setValue("0.0");
