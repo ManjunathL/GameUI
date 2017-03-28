@@ -1009,6 +1009,7 @@ public class ProductAndAddons extends Window
                 copyProduct.setManufactureAmount(p.getManufactureAmount());
                 copyProduct.setAmountWoTax(p.getAmountWoTax());
                 copyProduct.setModules(modulesFromOldProduct);
+                copyProduct.setSource(p.getSource());
                 LOG.debug("COPIED@"+ copyProduct);
 
                 copyProduct.setAddons(p.getAddons());
@@ -1374,6 +1375,7 @@ public class ProductAndAddons extends Window
                 double discountamount= Double.valueOf(replace);
                 productAndAddonSelection.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
                 productAndAddonSelection.setDiscountAmount(discountamount);
+
                 String quoteFile = proposalDataProvider.getProposalQuoteFile(this.productAndAddonSelection);
                 InputStream input = null;
                 try {
