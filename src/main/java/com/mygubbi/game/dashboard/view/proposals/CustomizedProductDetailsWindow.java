@@ -716,7 +716,9 @@ public class CustomizedProductDetailsWindow extends Window {
                     if (!commitValues()) return;
                     Module module = new Module();
                     product.setType(TYPES.CUSTOMIZED.name());
-                    product.setSource("GAME");
+                    if (product.getSource() == null) {
+                        product.setSource("GAME");
+                    }
                     module.setModuleType("N");
                     module.setProductCategory(product.getProductCategoryCode());
                     module.setModuleSource("button");
