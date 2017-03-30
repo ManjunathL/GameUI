@@ -339,7 +339,11 @@ public class MarginDetailsWindow extends Window
                     moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
                 }
                 ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
-                if(module.getMgCode().equals("MG-NS-H-001"))
+             /*   if(module.getMgCode().equals("MG-NS-H-001") || ("MG-NS-H-002").equals(module.getMgCode()))
+                {
+                    hikeCost+=modulePrice.getWoodworkCost();
+                }*/
+                if(module.getMgCode().startsWith("MG-NS-H"))
                 {
                     hikeCost+=modulePrice.getWoodworkCost();
                 }
@@ -366,7 +370,8 @@ public class MarginDetailsWindow extends Window
                 if (module.getMgCode().startsWith("MG-NS"))
                 {
                     nonStdModuleCount++;
-                    if(!module.getMgCode().equals("MG-NS-H-001"))
+                    /*if((!module.getMgCode().equals("MG-NS-H-001")) || (!module.getMgCode().equals("MG-NS-H-002")))*/
+                    if(!(module.getMgCode().startsWith("MG-NS-H")))
                     {
                         NSWoodWorkCost+=modulePrice.getCarcassCost()+modulePrice.getShutterCost();
                     }
@@ -426,7 +431,11 @@ public class MarginDetailsWindow extends Window
                     }*/
                 }
                 HardwareCost+=modulePrice.getHardwareCost();
-                if(!module.getMgCode().equals("MG-NS-H-001"))
+/*
+                if((!module.getMgCode().equals("MG-NS-H-001")) || (!module.getMgCode().equals("MG-NS-H-002")) )
+*/
+                if(!(module.getMgCode().startsWith("MG-NS-H")))
+
                 {
                     LabourCost+=modulePrice.getLabourCost();
                 }

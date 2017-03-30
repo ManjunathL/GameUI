@@ -40,7 +40,6 @@ import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
 import java.io.*;
-import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1330,6 +1329,19 @@ public class CustomizedProductDetailsWindow extends Window {
                         return;
                     }
                     LOG.debug("cwa :" + product.getCostWoAccessories());
+
+                    List<Module> modules = this.product.getModules();
+                    for (Module module : modules)
+                    {
+                        if (("Yes").equals(module.getAccessoryPackDefault()))
+                        {
+                            if (module.getAccessoryPacks().size() == 0)
+                            {
+                                NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                return;
+                            }
+                        }
+                    }
 
                     List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
                     proposal.setProducts(getAllVersionProducts);

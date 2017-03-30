@@ -432,10 +432,10 @@ public class AddonDetailsWindow extends Window {
            return;
        }
 
-        boolean wasReadOnly = this.rate.isReadOnly();
+
         this.rate.setReadOnly(false);
         this.rate.setValue(this.rateToBeUsed + "");
-        this.rate.setReadOnly(wasReadOnly);
+        this.rate.setReadOnly(true);
 
         if (StringUtils.isEmpty(this.quantity.getValue()) || Double.parseDouble(this.quantity.getValue().replaceAll(",", "")) <= 0) {
             this.quantity.setValue("1");
