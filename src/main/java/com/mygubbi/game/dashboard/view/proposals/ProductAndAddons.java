@@ -1510,8 +1510,8 @@ public class ProductAndAddons extends Window
         }
         else {
             NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            discountAmount.setValue("0.0");
-            discountPercentage.setValue("0.0");
+            discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()).replace(",",""));
+            discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
         }
     }
 
@@ -1616,8 +1616,8 @@ public class ProductAndAddons extends Window
         else
         {
             NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            discountAmount.setValue("0.0");
-            discountPercentage.setValue("0.0");
+            discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()).replace(",",""));
+            discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
         }
 
     }
@@ -1656,11 +1656,10 @@ public class ProductAndAddons extends Window
                 return;
             }
             saveProposalVersion();
-        }else
-        {
+        }else {
             NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            discountAmount.setValue("0.0");
-            discountPercentage.setValue("0.0");
+            discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()).replace(",",""));
+            discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
         }
     }
 

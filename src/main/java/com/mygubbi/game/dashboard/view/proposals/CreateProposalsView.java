@@ -355,6 +355,7 @@ public class CreateProposalsView extends Panel implements View {
                 copyVersion.setFromVersion(pVersion.getVersion());
                 copyVersion.setProposalId(pVersion.getProposalId());
                 copyVersion.setTitle(pVersion.getTitle());
+                copyVersion.setRemarks("");
                 copyVersion.setFinalAmount(pVersion.getFinalAmount());
                 copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
                 copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
@@ -424,6 +425,7 @@ public class CreateProposalsView extends Panel implements View {
             copyVersion.setFromVersion("0.0");
             copyVersion.setProposalId(proposalHeaderNew.getId());
             copyVersion.setTitle(pVersion.getTitle());
+            copyVersion.setRemarks("");
             copyVersion.setFinalAmount(pVersion.getFinalAmount());
             copyVersion.setStatus(ProposalVersion.ProposalStage.Draft.name());
             copyVersion.setInternalStatus(ProposalVersion.ProposalStage.Draft.name());
