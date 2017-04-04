@@ -832,10 +832,13 @@ public class ModuleDetailsWindow extends Window {
         String accessoryPackCode = (String) accessoryPack.getValue();
         List<AccessoryAddon> accessoryAddons = proposalDataProvider.getAccessoryAddons(accessoryPackCode);
         addons1.getContainerDataSource().removeAllItems();
+        refreshPrice();
         ((BeanContainer<String, AccessoryAddon>) addons1.getContainerDataSource()).addAll(accessoryAddons);
         addons2.getContainerDataSource().removeAllItems();
+        refreshPrice();
         ((BeanContainer<String, AccessoryAddon>) addons2.getContainerDataSource()).addAll(accessoryAddons);
         addons3.getContainerDataSource().removeAllItems();
+        refreshPrice();
         ((BeanContainer<String, AccessoryAddon>) addons3.getContainerDataSource()).addAll(accessoryAddons);
 
         refreshAccessoryImages();
