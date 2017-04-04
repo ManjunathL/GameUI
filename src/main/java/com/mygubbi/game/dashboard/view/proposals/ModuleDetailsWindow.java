@@ -340,7 +340,7 @@ public class ModuleDetailsWindow extends Window {
         if (!module.getExposedLeft().equals(false)) exposedLeft.setValue(module.getExposedLeft());
         if (!module.getExposedRight().equals(false)) exposedRight.setValue(module.getExposedRight());
         if (!module.getExposedTop().equals(false)) exposedTop.setValue(module.getExposedTop());
-        if (module.getExposedBottom().equals(false)) exposedBottom.setValue(module.getExposedBottom());
+        if (!module.getExposedBottom().equals(false)) exposedBottom.setValue(module.getExposedBottom());
         if (!module.getExposedBack().equals(false)) exposedBack.setValue(module.getExposedBack());
         if (!module.getExposedOpen().equals(false)) exposedOpen.setValue(module.getExposedOpen());
 
@@ -358,11 +358,12 @@ public class ModuleDetailsWindow extends Window {
         }
     }
 
-    private void initModule() {
+    private void initModule()
+    {
 
-        if (module.getExpBottom()!= null && module.getExpBottom().equals("Yes"))
+        /*if (module.getExpBottom()!= null && module.getExpBottom().equals("Yes"))
             module.setExposedBottom(true);
-        else module.setExposedBottom(false);
+        else module.setExposedBottom(false);*/
 
 
         if (module.getExpSides()!= null && module.getExpSides().equals("both"))
