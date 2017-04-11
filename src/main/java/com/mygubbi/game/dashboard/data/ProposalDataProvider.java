@@ -1461,5 +1461,91 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<Product> getAllProducts(String productCategoryCode) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectallproducts", new HashMap<String, String>() {
+            {
+                put("productCategoryCode", productCategoryCode);
+
+            }
+        });
+        try
+        {
+            Product[] items = this.mapper.readValue(jsonArray.toString(), Product[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /*public ProposalVersion createNewProductLibrary(ProposalVersion proposalVersion) {
+        try {
+            String productJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/createnew", productJson);
+
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
+
+    }*/
+
+    public boolean InsertProductLibrary(ProductLibrary product) {
+        try {
+            product.setUpdatedBy(getUserId());
+            String productJson = this.mapper.writeValueAsString(product);
+            LOG.debug("Product json:" + productJson);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/insertproductlibray", productJson);
+            if (!jsonObject.has("error")) {
+                product.setId(jsonObject.getInt("id"));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (IOException | JSONException e) {
+            throw new RuntimeException("Couldn't update product", e);
+        }
+    }
+
+    public boolean UpdateProductLibrary(ProductLibrary product) {
+        try {
+            product.setUpdatedBy(getUserId());
+            String productJson = this.mapper.writeValueAsString(product);
+            LOG.debug("Product json:" + productJson);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/updateproductlibray", productJson);
+            if (!jsonObject.has("error")) {
+                product.setId(jsonObject.getInt("id"));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (IOException | JSONException e) {
+            throw new RuntimeException("Couldn't update product", e);
+        }
+    }
+
+    public List<ProductLibrary> getProductsLibrary(String proposalId,String seq,String fromVersion)
+    {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/searchproductlibrary", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId);
+                put("seq",seq);
+                put("fromVersion",fromVersion);
+            }
+        });
+        try
+        {
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 }
 

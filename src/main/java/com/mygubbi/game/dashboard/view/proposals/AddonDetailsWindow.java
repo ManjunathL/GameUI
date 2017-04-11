@@ -673,7 +673,10 @@ public class AddonDetailsWindow extends Window {
         }
     }
 
-    public static void open(AddonProduct addon, String title, boolean isProposalAddon, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
+    public static void open(AddonProduct addon, String title, boolean isProposalAddon, ProposalVersion proposalVersion, ProposalHeader proposalHeader)
+    {
+        LOG.info("proposal Version in Addon DetailsWindow " +proposalVersion);
+        LOG.info("proposal details in Addon Details window " +proposalHeader);
         Window w = new AddonDetailsWindow(addon, title, isProposalAddon,proposalVersion, proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
