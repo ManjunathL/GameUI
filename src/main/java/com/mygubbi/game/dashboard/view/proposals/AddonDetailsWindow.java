@@ -14,6 +14,7 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.ThemeResource;
@@ -416,8 +417,8 @@ public class AddonDetailsWindow extends Window {
         this.title.setReadOnly(true);
 
         this.addonProduct.setImagePath(addonProductItem.getImagePath());
-        this.addonImage.setSource(new FileResource(new File(imageBasePath + addonProductItem.getImagePath())));
-
+        //this.addonImage.setSource(new FileResource(new File(imageBasePath + addonProductItem.getImagePath())));
+        this.addonImage.setSource(new ExternalResource(addonProductItem.getImagePath()));
         if (this.priceDate == null)
         {
             this.priceDate = new Date(System.currentTimeMillis());
