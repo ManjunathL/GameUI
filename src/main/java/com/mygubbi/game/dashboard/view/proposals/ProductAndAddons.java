@@ -696,7 +696,6 @@ public class ProductAndAddons extends Window
 
     private void refreshDiscountForNewProposals(Double totalAmount, Double addonsTotal, Double productsTotal)
     {
-
         Double discountPercent=0.0,discountAmount=0.0;
         //rateForDiscount=rateForDiscount*100;
         rateForDiscount=proposalHeader.getMaxDiscountPercentage();
@@ -963,7 +962,7 @@ public class ProductAndAddons extends Window
         addFromProductLibrary.addClickListener(
                 clickEvent -> {
                     //AllProductsDetailsWindow.open();
-                    Dummy.open();
+                    Dummy.open(proposalVersion);
                 }
         );
 

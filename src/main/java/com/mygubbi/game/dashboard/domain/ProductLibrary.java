@@ -1,5 +1,8 @@
 package com.mygubbi.game.dashboard.domain;
 
+import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,7 +10,7 @@ import java.util.List;
 /**
  * Created by user on 10-Apr-17.
  */
-public class ProductLibrary
+public class ProductLibrary implements FileAttachmentsHolder
 {
     public enum TYPES {CUSTOMIZED, CATALOGUE;};
 
@@ -49,6 +52,7 @@ public class ProductLibrary
     public static final String SOURCE = "source";
     public static final String SUB_CATEGORY="subCategory";
     public static final String PRODUCT_DESCRIPTION="ProductDescription";
+    public static final String IMAGE_PATH="imageurl";
 
 
     private int id;
@@ -90,6 +94,7 @@ public class ProductLibrary
     private double margin;
     private double amountWoTax;
     private double manufactureAmount;
+    private String imageurl;
     private List<Module> modules = new ArrayList<>();
 
     public double getCostWoAccessories() {
@@ -420,4 +425,65 @@ public class ProductLibrary
         ProductDescription = productDescription;
     }
 
+    public String getImageurl() {
+        return imageurl;
+    }
+
+    public void setImageurl(String imageurl) {
+        this.imageurl = imageurl;
+    }
+
+    @Override
+    public List<FileAttachment> getFileAttachmentList() {
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductLibrary{" +
+                "addons=" + addons +
+                ", id=" + id +
+                ", proposalId=" + proposalId +
+                ", fromVersion='" + fromVersion + '\'' +
+                ", title='" + title + '\'' +
+                ", seq=" + seq +
+                ", manualSeq=" + manualSeq +
+                ", productCategory='" + productCategory + '\'' +
+                ", productCategoryCode='" + productCategoryCode + '\'' +
+                ", room='" + room + '\'' +
+                ", roomCode='" + roomCode + '\'' +
+                ", shutterDesign='" + shutterDesign + '\'' +
+                ", shutterDesignCode='" + shutterDesignCode + '\'' +
+                ", catalogueName='" + catalogueName + '\'' +
+                ", catalogueId='" + catalogueId + '\'' +
+                ", source='" + source + '\'' +
+                ", ProductDescription='" + ProductDescription + '\'' +
+                ", subCategory='" + subCategory + '\'' +
+                ", baseCarcass='" + baseCarcass + '\'' +
+                ", baseCarcassCode='" + baseCarcassCode + '\'' +
+                ", wallCarcass='" + wallCarcass + '\'' +
+                ", wallCarcassCode='" + wallCarcassCode + '\'' +
+                ", finishType='" + finishType + '\'' +
+                ", finishTypeCode='" + finishTypeCode + '\'' +
+                ", finish='" + finish + '\'' +
+                ", finishCode='" + finishCode + '\'' +
+                ", dimension='" + dimension + '\'' +
+                ", amount=" + amount +
+                ", quantity=" + quantity +
+                ", type='" + type + '\'' +
+                ", quoteFilePath='" + quoteFilePath + '\'' +
+                ", createdOn=" + createdOn +
+                ", createdBy='" + createdBy + '\'' +
+                ", updatedOn=" + updatedOn +
+                ", costWoAccessories=" + costWoAccessories +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", profit=" + profit +
+                ", margin=" + margin +
+                ", amountWoTax=" + amountWoTax +
+                ", manufactureAmount=" + manufactureAmount +
+                ", imageurl='" + imageurl + '\'' +
+                ", modules=" + modules +
+                ", fileAttachmentList=" + fileAttachmentList +
+                '}';
+    }
 }

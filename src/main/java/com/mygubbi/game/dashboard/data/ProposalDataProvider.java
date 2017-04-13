@@ -1547,5 +1547,62 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
+
+    public List<ProductLibrary> getAllProductsLibrary()
+    {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectproductlibrary", new HashMap<String, String>() {
+            {
+
+            }
+        });
+        try
+        {
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<ProductLibrary> AddToProposalProducts(String seq,String proposalId,String fromVersion,String searchSeq)
+    {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/addtoproductlibrary", new HashMap<String, String>() {
+            {
+                put("seq",seq);
+                put("proposalId", proposalId);
+                put("fromVersion", fromVersion);
+                put("seq",searchSeq);
+
+            }
+        });
+        try
+        {
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    /*public boolean AddToProposalProduct(Product product) {
+        try {
+            product.setUpdatedBy(getUserId());
+            String productJson = this.mapper.writeValueAsString(product);
+            LOG.debug("Product json:" + productJson);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/insertproductlibray", productJson);
+            if (!jsonObject.has("error")) {
+                product.setId(jsonObject.getInt("id"));
+                return true;
+            } else {
+                return false;
+            }
+        } catch (IOException | JSONException e) {
+            throw new RuntimeException("Couldn't update product", e);
+        }
+    }*/
 }
 

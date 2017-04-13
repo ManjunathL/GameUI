@@ -213,7 +213,6 @@ public class CatalogItemDetailsWindow extends Window {
                             .getItem(this.subCategoryCombo.getValue()).getBean().getName());
                     product.setFromVersion(proposalVersion.getVersion());
                     List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
-
                     proposal.setProducts(getAllVersionProducts);
 
                     if (product.getSeq() == 0)
