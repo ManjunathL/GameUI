@@ -1,16 +1,14 @@
 package com.mygubbi.game.dashboard.domain;
 
-import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Created by nitinpuri on 01-05-2016.
+ * Created by user on 10-Apr-17.
  */
-public class Product implements FileAttachmentsHolder {
-
+public class ProductLibrary
+{
     public enum TYPES {CUSTOMIZED, CATALOGUE;};
 
     public static final String PROPOSAL_ID = "proposalId";
@@ -70,49 +68,6 @@ public class Product implements FileAttachmentsHolder {
     private String source;
     private String ProductDescription;
     private String subCategory;
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", proposalId=" + proposalId +
-                ", fromVersion=" + fromVersion +
-                ", title='" + title + '\'' +
-                ", seq=" + seq +
-                ", manualSeq=" + manualSeq +
-                ", productCategory='" + productCategory + '\'' +
-                ", productCategoryCode='" + productCategoryCode + '\'' +
-                ", room='" + room + '\'' +
-                ", roomCode='" + roomCode + '\'' +
-                ", shutterDesign='" + shutterDesign + '\'' +
-                ", shutterDesignCode='" + shutterDesignCode + '\'' +
-                ", catalogueName='" + catalogueName + '\'' +
-                ", catalogueId='" + catalogueId + '\'' +
-                ", baseCarcass='" + baseCarcass + '\'' +
-                ", baseCarcassCode='" + baseCarcassCode + '\'' +
-                ", wallCarcass='" + wallCarcass + '\'' +
-                ", wallCarcassCode='" + wallCarcassCode + '\'' +
-                ", finishType='" + finishType + '\'' +
-                ", finishTypeCode='" + finishTypeCode + '\'' +
-                ", finish='" + finish + '\'' +
-                ", finishCode='" + finishCode + '\'' +
-                ", dimension='" + dimension + '\'' +
-                ", amount=" + amount +
-                ", quantity=" + quantity +
-                ", type='" + type + '\'' +
-                ", quoteFilePath='" + quoteFilePath + '\'' +
-                ", createdOn=" + createdOn +
-                ", createdBy='" + createdBy + '\'' +
-                ", updatedOn=" + updatedOn +
-                ", costWoAccessories=" + costWoAccessories +
-                ", updatedBy='" + updatedBy + '\'' +
-                ", modules=" + modules +
-                ", addons=" + addons +
-                ", fileAttachmentList=" + fileAttachmentList +
-                ", source='" + source + '\'' +
-                '}';
-    }
-
     private String baseCarcass;
     private String baseCarcassCode;
     private String wallCarcass;
@@ -148,10 +103,10 @@ public class Product implements FileAttachmentsHolder {
     private List<AddonProduct> addons = new ArrayList<>();
     private List<FileAttachment> fileAttachmentList = new ArrayList<>();
 
-    public Product() {
+    public ProductLibrary() {
     }
 
-    public Product(int proposalId, int seq) {
+    public ProductLibrary(int proposalId, int seq) {
         this.proposalId = proposalId;
         this.seq = seq;
     }
@@ -173,7 +128,7 @@ public class Product implements FileAttachmentsHolder {
         return fromVersion;
     }
 
-    public void setFromVersion(String fromVersion) {
+   public void setFromVersion(String fromVersion) {
         this.fromVersion = fromVersion;
     }
 
@@ -311,15 +266,6 @@ public class Product implements FileAttachmentsHolder {
 
     public void setAddons(List<AddonProduct> addons) {
         this.addons = addons;
-    }
-
-    @Override
-    public List<FileAttachment> getFileAttachmentList() {
-        return fileAttachmentList;
-    }
-
-    public void setFileAttachmentList(List<FileAttachment> fileAttachmentList) {
-        this.fileAttachmentList = fileAttachmentList;
     }
 
     public int getProposalId() {
@@ -474,24 +420,4 @@ public class Product implements FileAttachmentsHolder {
         ProductDescription = productDescription;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Product product = (Product) o;
-
-        if (id != product.id) return false;
-        if (proposalId != product.proposalId) return false;
-        return fromVersion.equals(product.fromVersion);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + proposalId;
-        result = 31 * result + fromVersion.hashCode();
-        return result;
-    }
 }

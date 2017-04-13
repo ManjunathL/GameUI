@@ -1,5 +1,7 @@
 package com.mygubbi.game.dashboard.domain.JsonPojo;
 
+import com.vaadin.server.ExternalResource;
+
 /**
  * Created by user on 10-Feb-17.
  */
@@ -20,6 +22,7 @@ public class AddonMaster
     public static final String MRP="mrp";
     public static final String DEALER_PRICE="dealerPrice";
     public static final String UOM="uom";
+    public static final String IMAGEPATH="imagePath";
 
     private String id;
     private String code;
@@ -36,6 +39,33 @@ public class AddonMaster
     private String mrp;
     private String dealerPrice;
     private String uom;
+    private ExternalResource imagePath;
+
+    /*public AddonMaster(ExternalResource imagePath,String catalogueCode,String productTypeCode)
+    {
+        this.imagePath=imagePath;
+        this.catalogueCode=catalogueCode;
+        this.productTypeCode=productTypeCode;
+    }
+
+    public AddonMaster(String brandCode, String catalogueCode, String categoryCode, String code, String dealerPrice, String id, ExternalResource imagePath, String mrp, String product, String productSubtypeCode, String productTypeCode, String rate, String rateReadOnly, String roomCode, String title, String uom) {
+        this.brandCode = brandCode;
+        this.catalogueCode = catalogueCode;
+        this.categoryCode = categoryCode;
+        this.code = code;
+        this.dealerPrice = dealerPrice;
+        this.id = id;
+        this.imagePath = imagePath;
+        this.mrp = mrp;
+        this.product = product;
+        this.productSubtypeCode = productSubtypeCode;
+        this.productTypeCode = productTypeCode;
+        this.rate = rate;
+        this.rateReadOnly = rateReadOnly;
+        this.roomCode = roomCode;
+        this.title = title;
+        this.uom = uom;
+    }*/
 
     public String getId() {
         return id;
@@ -157,16 +187,32 @@ public class AddonMaster
         this.uom = uom;
     }
 
+    /*public Image getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(Image imagePath) {
+        this.imagePath = imagePath;
+    }*/
+
+    public ExternalResource getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(ExternalResource imagePath) {
+        this.imagePath = imagePath;
+    }
+
     @Override
     public String toString() {
         return "AddonMaster{" +
-                "id='" + id + '\'' +
+                "brandCode='" + brandCode + '\'' +
+                ", id='" + id + '\'' +
                 ", code='" + code + '\'' +
                 ", categoryCode='" + categoryCode + '\'' +
                 ", roomCode='" + roomCode + '\'' +
                 ", productTypeCode='" + productTypeCode + '\'' +
                 ", productSubtypeCode='" + productSubtypeCode + '\'' +
-                ", brandCode='" + brandCode + '\'' +
                 ", product='" + product + '\'' +
                 ", catalogueCode='" + catalogueCode + '\'' +
                 ", rateReadOnly='" + rateReadOnly + '\'' +
@@ -175,6 +221,7 @@ public class AddonMaster
                 ", mrp='" + mrp + '\'' +
                 ", dealerPrice='" + dealerPrice + '\'' +
                 ", uom='" + uom + '\'' +
+                ", imagePath='" + imagePath + '\'' +
                 '}';
     }
 }

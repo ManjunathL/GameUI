@@ -66,6 +66,7 @@ public class ProductAndAddons extends Window
     private ProductAndAddonSelection productAndAddonSelection;
     private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
+    private Button addFromProductLibrary;
     private FileAttachmentComponent fileAttachmentComponent;
     private TextField discountPercentage;
     private TextField discountAmount;
@@ -819,7 +820,7 @@ public class ProductAndAddons extends Window
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
 
-       // proposalVersion.setFinalAmount(res);
+        //proposalVersion.setFinalAmount(res);
         /*proposalVersion.setDiscountPercentage(Double.valueOf(round(discountPercent,2)));
         proposalVersion.setDiscountAmount(Double.valueOf(round(discountAmount.intValue(),2)));*/
         String replace = this.discountAmount.getValue().replace(",", "");
@@ -930,6 +931,12 @@ public class ProductAndAddons extends Window
         hLayoutInner.addComponent(addFromCatalogueButton);
         hLayoutInner.setComponentAlignment(addFromCatalogueButton,Alignment.TOP_RIGHT);
 
+        addFromProductLibrary = new Button("From Product Library");
+        addFromProductLibrary.setIcon(FontAwesome.PLUS_CIRCLE);
+        addFromProductLibrary.addStyleName(ValoTheme.BUTTON_SMALL);
+        hLayoutInner.addComponent(addFromProductLibrary);
+        hLayoutInner.setComponentAlignment(addFromProductLibrary,Alignment.TOP_RIGHT);
+
         horizontalLayout.addComponent(hLayoutInner);
         horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
 
@@ -950,6 +957,13 @@ public class ProductAndAddons extends Window
                     newProduct.setProposalId(this.proposalHeader.getId());
                     newProduct.setFromVersion(this.vid);
                     CatalogItemDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
+                }
+        );
+
+        addFromProductLibrary.addClickListener(
+                clickEvent -> {
+                    //AllProductsDetailsWindow.open();
+                    Dummy.open();
                 }
         );
 

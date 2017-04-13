@@ -73,6 +73,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private Button addModules;
     private Button closeBtn;
+    private Button addToproductLibraryBtn;
     private Button saveBtn;
     private Proposal proposal;
 
@@ -1392,6 +1393,16 @@ public class CustomizedProductDetailsWindow extends Window {
         updatePsftCosts();
         footer.addComponent(saveBtn);
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
+
+        addToproductLibraryBtn=new Button("Add To Product Library");
+        footer.addComponent(addToproductLibraryBtn);
+        addToproductLibraryBtn.addClickListener(clickEvent -> {
+            LOG.info("product on product library" +product);
+            ProductLibraryInfo.open(product);
+            /*boolean success = proposalDataProvider.InsertProductLibrary(product);
+            LOG.info("success in " +success );*/
+        });
+        //footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 
 
 /*

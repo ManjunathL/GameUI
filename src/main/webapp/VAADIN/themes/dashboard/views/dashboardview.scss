@@ -291,6 +291,7 @@
     font-weight: bold !important;
     font-size: 12px !important;
 }
+
 .discountstyle{
     margin-right:10px !important;
     margin-left:10px !important
@@ -583,4 +584,20 @@
     {
         height:100px
     }
+}
+
+.v-lst-event .v-grid-header .v-grid-row .v-grid-cell {
+    height: 120px ! important;
+}
+
+.v-lst-event .v-grid-header .v-grid-row .v-grid-cell {
+    height: 40px ! important;
+}
+.v-lst-event .v-grid-body .v-grid-row .v-grid-cell {
+    height: 140px ! important;
+    background: white ! important;
+}
+.v-lst-event .v-grid-body .v-grid-row .v-grid-cell .gwt-Image {
+    width: 250px !important;
+    height: 120px ! important;
 }
