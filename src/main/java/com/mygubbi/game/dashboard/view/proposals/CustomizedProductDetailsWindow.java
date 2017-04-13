@@ -1404,10 +1404,16 @@ public class CustomizedProductDetailsWindow extends Window {
         updatePsftCosts();
         footer.addComponent(saveBtn);
         footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
-        footer.setComponentAlignment(addToproductLibraryBtn, Alignment.TOP_RIGHT);
 
-
-
+        addToproductLibraryBtn=new Button("Add To Product Library");
+        footer.addComponent(addToproductLibraryBtn);
+        addToproductLibraryBtn.addClickListener(clickEvent -> {
+            LOG.info("product on product library" +product);
+            ProductLibraryInfo.open(product);
+            /*boolean success = proposalDataProvider.InsertProductLibrary(product);
+            LOG.info("success in " +success );*/
+        });
+        //footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
 
 
 /*

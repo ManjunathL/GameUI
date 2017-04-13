@@ -85,7 +85,6 @@ public class AddonDetailsWindow extends Window {
 
 
     public AddonDetailsWindow(AddonProduct addonProduct, String title, boolean isProposalAddon, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
-        LOG.info("Addon product in open " +addonProduct);
         this.addonProduct = addonProduct;
         this.isProposalAddon = isProposalAddon;
         this.proposalHeader=proposalHeader;
@@ -114,7 +113,6 @@ public class AddonDetailsWindow extends Window {
         verticalLayout.addComponent(footerLayOut);
 
         setContent(verticalLayout);
-
         this.productCodeChanged(null);
 
         handleState();
@@ -405,14 +403,8 @@ public class AddonDetailsWindow extends Window {
 
 
     private void productCodeChanged(Property.ValueChangeEvent valueChangeEvent) {
-        LOG.info("product value changed" +this.product.getValue());
-
-        /*BeanItem<AddonProductItem> item = (BeanItem<AddonProductItem>) valueChangeEvent.getProperty();
-        AddonProductItem addonProductItem = item.getBean();*/
 
         AddonProductItem addonProductItem = ((BeanItem<AddonProductItem>) this.product.getItem(product.getValue())).getBean();
-        //this.productType.getValue()).getBean().getProductTypeCode();*/
-        //AddonProductItem addonProductItem = ((BeanItem<AddonProductItem>) this.product.getItem(this.product.getValue())).getBean();
 
         LOG.debug("Addon product item : " + addonProductItem.toString());
 
@@ -426,9 +418,7 @@ public class AddonDetailsWindow extends Window {
 
         this.addonProduct.setImagePath(addonProductItem.getImagePath());
         //this.addonImage.setSource(new FileResource(new File(imageBasePath + addonProductItem.getImagePath())));
-        LOG.info("image path" +addonProductItem.getImagePath());
         this.addonImage.setSource(new ExternalResource(addonProductItem.getImagePath()));
-
         if (this.priceDate == null)
         {
             this.priceDate = new Date(System.currentTimeMillis());
@@ -442,6 +432,7 @@ public class AddonDetailsWindow extends Window {
            NotificationUtil.showNotification("Error in Addon pricing",NotificationUtil.STYLE_BAR_ERROR_SMALL);
            return;
        }
+
 
         this.rate.setReadOnly(false);
         this.rate.setValue(this.rateToBeUsed + "");
