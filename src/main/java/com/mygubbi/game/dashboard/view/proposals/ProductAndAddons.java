@@ -679,7 +679,7 @@ public class ProductAndAddons extends Window
         ProposalHeader proposalHeaderCreateDate = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
 
         java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
-        java.util.Date currentDate = new Date(167,1,28,0,0,00);
+        java.util.Date currentDate = new Date(167,4,17,0,0,00);
         LOG.debug("Currnet Date new :" + currentDate);
         LOG.debug("Currnet Date old :" + date);
         if (date.after(currentDate))
@@ -702,15 +702,12 @@ public class ProductAndAddons extends Window
         if("DP".equals(status))
         {
             discountPercent = (Double) this.discountPercentage.getConvertedValue();
-            //if(discountPercent<=40)
             if(discountPercent<=rateForDiscount)
             {
                 if (discountPercent == null) {
                     discountPercent = 0.0;
                 }
-                LOG.info("****"+productsTotal);
-                discountAmount = (productsTotal * discountPercent) / 100.0;
-                LOG.info("disamount***"+discountAmount);
+                discountAmount = productsTotal * (discountPercent / 100.0);
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
                 disAmount=discountAmount.intValue();
             }
@@ -724,7 +721,6 @@ public class ProductAndAddons extends Window
         {
             discountAmount = (Double) this.discountAmount.getConvertedValue();
             discountPercent=(discountAmount/productsTotal)*100;
-            //if(discountPercent<=40)
             if(discountPercent<=rateForDiscount)
             {
                 this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
@@ -750,15 +746,9 @@ public class ProductAndAddons extends Window
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
 
-        proposalVersion.setFinalAmount(res);
-
-        LOG.info("new discount" +round(discountPercent,2) + round(discountAmount.intValue(),2));
-        LOG.info("version in new" +proposalVersion);
-/*
-        proposalDataProvider.updateVersion(proposalVersion);
-*/
-        LOG.info("prposal version changed" +proposalVersion);
     }
+
+
 
     private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
     {
@@ -810,23 +800,8 @@ public class ProductAndAddons extends Window
         this.grandTotal.setValue(totalAmount.intValue() + "");
         this.grandTotal.setReadOnly(true);
 
-        //this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
-       /* productAndAddonSelection.setDiscountPercentage(discountPercent);
-        productAndAddonSelection.setDiscountAmount(discountAmount);*/
-
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
-
-       // proposalVersion.setFinalAmount(res);
-        /*proposalVersion.setDiscountPercentage(Double.valueOf(round(discountPercent,2)));
-        proposalVersion.setDiscountAmount(Double.valueOf(round(discountAmount.intValue(),2)));*/
-        String replace = this.discountAmount.getValue().replace(",", "");
-      /*  proposalVersion.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
-        proposalVersion.setDiscountAmount(Double.valueOf(replace));*/
-        LOG.info("old discount" +round(discountPercent,2) +" " +round(discountAmount.intValue(),2));
-        LOG.info("old discount txt value" +this.discountAmount.getValue() +" " +this.discountPercentage.getValue());
-        LOG.info("version in old" +proposalVersion);
-        /*proposalDataProvider.updateVersion(proposalVersion);*/
 
     }
     private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
