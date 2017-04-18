@@ -1410,6 +1410,19 @@ public class ProposalDataProvider {
 
     }
 
+    public ProposalHeader updatePriceForNewProposal(ProposalHeader proposalHeader) {
+            try {
+                String productJson = this.mapper.writeValueAsString(proposalHeader);
+                JSONObject jsonObject = dataProviderMode.postResource(
+                        "priceupdate/updatepricefornewproposal", productJson);
+
+                return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
+            } catch (IOException e) {
+                throw new RuntimeException("Couldn't update prices", e);
+            }
+        }
+
+
     public PriceMaster getFactorRatePriceDetails(String rateId, Date priceDate, String city)
     {
         JSONObject jsonObject = dataProviderMode.getResource("proposal/ratefactordetailsfromhandler", new HashMap<String, String>(){

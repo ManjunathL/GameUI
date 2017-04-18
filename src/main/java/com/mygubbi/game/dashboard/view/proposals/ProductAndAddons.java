@@ -750,10 +750,8 @@ public class ProductAndAddons extends Window
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
 
-        String replace = this.discountAmount.getValue().replace(",", "");
         proposalVersion.setFinalAmount(res);
-        proposalVersion.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
-        proposalVersion.setDiscountAmount(Double.valueOf(replace));
+
         LOG.info("new discount" +round(discountPercent,2) + round(discountAmount.intValue(),2));
         LOG.info("version in new" +proposalVersion);
 /*
