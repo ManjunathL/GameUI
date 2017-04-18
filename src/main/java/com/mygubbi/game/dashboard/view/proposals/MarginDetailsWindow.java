@@ -534,11 +534,12 @@ public class MarginDetailsWindow extends Window
         LOG.info("Addonprofit" +addonsProfit);
 
         java.util.Date date =proposalHeader.getCreatedOn();
-        java.util.Date currentDate = new java.util.Date(200,1,28,0,0,00);
+        java.util.Date currentDate = new java.util.Date(117,3,17,0,0,00);
         double TspToBeConsidered = ProductTotal - addonsTotal;
         if (date.after(currentDate))
         {
             LOG.info("if loop in main method");
+            LOG.info("MSC : " + TspToBeConsidered);
             obj1=calculateSalesPriceWithDiscount(obj1, TspToBeConsidered);
             obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
             obj3=obj2;
@@ -555,15 +556,6 @@ public class MarginDetailsWindow extends Window
 
         }
 
-
-       /* obj1=calculateSalesPriceWithDiscount(obj1,ProductTotal-addonsTotal);
-
-        obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
-        obj3=obj2;*/
-
-        /*LOG.info("totalSalesPrice " + totalSalesPrice + "Discount Amount" +proposalVersion.getDiscountAmount());
-        obj2=calculateSalesPriceWithDiscount(obj2, ProductTotal-proposalVersion.getDiscountAmount(),addonsTotal,addonsTotalWOtax,addonsProfit);
-        obj3=obj2;*/
 
         manufacturingProfit = totalSalesPriceWOtax - manufacturingTotalSalesPrice;
         marginCompute=(manufacturingProfit / totalSalesPriceWOtax)*100;

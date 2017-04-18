@@ -639,6 +639,9 @@ public class CreateProposalsView extends Panel implements View {
 
         if (success) {
 
+            proposalDataProvider.updatePriceForNewProposal(proposalHeader);
+
+
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             cityLockedForSave();
         } else {

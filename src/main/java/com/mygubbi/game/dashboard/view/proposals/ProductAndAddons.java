@@ -679,7 +679,7 @@ public class ProductAndAddons extends Window
         ProposalHeader proposalHeaderCreateDate = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
 
         java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
-        java.util.Date currentDate = new Date(167,4,17,0,0,00);
+        java.util.Date currentDate = new Date(117,3,17,0,0,00);
         LOG.debug("Currnet Date new :" + currentDate);
         LOG.debug("Currnet Date old :" + date);
         if (date.after(currentDate))
@@ -695,9 +695,8 @@ public class ProductAndAddons extends Window
 
     private void refreshDiscountForNewProposals(Double totalAmount, Double addonsTotal, Double productsTotal)
     {
-
+        LOG.debug("For new proposal");
         Double discountPercent=0.0,discountAmount=0.0;
-        //rateForDiscount=rateForDiscount*100;
         rateForDiscount=proposalHeader.getMaxDiscountPercentage();
         if("DP".equals(status))
         {
@@ -752,6 +751,7 @@ public class ProductAndAddons extends Window
 
     private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
     {
+        LOG.debug("for old proposal");
         Double discountPercent=0.0,discountAmount=0.0;
         //rateForDiscount=rateForDiscount*100;
         rateForDiscount=proposalHeader.getMaxDiscountPercentage();
