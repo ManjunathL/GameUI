@@ -108,6 +108,7 @@ public class ProductAndAddons extends Window
         ProductAndAddons w = new ProductAndAddons(proposalHeader,proposal,vid,proposalVersion);
         UI.getCurrent().addWindow(w);
         w.focus();
+        LOG.info("header  " +proposalHeader);
 
     }
 
@@ -282,6 +283,7 @@ public class ProductAndAddons extends Window
                         //MarginComputationWindow.open(proposalVersion);
                         saveVersionAmounts();
                         MarginDetailsWindow.open(proposalVersion,this.proposalHeader);
+                        LOG.info("proposal heaDER IN VERSION CLASS " +proposalHeader);
 
                     }
             );

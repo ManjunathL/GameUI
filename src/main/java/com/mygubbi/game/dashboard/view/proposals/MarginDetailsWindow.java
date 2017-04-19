@@ -146,6 +146,7 @@ public class MarginDetailsWindow extends Window
             this.priceDate = new Date(System.currentTimeMillis());
         }
         setModal(true);
+        LOG.info("Proposal in margin" +proposalHeader);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("75%");
         setClosable(false);
@@ -533,8 +534,11 @@ public class MarginDetailsWindow extends Window
         LOG.info("Addon total wo tax" +addonsTotalWOtax);
         LOG.info("Addonprofit" +addonsProfit);
 
+        LOG.info("proposalHeader in update total" +proposalHeader);
+
         java.util.Date date =proposalHeader.getCreatedOn();
         java.util.Date currentDate = new java.util.Date(117,3,17,0,0,00);
+
         double TspToBeConsidered = ProductTotal - addonsTotal;
         if (date.after(currentDate))
         {
@@ -1199,7 +1203,7 @@ public class MarginDetailsWindow extends Window
     private void calculateDiscount()
     {
         java.util.Date date =proposalHeader.getCreatedOn();
-        java.util.Date currentDate = new java.util.Date(200,1,28,0,0,00);
+        java.util.Date currentDate = new java.util.Date(117 ,3,17,0,0,00);
         if(checkProduct.getValue()=="Product") {
 
             if("DP".equals(status))
