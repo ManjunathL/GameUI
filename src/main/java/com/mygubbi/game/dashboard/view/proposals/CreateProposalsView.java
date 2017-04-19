@@ -216,7 +216,7 @@ public class CreateProposalsView extends Panel implements View {
             this.priceDate = this.proposalHeader.getPriceDate();
         }
         LOG.info("Price date value" +priceDate);
-        PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,proposalHeader.getPcity());
+        PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,this.proposalHeader.getPcity());
         rateForDiscount=discountpriceMaster.getSourcePrice();
         LOG.info("Rate for discount" +rateForDiscount);
     }
@@ -270,6 +270,8 @@ public class CreateProposalsView extends Panel implements View {
         versionsGrid.setSizeFull();
         versionsGrid.setColumns(ProposalVersion.VERSION, ProposalVersion.FROM_VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
                 ProposalVersion.REMARKS, "actions","CNC");
+
+        versionContainer.removeAllItems();
 
 
         versionContainer.addAll(proposalVersionList);
