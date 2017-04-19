@@ -900,7 +900,7 @@ public class MarginDetailsWindow extends Window
     {
         LOG.info("selected Value" +checkProduct.getValue());
         java.util.Date date =proposalHeader.getCreatedOn();
-        java.util.Date currentDate = new java.util.Date(200,1,28,0,0,00);
+        java.util.Date currentDate = new java.util.Date(117,3,17,0,0,00);
         if(checkProduct.getValue()=="Product")
         {
             obj1=new margin();
