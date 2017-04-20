@@ -447,11 +447,14 @@ public class CreateProposalsView extends Panel implements View {
             int proposalId = proposalHeaderNew.getId();
 
 
-            proposalDataProvider.updatePriceForNewProposal(proposalHeaderNew);
+            ProposalHeader proposalHeaderUpdatePrice = proposalDataProvider.updatePriceForNewProposal(proposalHeaderNew);
+            if (!(proposalHeaderUpdatePrice == null))
+            {
+                UI.getCurrent().getNavigator()
+                        .navigateTo("New Quotation/" + proposalId);
+                DashboardEventBus.unregister(this);
+            }
 
-            UI.getCurrent().getNavigator()
-                    .navigateTo("New Quotation/" + proposalId);
-            DashboardEventBus.unregister(this);
         }));
 
 
