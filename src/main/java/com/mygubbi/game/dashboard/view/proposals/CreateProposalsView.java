@@ -273,6 +273,8 @@ public class CreateProposalsView extends Panel implements View {
 
         versionContainer.removeAllItems();
 
+        LOG.debug("version container size"+ versionContainer.size());
+
 
         versionContainer.addAll(proposalVersionList);
         versionsGrid.setContainerDataSource(createGeneratedVersionPropertyContainer());

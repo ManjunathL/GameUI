@@ -681,7 +681,7 @@ public class ProductAndAddons extends Window
         ProposalHeader proposalHeaderCreateDate = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
 
         java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
-        java.util.Date currentDate = new Date(117,3,17,0,0,00);
+        java.util.Date currentDate = new Date(117,3,20,0,0,00);
         LOG.debug("Currnet Date new :" + currentDate);
         LOG.debug("Currnet Date old :" + date);
         if (date.after(currentDate))
@@ -855,7 +855,7 @@ public class ProductAndAddons extends Window
             }
         }
 
-        ///double addonsTotal = 0;
+        ///double addonsTFotal = 0;
 
         for (Object object : addonObjects) {
             Double amount = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT).getValue();
@@ -1542,6 +1542,7 @@ public class ProductAndAddons extends Window
                         proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                         proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
+                        LOG.info("###"+proposalHeader);
                     } else if (versionNew.startsWith("1.")) {
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
                         proposalVersion.setToVersion(proposalVersion.getVersion());
