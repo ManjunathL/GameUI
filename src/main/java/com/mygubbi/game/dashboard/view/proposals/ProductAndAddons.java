@@ -906,6 +906,12 @@ public class ProductAndAddons extends Window
         hLayoutInner.addComponent(addFromCatalogueButton);
         hLayoutInner.setComponentAlignment(addFromCatalogueButton,Alignment.TOP_RIGHT);
 
+        addFromProductLibrary = new Button("From Product Library");
+        addFromProductLibrary.setIcon(FontAwesome.PLUS_CIRCLE);
+        addFromProductLibrary.addStyleName(ValoTheme.BUTTON_SMALL);
+        hLayoutInner.addComponent(addFromProductLibrary);
+        hLayoutInner.setComponentAlignment(addFromProductLibrary,Alignment.TOP_RIGHT);
+
         horizontalLayout.addComponent(hLayoutInner);
         horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
 
@@ -926,6 +932,14 @@ public class ProductAndAddons extends Window
                     newProduct.setProposalId(this.proposalHeader.getId());
                     newProduct.setFromVersion(this.vid);
                     CatalogItemDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
+                }
+        );
+
+        addFromProductLibrary.addClickListener(
+                clickEvent -> {
+                    //AllProductsDetailsWindow.open();
+                    //Dummy.open(proposal,proposalVersion,proposalHeader);
+                    AllProposalLibrary.open(proposal,proposalVersion,proposalHeader);
                 }
         );
 
@@ -1028,7 +1042,7 @@ public class ProductAndAddons extends Window
 
                 Product product = (Product) rendererClickEvent.getItemId();
 
-                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name())) {
+                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name()) || product.getType().equals(Product.TYPES.PRODUCT_LIBRARY.name())) {
                     if (product.getModules().isEmpty()) {
                         Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId(),product.getFromVersion());
                         product.setModules(productDetails.getModules());
@@ -1853,7 +1867,7 @@ public class ProductAndAddons extends Window
             public String getValue(Item item, Object o, Object o1) {
                 Product product = (Product) ((BeanItem) item).getBean();
 
-                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name())) {
+                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name()) || product.getType().equals(Product.TYPES.PRODUCT_LIBRARY.name() )) {
                     if (StringUtils.isNotEmpty(product.getProductCategory())) {
                         return product.getProductCategory();
                     } else {
