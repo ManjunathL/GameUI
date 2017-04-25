@@ -39,6 +39,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -961,8 +962,7 @@ public class ProductAndAddons extends Window
 
         addFromProductLibrary.addClickListener(
                 clickEvent -> {
-                    //AllProductsDetailsWindow.open();
-                    Dummy.open(proposalVersion);
+                    AllProposalLibrary.open(proposal,proposalVersion,proposalHeader);
                 }
         );
 
@@ -1065,7 +1065,7 @@ public class ProductAndAddons extends Window
 
                 Product product = (Product) rendererClickEvent.getItemId();
 
-                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name())) {
+                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name()) || product.getType().equals(Product.TYPES.PRODUCT_LIBRARY.name())) {
                     if (product.getModules().isEmpty()) {
                         Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId(),product.getFromVersion());
                         product.setModules(productDetails.getModules());
@@ -1890,7 +1890,7 @@ public class ProductAndAddons extends Window
             public String getValue(Item item, Object o, Object o1) {
                 Product product = (Product) ((BeanItem) item).getBean();
 
-                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name())) {
+                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name()) || product.getType().equals(Product.TYPES.PRODUCT_LIBRARY.name() )) {
                     if (StringUtils.isNotEmpty(product.getProductCategory())) {
                         return product.getProductCategory();
                     } else {

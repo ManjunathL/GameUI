@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Product implements FileAttachmentsHolder {
 
-    public enum TYPES {CUSTOMIZED, CATALOGUE;};
+    public enum TYPES {CUSTOMIZED, CATALOGUE,PRODUCT_LIBRARY;};
 
     public static final String PROPOSAL_ID = "proposalId";
     public static final String FROM_VERSION = "fromVersion";

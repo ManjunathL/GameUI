@@ -53,6 +53,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String SUB_CATEGORY="subCategory";
     public static final String PRODUCT_DESCRIPTION="ProductDescription";
     public static final String IMAGE_PATH="imageurl";
+    public static final String PRODUCT_TITLE="productTitle";
 
 
     private int id;
@@ -95,6 +96,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     private double amountWoTax;
     private double manufactureAmount;
     private String imageurl;
+    private String productTitle;
     private List<Module> modules = new ArrayList<>();
 
     public double getCostWoAccessories() {
@@ -431,6 +433,14 @@ public class ProductLibrary implements FileAttachmentsHolder
 
     public void setImageurl(String imageurl) {
         this.imageurl = imageurl;
+    }
+
+    public String getProductTitle() {
+        return productTitle;
+    }
+
+    public void setProductTitle(String productTitle) {
+        this.productTitle = productTitle;
     }
 
     @Override

@@ -1273,7 +1273,10 @@ public class CustomizedProductDetailsWindow extends Window {
         HorizontalLayout footer = new HorizontalLayout();
         footer.setSizeFull();
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-        footer.setWidth(100.0f, Unit.PERCENTAGE);
+        //footer.setWidth(100.0f, Unit.PERCENTAGE);
+
+        HorizontalLayout right = new HorizontalLayout();
+        right.setSpacing(true);
 
         String caption = null;
         boolean modulesInitiallyMapped = this.modulesCopy.stream().allMatch(module -> StringUtils.isNotEmpty(module.getMgCode()));
@@ -1287,19 +1290,86 @@ public class CustomizedProductDetailsWindow extends Window {
             caption = CANCEL;
         }
 
-        addToproductLibraryBtn=new Button("Add To Product Library");
-        addToproductLibraryBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        footer.addComponent(addToproductLibraryBtn);
-        footer.setSpacing(true);
-        //footer.setComponentAlignment(addToproductLibraryBtn, Alignment.MIDDLE_CENTER);
-        addToproductLibraryBtn.addClickListener(clickEvent -> {
-            LOG.info("product on product library" +product);
-            ProductLibraryInfo.open(product);
-            /*boolean success = proposalDataProvider.InsertProductLibrary(product);
-            LOG.info("success in " +success );*/
+        saveBtn = new Button("Save");
+        saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        saveBtn.addClickListener(event -> {
+            try {
+               /* if ("0".equals(manualSeq.getValue())) {
+                    NotificationUtil.showNotification("Product Sequence cannot be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                } else {*/
+
+                try {
+                    binder.commit();
+                } catch (FieldGroup.CommitException e) {
+                    NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+                LOG.debug("cwa :" + product.getCostWoAccessories());
+
+                List<Module> modules = this.product.getModules();
+                for (Module module : modules)
+                {
+                    if (("Yes").equals(module.getAccessoryPackDefault()))
+                    {
+                        if (module.getAccessoryPacks().size() == 0)
+                        {
+                            NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            return;
+                        }
+                    }
+                }
+
+                List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
+                proposal.setProducts(getAllVersionProducts);
+
+                if (product.getSeq() == 0) {
+                    int size = getAllVersionProducts.size();
+                    size++;
+                    product.setSeq(size);
+                }
+
+                boolean success = proposalDataProvider.updateProduct(product);
+
+                if (success) {
+                    double amountWoDiscount = 0;
+                    double amountWoAccessories = 0;
+                    double discountPercentage = this.proposalVersion.getDiscountPercentage();
+                    List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(), this.proposalVersion.getVersion());
+                    for (Product product : versionProducts) {
+                        LOG.debug("Product module :" + product.getAmount());
+                        amountWoDiscount += product.getAmount();
+                        amountWoAccessories += product.getCostWoAccessories();
+                    }
+                    this.proposalVersion.setAmount(amountWoDiscount);
+                    double discountAmount = amountWoAccessories * (discountPercentage / 100);
+                    this.proposalVersion.setDiscountAmount(discountAmount);
+                    this.proposalVersion.setFinalAmount(amountWoDiscount - discountAmount);
+
+                    LOG.debug("Proposal Version inside module :" + this.proposalVersion.toString());
+                    proposalDataProvider.updateVersion(this.proposalVersion);
+                    NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
+                    DashboardEventBus.unregister(this);
+                    LOG.info("windows in product " +UI.getCurrent().getWindows());
+                    close();
+                } else {
+                    NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                }
+            } catch(Exception e){
+                Notification.show("Error while saving Item details",
+                        Type.ERROR_MESSAGE);
+            }
+
         });
+        saveBtn.focus();
+        saveBtn.setVisible(true);
+        updatePsftCosts();
+        right.addComponent(saveBtn);
+        right.setComponentAlignment(saveBtn, Alignment.MIDDLE_RIGHT);
 
         closeBtn = new Button(caption);
+        closeBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
         closeBtn.addClickListener((Button.ClickListener) clickEvent -> {
 
                 ConfirmDialog.show(UI.getCurrent(), "",
@@ -1324,143 +1394,25 @@ public class CustomizedProductDetailsWindow extends Window {
 
         });
         closeBtn.focus();
-        footer.addComponent(closeBtn);
-        footer.setSpacing(true);
+        right.addComponent(closeBtn);
+        right.setComponentAlignment(closeBtn, Alignment.MIDDLE_RIGHT);
 
-        saveBtn = new Button("Save");
-        saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        saveBtn.addClickListener(event -> {
-            try {
-               /* if ("0".equals(manualSeq.getValue())) {
-                    NotificationUtil.showNotification("Product Sequence cannot be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return;
-                } else {*/
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
-                    try {
-                        binder.commit();
-                    } catch (FieldGroup.CommitException e) {
-                        NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        return;
-                    }
-                    LOG.debug("cwa :" + product.getCostWoAccessories());
-
-                    List<Module> modules = this.product.getModules();
-                    for (Module module : modules)
-                    {
-                        if (("Yes").equals(module.getAccessoryPackDefault()))
-                        {
-                            if (module.getAccessoryPacks().size() == 0)
-                            {
-                                NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                                return;
-                            }
-                        }
-                    }
-
-                    List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
-                    proposal.setProducts(getAllVersionProducts);
-
-                    if (product.getSeq() == 0) {
-                        int size = getAllVersionProducts.size();
-                        size++;
-                        product.setSeq(size);
-                    }
-
-                    boolean success = proposalDataProvider.updateProduct(product);
-
-                    if (success) {
-                        double amountWoDiscount = 0;
-                        double amountWoAccessories = 0;
-                        double discountPercentage = this.proposalVersion.getDiscountPercentage();
-                        List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(), this.proposalVersion.getVersion());
-                        for (Product product : versionProducts) {
-                            LOG.debug("Product module :" + product.getAmount());
-
-                            amountWoDiscount += product.getAmount();
-                            amountWoAccessories += product.getCostWoAccessories();
-                        }
-                        this.proposalVersion.setAmount(amountWoDiscount);
-                        double discountAmount = amountWoAccessories * (discountPercentage / 100);
-                        this.proposalVersion.setDiscountAmount(discountAmount);
-                        this.proposalVersion.setFinalAmount(amountWoDiscount - discountAmount);
-
-                        LOG.debug("Proposal Version inside module :" + this.proposalVersion.toString());
-                        proposalDataProvider.updateVersion(this.proposalVersion);
-                        NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                        DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
-                        DashboardEventBus.unregister(this);
-                        close();
-                    } else {
-                        NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    }
-                } catch(Exception e){
-                    Notification.show("Error while saving Item details",
-                            Type.ERROR_MESSAGE);
-                }
-
-        });
-        saveBtn.focus();
-        saveBtn.setVisible(true);
-        updatePsftCosts();
-        footer.addComponent(saveBtn);
-        footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
-
-        addToproductLibraryBtn=new Button("Add To Product Library");
-        footer.addComponent(addToproductLibraryBtn);
-        addToproductLibraryBtn.addClickListener(clickEvent -> {
-            LOG.info("product on product library" +product);
-            ProductLibraryInfo.open(product);
-            /*boolean success = proposalDataProvider.InsertProductLibrary(product);
-            LOG.info("success in " +success );*/
-        });
-        //footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
-
-
-/*
-        if (("admin").equals(role) && versionNew.startsWith("2."))
+        if (("admin").equals(role))
         {
-            Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            soExtractButton.setCaptionAsHtml(true);
-            soExtractButton.setIcon(FontAwesome.DOWNLOAD);
-            soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-            soExtractButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-            soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
-            soExtractButton.setWidth("120px");
+            addToproductLibraryBtn=new Button("Add To Product Library");
+            addToproductLibraryBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
+            right.addComponent(addToproductLibraryBtn);
+            right.setComponentAlignment(addToproductLibraryBtn, Alignment.MIDDLE_RIGHT);
+            addToproductLibraryBtn.addClickListener(clickEvent -> {
+                close();
+                ProductLibraryInfo.open(product,proposal);
+            });
+        }
 
-            FileDownloader soExtractDownloader = this.getSOExtractFileDownloader();
-            soExtractDownloader.extend(soExtractButton);
-            footer.addComponent(soExtractButton);
-            footer.setComponentAlignment(soExtractButton, Alignment.TOP_RIGHT);
-
-            Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            jobcardButton.setCaptionAsHtml(true);
-            jobcardButton.setIcon(FontAwesome.DOWNLOAD);
-            jobcardButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-            jobcardButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-            jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
-            jobcardButton.setWidth("100px");
-
-            StreamResource jobcardResource = createJobcardResource();
-            FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
-            jobcardDownloader.extend(jobcardButton);
-            footer.addComponent(jobcardButton);
-            footer.setComponentAlignment(jobcardButton, Alignment.TOP_RIGHT);
-
-            Button marginButton = new Button("Margin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            marginButton.setCaptionAsHtml(true);
-            marginButton.setIcon(FontAwesome.DOWNLOAD);
-            marginButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-            marginButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-            marginButton.addStyleName(ValoTheme.BUTTON_SMALL);
-            soExtractButton.setWidth("100px");
-
-
-            StreamResource marginSheetResource = createMarginSheetResource();
-            FileDownloader marginSheetDownloader = new FileDownloader(marginSheetResource);
-            marginSheetDownloader.extend(marginButton);
-            footer.addComponent(marginButton);
-            footer.setComponentAlignment(marginButton, Alignment.TOP_RIGHT);
-        }*/
+        footer.addComponent(right);
+        footer.setComponentAlignment(right, Alignment.MIDDLE_CENTER);
         return footer;
     }
 

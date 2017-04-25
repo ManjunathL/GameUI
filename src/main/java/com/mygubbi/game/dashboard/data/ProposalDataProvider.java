@@ -10,6 +10,7 @@ import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AddonMaster;
+import com.mygubbi.game.dashboard.domain.JsonPojo.CloudinaryImageUrl;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.server.FileResource;
@@ -740,7 +741,6 @@ public class ProposalDataProvider {
         } catch (IOException e) {
             throw new RuntimeException("Couldn't map modules", e);
         }
-
     }
 
     public ProposalVersion createNewAddonFromOldProposal(ProposalVersion proposalVersion) {
@@ -1528,13 +1528,11 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<ProductLibrary> getProductsLibrary(String proposalId,String seq,String fromVersion)
+    public List<ProductLibrary> getProductsLibrary(String productTitle)
     {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/searchproductlibrary", new HashMap<String, String>() {
             {
-                put("proposalId", proposalId);
-                put("seq",seq);
-                put("fromVersion",fromVersion);
+                put("productTitle", productTitle);
             }
         });
         try
@@ -1566,15 +1564,23 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<ProductLibrary> AddToProposalProducts(String seq,String proposalId,String fromVersion,String searchSeq)
-    {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/addtoproductlibrary", new HashMap<String, String>() {
-            {
-                put("seq",seq);
-                put("proposalId", proposalId);
-                put("fromVersion", fromVersion);
-                put("seq",searchSeq);
+    public ProposalVersion AddToProposalProduct(ProductLibrary proposalVersion) {
+        try {
+            String productJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "proposal/addtoproductlibrary", productJson);
 
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
+    }
+
+    public List<ProductLibrary> getProductsLibraryBasedonId(String id)
+    {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectlibrarybasedonid", new HashMap<String, String>() {
+            {
+                put("id",id);
             }
         });
         try
@@ -1587,22 +1593,60 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
-    /*public boolean AddToProposalProduct(Product product) {
-        try {
-            product.setUpdatedBy(getUserId());
-            String productJson = this.mapper.writeValueAsString(product);
-            LOG.debug("Product json:" + productJson);
-            JSONObject jsonObject = dataProviderMode.postResource(
-                    "product/insertproductlibray", productJson);
-            if (!jsonObject.has("error")) {
-                product.setId(jsonObject.getInt("id"));
-                return true;
-            } else {
-                return false;
+
+    public List<ProductLibraryMaster> getProductsubcategory(String category)
+    {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectcategorybasedonproduct", new HashMap<String, String>() {
+            {
+                put("category",category);
             }
-        } catch (IOException | JSONException e) {
-            throw new RuntimeException("Couldn't update product", e);
+        });
+        try
+        {
+            ProductLibraryMaster[] items = this.mapper.readValue(jsonArray.toString(), ProductLibraryMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
         }
-    }*/
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<ProductLibrary> getproductlibraryimage(String image)
+    {
+        LOG.info("image parameter" +image);
+        JSONArray jsonArray = dataProviderMode.getResourceArray("cloudinaryfileupload/image", new HashMap<String, String>() {
+            {
+                put("imagepath",image);
+            }
+        });
+        try
+        {
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public CloudinaryImageUrl addToCloudinary(CloudinaryImageUrl cloudinaryImageUrl)
+    {
+        try {
+
+            String faJson = this.mapper.writeValueAsString(cloudinaryImageUrl);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "cloudinaryfileupload/", faJson);
+            if (!jsonObject.has("error")) {
+                return this.mapper.readValue(jsonObject.toString(), CloudinaryImageUrl.class);
+
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't add proposal doc", e);
+        }
+    }
 }
 
