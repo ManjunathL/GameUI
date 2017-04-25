@@ -257,8 +257,10 @@ public class AllProposalLibrary extends Window
             public String convertToPresentation(String value, Class<? extends String> targetType, Locale locale)
                     throws com.vaadin.data.util.converter.Converter.ConversionException {
 
-                return "<p><a href='" + value + "' target='_blank'>click to view image</a> " ;
-                      /*  +
+                return "<a class='img-anc' href='" + value + "' target='_blank'>click to view image</a> <style> .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>" ;
+
+                //return "<a href='" + value +"' target='_blank' onclick='window.open('" + value + "' ,'popup','width=600,height=600')>Open Link in Popup </a>";
+                              /*  +
                 "<img src='" +value+ "' width='100' height='100'> </a></p>";*/
 
             }
