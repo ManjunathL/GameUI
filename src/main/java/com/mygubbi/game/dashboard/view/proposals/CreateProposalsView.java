@@ -216,7 +216,7 @@ public class CreateProposalsView extends Panel implements View {
             this.priceDate = this.proposalHeader.getPriceDate();
         }
         LOG.info("Price date value" +priceDate);
-        PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,proposalHeader.getPcity());
+        PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,this.proposalHeader.getPcity());
         rateForDiscount=discountpriceMaster.getSourcePrice();
         LOG.info("Rate for discount" +rateForDiscount);
     }
@@ -270,6 +270,10 @@ public class CreateProposalsView extends Panel implements View {
         versionsGrid.setSizeFull();
         versionsGrid.setColumns(ProposalVersion.VERSION, ProposalVersion.FROM_VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
                 ProposalVersion.REMARKS, "actions","CNC");
+
+        versionContainer.removeAllItems();
+
+        LOG.debug("version container size"+ versionContainer.size());
 
 
         versionContainer.addAll(proposalVersionList);
@@ -441,9 +445,16 @@ public class CreateProposalsView extends Panel implements View {
             proposalDataProvider.createNewAddonFromOldProposal(copyVersion);
 
             int proposalId = proposalHeaderNew.getId();
-            UI.getCurrent().getNavigator()
-                    .navigateTo("New Quotation/" + proposalId);
-            DashboardEventBus.unregister(this);
+
+
+            ProposalHeader proposalHeaderUpdatePrice = proposalDataProvider.updatePriceForNewProposal(proposalHeaderNew);
+            if (!(proposalHeaderUpdatePrice == null))
+            {
+                UI.getCurrent().getNavigator()
+                        .navigateTo("New Quotation/" + proposalId);
+                DashboardEventBus.unregister(this);
+            }
+
         }));
 
 
@@ -634,6 +645,9 @@ public class CreateProposalsView extends Panel implements View {
         saveAndCloseButton.setVisible(true);
 
         if (success) {
+
+            proposalDataProvider.updatePriceForNewProposal(proposalHeader);
+
 
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             cityLockedForSave();

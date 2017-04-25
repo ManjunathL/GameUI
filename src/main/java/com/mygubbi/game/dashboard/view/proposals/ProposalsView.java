@@ -200,8 +200,8 @@ public final class ProposalsView extends TabSheet implements View {
                 }
             });
 
-            header.addComponent(updatePrice);
-            header.setComponentAlignment(updatePrice, Alignment.MIDDLE_RIGHT);
+           /* header.addComponent(updatePrice);
+            header.setComponentAlignment(updatePrice, Alignment.MIDDLE_RIGHT);*/
         }
 
         return header;

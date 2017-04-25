@@ -146,6 +146,7 @@ public class MarginDetailsWindow extends Window
             this.priceDate = new Date(System.currentTimeMillis());
         }
         setModal(true);
+        LOG.info("Proposal in margin" +proposalHeader);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("75%");
         setClosable(false);
@@ -533,12 +534,16 @@ public class MarginDetailsWindow extends Window
         LOG.info("Addon total wo tax" +addonsTotalWOtax);
         LOG.info("Addonprofit" +addonsProfit);
 
+        LOG.info("proposalHeader in update total" +proposalHeader);
+
         java.util.Date date =proposalHeader.getCreatedOn();
-        java.util.Date currentDate = new java.util.Date(200,1,28,0,0,00);
+        java.util.Date currentDate = new java.util.Date(117,3,20,0,0,00);
+
         double TspToBeConsidered = ProductTotal - addonsTotal;
         if (date.after(currentDate))
         {
             LOG.info("if loop in main method");
+            LOG.info("MSC : " + TspToBeConsidered);
             obj1=calculateSalesPriceWithDiscount(obj1, TspToBeConsidered);
             obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
             obj3=obj2;
@@ -555,15 +560,6 @@ public class MarginDetailsWindow extends Window
 
         }
 
-
-       /* obj1=calculateSalesPriceWithDiscount(obj1,ProductTotal-addonsTotal);
-
-        obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
-        obj3=obj2;*/
-
-        /*LOG.info("totalSalesPrice " + totalSalesPrice + "Discount Amount" +proposalVersion.getDiscountAmount());
-        obj2=calculateSalesPriceWithDiscount(obj2, ProductTotal-proposalVersion.getDiscountAmount(),addonsTotal,addonsTotalWOtax,addonsProfit);
-        obj3=obj2;*/
 
         manufacturingProfit = totalSalesPriceWOtax - manufacturingTotalSalesPrice;
         marginCompute=(manufacturingProfit / totalSalesPriceWOtax)*100;
@@ -908,7 +904,7 @@ public class MarginDetailsWindow extends Window
     {
         LOG.info("selected Value" +checkProduct.getValue());
         java.util.Date date =proposalHeader.getCreatedOn();
-        java.util.Date currentDate = new java.util.Date(200,1,28,0,0,00);
+        java.util.Date currentDate = new java.util.Date(117,3,20,0,0,00);
         if(checkProduct.getValue()=="Product")
         {
             obj1=new margin();
@@ -1207,7 +1203,7 @@ public class MarginDetailsWindow extends Window
     private void calculateDiscount()
     {
         java.util.Date date =proposalHeader.getCreatedOn();
-        java.util.Date currentDate = new java.util.Date(200,1,28,0,0,00);
+        java.util.Date currentDate = new java.util.Date(117 ,3,20,0,0,00);
         if(checkProduct.getValue()=="Product") {
 
             if("DP".equals(status))
