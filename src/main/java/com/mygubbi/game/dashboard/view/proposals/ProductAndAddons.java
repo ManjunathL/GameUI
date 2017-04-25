@@ -1480,6 +1480,8 @@ public class ProductAndAddons extends Window
                             addKitchenOrWardrobeButton.setVisible(false);
                             addFromCatalogueButton.setVisible(false);
                             addonAddButton.setVisible(false);
+                            addFromProductLibrary.setVisible(false);
+                            customAddonAddButton.setVisible(false);
                         /*versionStatus.setValue("Published");*/
                             NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                             handleState();
@@ -1754,10 +1756,12 @@ public class ProductAndAddons extends Window
                 case Draft:
                     submitButton.setVisible(true);
                     addKitchenOrWardrobeButton.setEnabled(true);
+                    addFromProductLibrary.setEnabled(true);
                     addFromCatalogueButton.setEnabled(true);
                     designSignOffButton.setVisible(false);
                     productionSignOffButton.setVisible(false);
                     addonAddButton.setEnabled(true);
+                    customAddonAddButton.setEnabled(true);
                     confirmButton.setVisible(false);
                     break;
                 case Published:
@@ -1800,8 +1804,10 @@ public class ProductAndAddons extends Window
                     submitButton.setVisible(false);
                     confirmButton.setVisible(false);
                     addKitchenOrWardrobeButton.setVisible(false);
+                    addFromProductLibrary.setVisible(false);
                     addFromCatalogueButton.setVisible(false);
                     addonAddButton.setVisible(false);
+                    customAddonAddButton.setVisible(false);
                     designSignOffButton.setVisible(false);
                     productionSignOffButton.setVisible(false);
                     discountAmount.setReadOnly(true);
@@ -1893,6 +1899,7 @@ public class ProductAndAddons extends Window
         addFromCatalogueButton.setEnabled(false);
         addonAddButton.setEnabled(false);
         customAddonAddButton.setEnabled(false);
+        addFromProductLibrary.setEnabled(false);
     }
 
     @Subscribe
