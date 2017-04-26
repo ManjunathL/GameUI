@@ -1069,18 +1069,10 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        HorizontalLayout horizontalLayout=new HorizontalLayout();
-        horizontalLayout.setSizeFull();
         crmId = binder.buildAndBind("CRM #", CRM_ID);
         crmId.setRequired(true);
         ((TextField) crmId).setNullRepresentation("");
-        horizontalLayout.addComponent(crmId);
-
-        Button searchcrmid=new Button("Search");
-        horizontalLayout.addComponent(searchcrmid);
-        //horizontalLayout.setComponentAlignment(searchcrmid,Alignment.TOP_RIGHT);
-
-        formLayoutRight.addComponent(horizontalLayout);
+        formLayoutRight.addComponent(crmId);
 
         quotenew = new TextField("Quotation #");
         quotenew.setValue(this.proposalHeader.getQuoteNo());

@@ -108,7 +108,7 @@ public class ProductLibraryInfo extends Window
         horizontalLayout.addComponent(formLayoutLeft);
         horizontalLayout.setExpandRatio(formLayoutLeft,0.4f);
 
-        productTitleField = binder.buildAndBind("Title", ProductLibrary.PRODUCT_TITLE);
+        productTitleField = binder.buildAndBind("Product Name", ProductLibrary.PRODUCT_TITLE);
         productTitleField.setRequired(true);
         ((TextField) productTitleField).setNullRepresentation("");
 
@@ -124,7 +124,7 @@ public class ProductLibraryInfo extends Window
         subcategoryField.setRequired(true);
         formLayoutLeft.addComponent(subcategoryField);
 
-        productdescriptionField = binder.buildAndBind("Description", ProductLibrary.PRODUCT_DESCRIPTION);
+        productdescriptionField = binder.buildAndBind("Product Description", ProductLibrary.PRODUCT_DESCRIPTION);
         ((TextField) productdescriptionField).setNullRepresentation("");
         productdescriptionField.setRequired(true);
         formLayoutLeft.addComponent(productdescriptionField);
