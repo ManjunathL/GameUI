@@ -16,7 +16,9 @@ public final class User {
     private String userId;
     private String userName;
 
-    public User() {
+    public User()
+    {
+
     }
 
     public User(String email, String role, String phone, String name) {

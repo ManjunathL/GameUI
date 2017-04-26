@@ -1609,17 +1609,18 @@ public class ProposalDataProvider {
 
     public List<ProductLibraryMaster> getProductsubcategory(String category)
     {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectcategorybasedonproduct", new HashMap<String, String>() {
-            {
-                put("category",category);
-            }
-        });
         try
         {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectcategorybasedonproduct", new HashMap<String, String>() {
+                {
+
+                    put("category",URLEncoder.encode(category,"UTF-8"));
+                }
+            });
             ProductLibraryMaster[] items = this.mapper.readValue(jsonArray.toString(), ProductLibraryMaster[].class);
             return new ArrayList<>(Arrays.asList(items));
         }
-        catch (IOException e) {
+        catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }

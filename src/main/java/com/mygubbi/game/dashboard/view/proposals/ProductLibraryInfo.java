@@ -126,6 +126,7 @@ public class ProductLibraryInfo extends Window
 
         productdescriptionField = binder.buildAndBind("Description", ProductLibrary.PRODUCT_DESCRIPTION);
         ((TextField) productdescriptionField).setNullRepresentation("");
+        productdescriptionField.setRequired(true);
         formLayoutLeft.addComponent(productdescriptionField);
         formLayoutLeft.addComponent(getQuoteUploadControl());
 
