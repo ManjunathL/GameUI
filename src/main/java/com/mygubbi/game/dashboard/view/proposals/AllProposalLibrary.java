@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 public class AllProposalLibrary extends Window
 {
-    private static final Logger LOG = LogManager.getLogger(Dummy.class);
+    private static final Logger LOG = LogManager.getLogger(AllProposalLibrary.class);
     Grid addonsGrid;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private BeanItemContainer<ProductLibrary> productsContainer;
@@ -243,7 +243,7 @@ public class AllProposalLibrary extends Window
         int idx = 0;
         columns.get(idx++).setHeaderCaption("Product Category");
         columns.get(idx++).setHeaderCaption("Product Subcategory");
-        columns.get(idx++).setHeaderCaption("Title");
+        columns.get(idx++).setHeaderCaption("Product Name");
         columns.get(idx++).setHeaderCaption("Image").setRenderer(new HtmlRenderer(), new Converter<String, String>()
         {
             @Override
