@@ -585,6 +585,11 @@ public class CreateProposalsView extends Panel implements View {
 
     private void save(Button.ClickEvent clickEvent) {
 
+        if (!(proposalHeader.getQuoteNoNew() == null)) {
+            LOG.debug("Hey");
+            proposalDataProvider.updatePriceForNewProposal(proposalHeader);
+        }
+
         LOG.debug("Proposal Header inside save :" + this.proposalHeader.toString());
         boolean duplicateCrm = checkForDuplicateCRM();
 
@@ -645,8 +650,6 @@ public class CreateProposalsView extends Panel implements View {
         saveAndCloseButton.setVisible(true);
 
         if (success) {
-
-            proposalDataProvider.updatePriceForNewProposal(proposalHeader);
 
 
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
