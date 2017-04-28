@@ -139,13 +139,13 @@ public class AllProposalLibrary extends Window
         productsContainer = new BeanItemContainer<>(ProductLibrary.class);
         GeneratedPropertyContainer genContainer = createGeneratedAddonsPropertyContainer();
         addonsGrid = new Grid(genContainer);
-        /*addonsGrid.addStyleName("v-lst-event");
+        addonsGrid.addStyleName("v-lst-event");
         addonsGrid.setRowStyleGenerator(new Grid.RowStyleGenerator() {
             @Override
             public String getStyle(Grid.RowReference rowReference) {
                 return "v-grid-header";
             }
-        });*/
+        });
         addonsGrid.setSizeFull();
         addonsGrid.setHeightByRows(11);
         addonsGrid.setHeightMode(HeightMode.ROW);
@@ -257,7 +257,8 @@ public class AllProposalLibrary extends Window
             public String convertToPresentation(String value, Class<? extends String> targetType, Locale locale)
                     throws com.vaadin.data.util.converter.Converter.ConversionException {
 
-                return "<a class='img-anc' href='" + value + "' target='_blank'>click to view image</a> <style> .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>" ;
+                return "<img src='" +value+ "' width='100' height='100'>";
+                        //"<a class='img-anc' href='" + value + "' target='_blank'>click to view image</a> <style> .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>" ;
 
                 //return "<a href='" + value +"' target='_blank' onclick='window.open('" + value + "' ,'popup','width=600,height=600')>Open Link in Popup </a>";
                               /*  +
