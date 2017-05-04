@@ -6,6 +6,7 @@ import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -25,10 +26,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.gridutil.cell.GridCellFilter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import static java.lang.StrictMath.round;
 
 /**
  * Created by shruthi on 15-Apr-17.
@@ -159,7 +163,7 @@ public class AllProposalLibrary extends Window
         //grid.setSelectionMode(SelectionMode.MULTI);
         //addonsGrid.addSelectionListener(this::updateTotal);
         //addonsGrid.setColumns(AddonMaster.PRODUCT,AddonMaster.CATEGORY_CODE,AddonMaster.CATALOUGE_CODE,AddonMaster.IMAGE_PATH);
-        addonsGrid.setColumns("productCategoryText",ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH);
+        addonsGrid.setColumns(ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH);
 
 
 
@@ -288,7 +292,7 @@ public class AllProposalLibrary extends Window
     private GeneratedPropertyContainer createGeneratedAddonsPropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productsContainer);
         genContainer.addGeneratedProperty("Link", getEmptyActionTextGenerator());
-        genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
+//        genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
         return genContainer;
     }
 
@@ -397,11 +401,43 @@ public class AllProposalLibrary extends Window
             product.setMargin(p.getMargin());
             product.setManufactureAmount(p.getManufactureAmount());
             product.setAmountWoTax(p.getAmountWoTax());
+
+            List<Module> modules = p.getModules();
+            List<Module> refreshedModules = new ArrayList<>();
+            for (Module refreshedModule: modules)
+            {
+                ModuleForPrice moduleForPrice = new ModuleForPrice();
+
+                if (proposalHeader.getPriceDate() == null) {
+                    java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
+                    moduleForPrice.setPriceDate( date);
+                }
+                else
+                {
+                    moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
+                }
+
+                moduleForPrice.setCity(proposalHeader.getPcity());
+
+                moduleForPrice.setModule(refreshedModule);
+                ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
+                double amount = round(modulePrice.getTotalCost());
+                double areainsft = modulePrice.getModuleArea();
+                double costwoaccessories = round(modulePrice.getWoodworkCost());
+
+
+                modules.get(modules.indexOf(refreshedModule)).setAmount(amount);
+                modules.get(modules.indexOf(refreshedModule)).setAmountWOAccessories(costwoaccessories);
+                modules.get(modules.indexOf(refreshedModule)).setArea(areainsft);
+            }
+            product.setModules(refreshedModules);
+
             product.setModules(p.getModules());
             product.setSource(p.getSource());
             product.setAddons(p.getAddons());
             LOG.debug("NEW PRoduct crearted from product library"+ product);
-            DashboardEventBus.unregister(this);
+            proposalDataProvider.updateProduct(product);
+//            Product updatedProduct = proposalDataProvider.updateProductWithRefreshedPrice(product);
             close();
             LOG.info("windows ***" +UI.getCurrent().getWindows());
             CustomizedProductDetailsWindow.open(proposal,product,proposalVersion,proposalHeader);

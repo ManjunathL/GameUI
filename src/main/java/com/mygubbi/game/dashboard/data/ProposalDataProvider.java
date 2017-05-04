@@ -841,6 +841,24 @@ public class ProposalDataProvider {
         }
     }
 
+    public Product updateProductWithRefreshedPrice(Product product) {
+        try {
+            product.setUpdatedBy(getUserId());
+            String productJson = this.mapper.writeValueAsString(product);
+            LOG.debug("Product json:" + productJson);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/updaterefreshedprice", productJson);
+            if (!jsonObject.has("error")) {
+                product.setId(jsonObject.getInt("id"));
+                return this.mapper.readValue(jsonObject.toString(), Product.class);
+            } else {
+                return null;
+            }
+        } catch (IOException | JSONException e) {
+            throw new RuntimeException("Couldn't update product", e);
+        }
+    }
+
     public Product updateProductSequence(int seq, int id) {
         try {
             JSONObject jsonObject = dataProviderMode.postResource("product/updatesequence", "{\"seq\": " + "\"" + seq + "\"" + "," + "\"id\" : " + id + "}");

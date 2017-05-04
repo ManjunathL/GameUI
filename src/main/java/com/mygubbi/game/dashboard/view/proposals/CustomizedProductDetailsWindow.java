@@ -804,6 +804,7 @@ public class CustomizedProductDetailsWindow extends Window {
             product.setQuoteFilePath(quoteFilePath);
             product.setSource("KDMax");
             Product productResult = proposalDataProvider.loadAndUpdateProduct(product);
+            LOG.debug("Product Result :" + productResult.toString());
             product.setId(productResult.getId());
             product.setModules(productResult.getModules());
             product.setType(TYPES.CUSTOMIZED.name());
