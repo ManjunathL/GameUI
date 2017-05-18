@@ -1453,6 +1453,9 @@ public class ProductAndAddons extends Window
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
             proposalDataProvider.updateVersion(proposalVersion);
+
+            SendToCRM sendToCRM = updatePriceInCRMOnPublish();
+            proposalDataProvider.updateCrmPrice(sendToCRM);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             DashboardEventBus.unregister(this);
             close();
@@ -1462,6 +1465,23 @@ public class ProductAndAddons extends Window
             discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()).replace(",",""));
             discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
         }
+    }
+
+    private SendToCRM updatePriceInCRMOnPublish() {
+        SendToCRM sendToCRM = new SendToCRM();
+        sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
+        sendToCRM.setFinal_proposal_amount_c(proposalVersion.getFinalAmount());
+        sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
+        return sendToCRM;
+    }
+
+    private SendToCRM updatePriceInCRMOnConfirm() {
+        SendToCRM sendToCRM = new SendToCRM();
+        sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
+        sendToCRM.setFinal_proposal_amount_c(proposalVersion.getFinalAmount());
+        sendToCRM.setEstimated_project_cost_c(proposalVersion.getFinalAmount());
+        sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
+        return sendToCRM;
     }
 
     private void confirm(Button.ClickEvent clickEvent) {
@@ -1513,6 +1533,8 @@ public class ProductAndAddons extends Window
                         proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                         proposalHeader.setVersion(proposalVersion.getVersion());
+                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
+                        proposalDataProvider.updateCrmPrice(sendToCRM);
                         proposalDataProvider.saveProposal(proposalHeader);
                     } else if (versionNew.startsWith("1.")) {
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
@@ -1528,6 +1550,8 @@ public class ProductAndAddons extends Window
                         proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                         proposalHeader.setVersion(proposalVersion.getVersion());
+                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
+                        proposalDataProvider.updateCrmPrice(sendToCRM);
                         proposalDataProvider.saveProposal(proposalHeader);
 
 
@@ -1541,6 +1565,8 @@ public class ProductAndAddons extends Window
                         success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                         proposalHeader.setVersion(proposalVersion.getVersion());
+                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
+                        proposalDataProvider.updateCrmPrice(sendToCRM);
                         proposalDataProvider.saveProposal(proposalHeader);
                     }
 
