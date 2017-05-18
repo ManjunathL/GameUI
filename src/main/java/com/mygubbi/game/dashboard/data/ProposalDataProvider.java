@@ -14,10 +14,10 @@ import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.objectweb.asm.Handle;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
+import us.monoid.web.JSONResource;
 
 import java.io.File;
 import java.io.IOException;
@@ -119,7 +119,8 @@ public class ProposalDataProvider {
                 put("id", proposalId + "");
             }
         });
-        try {
+        try
+        {
             return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);
@@ -132,10 +133,12 @@ public class ProposalDataProvider {
                 put("proposalId", proposalId + "");
             }
         });
-        try {
+        try
+        {
             Product[] items = this.mapper.readValue(jsonArray.toString(), Product[].class);
             return new ArrayList<>(Arrays.asList(items));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
@@ -830,6 +833,24 @@ public class ProposalDataProvider {
         }
     }
 
+    public Product updateProductWithRefreshedPrice(Product product) {
+        try {
+            product.setUpdatedBy(getUserId());
+            String productJson = this.mapper.writeValueAsString(product);
+            LOG.debug("Product json:" + productJson);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/updaterefreshedprice", productJson);
+            if (!jsonObject.has("error")) {
+                product.setId(jsonObject.getInt("id"));
+                return this.mapper.readValue(jsonObject.toString(), Product.class);
+            } else {
+                return null;
+            }
+        } catch (IOException | JSONException e) {
+            throw new RuntimeException("Couldn't update product", e);
+        }
+    }
+
     public Product updateProductSequence(int seq, int id) {
         try {
             JSONObject jsonObject = dataProviderMode.postResource("product/updatesequence", "{\"seq\": " + "\"" + seq + "\"" + "," + "\"id\" : " + id + "}");
@@ -910,7 +931,7 @@ public class ProposalDataProvider {
         }
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
         ProposalHeader proposal = proposalDataProvider.createProposal();
 
@@ -920,7 +941,7 @@ public class ProposalDataProvider {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
 
     public ModulePrice getModulePrice(ModuleForPrice moduleForPrice) {
@@ -1293,18 +1314,22 @@ public class ProposalDataProvider {
                 put("code", code + "");
             }
         });
-        try {
+        try
+        {
             AddonMaster[] items = this.mapper.readValue(jsonArray.toString(), AddonMaster[].class);
             return new ArrayList<>(Arrays.asList(items));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
 
-    public List<AccessoryDetails> getAccessoryDetails(String apcode) {
-        JSONArray array = dataProviderMode.getResourceArray("proposal/accdetails", new HashMap<String, String>() {
+
+    public List<AccessoryDetails> getAccessoryDetails(String apcode)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/accdetails", new HashMap<String, String>(){
             {
                 put("apcode", apcode);
             }
@@ -1317,9 +1342,9 @@ public class ProposalDataProvider {
             throw new RuntimeException(e);
         }
     }
-
-    public List<AccessoryDetails> getAccessoryhwDetails(String apcode) {
-        JSONArray array = dataProviderMode.getResourceArray("proposal/acchwdetails", new HashMap<String, String>() {
+    public List<AccessoryDetails> getAccessoryhwDetails(String apcode)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/acchwdetails", new HashMap<String, String>(){
             {
                 put("apcode", apcode);
             }
@@ -1336,9 +1361,9 @@ public class ProposalDataProvider {
     public PriceMaster getAddonRate(String code, Date priceDate, String city) {
         JSONObject jsonObject = dataProviderMode.getResource("addon/getprice", new HashMap<String, String>() {
             {
-                put("code", code + "");
-                put("priceDate", priceDate + "");
-                put("city", city + "");
+                put("code", code + "" );
+                put("priceDate", priceDate +  "");
+                put("city", city + "" );
             }
         });
 
@@ -1351,15 +1376,17 @@ public class ProposalDataProvider {
 
     }
 
-    public PriceMaster getAccessoryRateDetails(String rateId, Date priceDate, String city) {
-        JSONObject jsonObject = dataProviderMode.getResource("proposal/accratedetails", new HashMap<String, String>() {
+    public PriceMaster getAccessoryRateDetails(String rateId, Date priceDate, String city)
+    {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/accratedetails", new HashMap<String, String>(){
             {
                 put("rateId", rateId + "");
                 put("priceDate", priceDate + "");
-                put("city", city + "");
+                put("city",city + "");
             }
         });
-        try {
+        try
+        {
             return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
 
         } catch (Exception e) {
@@ -1368,15 +1395,17 @@ public class ProposalDataProvider {
         }
     }
 
-    public PriceMaster getHardwareRateDetails(String rateId, Date priceDate, String city) {
-        JSONObject jsonObject = dataProviderMode.getResource("proposal/hardwareratedetails", new HashMap<String, String>() {
+    public PriceMaster getHardwareRateDetails(String rateId, Date priceDate, String city)
+    {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/hardwareratedetails", new HashMap<String, String>(){
             {
                 put("rateId", rateId + "");
                 put("priceDate", priceDate + "");
-                put("city", city + "");
+                put("city",city + "");
             }
         });
-        try {
+        try
+        {
             return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
 
         } catch (Exception e) {
@@ -1386,33 +1415,35 @@ public class ProposalDataProvider {
     }
 
     public boolean updatePriceForDraftProposals(int id) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/updatepricefordraftproposals", "{\"priceDate\": " + id + "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/updatepricefordraftproposals",  "{\"priceDate\": " + id + "}");
         return !jsonObject.has("error");
 
     }
 
     public ProposalHeader updatePriceForNewProposal(ProposalHeader proposalHeader) {
-        try {
-            String productJson = this.mapper.writeValueAsString(proposalHeader);
-            JSONObject jsonObject = dataProviderMode.postResource(
-                    "priceupdate/updatepricefornewproposal", productJson);
+            try {
+                String productJson = this.mapper.writeValueAsString(proposalHeader);
+                JSONObject jsonObject = dataProviderMode.postResource(
+                        "priceupdate/updatepricefornewproposal", productJson);
 
-            return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't update prices", e);
+                return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
+            } catch (IOException e) {
+                throw new RuntimeException("Couldn't update prices", e);
+            }
         }
-    }
 
 
-    public PriceMaster getFactorRatePriceDetails(String rateId, Date priceDate, String city) {
-        JSONObject jsonObject = dataProviderMode.getResource("proposal/ratefactordetailsfromhandler", new HashMap<String, String>() {
+    public PriceMaster getFactorRatePriceDetails(String rateId, Date priceDate, String city)
+    {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/ratefactordetailsfromhandler", new HashMap<String, String>(){
             {
                 put("rateId", rateId + "");
                 put("priceDate", priceDate + "");
-                put("city", city + "");
+                put("city",city + "");
             }
         });
-        try {
+        try
+        {
             return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
 
         } catch (Exception e) {
@@ -1421,8 +1452,9 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<RateCard> getFactorRateCodeDetails(String rateCardId) {
-        JSONArray array = dataProviderMode.getResourceArray("proposal/rcodedetails", new HashMap<String, String>() {
+    public List<RateCard> getFactorRateCodeDetails(String rateCardId)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/rcodedetails", new HashMap<String, String>(){
             {
                 put("rateCardId", rateCardId);
             }
@@ -1436,8 +1468,9 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<ModuleComponent> getModuleAccessoryhwDetails(String modulecode) {
-        JSONArray array = dataProviderMode.getResourceArray("proposal/moduleacchwdetails", new HashMap<String, String>() {
+    public List<ModuleComponent> getModuleAccessoryhwDetails(String modulecode)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/moduleacchwdetails", new HashMap<String, String>(){
             {
                 put("modulecode", modulecode);
             }
@@ -1458,10 +1491,12 @@ public class ProposalDataProvider {
 
             }
         });
-        try {
+        try
+        {
             Product[] items = this.mapper.readValue(jsonArray.toString(), Product[].class);
             return new ArrayList<>(Arrays.asList(items));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
@@ -1525,22 +1560,26 @@ public class ProposalDataProvider {
         try {
             ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
             return new ArrayList<>(Arrays.asList(items));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
-    public List<ProductLibrary> getAllProductsLibrary() {
+    public List<ProductLibrary> getAllProductsLibrary()
+    {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectproductlibrary", new HashMap<String, String>() {
             {
 
             }
         });
-        try {
+        try
+        {
             ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
             return new ArrayList<>(Arrays.asList(items));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
@@ -1558,54 +1597,64 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<ProductLibrary> getProductsLibraryBasedonId(String id) {
+    public List<ProductLibrary> getProductsLibraryBasedonId(String id)
+    {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectlibrarybasedonid", new HashMap<String, String>() {
             {
-                put("id", id);
+                put("id",id);
             }
         });
-        try {
+        try
+        {
             ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
             return new ArrayList<>(Arrays.asList(items));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
-    public List<ProductLibraryMaster> getProductsubcategory(String category) {
-        try {
+    public List<ProductLibraryMaster> getProductsubcategory(String category)
+    {
+        try
+        {
             JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectcategorybasedonproduct", new HashMap<String, String>() {
                 {
 
-                    put("category", URLEncoder.encode(category, "UTF-8"));
+                    put("category",URLEncoder.encode(category,"UTF-8"));
                 }
             });
             ProductLibraryMaster[] items = this.mapper.readValue(jsonArray.toString(), ProductLibraryMaster[].class);
             return new ArrayList<>(Arrays.asList(items));
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
-    public List<ProductLibrary> getproductlibraryimage(String image) {
-        LOG.info("image parameter" + image);
+    public List<ProductLibrary> getproductlibraryimage(String image)
+    {
+        LOG.info("image parameter" +image);
         JSONArray jsonArray = dataProviderMode.getResourceArray("cloudinaryfileupload/image", new HashMap<String, String>() {
             {
-                put("imagepath", image);
+                put("imagepath",image);
             }
         });
-        try {
+        try
+        {
             ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
             return new ArrayList<>(Arrays.asList(items));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
-    public CloudinaryImageUrl addToCloudinary(CloudinaryImageUrl cloudinaryImageUrl) {
+    public CloudinaryImageUrl addToCloudinary(CloudinaryImageUrl cloudinaryImageUrl)
+    {
         try {
 
             String faJson = this.mapper.writeValueAsString(cloudinaryImageUrl);
@@ -1620,6 +1669,37 @@ public class ProposalDataProvider {
         } catch (IOException e) {
             throw new RuntimeException("Couldn't add proposal doc", e);
         }
+    }
+
+    public boolean updateCrmPrice(SendToCRM sendToCRM)
+    {
+        try {
+            String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";
+            String final_amount = String.valueOf(sendToCRM.getFinal_proposal_amount_c());
+            String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
+        /*
+                    JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
+        */
+            JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrm(baseCrmUrl, sendToCRM.getOpportunity_name(),final_amount,estimated_project_cost,sendToCRM.getQuotation_number_c());
+            LOG.debug("Json Object : "+ jsonObject.toString());
+//            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new RestDataProviderMode());
+        SendToCRM sendToCRM = new SendToCRM();
+        sendToCRM.setEstimated_project_cost_c(8000);
+        sendToCRM.setFinal_proposal_amount_c(8000);
+        sendToCRM.setOpportunity_name("SAL-1701-000951");
+        sendToCRM.setQuotation_number_c("BLR-111-111");
+        boolean jsonObject = proposalDataProvider.updateCrmPrice(sendToCRM);
+        System.out.println(jsonObject);
     }
 
     public List<UserProfile> getUserProfileDetails(String crmID) {

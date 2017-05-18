@@ -504,21 +504,6 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setAmountWoTax(round(totalSalesPriceWOtax));
         product.setManufactureAmount(round(manufacturingTotalSalesPrice));
 
-        LOG.info("Non std WoodCost " +NonStandardWoodworkCost);
-        LOG.info("Std WoodCost" +StandardWoodworkCost);
-        LOG.info("Accessory Cost" +accessoryCost);
-        LOG.info("Hardware Cost" +hardwareCost);
-        LOG.info("Labour Cost" +labourCost);
-        LOG.info("hike cost" +hikeCost);
-        LOG.info("Total Sales Price" +totalSalesPrice);
-        LOG.info("TSP WO Tax" +totalSalesPriceWOtax);
-
-        LOG.info("Manf std" +stdModuleManufacturingCost);
-        LOG.info("manf NONStd " +nonStdModuleManufacturingCost);
-        LOG.info("mnf Accessory price" +FinalmanufacturingAccoryCost);
-        LOG.info("mnf Hardware price" +manufacturingHardwareCost);
-        LOG.info("mnf Labour price" +manufacturingLabourCost);
-        LOG.info("Mnf Total price" +manufacturingTotalSalesPrice);
 
         Double cwa=product.getCostWoAccessories();
         if (totalModuleArea != 0) {
@@ -975,6 +960,7 @@ public class CustomizedProductDetailsWindow extends Window {
             product.setQuoteFilePath(quoteFilePath);
             product.setSource("KDMax");
             Product productResult = proposalDataProvider.loadAndUpdateProduct(product);
+            LOG.debug("Product Result :" + productResult.toString());
             product.setId(productResult.getId());
             product.setModules(productResult.getModules());
             product.setType(TYPES.CUSTOMIZED.name());

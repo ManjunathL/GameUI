@@ -6,6 +6,7 @@ import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -25,10 +26,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.gridutil.cell.GridCellFilter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import static java.lang.StrictMath.round;
 
 /**
  * Created by shruthi on 15-Apr-17.
@@ -283,7 +287,7 @@ public class AllProposalLibrary extends Window
             public String convertToPresentation(String value, Class<? extends String> targetType, Locale locale)
                     throws com.vaadin.data.util.converter.Converter.ConversionException {
 
-                //return "<a class='img-anc' href='" + value + "' target='_blank'>click to view image</a> <style> a, a:visited, a:hover { color: #4396ea;} .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>" ;
+               // return "<a class='img-anc' href='" + value + "' target='_blank'>click to view image</a> <style> .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>" ;
 
                 //return "<a href='" + value +"' target='_blank' onclick='window.open('" + value + "' ,'popup','width=600,height=600')>Open Link in Popup </a>";
                               /*  +*/
@@ -422,11 +426,43 @@ public class AllProposalLibrary extends Window
             product.setMargin(p.getMargin());
             product.setManufactureAmount(p.getManufactureAmount());
             product.setAmountWoTax(p.getAmountWoTax());
+
+            List<Module> modules = p.getModules();
+            List<Module> refreshedModules = new ArrayList<>();
+            for (Module refreshedModule: modules)
+            {
+                ModuleForPrice moduleForPrice = new ModuleForPrice();
+
+                if (proposalHeader.getPriceDate() == null) {
+                    java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
+                    moduleForPrice.setPriceDate( date);
+                }
+                else
+                {
+                    moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
+                }
+
+                moduleForPrice.setCity(proposalHeader.getPcity());
+
+                moduleForPrice.setModule(refreshedModule);
+                ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
+                double amount = round(modulePrice.getTotalCost());
+                double areainsft = modulePrice.getModuleArea();
+                double costwoaccessories = round(modulePrice.getWoodworkCost());
+
+
+                modules.get(modules.indexOf(refreshedModule)).setAmount(amount);
+                modules.get(modules.indexOf(refreshedModule)).setAmountWOAccessories(costwoaccessories);
+                modules.get(modules.indexOf(refreshedModule)).setArea(areainsft);
+            }
+            product.setModules(refreshedModules);
+
             product.setModules(p.getModules());
             product.setSource(p.getSource());
             product.setAddons(p.getAddons());
             LOG.debug("NEW PRoduct crearted from product library"+ product);
-            DashboardEventBus.unregister(this);
+            proposalDataProvider.updateProduct(product);
+//            Product updatedProduct = proposalDataProvider.updateProductWithRefreshedPrice(product);
             close();
             LOG.info("windows ***" +UI.getCurrent().getWindows());
             CustomizedProductDetailsWindow.open(proposal,product,proposalVersion,proposalHeader);
