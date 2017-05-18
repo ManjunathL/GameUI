@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
-import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AddonMaster;
@@ -20,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
+import us.monoid.web.JSONResource;
 
 import java.io.File;
 import java.io.IOException;
@@ -939,7 +939,7 @@ public class ProposalDataProvider {
         }
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
         ProposalHeader proposal = proposalDataProvider.createProposal();
 
@@ -949,7 +949,7 @@ public class ProposalDataProvider {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
 
     public ModulePrice getModulePrice(ModuleForPrice moduleForPrice) {
@@ -1561,11 +1561,16 @@ public class ProposalDataProvider {
 
     public List<ProductLibrary> getProductsLibrary(String productTitle)
     {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/searchproductlibrary", new HashMap<String, String>() {
-            {
-                put("productTitle", productTitle);
-            }
-        });
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = dataProviderMode.getResourceArray("proposal/searchproductlibrary", new HashMap<String, String>() {
+                {
+                    put("productTitle", URLEncoder.encode(productTitle,"UTF-8"));
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try
         {
             ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
@@ -1679,6 +1684,86 @@ public class ProposalDataProvider {
         } catch (IOException e) {
             throw new RuntimeException("Couldn't add proposal doc", e);
         }
+    }
+
+    public List<ProductLibraryMaster> getProductcategory() {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectcategory", new HashMap<String, String>() {
+                {
+
+                }
+            });
+            ProductLibraryMaster[] items = this.mapper.readValue(jsonArray.toString(), ProductLibraryMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public List<ProductLibrary> getProducttitle(String productCategoryCode,String subCategory)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectproductname", new HashMap<String, String>() {
+                {
+                    put("productCategoryCode",URLEncoder.encode(productCategoryCode, "UTF-8"));
+                    put("subCategory",URLEncoder.encode(subCategory, "UTF-8"));
+                }
+            });
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<ProductLibrary> getProductLibrary(String productCategoryCode,String subCategory,String title)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectproductfromlibrary", new HashMap<String, String>() {
+                {
+                    put("productCategoryCode",URLEncoder.encode(productCategoryCode, "UTF-8"));
+                    put("subCategory",URLEncoder.encode(subCategory, "UTF-8"));
+                    put("productTitle",URLEncoder.encode(title, "UTF-8"));
+                }
+            });
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public boolean updateCrmPrice(SendToCRM sendToCRM)
+    {
+        try {
+            String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";
+            String final_amount = String.valueOf(sendToCRM.getFinal_proposal_amount_c());
+            String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
+        /*
+                    JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
+        */
+            JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrm(baseCrmUrl, sendToCRM.getOpportunity_name(),final_amount,estimated_project_cost,sendToCRM.getQuotation_number_c());
+            LOG.debug("Json Object : "+ jsonObject.toString());
+//            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new RestDataProviderMode());
+        SendToCRM sendToCRM = new SendToCRM();
+        sendToCRM.setEstimated_project_cost_c(8000);
+        sendToCRM.setFinal_proposal_amount_c(8000);
+        sendToCRM.setOpportunity_name("SAL-1701-000951");
+        sendToCRM.setQuotation_number_c("BLR-111-111");
+        boolean jsonObject = proposalDataProvider.updateCrmPrice(sendToCRM);
+        System.out.println(jsonObject);
     }
 }
 
