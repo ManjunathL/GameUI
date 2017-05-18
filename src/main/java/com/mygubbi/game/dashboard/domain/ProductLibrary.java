@@ -18,8 +18,6 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String FROM_VERSION = "fromVersion";
     public static final String ID = "id";
     public static final String SEQ = "seq";
-
-
     public static final String MANUAL_SEQ = "manualSeq";
     public static final String TITLE = "title";
     public static final String PRODUCT_CATEGORY = "productCategory";
@@ -54,6 +52,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String PRODUCT_DESCRIPTION="ProductDescription";
     public static final String IMAGE_PATH="imageurl";
     public static final String PRODUCT_TITLE="productTitle";
+    public static final String COLLECTION="collection";
 
 
     private int id;
@@ -97,6 +96,8 @@ public class ProductLibrary implements FileAttachmentsHolder
     private double manufactureAmount;
     private String imageurl;
     private String productTitle;
+    private String collection;
+
     private List<Module> modules = new ArrayList<>();
 
     public double getCostWoAccessories() {
@@ -443,6 +444,14 @@ public class ProductLibrary implements FileAttachmentsHolder
         this.productTitle = productTitle;
     }
 
+    public String getCollection() {
+        return collection;
+    }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
+    }
+
     @Override
     public List<FileAttachment> getFileAttachmentList() {
         return null;
@@ -492,6 +501,8 @@ public class ProductLibrary implements FileAttachmentsHolder
                 ", amountWoTax=" + amountWoTax +
                 ", manufactureAmount=" + manufactureAmount +
                 ", imageurl='" + imageurl + '\'' +
+                ", productTitle='" + productTitle + '\'' +
+                ", collection='" + collection + '\'' +
                 ", modules=" + modules +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';

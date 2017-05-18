@@ -128,8 +128,11 @@ public class CreateProposalsView extends Panel implements View {
     int pid;
     String parameters;
     List<ProposalCity> proposalCityData;
+    Profile profile;
+    String UserId;
 
-    public CreateProposalsView() {
+    public CreateProposalsView()
+    {
     }
 
     @Override
@@ -586,14 +589,14 @@ public class CreateProposalsView extends Panel implements View {
     private void save(Button.ClickEvent clickEvent) {
 
         LOG.debug("Proposal Header inside save :" + this.proposalHeader.toString());
-        boolean duplicateCrm = checkForDuplicateCRM();
+        /*boolean duplicateCrm = checkForDuplicateCRM();
 
         LOG.debug("duplicate crm" + duplicateCrm);
 
         if (duplicateCrm) {
             NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
-        }
+        }*/
 
         if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
             this.proposalHeader.setTitle(NEW_TITLE);
@@ -669,12 +672,12 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void saveAndClose(Button.ClickEvent clickEvent) {
-        boolean duplicateCrm = checkForDuplicateCRM();
+       /* boolean duplicateCrm = checkForDuplicateCRM();
 
         if (duplicateCrm) {
             NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
-        }
+        }*/
 
         if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
             this.proposalHeader.setTitle(NEW_TITLE);
@@ -715,7 +718,7 @@ public class CreateProposalsView extends Panel implements View {
         UI.getCurrent().getNavigator().navigateTo(DashboardViewType.PROPOSALS.name());
     }
 
-    private boolean checkForDuplicateCRM() {
+    /*private boolean checkForDuplicateCRM() {
 
         String crmIdValue = (String) crmId.getValue();
         ProposalHeader getCrm = proposalDataProvider.getProposalHeader(proposalHeader.getId());
@@ -736,7 +739,7 @@ public class CreateProposalsView extends Panel implements View {
             }
         }
         return duplicateCrm;
-    }
+    }*/
 
 
     private void cancel(Button.ClickEvent clickEvent) {
@@ -770,6 +773,13 @@ public class CreateProposalsView extends Panel implements View {
         HorizontalLayout horizontalLayout0 = new HorizontalLayout();
         horizontalLayout0.setSizeFull();
         verticalLayout.addComponent(horizontalLayout0);
+
+        HorizontalLayout hlayout=new HorizontalLayout();
+        Button searchcrmid=new Button("Search");
+        hlayout.addStyleName("crmstyle");
+        searchcrmid.addClickListener(this::searchCRMData);
+        hlayout.addComponent(searchcrmid);
+        verticalLayout.addComponent(hlayout);
 
         HorizontalLayout horizontalLayout1 = new HorizontalLayout();
         horizontalLayout1.setSizeFull();
@@ -1069,18 +1079,16 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        HorizontalLayout horizontalLayout=new HorizontalLayout();
-        horizontalLayout.setSizeFull();
+        /*HorizontalLayout horizontalLayout=new HorizontalLayout();
+        horizontalLayout.setSizeFull();*/
         crmId = binder.buildAndBind("CRM #", CRM_ID);
         crmId.setRequired(true);
         ((TextField) crmId).setNullRepresentation("");
-        horizontalLayout.addComponent(crmId);
+        formLayoutRight.addComponent(crmId);
 
-        Button searchcrmid=new Button("Search");
-        horizontalLayout.addComponent(searchcrmid);
         //horizontalLayout.setComponentAlignment(searchcrmid,Alignment.TOP_RIGHT);
 
-        formLayoutRight.addComponent(horizontalLayout);
+        formLayoutRight.addComponent(crmId);
 
         quotenew = new TextField("Quotation #");
         quotenew.setValue(this.proposalHeader.getQuoteNo());
@@ -1329,6 +1337,15 @@ public class CreateProposalsView extends Panel implements View {
         }
 
 
+    }
+
+    private void searchCRMData(Button.ClickEvent clickEvent)
+    {
+        callWindow();
+    }
+    private void callWindow()
+    {
+        CRMsearchWindow.open(proposalHeader);
     }
 }
 

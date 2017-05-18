@@ -9,11 +9,13 @@ public class AccessoryDetails
     public static final String TYPE="type";
     public static final String CODE="code";
     public static final String TITLE="title";
+    public static final String QTY="qty";
 
     private String apcode;
     private String type;
     private String code;
     private String title;
+    private String qty;
 
     public String getApcode() {
         return apcode;
@@ -47,6 +49,10 @@ public class AccessoryDetails
         this.type = type;
     }
 
+    public String getQty() {
+        return qty;
+    }
+
     @Override
     public String toString() {
         return "AccessoryDetails{" +
@@ -54,6 +60,12 @@ public class AccessoryDetails
                 ", type='" + type + '\'' +
                 ", code='" + code + '\'' +
                 ", title='" + title + '\'' +
+                ", qty='" + qty + '\'' +
                 '}';
     }
+
+    public void setQty(String qty) {
+        this.qty = qty;
+    }
+
 }

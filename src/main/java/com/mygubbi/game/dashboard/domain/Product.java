@@ -1,5 +1,6 @@
 package com.mygubbi.game.dashboard.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
 
 import java.util.ArrayList;
@@ -51,7 +52,16 @@ public class Product implements FileAttachmentsHolder {
     public static final String SOURCE = "source";
     public static final String SUB_CATEGORY="subCategory";
     public static final String PRODUCT_DESCRIPTION="ProductDescription";
-
+    public static final String HINGES_TYPE="hinge";
+    public static final String GLASS_TYPE="glass";
+    public static final String HANDLE_TYPE="handleType";
+    public static final String HANDLE_THICKNESS="handleThickness";
+    public static final String KNOB_TYPE="knobType";
+    public static final String KNOB_THICKNESS="knobThickness";
+    public static final String HANDLE_FINISH="handleFinish";
+    public static final String KNOB_Finish="knobFinish";
+    public static final String HANDLE_IMAGE="handleImage";
+    public static final String KNOB_IMAGE="knobImage";
 
     private int id;
     private int proposalId;
@@ -70,48 +80,14 @@ public class Product implements FileAttachmentsHolder {
     private String source;
     private String ProductDescription;
     private String subCategory;
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", proposalId=" + proposalId +
-                ", fromVersion=" + fromVersion +
-                ", title='" + title + '\'' +
-                ", seq=" + seq +
-                ", manualSeq=" + manualSeq +
-                ", productCategory='" + productCategory + '\'' +
-                ", productCategoryCode='" + productCategoryCode + '\'' +
-                ", room='" + room + '\'' +
-                ", roomCode='" + roomCode + '\'' +
-                ", shutterDesign='" + shutterDesign + '\'' +
-                ", shutterDesignCode='" + shutterDesignCode + '\'' +
-                ", catalogueName='" + catalogueName + '\'' +
-                ", catalogueId='" + catalogueId + '\'' +
-                ", baseCarcass='" + baseCarcass + '\'' +
-                ", baseCarcassCode='" + baseCarcassCode + '\'' +
-                ", wallCarcass='" + wallCarcass + '\'' +
-                ", wallCarcassCode='" + wallCarcassCode + '\'' +
-                ", finishType='" + finishType + '\'' +
-                ", finishTypeCode='" + finishTypeCode + '\'' +
-                ", finish='" + finish + '\'' +
-                ", finishCode='" + finishCode + '\'' +
-                ", dimension='" + dimension + '\'' +
-                ", amount=" + amount +
-                ", quantity=" + quantity +
-                ", type='" + type + '\'' +
-                ", quoteFilePath='" + quoteFilePath + '\'' +
-                ", createdOn=" + createdOn +
-                ", createdBy='" + createdBy + '\'' +
-                ", updatedOn=" + updatedOn +
-                ", costWoAccessories=" + costWoAccessories +
-                ", updatedBy='" + updatedBy + '\'' +
-                ", modules=" + modules +
-                ", addons=" + addons +
-                ", fileAttachmentList=" + fileAttachmentList +
-                ", source='" + source + '\'' +
-                '}';
-    }
+    private String hinge;
+    private String glass;
+    private String handleType;
+    private String handleFinish;
+    private int handleThickness;
+    private String knobType;
+    private String knobFinish;
+    private int knobThickness;
 
     private String baseCarcass;
     private String baseCarcassCode;
@@ -135,6 +111,9 @@ public class Product implements FileAttachmentsHolder {
     private double margin;
     private double amountWoTax;
     private double manufactureAmount;
+    private String handleImage;
+    private String knobImage;
+
     private List<Module> modules = new ArrayList<>();
 
     public double getCostWoAccessories() {
@@ -474,6 +453,86 @@ public class Product implements FileAttachmentsHolder {
         ProductDescription = productDescription;
     }
 
+    public String getGlass() {
+        return glass;
+    }
+
+    public void setGlass(String glass) {
+        this.glass = glass;
+    }
+
+    public String getHinge() {
+        return hinge;
+    }
+
+    public void setHinge(String hinge) {
+        this.hinge = hinge;
+    }
+
+    public int getHandleThickness() {
+        return handleThickness;
+    }
+
+    public void setHandleThickness(int handleThickness) {
+        this.handleThickness = handleThickness;
+    }
+
+    public String getHandleType() {
+        return handleType;
+    }
+
+    public void setHandleType(String handleType) {
+        this.handleType = handleType;
+    }
+
+    public int getKnobThickness() {
+        return knobThickness;
+    }
+
+    public void setKnobThickness(int knobThickness) {
+        this.knobThickness = knobThickness;
+    }
+
+    public String getKnobType() {
+        return knobType;
+    }
+
+    public void setKnobType(String knobType) {
+        this.knobType = knobType;
+    }
+
+    public String getHandleFinish() {
+        return handleFinish;
+    }
+
+    public void setHandleFinish(String handleFinish) {
+        this.handleFinish = handleFinish;
+    }
+
+    public String getKnobFinish() {
+        return knobFinish;
+    }
+
+    public void setKnobFinish(String knobFinish) {
+        this.knobFinish = knobFinish;
+    }
+
+    public String getHandleImage() {
+        return handleImage;
+    }
+
+    public void setHandleImage(String handleImage) {
+        this.handleImage = handleImage;
+    }
+
+    public String getKnobImage() {
+        return knobImage;
+    }
+
+    public void setKnobImage(String knobImage) {
+        this.knobImage = knobImage;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -493,5 +552,61 @@ public class Product implements FileAttachmentsHolder {
         result = 31 * result + proposalId;
         result = 31 * result + fromVersion.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "addons=" + addons +
+                ", id=" + id +
+                ", proposalId=" + proposalId +
+                ", fromVersion='" + fromVersion + '\'' +
+                ", title='" + title + '\'' +
+                ", seq=" + seq +
+                ", manualSeq=" + manualSeq +
+                ", productCategory='" + productCategory + '\'' +
+                ", productCategoryCode='" + productCategoryCode + '\'' +
+                ", room='" + room + '\'' +
+                ", roomCode='" + roomCode + '\'' +
+                ", shutterDesign='" + shutterDesign + '\'' +
+                ", shutterDesignCode='" + shutterDesignCode + '\'' +
+                ", catalogueName='" + catalogueName + '\'' +
+                ", catalogueId='" + catalogueId + '\'' +
+                ", source='" + source + '\'' +
+                ", ProductDescription='" + ProductDescription + '\'' +
+                ", subCategory='" + subCategory + '\'' +
+                ", hinge='" + hinge + '\'' +
+                ", glass='" + glass + '\'' +
+                ", handleType='" + handleType + '\'' +
+                ", handleFinish='" + handleFinish + '\'' +
+                ", handleThickness=" + handleThickness +
+                ", knobType='" + knobType + '\'' +
+                ", knobFinish='" + knobFinish + '\'' +
+                ", knobThickness=" + knobThickness +
+                ", baseCarcass='" + baseCarcass + '\'' +
+                ", baseCarcassCode='" + baseCarcassCode + '\'' +
+                ", wallCarcass='" + wallCarcass + '\'' +
+                ", wallCarcassCode='" + wallCarcassCode + '\'' +
+                ", finishType='" + finishType + '\'' +
+                ", finishTypeCode='" + finishTypeCode + '\'' +
+                ", finish='" + finish + '\'' +
+                ", finishCode='" + finishCode + '\'' +
+                ", dimension='" + dimension + '\'' +
+                ", amount=" + amount +
+                ", quantity=" + quantity +
+                ", type='" + type + '\'' +
+                ", quoteFilePath='" + quoteFilePath + '\'' +
+                ", createdOn=" + createdOn +
+                ", createdBy='" + createdBy + '\'' +
+                ", updatedOn=" + updatedOn +
+                ", costWoAccessories=" + costWoAccessories +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", profit=" + profit +
+                ", margin=" + margin +
+                ", amountWoTax=" + amountWoTax +
+                ", manufactureAmount=" + manufactureAmount +
+                ", modules=" + modules +
+                ", fileAttachmentList=" + fileAttachmentList +
+                '}';
     }
 }

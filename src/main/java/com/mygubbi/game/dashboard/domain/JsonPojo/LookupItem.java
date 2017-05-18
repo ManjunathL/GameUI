@@ -4,10 +4,11 @@ public class LookupItem {
 
     public static final String CODE = "code";
     public static final String TITLE = "title";
+    public static final String LOOKUP_TYPE = "lookupType";
     private String code;
     private String title;
     private String additionalType;
-
+    private String lookupType;
 
     public LookupItem() {
     }
@@ -56,5 +57,13 @@ public class LookupItem {
 
     public void setAdditionalType(String additionalType) {
         this.additionalType = additionalType;
+    }
+
+    public String getLookupType() {
+        return lookupType;
+    }
+
+    public void setLookupType(String lookupType) {
+        this.lookupType = lookupType;
     }
 }

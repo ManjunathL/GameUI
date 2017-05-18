@@ -14,6 +14,10 @@ public class MGModule {
     public static final String MODULE_CATEGORY = "moduleCategory";
     public static final String UNIT_TYPE = "unitType";
     public static final String ACCESSORYPACKDEFAULT = "accessoryPackDefault";
+    public static final String HANDLE_MANDATORY = "handleMandatory";
+    public static final String KNOB_MANDATORY = "knobMandatory";
+    public static final String SQFT_CALCULATION = "sqftCalculation";
+
 
     private String code;
     private String title;
@@ -28,6 +32,10 @@ public class MGModule {
     private String productCategory;
     private String moduleType;
     private String accessoryPackDefault;
+    private String handleMandatory;
+    private String KnobMandatory;
+    private String sqftCalculation;
+
     private String concat;
     private List<ModuleAccessory> accessories = new ArrayList<>();
 
@@ -155,10 +163,35 @@ public class MGModule {
         this.accessoryPackDefault=accessoryPackDefault;
     }
 
+    public String getHandleMandatory() {
+        return handleMandatory;
+    }
+
+    public void setHandleMandatory(String handleMandatory) {
+        this.handleMandatory = handleMandatory;
+    }
+
+    public String getKnobMandatory() {
+        return KnobMandatory;
+    }
+
+    public void setKnobMandatory(String knobMandatory) {
+        KnobMandatory = knobMandatory;
+    }
+
+    public String getSqftCalculation() {
+        return sqftCalculation;
+    }
+
+    public void setSqftCalculation(String sqftCalculation) {
+        this.sqftCalculation = sqftCalculation;
+    }
+
     @Override
     public String toString() {
         return "MGModule{" +
-                "code='" + code + '\'' +
+                "accessories=" + accessories +
+                ", code='" + code + '\'' +
                 ", title='" + title + '\'' +
                 ", carcassCode='" + carcassCode + '\'' +
                 ", description='" + description + '\'' +
@@ -171,8 +204,10 @@ public class MGModule {
                 ", productCategory='" + productCategory + '\'' +
                 ", moduleType='" + moduleType + '\'' +
                 ", accessoryPackDefault='" + accessoryPackDefault + '\'' +
+                ", handleMandatory='" + handleMandatory + '\'' +
+                ", KnobMandatory='" + KnobMandatory + '\'' +
+                ", sqftCalculation='" + sqftCalculation + '\'' +
                 ", concat='" + concat + '\'' +
-                ", accessories=" + accessories +
                 '}';
     }
 }

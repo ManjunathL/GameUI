@@ -51,6 +51,7 @@ public class ProductLibraryInfo extends Window
     private ComboBox subcategoryField;
     private Field<?> productTitleField;
     private Field<?> productdescriptionField;
+    private Field<?> collectionField;
 
     TextField productdescription;
     TextField productTitle;
@@ -129,6 +130,11 @@ public class ProductLibraryInfo extends Window
         productdescriptionField.setRequired(true);
         formLayoutLeft.addComponent(productdescriptionField);
         formLayoutLeft.addComponent(getQuoteUploadControl());
+
+        collectionField= binder.buildAndBind("Collection", ProductLibrary.COLLECTION);
+        ((TextField) collectionField).setNullRepresentation("");
+        collectionField.setRequired(true);
+        formLayoutLeft.addComponent(collectionField);
 
         return formLayoutLeft;
     }

@@ -62,7 +62,21 @@ public class Module implements Cloneable {
     public static final String PRODUCT_CATEGORY = "productCategory";
     public static final String ACCESSORYPACKDEFAULT = "accessoryPackDefault";
     public static final String ACCESSORY_FLAG="accessoryflag";
-
+    public static final String SHUTTER_DESIGN="shutterDesign";
+    public static final String HANDLE_TYPE="handleType";
+    public static final String HANDLE_FINISH="handleFinish";
+    public static final String HANDLE_THICKNESS="handleThickness";
+    public static final String KNOB_TYPE="knobType";
+    public static final String KNOB_FINISH="knobFinish";
+    public static final String KNOB_THICKNESS="knobThickness";
+    public static final String HANDLE_PRESENT="handlePresent";
+    public static final String KNOB_PRESENT="knobPresent";
+    public static final String CUSTOM_TEXT="customText";
+    public static final String HANDLE_CODE="handleCode";
+    public static final String KNOB_CODE="knobCode";
+    public static final String CUSTOM_CHECK="customCheck";
+    public static final String HANDLE_QUANTITY="handleQuantity";
+    public static final String KNOB_QUANTITY="knobQuantity";
 
     private int seq;
     private int moduleSequence;
@@ -112,8 +126,26 @@ public class Module implements Cloneable {
     private double accessoryCost;
     private double labourCost;
     private String accessoryflag;
+    private String shutterDesign;
+    private String handleType;
+    private String handleFinish;
+    private String handleThickness;
+    private String knobType;
+    private String knobFinish;
+    private String knobThickness;
+    private String handlePresent;
+    private String knobPresent;
+    private String handleCode;
+    private String knobCode;
+    private String customText;
+    private boolean customCheck;
+    private int handleQuantity;
+    private int knobQuantity;
+    private String newModuleFlag;
 
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
+    private List<HandleMaster> handlePack=new ArrayList<>();
+    private List<HandleMaster> knobPack=new ArrayList<>();
 
     public String getExpSides() {
         return expSides;
@@ -552,6 +584,161 @@ public class Module implements Cloneable {
         this.accessoryflag = accessoryflag;
     }
 
+    public String getHandleThickness() {
+        return handleThickness;
+    }
+
+    public void setHandleThickness(String handleThickness) {
+        this.handleThickness = handleThickness;
+    }
+
+    public String getHandleType() {
+        return handleType;
+    }
+
+    public void setHandleType(String handleType) {
+        this.handleType = handleType;
+    }
+
+    public String getKnobThickness() {
+        return knobThickness;
+    }
+
+    public void setKnobThickness(String knobThickness) {
+        this.knobThickness = knobThickness;
+    }
+
+    public String getKnobType() {
+        return knobType;
+    }
+
+    public void setKnobType(String knobType) {
+        this.knobType = knobType;
+    }
+
+    public String getShutterDesign() {
+        return shutterDesign;
+    }
+
+    public void setShutterDesign(String shutterDesign) {
+        this.shutterDesign = shutterDesign;
+    }
+
+    public String getHandlePresent() {
+        return handlePresent;
+    }
+
+    public void setHandlePresent(String handlePresent) {
+        this.handlePresent = handlePresent;
+    }
+
+    public void clearAcessorryPacks() {
+        this.accessoryPacks.clear();
+
+    }
+
+    public String getHandleFinish() {
+        return handleFinish;
+    }
+
+    public void setHandleFinish(String handleFinish) {
+        this.handleFinish = handleFinish;
+    }
+
+    public String getKnobFinish() {
+        return knobFinish;
+    }
+
+    public void setKnobFinish(String knobFinish) {
+        this.knobFinish = knobFinish;
+    }
+
+    public String getHandleCode() {
+        return handleCode;
+    }
+
+    public void setHandleCode(String handleCode) {
+        this.handleCode = handleCode;
+    }
+
+    public String getKnobCode() {
+        return knobCode;
+    }
+
+    public void setKnobCode(String knobCode) {
+        this.knobCode = knobCode;
+    }
+
+    public String getCustomText() {
+        return customText;
+    }
+
+    public void setCustomText(String customText) {
+        this.customText = customText;
+    }
+
+    public boolean getCustomCheck() {
+        return customCheck;
+    }
+
+    public void setCustomCheck(boolean customCheck) {
+        this.customCheck = customCheck;
+    }
+
+
+
+    public static void main(String[] args)
+    {
+        //Test cloning
+
+        Module origin = new Module();
+        origin.setMgCode("MG1");
+
+        Module clone = (Module) origin.clone();
+        System.out.println("Original:" + origin.getMgCode() + " | Cloned:" + clone.getMgCode());
+    }
+
+
+    public List<HandleMaster> getKnobPack() {
+        return knobPack;
+    }
+
+    public void setKnobPack(List<HandleMaster> knobPack) {
+        this.knobPack = knobPack;
+    }
+
+    public List<HandleMaster> getHandlePack() {
+        return handlePack;
+    }
+
+    public void setHandlePack(List<HandleMaster> handlePack) {
+        this.handlePack = handlePack;
+    }
+
+    public int getHandleQuantity() {
+        return handleQuantity;
+    }
+
+    public void setHandleQuantity(int handleQuantity) {
+        this.handleQuantity = handleQuantity;
+    }
+
+    public int getKnobQuantity() {
+        return knobQuantity;
+    }
+
+    public void setKnobQuantity(int knobQuantity) {
+        this.knobQuantity = knobQuantity;
+    }
+
+    public String getKnobPresent() {
+        return knobPresent;
+    }
+
+    public void setKnobPresent(String knobPresent) {
+        this.knobPresent = knobPresent;
+    }
+
     @Override
     public String toString() {
         return "Module{" +
@@ -602,24 +789,27 @@ public class Module implements Cloneable {
                 ", shutterCost=" + shutterCost +
                 ", carcassCost=" + carcassCost +
                 ", labourCost=" + labourCost +
+                ", accessoryflag='" + accessoryflag + '\'' +
+                ", shutterDesign='" + shutterDesign + '\'' +
+                ", handleType='" + handleType + '\'' +
+                ", handleFinish='" + handleFinish + '\'' +
+                ", handleThickness='" + handleThickness + '\'' +
+                ", knobType='" + knobType + '\'' +
+                ", knobFinish='" + knobFinish + '\'' +
+                ", knobThickness='" + knobThickness + '\'' +
+                ", handlePresent='" + handlePresent + '\'' +
+                ", knobPresent='" + knobPresent + '\'' +
+                ", handleCode='" + handleCode + '\'' +
+                ", knobCode='" + knobCode + '\'' +
+                ", customText='" + customText + '\'' +
+                ", customCheck=" + customCheck +
+                ", handleQuantity='" + handleQuantity + '\'' +
+                ", knobQuantity='" + knobQuantity + '\'' +
                 ", accessoryPacks=" + accessoryPacks +
+                ", handlePack=" + handlePack +
+                ", knobPack=" + knobPack +
                 '}';
     }
-
-    public void clearAcessorryPacks() {
-        this.accessoryPacks.clear();
-
-    }
-
-    public static void main(String[] args)
-    {
-        //Test cloning
-
-        Module origin = new Module();
-        origin.setMgCode("MG1");
-
-        Module clone = (Module) origin.clone();
-        System.out.println("Original:" + origin.getMgCode() + " | Cloned:" + clone.getMgCode());
-    }
-
 }
+
+

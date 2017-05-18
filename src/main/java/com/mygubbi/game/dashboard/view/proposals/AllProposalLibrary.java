@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 public class AllProposalLibrary extends Window
 {
-    private static final Logger LOG = LogManager.getLogger(Dummy.class);
+    private static final Logger LOG = LogManager.getLogger(AllProposalLibrary.class);
     Grid addonsGrid;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private BeanItemContainer<ProductLibrary> productsContainer;
@@ -44,6 +44,10 @@ public class AllProposalLibrary extends Window
     Proposal proposal;
     ProposalHeader proposalHeader;
     String Id;
+    ComboBox Category;
+    ComboBox SubCategory;
+    ComboBox productName;
+
 
     private AllProposalLibrary(Proposal proposal,ProposalVersion proposalVersion,ProposalHeader proposalHeader)
     {
@@ -64,6 +68,9 @@ public class AllProposalLibrary extends Window
         Component componentheading=buildHeading();
         verticalLayout.addComponent(componentheading);
 
+        Component componentsearch=buildSearch();
+        verticalLayout.addComponent(componentsearch);
+
         Component componentAdd=buildAddButton();
         verticalLayout.addComponent(componentAdd);
 
@@ -80,6 +87,23 @@ public class AllProposalLibrary extends Window
         AllProposalLibrary w=new AllProposalLibrary(proposal,proposalVersion,proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
+    }
+
+    private Component buildSearch()
+    {
+        HorizontalLayout verticalLayout=new HorizontalLayout();
+        verticalLayout.setSizeFull();
+
+        /*Category=getCategory();
+        verticalLayout.addComponent(Category);*/
+
+        SubCategory=new ComboBox("Sub Category");
+        verticalLayout.addComponent(SubCategory);
+
+        productName=new ComboBox("Product Name");
+        verticalLayout.addComponent(productName);
+
+        return verticalLayout;
     }
 
     private Component buildHeading()
@@ -139,13 +163,13 @@ public class AllProposalLibrary extends Window
         productsContainer = new BeanItemContainer<>(ProductLibrary.class);
         GeneratedPropertyContainer genContainer = createGeneratedAddonsPropertyContainer();
         addonsGrid = new Grid(genContainer);
-        /*addonsGrid.addStyleName("v-lst-event");
+        addonsGrid.addStyleName("v-lst-event");
         addonsGrid.setRowStyleGenerator(new Grid.RowStyleGenerator() {
             @Override
             public String getStyle(Grid.RowReference rowReference) {
                 return "v-grid-header";
             }
-        });*/
+        });
         addonsGrid.setSizeFull();
         addonsGrid.setHeightByRows(11);
         addonsGrid.setHeightMode(HeightMode.ROW);
@@ -159,7 +183,7 @@ public class AllProposalLibrary extends Window
         //grid.setSelectionMode(SelectionMode.MULTI);
         //addonsGrid.addSelectionListener(this::updateTotal);
         //addonsGrid.setColumns(AddonMaster.PRODUCT,AddonMaster.CATEGORY_CODE,AddonMaster.CATALOUGE_CODE,AddonMaster.IMAGE_PATH);
-        addonsGrid.setColumns("productCategoryText",ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH);
+        addonsGrid.setColumns("productCategoryText",ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.COLLECTION,ProductLibrary.IMAGE_PATH);
 
 
 
@@ -238,12 +262,14 @@ public class AllProposalLibrary extends Window
         filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,true);
         filter.setTextFilter(ProductLibrary.SUB_CATEGORY,true,true);
         filter.setTextFilter(ProductLibrary.PRODUCT_TITLE,true,true);
+        filter.setTextFilter(ProductLibrary.COLLECTION,true,true);
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("Product Category");
         columns.get(idx++).setHeaderCaption("Product Subcategory");
         columns.get(idx++).setHeaderCaption("Title");
+        columns.get(idx++).setHeaderCaption("COllection");
         columns.get(idx++).setHeaderCaption("Image").setRenderer(new HtmlRenderer(), new Converter<String, String>()
         {
             @Override
@@ -257,11 +283,11 @@ public class AllProposalLibrary extends Window
             public String convertToPresentation(String value, Class<? extends String> targetType, Locale locale)
                     throws com.vaadin.data.util.converter.Converter.ConversionException {
 
-                return "<a class='img-anc' href='" + value + "' target='_blank'>click to view image</a> <style> .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>" ;
+                //return "<a class='img-anc' href='" + value + "' target='_blank'>click to view image</a> <style> a, a:visited, a:hover { color: #4396ea;} .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>" ;
 
                 //return "<a href='" + value +"' target='_blank' onclick='window.open('" + value + "' ,'popup','width=600,height=600')>Open Link in Popup </a>";
-                              /*  +
-                "<img src='" +value+ "' width='100' height='100'> </a></p>";*/
+                              /*  +*/
+                return "<img src='" +value+ "' width='100' height='100'> <style> a, a:visited, a:hover { color: #4396ea;} .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>";
 
             }
 
@@ -405,6 +431,19 @@ public class AllProposalLibrary extends Window
             LOG.info("windows ***" +UI.getCurrent().getWindows());
             CustomizedProductDetailsWindow.open(proposal,product,proposalVersion,proposalHeader);
         }
+    }
+    private Component getCategory()
+    {
+        FormLayout formLayout = new FormLayout();
+        formLayout.setSizeFull();
+        formLayout.addStyleName("no-exposedBottom-margin");
+        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+
+      /*  ComboBox comboBox=new ComboBox("Category");
+        List<ProductLibraryMaster> category=proposalDataProvider.get*/
+
+        return formLayout;
+
     }
 }
 
