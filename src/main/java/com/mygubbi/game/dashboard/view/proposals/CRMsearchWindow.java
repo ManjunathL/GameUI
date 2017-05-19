@@ -101,7 +101,8 @@ public class CRMsearchWindow extends Window
                         proposalHeader.setTitle(profile1.getDisplayName());
                         proposalHeader.setCemail(profile1.getEmail());
                         proposalHeader.setCphone1(profile1.getMobile());
-                        proposalHeader.setPcity(profile1.getCity());
+                        //proposalHeader.setPcity(profile1.getCity());
+                        proposalHeader.setPcity("my city");
                         proposalHeader.setCname(profile1.getFirst_name());
                         proposalHeader.setSalesEmail(profile1.getSalesExecUserId());
                         proposalHeader.setSalesName(profile1.getSalesExecName());
