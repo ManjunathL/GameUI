@@ -109,6 +109,11 @@ public class ProductLibraryInfo extends Window
         horizontalLayout.addComponent(formLayoutLeft);
         horizontalLayout.setExpandRatio(formLayoutLeft,0.4f);
 
+        collectionField= binder.buildAndBind("Collection", ProductLibrary.COLLECTION);
+        ((TextField) collectionField).setNullRepresentation("");
+        collectionField.setRequired(true);
+        formLayoutLeft.addComponent(collectionField);
+
         productTitleField = binder.buildAndBind("Product Name", ProductLibrary.PRODUCT_TITLE);
         productTitleField.setRequired(true);
         ((TextField) productTitleField).setNullRepresentation("");
@@ -130,11 +135,6 @@ public class ProductLibraryInfo extends Window
         productdescriptionField.setRequired(true);
         formLayoutLeft.addComponent(productdescriptionField);
         formLayoutLeft.addComponent(getQuoteUploadControl());
-
-        collectionField= binder.buildAndBind("Collection", ProductLibrary.COLLECTION);
-        ((TextField) collectionField).setNullRepresentation("");
-        collectionField.setRequired(true);
-        formLayoutLeft.addComponent(collectionField);
 
         return formLayoutLeft;
     }

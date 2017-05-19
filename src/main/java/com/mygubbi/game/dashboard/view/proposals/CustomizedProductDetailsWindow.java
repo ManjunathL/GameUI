@@ -552,7 +552,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH).setValue(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
                 }
             }
-            }
+
 
             if (StringUtils.isNotEmpty(module.getMgCode()))
             {
@@ -598,6 +598,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     }
                 }
             }
+        }
         updateTotalAmount();
         updatePsftCosts();
     }
@@ -904,15 +905,6 @@ public class CustomizedProductDetailsWindow extends Window {
         if (filteredShutterFinish.size() > 0)
             shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
 
-        List<Module> modules = product.getModules();
-
-        for (Module module : modules) {
-            String text = (String) moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).getValue();
-            if (text.contains(Module.DEFAULT)) {
-                moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE_CODE).setValue(finishTypeSelection.getValue());
-                moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).setValue(getDefaultText(getSelectedItemText(finishTypeSelection)));
-            }
-        }
         refreshPrice(valueChangeEvent);
     }
     private void shutterfinishchanged(Property.ValueChangeEvent valueChangeEvent)
@@ -923,7 +915,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (finishes.size() > 0)
             shutterDesign.setValue(shutterDesign.getItemIds().iterator().next());
-        refreshPrice(null);
+        refreshPrice(valueChangeEvent);
     }
 
     private Component getQuoteUploadControl() {
