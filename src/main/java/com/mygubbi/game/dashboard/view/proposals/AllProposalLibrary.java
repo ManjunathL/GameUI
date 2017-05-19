@@ -72,9 +72,6 @@ public class AllProposalLibrary extends Window
         Component componentheading=buildHeading();
         verticalLayout.addComponent(componentheading);
 
-        Component componentsearch=buildSearch();
-        verticalLayout.addComponent(componentsearch);
-
         Component componentAdd=buildAddButton();
         verticalLayout.addComponent(componentAdd);
 
@@ -91,23 +88,6 @@ public class AllProposalLibrary extends Window
         AllProposalLibrary w=new AllProposalLibrary(proposal,proposalVersion,proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
-    }
-
-    private Component buildSearch()
-    {
-        HorizontalLayout verticalLayout=new HorizontalLayout();
-        verticalLayout.setSizeFull();
-
-        /*Category=getCategory();
-        verticalLayout.addComponent(Category);*/
-
-        SubCategory=new ComboBox("Sub Category");
-        verticalLayout.addComponent(SubCategory);
-
-        productName=new ComboBox("Product Name");
-        verticalLayout.addComponent(productName);
-
-        return verticalLayout;
     }
 
     private Component buildHeading()
@@ -273,7 +253,7 @@ public class AllProposalLibrary extends Window
         columns.get(idx++).setHeaderCaption("Product Category");
         columns.get(idx++).setHeaderCaption("Product Subcategory");
         columns.get(idx++).setHeaderCaption("Title");
-        columns.get(idx++).setHeaderCaption("COllection");
+        columns.get(idx++).setHeaderCaption("Collection");
         columns.get(idx++).setHeaderCaption("Image").setRenderer(new HtmlRenderer(), new Converter<String, String>()
         {
             @Override

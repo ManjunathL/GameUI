@@ -130,8 +130,8 @@ public class CRMsearchWindow extends Window
         verticalLayout.addComponent(crmgrid);
 
         UserProfile userProfile=new UserProfile();
-        userProfile.setCrmId("SAL-1612-000828");
-        List<UserProfile> userProfiles=proposalDataProvider.getUserProfileDetails("SAL-1612-000808");
+        userProfile.setCrmId("SAL-1705-001505");
+        List<UserProfile> userProfiles=proposalDataProvider.getUserProfileDetails("SAL-1705-001505");
         LOG.info("$$$" +userProfiles.toString());
 
         for(UserProfile u:userProfiles)

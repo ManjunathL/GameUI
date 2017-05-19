@@ -777,7 +777,7 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.addComponent(horizontalLayout0);
 
         HorizontalLayout hlayout=new HorizontalLayout();
-        Button searchcrmid=new Button("Search");
+        Button searchcrmid=new Button("Search CRMID");
         hlayout.addStyleName("crmstyle");
         searchcrmid.addClickListener(this::searchCRMData);
         hlayout.addComponent(searchcrmid);

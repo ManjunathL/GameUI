@@ -552,6 +552,37 @@ public class CustomizedProductDetailsWindow extends Window {
                     moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH).setValue(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
                 }
             }
+            else if (component == handleType)
+            {
+                LOG.info("handle Type");
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).getValue();
+               /* if (text.contains(Module.DEFAULT)) {*/
+                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue(handleType.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue((getSelectedItemText(handleType)));
+                LOG.info("module handle " +module.getHandleType());
+                //}
+            }
+            else if (component == knobType) {
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).getValue();
+                if (text.contains(Module.DEFAULT)) {
+                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(knobType.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(getDefaultText(getSelectedFinishText(knobType)));
+                }
+            }
+            else if (component == handle) {
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).getValue();
+                if (text.contains(Module.DEFAULT)) {
+                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(getDefaultText(getSelectedFinishText(handle)));
+                }
+            }
+            else if (component == knob) {
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).getValue();
+                if (text.contains(Module.DEFAULT)) {
+                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(getDefaultText(getSelectedFinishText(knob)));
+                }
+            }
 
             if (StringUtils.isNotEmpty(module.getMgCode()))
             {
@@ -693,7 +724,7 @@ public class CustomizedProductDetailsWindow extends Window {
         LOG.info("knob value " +knobType.getValue().toString());
         knobfinishlist=proposalDataProvider.getHandleFinish(knobType.getValue().toString(),"knob");
         LOG.info("knob finish list" +knobfinishlist.size());
-        this.knob=getHanldeFinishfilledComboBox("Knob Finish",knobfinishlist,null);
+        this.knob=getKnobFinishedComboBox("Knob Finish",knobfinishlist,null);
         knob.setRequired(true);
         binder.bind(knob,KNOB_Finish);
         this.knob.getContainerDataSource().removeAllItems();
@@ -854,7 +885,7 @@ public class CustomizedProductDetailsWindow extends Window {
         knobImage = new Image();
         if (StringUtils.isEmpty(product.getKnobImage()))
         {
-            Knobthickness=proposalDataProvider.getHandleImages("knob",handleType.getValue().toString(),knob.getValue().toString());
+            Knobthickness=proposalDataProvider.getHandleImages("knob",knobType.getValue().toString(),knob.getValue().toString());
             for(HandleMaster h: Knobthickness)
             {
                 LOG.info("knob master data for image " +h);
@@ -921,7 +952,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (finishes.size() > 0)
             shutterDesign.setValue(shutterDesign.getItemIds().iterator().next());
-
+        refreshPrice(null);
     }
 
     private Component getQuoteUploadControl() {
@@ -1734,19 +1765,35 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox getHanldeFinishfilledComboBox(String caption,List<HandleMaster> list,Property.ValueChangeListener listener)
     {
         LOG.info("List in filled combo " +list.size());
-        final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
-        container.setBeanIdProperty(HandleMaster.FINISH);
-        container.addAll(list);
+        handlefinishBeanContainer = new BeanContainer<>(HandleMaster.class);
+        handlefinishBeanContainer.setBeanIdProperty(HandleMaster.FINISH);
+        handlefinishBeanContainer.addAll(list);
 
         ComboBox select = new ComboBox(caption);
         select.setNullSelectionAllowed(false);
         select.setWidth("250px");
-        select.setContainerDataSource(container);
+        select.setContainerDataSource(handlefinishBeanContainer);
         select.setItemCaptionPropertyId(HandleMaster.FINISH);
         if (listener != null) select.addValueChangeListener(listener);
-        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        if (handlefinishBeanContainer.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
+    }
 
+    private ComboBox getKnobFinishedComboBox(String caption,List<HandleMaster> list,Property.ValueChangeListener listener )
+    {
+        LOG.info("List in filled combo " +list.size());
+        knobfinishBeanContainer = new BeanContainer<>(HandleMaster.class);
+        knobfinishBeanContainer.setBeanIdProperty(HandleMaster.FINISH);
+        knobfinishBeanContainer.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(knobfinishBeanContainer);
+        select.setItemCaptionPropertyId(HandleMaster.FINISH);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (knobfinishBeanContainer.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
     }
 
     private ComboBox getSimpleItemFilledCombo(String caption, List<LookupItem> list, Property.ValueChangeListener listener) {
@@ -1971,21 +2018,28 @@ public class CustomizedProductDetailsWindow extends Window {
     }
     private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        String prevCode = product.getHandleFinish();
+        //String prevCode = product.getHandleFinish();
+        String prevCode = handle.getValue().toString();
+        LOG.info("prevcode " +prevCode);
         String title=valueChangeEvent.getProperty().getValue().toString();
         handlefinishlist=proposalDataProvider.getHandleFinish(title,"Handle");
         this.handlefinishBeanContainer.removeAllItems();
         this.handlefinishBeanContainer.addAll(handlefinishlist);
         Object next=this.handle.getItemIds().iterator().next();
+        LOG.info("next " +next.toString());
         handle.setValue(next);
 
-        if (next.equals(prevCode)) {
+        if (next.equals(prevCode))
+        {
             this.handlefinishchanged(null);
         }
+        refreshPrice(null);
     }
     private void knobtypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        String prevCode=product.getKnobFinish();
+        LOG.info("knov type changed" +valueChangeEvent.getProperty().getValue().toString());
+        //String prevCode=product.getKnobFinish();
+        String prevCode=knob.getValue().toString();
         String title=valueChangeEvent.getProperty().getValue().toString();
         knobfinishlist=proposalDataProvider.getHandleFinish(title,"knob");
         this.knobfinishBeanContainer.removeAllItems();
@@ -1996,25 +2050,34 @@ public class CustomizedProductDetailsWindow extends Window {
         if (next.equals(prevCode)) {
             this.knobfinishchanged(null);
         }
+        refreshPrice(null);
     }
     private void  handlefinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        String title=valueChangeEvent.getProperty().getValue().toString();
+        //LOG.info("Title " +valueChangeEvent.getProperty().getValue().toString());
+        //String title=valueChangeEvent.getProperty().getValue().toString();
+        String title=handle.getValue().toString();
         handlethickness=proposalDataProvider.getHandleImages("Handle",handleType.getValue().toString(),title);
+        LOG.info("size " +handlethickness.size());
         for(HandleMaster h: handlethickness)
         {
+            LOG.info("handle image " +h);
             product.setHandleImage(h.getImagePath());
             handleImage.setSource(new ExternalResource(h.getImagePath()));
         }
+        refreshPrice(null);
     }
     private void knobfinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        String title=valueChangeEvent.getProperty().getValue().toString();
-        Knobthickness=proposalDataProvider.getHandleImages("knob",handleType.getValue().toString(),title);
+        //String title=valueChangeEvent.getProperty().getValue().toString();
+        String title=knob.getValue().toString();
+        Knobthickness=proposalDataProvider.getHandleImages("knob",knobType.getValue().toString(),title);
         for(HandleMaster h: Knobthickness)
         {
+            LOG.info("knob image " +h);
             product.setKnobImage(h.getImagePath());
             knobImage.setSource(new ExternalResource(h.getImagePath()));
         }
+        refreshPrice(null);
     }
 }

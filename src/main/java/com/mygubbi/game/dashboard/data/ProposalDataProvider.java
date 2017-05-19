@@ -1772,7 +1772,7 @@ public class ProposalDataProvider {
         try {
             JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthandlefinish", new HashMap<String, String>() {
                 {
-                    put("title", Title);
+                    put("title", URLEncoder.encode(Title, "UTF-8"));
                     put("type", type);
                 }
             });
