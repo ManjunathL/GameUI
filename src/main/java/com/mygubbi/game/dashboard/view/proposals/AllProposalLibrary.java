@@ -167,8 +167,7 @@ public class AllProposalLibrary extends Window
         //grid.setSelectionMode(SelectionMode.MULTI);
         //addonsGrid.addSelectionListener(this::updateTotal);
         //addonsGrid.setColumns(AddonMaster.PRODUCT,AddonMaster.CATEGORY_CODE,AddonMaster.CATALOUGE_CODE,AddonMaster.IMAGE_PATH);
-        addonsGrid.setColumns(ProductLibrary.COLLECTION,"productCategoryText",ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH);
-
+        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH);
 
 
        /* selectionModel.addMultiSelectionListener(event -> {
@@ -247,6 +246,7 @@ public class AllProposalLibrary extends Window
         filter.setTextFilter(ProductLibrary.SUB_CATEGORY,true,true);
         filter.setTextFilter(ProductLibrary.PRODUCT_TITLE,true,true);
         filter.setTextFilter(ProductLibrary.COLLECTION,true,true);
+        filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,true);
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
