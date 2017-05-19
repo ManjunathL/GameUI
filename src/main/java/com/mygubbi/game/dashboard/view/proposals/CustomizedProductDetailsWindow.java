@@ -552,36 +552,6 @@ public class CustomizedProductDetailsWindow extends Window {
                     moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH).setValue(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
                 }
             }
-            else if (component == handleType)
-            {
-                LOG.info("handle Type");
-                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).getValue();
-               /* if (text.contains(Module.DEFAULT)) {*/
-                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue(handleType.getValue());
-                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue((getSelectedItemText(handleType)));
-                LOG.info("module handle " +module.getHandleType());
-                //}
-            }
-            else if (component == knobType) {
-                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).getValue();
-                if (text.contains(Module.DEFAULT)) {
-                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(knobType.getValue());
-                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(getDefaultText(getSelectedFinishText(knobType)));
-                }
-            }
-            else if (component == handle) {
-                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).getValue();
-                if (text.contains(Module.DEFAULT)) {
-                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
-                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(getDefaultText(getSelectedFinishText(handle)));
-                }
-            }
-            else if (component == knob) {
-                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).getValue();
-                if (text.contains(Module.DEFAULT)) {
-                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
-                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(getDefaultText(getSelectedFinishText(knob)));
-                }
             }
 
             if (StringUtils.isNotEmpty(module.getMgCode()))
@@ -628,10 +598,10 @@ public class CustomizedProductDetailsWindow extends Window {
                     }
                 }
             }
-        }
         updateTotalAmount();
         updatePsftCosts();
     }
+
 
     private void showPricingErrors()
     {
@@ -943,6 +913,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).setValue(getDefaultText(getSelectedItemText(finishTypeSelection)));
             }
         }
+        refreshPrice(valueChangeEvent);
     }
     private void shutterfinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
@@ -2033,7 +2004,6 @@ public class CustomizedProductDetailsWindow extends Window {
         {
             this.handlefinishchanged(null);
         }
-        refreshPrice(null);
     }
     private void knobtypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
@@ -2050,7 +2020,6 @@ public class CustomizedProductDetailsWindow extends Window {
         if (next.equals(prevCode)) {
             this.knobfinishchanged(null);
         }
-        refreshPrice(null);
     }
     private void  handlefinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
@@ -2065,7 +2034,6 @@ public class CustomizedProductDetailsWindow extends Window {
             product.setHandleImage(h.getImagePath());
             handleImage.setSource(new ExternalResource(h.getImagePath()));
         }
-        refreshPrice(null);
     }
     private void knobfinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
@@ -2078,6 +2046,5 @@ public class CustomizedProductDetailsWindow extends Window {
             product.setKnobImage(h.getImagePath());
             knobImage.setSource(new ExternalResource(h.getImagePath()));
         }
-        refreshPrice(null);
     }
 }

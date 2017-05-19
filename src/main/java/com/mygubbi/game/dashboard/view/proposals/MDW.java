@@ -597,6 +597,7 @@ public class MDW extends Window {
 
         this.customText=new TextField();
         binder.bind(this.customText,Module.CUSTOM_TEXT);
+        customText.setNullRepresentation(" ");
         this.customText.setEnabled(false);
 
         vlayout.addComponent(customText);

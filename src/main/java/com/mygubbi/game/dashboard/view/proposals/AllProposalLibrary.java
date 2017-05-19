@@ -167,7 +167,7 @@ public class AllProposalLibrary extends Window
         //grid.setSelectionMode(SelectionMode.MULTI);
         //addonsGrid.addSelectionListener(this::updateTotal);
         //addonsGrid.setColumns(AddonMaster.PRODUCT,AddonMaster.CATEGORY_CODE,AddonMaster.CATALOUGE_CODE,AddonMaster.IMAGE_PATH);
-        addonsGrid.setColumns("productCategoryText",ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.COLLECTION,ProductLibrary.IMAGE_PATH);
+        addonsGrid.setColumns(ProductLibrary.COLLECTION,"productCategoryText",ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH);
 
 
 
@@ -250,10 +250,10 @@ public class AllProposalLibrary extends Window
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
+        columns.get(idx++).setHeaderCaption("Collection");
         columns.get(idx++).setHeaderCaption("Product Category");
         columns.get(idx++).setHeaderCaption("Product Subcategory");
         columns.get(idx++).setHeaderCaption("Title");
-        columns.get(idx++).setHeaderCaption("Collection");
         columns.get(idx++).setHeaderCaption("Image").setRenderer(new HtmlRenderer(), new Converter<String, String>()
         {
             @Override
