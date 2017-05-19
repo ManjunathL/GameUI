@@ -1512,8 +1512,11 @@ public class CustomizedProductDetailsWindow extends Window {
 
         });
         closeBtn.focus();
-        right.addComponent(closeBtn);
-        right.setComponentAlignment(closeBtn, Alignment.MIDDLE_RIGHT);
+
+        if (!(Objects.equals(product.getType(), TYPES.PRODUCT_LIBRARY.name()))) {
+            right.addComponent(closeBtn);
+            right.setComponentAlignment(closeBtn, Alignment.MIDDLE_RIGHT);
+        }
 
         String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
