@@ -253,7 +253,7 @@ public class AllProposalLibrary extends Window
         columns.get(idx++).setHeaderCaption("Collection");
         columns.get(idx++).setHeaderCaption("Product Category");
         columns.get(idx++).setHeaderCaption("Product Subcategory");
-        columns.get(idx++).setHeaderCaption("Title");
+        columns.get(idx++).setHeaderCaption("Product Name");
         columns.get(idx++).setHeaderCaption("Image").setRenderer(new HtmlRenderer(), new Converter<String, String>()
         {
             @Override
@@ -373,7 +373,7 @@ public class AllProposalLibrary extends Window
         for(ProductLibrary p:productLibraries)
         {
             Product product=new Product();
-            //product.setType(Product.TYPES.PRODUCT_LIBRARY.name());
+            product.setType(Product.TYPES.PRODUCT_LIBRARY.name());
             LOG.info("product type name " +Product.TYPES.PRODUCT_LIBRARY.name());
             //product.setSeq(length);
             product.setProposalId(proposalHeader.getId());
@@ -420,6 +420,7 @@ public class AllProposalLibrary extends Window
                 else
                 {
                     moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
+                    moduleForPrice.getModule().setModuleSource("Button");
                 }
 
                 moduleForPrice.setCity(proposalHeader.getPcity());
