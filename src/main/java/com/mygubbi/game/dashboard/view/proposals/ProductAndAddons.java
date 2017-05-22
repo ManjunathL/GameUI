@@ -1454,8 +1454,8 @@ public class ProductAndAddons extends Window
             }
             proposalDataProvider.updateVersion(proposalVersion);
 
-            SendToCRM sendToCRM = updatePriceInCRMOnPublish();
-            proposalDataProvider.updateCrmPrice(sendToCRM);
+            SendToCRMOnPublish sendToCRM = updatePriceInCRMOnPublish();
+            proposalDataProvider.updateCrmPriceOnPublish(sendToCRM);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             DashboardEventBus.unregister(this);
             close();
@@ -1467,11 +1467,12 @@ public class ProductAndAddons extends Window
         }
     }
 
-    private SendToCRM updatePriceInCRMOnPublish() {
-        SendToCRM sendToCRM = new SendToCRM();
-        sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
-        sendToCRM.setFinal_proposal_amount_c(proposalVersion.getFinalAmount());
+    private SendToCRMOnPublish updatePriceInCRMOnPublish() {
+        SendToCRMOnPublish sendToCRM = new SendToCRMOnPublish();
+        sendToCRM.setOpportunity_name("SAL-1702-001036");
+        sendToCRM.setEstimated_project_cost_c(proposalVersion.getFinalAmount());
         sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
+        LOG.debug("Send to CRM : " + sendToCRM.toString());
         return sendToCRM;
     }
 
@@ -1481,6 +1482,9 @@ public class ProductAndAddons extends Window
         sendToCRM.setFinal_proposal_amount_c(proposalVersion.getFinalAmount());
         sendToCRM.setEstimated_project_cost_c(proposalVersion.getFinalAmount());
         sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
+        sendToCRM.setOpportunity_name("SAL-1702-001036");
+        LOG.debug("Send to CRM : " + sendToCRM.toString());
+
         return sendToCRM;
     }
 

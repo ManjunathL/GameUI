@@ -82,6 +82,18 @@ public class RestDataProviderMode implements DataProviderMode {
         }
     }
 
+    @Override
+    public JSONResource postResourceWithUrlForCrmOnPublish(String url, String opportunity_name,String estimated_project_cost_c, String quotation_number_c) {
+
+        try {
+
+            return new Resty().json(url, form(data("opportunity_name", opportunity_name), data("estimated_project_cost_c", estimated_project_cost_c), data("quotation_number_c", quotation_number_c)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error querying - " + url, e);
+        }
+    }
+
 
     @Override
     public JSONResource postResourceWithFormData(String url, Map<String, String> keyValuePairs) {

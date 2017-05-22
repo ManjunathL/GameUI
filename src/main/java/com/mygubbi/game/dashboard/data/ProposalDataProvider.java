@@ -1690,6 +1690,24 @@ public class ProposalDataProvider {
         }
     }
 
+    public boolean updateCrmPriceOnPublish(SendToCRMOnPublish sendToCRM)
+    {
+        try {
+            String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";
+            String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
+        /*
+                    JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
+        */
+            JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrmOnPublish(baseCrmUrl, sendToCRM.getOpportunity_name(),estimated_project_cost,sendToCRM.getQuotation_number_c());
+            LOG.debug("Json Object : "+ jsonObject.toString());
+//            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static void main(String[] args)
     {
         ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new RestDataProviderMode());
