@@ -51,6 +51,11 @@ public class FileDataProviderMode implements DataProviderMode {
     }
 
     @Override
+    public JSONResource postResourceWithUrlForCrmOnPublish(String url, String opportunity_name, String estimated_project_cost_c, String quotation_number_c) {
+        return null;
+    }
+
+    @Override
     public JSONResource postResourceWithFormData(String url, Map<String, String> keyValuePairs) {
         return null;
     }
