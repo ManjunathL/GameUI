@@ -162,6 +162,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(this.product);
+        LOG.info("product" +product);
         setModal(true);
         setSizeFull();
         setResizable(false);
@@ -848,8 +849,8 @@ public class CustomizedProductDetailsWindow extends Window {
             handleImage.setSource(new ExternalResource(product.getHandleImage()));
         }
         handleImage.setCaption(null);
-        handleImage.setHeight("50px");
-        handleImage.setWidth("250px");
+        handleImage.setHeight("65px");
+        handleImage.setWidth("200px");
         handleImage.setImmediate(true);
         verticalLayout.addComponent(handleImage);
 
@@ -868,8 +869,8 @@ public class CustomizedProductDetailsWindow extends Window {
         {
             knobImage.setSource(new ExternalResource(product.getKnobImage()));
         }
-        knobImage.setHeight("50px");
-        knobImage.setWidth("250px");
+        knobImage.setHeight("65px");
+        knobImage.setWidth("200px");
         knobImage.setCaption(null);
         knobImage.setImmediate(true);
         verticalLayout.addComponent(knobImage);
@@ -1152,6 +1153,21 @@ public class CustomizedProductDetailsWindow extends Window {
                 copyModule.setAccessoryCost(m.getAccessoryCost());
                 copyModule.setLabourCost(m.getLabourCost());
                 copyModule.setAccessoryflag(m.getAccessoryflag());
+                copyModule.setHandleType(m.getHandleType());
+                copyModule.setHandleFinish(m.getHandleFinish());
+                copyModule.setHandlePresent(m.getHandlePresent());
+                copyModule.setHandleQuantity(m.getHandleQuantity());
+                copyModule.setHandleCode(m.getHandleCode());
+                copyModule.setHandlePack(m.getHandlePack());
+                copyModule.setHandleThickness(m.getHandleThickness());
+                copyModule.setKnobQuantity(m.getKnobQuantity());
+                copyModule.setKnobType(m.getKnobType());
+                copyModule.setKnobPresent(m.getKnobPresent());
+                copyModule.setKnobPack(m.getKnobPack());
+                copyModule.setKnobCode(m.getKnobCode());
+                copyModule.setKnobQuantity(m.getKnobQuantity());
+                copyModule.setKnobFinish(m.getKnobFinish());
+                copyModule.setKnobPresent(m.getKnobPresent());
 
                 DashboardEventBus.post(new ProposalEvent.ModuleUpdated(copyModule,false,false,product.getModules().size(),CustomizedProductDetailsWindow.this));
                 DashboardEventBus.unregister(this);
@@ -1527,6 +1543,7 @@ public class CustomizedProductDetailsWindow extends Window {
             right.addComponent(addToproductLibraryBtn);
             right.setComponentAlignment(addToproductLibraryBtn, Alignment.MIDDLE_RIGHT);
             addToproductLibraryBtn.addClickListener(clickEvent -> {
+                LOG.info("product in customized product " +product);
                 close();
                 ProductLibraryInfo.open(product,proposal);
             });
@@ -1927,7 +1944,6 @@ public class CustomizedProductDetailsWindow extends Window {
 
     public static void open(Proposal proposal, Product product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         CustomizedProductDetailsWindow w = new CustomizedProductDetailsWindow(proposal, product, proposalVersion, proposalHeader);
-
         UI.getCurrent().addWindow(w);
         w.focus();
 

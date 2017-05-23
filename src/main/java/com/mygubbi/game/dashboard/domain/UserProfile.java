@@ -32,7 +32,6 @@ public class UserProfile
         this.id = id;
     }
 
-
     public String getActive() {
         return active;
     }

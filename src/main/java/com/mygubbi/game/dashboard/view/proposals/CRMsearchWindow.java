@@ -2,10 +2,8 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
-import com.mygubbi.game.dashboard.domain.Profile;
-import com.mygubbi.game.dashboard.domain.Proposal;
-import com.mygubbi.game.dashboard.domain.ProposalHeader;
-import com.mygubbi.game.dashboard.domain.UserProfile;
+import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.vaadin.data.util.BeanItemContainer;
@@ -16,6 +14,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.vaadin.gridutil.cell.GridCellFilter;
 
 import java.util.*;
 
@@ -31,7 +30,6 @@ public class CRMsearchWindow extends Window
     //ArrayList<Profile> profiles=new List<Profile>();
     ArrayList<Profile> profiles=new ArrayList<Profile>();
     ProposalHeader proposalHeader;
-
     private CRMsearchWindow(ProposalHeader proposalHeader)
     {
         this.proposalHeader=proposalHeader;
@@ -84,7 +82,7 @@ public class CRMsearchWindow extends Window
 
         crmgrid.setSizeFull();
         crmgrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        crmgrid.setColumns(Profile.CRM_ID,Profile.CUSTOMER_EMAIL,Profile.CUSTOMER_PHONE);
+        crmgrid.setColumns(Profile.CRM_ID,Profile.FIRST_NAME,Profile.CUSTOMER_EMAIL,Profile.CUSTOMER_PHONE);
 
         crmgrid.addSelectionListener(selectionEvent -> {
             if (!selectionEvent.getAdded().isEmpty()) {
@@ -101,6 +99,14 @@ public class CRMsearchWindow extends Window
                         proposalHeader.setTitle(profile1.getDisplayName());
                         proposalHeader.setCemail(profile1.getEmail());
                         proposalHeader.setCphone1(profile1.getMobile());
+                        List<LookupItem> lookupItems=proposalDataProvider.getLookupItems("region");
+                        for(LookupItem l:lookupItems)
+                        {
+                            if(l.getCode().equals(profile1.getCity()))
+                            {
+                                proposalHeader.setPcity(l.getTitle());
+                            }
+                        }
                         //proposalHeader.setPcity(profile1.getCity());
                         proposalHeader.setPcity("my city");
                         proposalHeader.setCname(profile1.getFirst_name());
@@ -122,9 +128,17 @@ public class CRMsearchWindow extends Window
 
         List<Grid.Column> columns=crmgrid.getColumns();
         int idx = 0;
-        columns.get(idx++).setHeaderCaption("CRM Id");
+        columns.get(idx++).setHeaderCaption("Opportunity");
+        columns.get(idx++).setHeaderCaption("Name");
         columns.get(idx++).setHeaderCaption("Email");
         columns.get(idx++).setHeaderCaption("Phone");
+
+        GridCellFilter filter = new GridCellFilter(crmgrid);
+
+        filter.setTextFilter(Profile.OPPORTUNITY_ID,true,true);
+        filter.setTextFilter(Profile.FIRST_NAME,true,false);
+        filter.setTextFilter(Profile.CUSTOMER_EMAIL,true,true);
+        filter.setTextFilter(Profile.CUSTOMER_PHONE,true,false);
 
         verticalLayout.addComponent(horizontalLayout);
         verticalLayout.setSpacing(true);

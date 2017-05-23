@@ -1,5 +1,8 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by shruthi on 26-Apr-17.
  */
@@ -22,6 +25,7 @@ public class Profile implements Cloneable
     public static final String SALES_EMAIL="salesExecUserId";
     public static final String SALES_NAME="salesExecName";
     public static final String SALES_MOBILE="salesExecMobile";
+    private ArrayList<ProfileJSON> profile = new ArrayList<>();
 
     private String crmId;
     private String mobile;
@@ -161,10 +165,19 @@ public class Profile implements Cloneable
         this.opportunityId = opportunityId;
     }
 
+    public ArrayList<ProfileJSON> getProfile() {
+        return profile;
+    }
+
+    public void setProfile(ArrayList<ProfileJSON> profile) {
+        this.profile = profile;
+    }
+
     @Override
     public String toString() {
         return "Profile{" +
                 "city='" + city + '\'' +
+                ", profile=" + profile +
                 ", crmId='" + crmId + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", displayName='" + displayName + '\'' +

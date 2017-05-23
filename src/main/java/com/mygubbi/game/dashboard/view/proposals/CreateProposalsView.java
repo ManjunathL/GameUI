@@ -777,7 +777,7 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.addComponent(horizontalLayout0);
 
         HorizontalLayout hlayout=new HorizontalLayout();
-        Button searchcrmid=new Button("Search CRMID");
+        Button searchcrmid=new Button("Search Customer");
         hlayout.addStyleName("crmstyle");
         searchcrmid.addClickListener(this::searchCRMData);
         hlayout.addComponent(searchcrmid);
@@ -825,10 +825,12 @@ public class CreateProposalsView extends Panel implements View {
         customerNameField.setRequired(true);
         ((TextField) customerNameField).setNullRepresentation("");
         formLayoutLeft.addComponent(customerNameField);
+
         customerAddressLine1 = binder.buildAndBind("Address Line 1", C_ADDRESS1);
         ((TextField) customerAddressLine1).setNullRepresentation("");
         formLayoutLeft.addComponent(customerAddressLine1);
-        customerAddressLine2 = binder.buildAndBind("Address Line 2", C_ADDRESS2);
+
+        /*customerAddressLine2 = binder.buildAndBind("Address Line 2", C_ADDRESS2);
         ((TextField) customerAddressLine2).setNullRepresentation("");
         formLayoutLeft.addComponent(customerAddressLine2);
         customerAddressLine3 = binder.buildAndBind("Address Line 3", C_ADDRESS3);
@@ -836,7 +838,8 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.addComponent(customerAddressLine3);
         customerCityField = binder.buildAndBind("City", C_CITY);
         ((TextField) customerCityField).setNullRepresentation("");
-        formLayoutLeft.addComponent(customerCityField);
+        formLayoutLeft.addComponent(customerCityField);*/
+
         customerEmailField = binder.buildAndBind("Email", C_EMAIL);
         ((TextField) customerEmailField).setNullRepresentation("");
         formLayoutLeft.addComponent(customerEmailField);
@@ -1081,15 +1084,9 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.setSizeFull();
         formLayoutRight.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
-        /*HorizontalLayout horizontalLayout=new HorizontalLayout();
-        horizontalLayout.setSizeFull();*/
         crmId = binder.buildAndBind("CRM #", CRM_ID);
         crmId.setRequired(true);
         ((TextField) crmId).setNullRepresentation("");
-        formLayoutRight.addComponent(crmId);
-
-        //horizontalLayout.setComponentAlignment(searchcrmid,Alignment.TOP_RIGHT);
-
         formLayoutRight.addComponent(crmId);
 
         quotenew = new TextField("Quotation #");
@@ -1129,12 +1126,6 @@ public class CreateProposalsView extends Panel implements View {
         proposalTitleField.setRequired(true);
         ((TextField) proposalTitleField).setNullRepresentation("");
 
-       /* ((TextField) proposalTitleField).addTextChangeListener(textChangeEvent -> {
-            String changedText = textChangeEvent.getText();
-            proposalTitleLabel.setValue(getFormattedTitle(changedText) + "&nbsp;");
-            proposalTitleLabel.setDescription(changedText);
-        });
-*/
         formLayoutLeft.addComponent(proposalTitleField);
         proposalVersionField = binder.buildAndBind("Quotation Version", VERSION);
         proposalVersionField.setReadOnly(true);

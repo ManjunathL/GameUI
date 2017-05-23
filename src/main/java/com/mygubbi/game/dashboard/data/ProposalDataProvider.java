@@ -1551,10 +1551,11 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<ProductLibrary> getProductsLibrary(String productTitle) {
+    public List<ProductLibrary> getProductsLibrary(String productTitle,String collection) {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/searchproductlibrary", new HashMap<String, String>() {
             {
                 put("productTitle", productTitle);
+                put("collection", collection);
             }
         });
         try {
