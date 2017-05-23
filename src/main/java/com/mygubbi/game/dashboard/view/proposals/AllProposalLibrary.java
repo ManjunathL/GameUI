@@ -48,10 +48,6 @@ public class AllProposalLibrary extends Window
     Proposal proposal;
     ProposalHeader proposalHeader;
     String Id;
-    ComboBox Category;
-    ComboBox SubCategory;
-    ComboBox productName;
-
 
     private AllProposalLibrary(Proposal proposal,ProposalVersion proposalVersion,ProposalHeader proposalHeader)
     {
@@ -84,7 +80,7 @@ public class AllProposalLibrary extends Window
     }
     public static void open(Proposal proposal,ProposalVersion proposalVersion,ProposalHeader proposalHeader)
     {
-        //DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
+
         AllProposalLibrary w=new AllProposalLibrary(proposal,proposalVersion,proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
@@ -157,96 +153,24 @@ public class AllProposalLibrary extends Window
         addonsGrid.setSizeFull();
         addonsGrid.setHeightByRows(11);
         addonsGrid.setHeightMode(HeightMode.ROW);
-        //Grid.MultiSelectionModel multiselection=addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-        //MultiSelectionModel<ProductLibrary> selectionModel = (MultiSelectionModel<ProductLibrary>) addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-
-
         addonsGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        //addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
-
-        //grid.setSelectionMode(SelectionMode.MULTI);
-        //addonsGrid.addSelectionListener(this::updateTotal);
-        //addonsGrid.setColumns(AddonMaster.PRODUCT,AddonMaster.CATEGORY_CODE,AddonMaster.CATALOUGE_CODE,AddonMaster.IMAGE_PATH);
         addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH);
-
-
-       /* selectionModel.addMultiSelectionListener(event -> {
-        Notification.show(selection.getAddedSelection().size()
-                    + " items added, "
-                    + selection.getRemovedSelection().size()
-                    + " removed.");
-
-            // Allow deleting only if there's any selected
-            deleteSelected.setEnabled(
-                    event.getNewSelection().size() > 0);
-        });*/
-
 
         addonsGrid.addSelectionListener( selectionEvent -> {
             if (!selectionEvent.getAdded().isEmpty()) {
-                //Object selected = ((Grid.MultiSelectionModel) addonsGrid.getSelectionModel()).getSelectedRows();
                 Object selected = ((Grid.SingleSelectionModel) addonsGrid.getSelectionModel()).getSelectedRow();
-               /* for(Object obj:selected)
-                {*/
-                    Id = (String) addonsGrid.getContainerDataSource().getItem(selected).getItemProperty(ProductLibrary.ID).getValue().toString();
+                Id = (String) addonsGrid.getContainerDataSource().getItem(selected).getItemProperty(ProductLibrary.ID).getValue().toString();
                     LOG.info("grid selected value" +Id);
-                    /*List<ProductLibrary> productLibraries=proposalDataProvider.getProductsLibraryBasedonId(Id);
-                    for(ProductLibrary p:productLibraries)
-                    {
-                        Product product=new Product();
-                        //product.setType(Product.TYPES.PRODUCT_LIBRARY.name());
-                        LOG.info("product type name " +Product.TYPES.PRODUCT_LIBRARY.name());
-                        //product.setSeq(length);
-                        product.setProposalId(proposalHeader.getId());
-                        product.setFromVersion(proposalVersion.getVersion());
-                        product.setTitle(p.getTitle());
-                        product.setProductCategory(p.getProductCategory());
-                        product.setProductCategoryCode(p.getProductCategoryCode());
-                        product.setRoom(p.getRoom());
-                        product.setRoomCode(p.getRoomCode());
-                        product.setShutterDesign(p.getShutterDesign());
-                        product.setShutterDesignCode(p.getShutterDesignCode());
-                        product.setCatalogueName(p.getCatalogueName());
-                        product.setCatalogueId(p.getCatalogueId());
-                        product.setBaseCarcass(p.getBaseCarcass());
-                        product.setBaseCarcassCode(p.getBaseCarcassCode());
-                        product.setWallCarcass(p.getWallCarcass());
-                        product.setWallCarcassCode(p.getWallCarcassCode());
-                        product.setFinishType(p.getFinishType());
-                        product.setFinishTypeCode(p.getFinishTypeCode());
-                        product.setFinish(p.getFinish());
-                        product.setFinishCode(p.getFinishCode());
-                        product.setDimension(p.getDimension());
-                        product.setAmount(p.getAmount());
-                        product.setQuantity(p.getQuantity());
-                        product.setType(p.getType());
-                        product.setQuoteFilePath(p.getQuoteFilePath());
-                        product.setCreatedBy(p.getCreatedBy());
-                        product.setCostWoAccessories(p.getCostWoAccessories());
-                        product.setProfit(p.getProfit());
-                        product.setMargin(p.getMargin());
-                        product.setManufactureAmount(p.getManufactureAmount());
-                        product.setAmountWoTax(p.getAmountWoTax());
-                        product.setModules(p.getModules());
-                        product.setSource(p.getSource());
-                        product.setAddons(p.getAddons());
-                        LOG.debug("NEW PRoduct crearted from product library"+ product);
-
-                        //UI.getCurrent().removeWindow(this);
-                        DashboardEventBus.unregister(this);
-                        close();
-                        LOG.info("windows ***" +UI.getCurrent().getWindows());
-                        CustomizedProductDetailsWindow.open(proposal,product,proposalVersion,proposalHeader);
-                    }*/
             }
         });
 
         GridCellFilter filter = new GridCellFilter(addonsGrid);
-        filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,true);
-        filter.setTextFilter(ProductLibrary.SUB_CATEGORY,true,true);
-        filter.setTextFilter(ProductLibrary.PRODUCT_TITLE,true,true);
-        filter.setTextFilter(ProductLibrary.COLLECTION,true,true);
-        filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,true);
+
+        filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,false);
+        filter.setTextFilter(ProductLibrary.SUB_CATEGORY,true,false);
+        filter.setTextFilter(ProductLibrary.PRODUCT_TITLE,true,false);
+        filter.setTextFilter(ProductLibrary.COLLECTION,true,false);
+        filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,false);
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
@@ -266,13 +190,7 @@ public class AllProposalLibrary extends Window
             @Override
             public String convertToPresentation(String value, Class<? extends String> targetType, Locale locale)
                     throws com.vaadin.data.util.converter.Converter.ConversionException {
-
-               // return "<a class='img-anc' href='" + value + "' target='_blank'>click to view image</a> <style> .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>" ;
-
-                //return "<a href='" + value +"' target='_blank' onclick='window.open('" + value + "' ,'popup','width=600,height=600')>Open Link in Popup </a>";
-                              /*  +*/
                 return "<img src='" +value+ "' width='100' height='100'> <style> a, a:visited, a:hover { color: #4396ea;} .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>";
-
             }
 
             @Override
@@ -368,7 +286,6 @@ public class AllProposalLibrary extends Window
 
     private void AddToProposalProduct(Button.ClickEvent clickEvent)
     {
-        LOG.info("Button click ");
         List<ProductLibrary> productLibraries=proposalDataProvider.getProductsLibraryBasedonId(Id);
         for(ProductLibrary p:productLibraries)
         {
@@ -406,6 +323,14 @@ public class AllProposalLibrary extends Window
             product.setMargin(p.getMargin());
             product.setManufactureAmount(p.getManufactureAmount());
             product.setAmountWoTax(p.getAmountWoTax());
+            product.setHandleType(p.getHandleType());
+            product.setKnobType(p.getKnobType());
+            product.setHandleFinish(p.getHandleFinish());
+            product.setKnobFinish(p.getKnobFinish());
+            product.setHandleImage(p.getHandleImage());
+            product.setKnobImage(p.getKnobImage());
+            product.setGlass(p.getGlass());
+            product.setHinge(p.getHinge());
 
             List<Module> modules = p.getModules();
             List<Module> refreshedModules = new ArrayList<>();
@@ -437,7 +362,6 @@ public class AllProposalLibrary extends Window
                 modules.get(modules.indexOf(refreshedModule)).setArea(areainsft);
             }
             product.setModules(refreshedModules);
-
             product.setModules(p.getModules());
             product.setSource(p.getSource());
             product.setAddons(p.getAddons());
@@ -448,19 +372,6 @@ public class AllProposalLibrary extends Window
             LOG.info("windows ***" +UI.getCurrent().getWindows());
             CustomizedProductDetailsWindow.open(proposal,product,proposalVersion,proposalHeader);
         }
-    }
-    private Component getCategory()
-    {
-        FormLayout formLayout = new FormLayout();
-        formLayout.setSizeFull();
-        formLayout.addStyleName("no-exposedBottom-margin");
-        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-      /*  ComboBox comboBox=new ComboBox("Category");
-        List<ProductLibraryMaster> category=proposalDataProvider.get*/
-
-        return formLayout;
-
     }
 }
 

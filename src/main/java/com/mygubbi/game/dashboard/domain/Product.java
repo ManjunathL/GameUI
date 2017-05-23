@@ -18,8 +18,6 @@ public class Product implements FileAttachmentsHolder {
     public static final String FROM_VERSION = "fromVersion";
     public static final String ID = "id";
     public static final String SEQ = "seq";
-
-
     public static final String MANUAL_SEQ = "manualSeq";
     public static final String TITLE = "title";
     public static final String PRODUCT_CATEGORY = "productCategory";

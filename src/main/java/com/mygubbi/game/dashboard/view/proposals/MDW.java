@@ -413,6 +413,7 @@ public class MDW extends Window {
     }
 
     private void addListenerstoDimensionCheckBoxes() {
+
         this.height.addValueChangeListener(valueChangeEvent -> {
             String code = (String) valueChangeEvent.getProperty().getValue();
             this.height.setValue(code);
@@ -619,6 +620,7 @@ public class MDW extends Window {
         module.setWidth(mgModule.getWidth());
         module.clearAcessorryPacks();
         this.removeAddons();
+        //this.removeHandleAndKnobQuantity();
         this.emptyAccessoryImages();
         module.setModuleType(mgModule.getModuleType());
         module.setModuleCategory(mgModule.getModuleCategory());
@@ -661,19 +663,29 @@ public class MDW extends Window {
         this.dontCalculatePriceNow = false;
 
         List<AccessoryDetails> accDetailsforHandle=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"HL");
-        for(AccessoryDetails a:accDetailsforHandle)
+        if(accDetailsforHandle.size()==0)
         {
-            module.setHandleQuantity(Integer.valueOf(a.getQty()));
-            handlequantity.setValue(a.getQty());
+            handlequantity.setValue(" ");
+        }else
+        {
+            for(AccessoryDetails a:accDetailsforHandle)
+            {
+                LOG.info("handle quantity " +a);
+                module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                handlequantity.setValue(a.getQty());
+            }
         }
 
         List<AccessoryDetails> accDetailsforKnob=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"K");
-        for(AccessoryDetails a:accDetailsforKnob)
+        if(accDetailsforKnob.size()==0)
         {
-            module.setKnobQuantity(Integer.valueOf(a.getQty()));
-            knobqquantity.setValue(a.getQty());
+            knobqquantity.setValue("");
+        }else {
+            for (AccessoryDetails a : accDetailsforKnob) {
+                module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                knobqquantity.setValue(a.getQty());
+            }
         }
-
         List<MGModule> handlePresent=proposalDataProvider.checkHandlePresent(module.getMgCode());
         for(MGModule m:handlePresent)
         {
@@ -1315,11 +1327,13 @@ public class MDW extends Window {
         applyButton.setWidth("10%");
         applyButton.focus();
         applyButton.setVisible(true);
+
         applyNextButton = new Button("Apply & Load Next");
         applyNextButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         applyNextButton.addClickListener(getApplyListener(true,true));
         applyNextButton.focus();
         applyNextButton.setVisible(!isLastModule());
+
         loadPreviousButton = new Button("Previous");
         loadPreviousButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         loadPreviousButton.addClickListener(getApplyListener(false,true));
@@ -1641,7 +1655,7 @@ public class MDW extends Window {
         container.setBeanIdProperty(HandleMaster.THICKNESS);
         container.addAll(handlethickness);
 
-        thickness=new ComboBox("Handle Thickness");
+        thickness=new ComboBox("Handle Width");
         thickness.setNullSelectionAllowed(false);
         thickness.setContainerDataSource(container);
         thickness.setItemCaptionPropertyId(HandleMaster.THICKNESS);
@@ -1682,8 +1696,10 @@ public class MDW extends Window {
 
     private void handlequantitychanged(Property.ValueChangeEvent valueChangeEvent)
     {
+        LOG.info("handle quantity changed");
         String s = valueChangeEvent.getProperty().getValue().toString();
         Integer integer = Integer.parseInt(s);
+        this.handlequantity.setValue(s);
         module.setHandleQuantity(integer);
         refreshPrice();
     }
@@ -1691,8 +1707,14 @@ public class MDW extends Window {
     {
         String s = valueChangeEvent.getProperty().getValue().toString();
         Integer integer = Integer.parseInt(s);
+        this.knobqquantity.setValue(s);
         module.setKnobQuantity(integer);
         refreshPrice();
+    }
+    private void removeHandleAndKnobQuantity()
+    {
+        handlequantity.setValue("");
+        knobqquantity.setValue("");
     }
 }
 

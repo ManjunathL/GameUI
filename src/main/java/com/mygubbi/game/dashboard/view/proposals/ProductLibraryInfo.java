@@ -116,11 +116,11 @@ public class ProductLibraryInfo extends Window
         collectionField.setRequired(true);
         formLayoutLeft.addComponent(collectionField);
 
-        productTitleField = binder.buildAndBind("Product Name", ProductLibrary.PRODUCT_TITLE);
-        productTitleField.setRequired(true);
-        ((TextField) productTitleField).setNullRepresentation("");
-
-        formLayoutLeft.addComponent(productTitleField);
+        categoryField=getcategory();
+        binder.buildAndBind("Category",ProductLibrary.PRODUCT_CATEGORY);
+        ((TextField) categoryField).setNullRepresentation("");
+        categoryField.setRequired(true);
+        formLayoutLeft.addComponent(categoryField);
 
         List<ProductLibraryMaster> productLibraryMasters=proposalDataProvider.getProductsubcategory(product.getProductCategoryCode());
         for(ProductLibraryMaster productLibraryMaster:productLibraryMasters)
@@ -131,6 +131,11 @@ public class ProductLibraryInfo extends Window
         binder.bind(subcategoryField,ProductLibrary.SUB_CATEGORY);
         subcategoryField.setRequired(true);
         formLayoutLeft.addComponent(subcategoryField);
+
+        productTitleField = binder.buildAndBind("Product Name", ProductLibrary.PRODUCT_TITLE);
+        productTitleField.setRequired(true);
+        ((TextField) productTitleField).setNullRepresentation("");
+        formLayoutLeft.addComponent(productTitleField);
 
         productdescriptionField = binder.buildAndBind("Product Description", ProductLibrary.PRODUCT_DESCRIPTION);
         ((TextField) productdescriptionField).setNullRepresentation("");
@@ -170,10 +175,7 @@ public class ProductLibraryInfo extends Window
                 return;
             }
             String proposalID=String.valueOf(product.getProposalId()).replace(",","");
-            LOG.info("Params" +product.getProposalId() + " " +product.getSeq()+ " " + product.getFromVersion());
-            productsLibraryList=proposalDataProvider.getProductsLibrary(productTitleField.getValue().toString());
-            LOG.info("products library list size" +productsLibraryList.size());
-
+            productsLibraryList=proposalDataProvider.getProductsLibrary(productTitleField.getValue().toString(),collectionField.getValue().toString());
             if(productsLibraryList.size()==0)
             {
                 productLibrary.setSubCategory(product.getSubCategory());
@@ -221,6 +223,15 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setSubCategory(subcategory.getValue().toString());
                 productLibrary.setProductDescription(productdescriptionField.getValue().toString());
                 productLibrary.setProductTitle(productTitleField.getValue().toString());
+                productLibrary.setGlass(product.getGlass());
+                productLibrary.setHinge(product.getHinge());
+                productLibrary.setHandleType(product.getHandleType());
+                productLibrary.setHandleFinish(product.getHandleFinish());
+                product.setHandleImage(product.getHandleImage());
+                product.setKnobImage(product.getKnobImage());
+                productLibrary.setKnobType(product.getKnobType());
+                productLibrary.setKnobFinish(product.getKnobFinish());
+
                 boolean success = proposalDataProvider.InsertProductLibrary(productLibrary);
                 LOG.info("field vale " +productdescriptionField.getValue());
                 LOG.info("success in " + success);
@@ -230,85 +241,11 @@ public class ProductLibraryInfo extends Window
             {
                 NotificationUtil.showNotification("Product is already added to library", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-               /* productLibrary.setSubCategory(product.getSubCategory());
-                productLibrary.setAmountWoTax(product.getAmountWoTax());
-                productLibrary.setAmount(product.getAmount());
-                productLibrary.setManufactureAmount(product.getManufactureAmount());
-                productLibrary.setProposalId(product.getProposalId());
-                productLibrary.setProductDescription(product.getProductDescription());
-                productLibrary.setAddons(product.getAddons());
-                productLibrary.setBaseCarcass(product.getBaseCarcass());
-                productLibrary.setBaseCarcassCode(product.getBaseCarcassCode());
-                productLibrary.setCatalogueId(product.getCatalogueId());
-                productLibrary.setCatalogueName(product.getCatalogueName());
-                productLibrary.setCostWoAccessories(product.getCostWoAccessories());
-                productLibrary.setCreatedBy(product.getCreatedBy());
-                productLibrary.setDimension(product.getDimension());
-                //productLibrary.setFileAttachmentList(product.getFileAttachmentList());
-                productLibrary.setFinish(product.getFinish());
-                productLibrary.setFinishCode(product.getFinishCode());
-                productLibrary.setFinishType(product.getFinishType());
-                productLibrary.setFinishTypeCode(product.getFinishTypeCode());
-                productLibrary.setFromVersion(product.getFromVersion());
-                productLibrary.setManualSeq(product.getManualSeq());
-                productLibrary.setManufactureAmount(product.getManufactureAmount());
-                productLibrary.setMargin(product.getMargin());
-                productLibrary.setModules(product.getModules());
-                productLibrary.setProfit(product.getProfit());
-                productLibrary.setProductCategory(product.getProductCategoryCode());
-                productLibrary.setProductCategoryCode(product.getProductCategoryCode());
-                productLibrary.setProposalId(product.getProposalId());
-                productLibrary.setQuantity(product.getQuantity());
-                productLibrary.setQuoteFilePath(product.getQuoteFilePath());
-                productLibrary.setRoom(product.getRoom());
-                productLibrary.setRoomCode(product.getRoomCode());
-                productLibrary.setSeq(product.getSeq());
-                productLibrary.setShutterDesign(product.getShutterDesign());
-                productLibrary.setShutterDesignCode(product.getShutterDesignCode());
-                productLibrary.setSource(product.getSource());
-                productLibrary.setTitle(product.getTitle());
-                productLibrary.setType(product.getType());
-                productLibrary.setUpdatedBy(product.getUpdatedBy());
-                productLibrary.setWallCarcass(product.getWallCarcass());
-                productLibrary.setWallCarcassCode(product.getWallCarcassCode());
-                productLibrary.setSubCategory(subcategory.getValue().toString());
-                productLibrary.setProductDescription(productdescription.getValue());
-                productLibrary.setProductTitle(productTitle.getValue());
-                boolean success = proposalDataProvider.UpdateProductLibrary(productLibrary);
-                LOG.info("updated  " +success);
-                close();*/
             }
         });
         footer.setComponentAlignment(cancelBtn, Alignment.TOP_RIGHT);
         return footer;
     }
-    private Component buildHeading()
-    {
-        HorizontalLayout formLayoutLeft = new HorizontalLayout();
-        formLayoutLeft.setSizeFull();
-        formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        Label customerDetailsLabel = new Label("Products Library");
-        customerDetailsLabel.addStyleName(ValoTheme.LABEL_HUGE);
-        customerDetailsLabel.addStyleName(ValoTheme.LABEL_COLORED);
-        customerDetailsLabel.addStyleName("products-and-addons-heading-text");
-        formLayoutLeft.addComponent(customerDetailsLabel);
-
-        return formLayoutLeft;
-    }
-    private Component buildLayout1()
-    {
-        HorizontalLayout formLayoutLeft = new HorizontalLayout();
-        formLayoutLeft.setSizeFull();
-        formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-        formLayoutLeft.setMargin(new MarginInfo(true,true,true,true));
-
-        productdescription=new TextField("Product Description");
-        formLayoutLeft.addComponent(productdescription);
-
-        return formLayoutLeft;
-    }
-
     private ComboBox getSubcategoryCombo()
     {
         List<ProductLibraryMaster> productLibraryMasters=proposalDataProvider.getProductsubcategory(product.getProductCategoryCode());
@@ -329,7 +266,6 @@ public class ProductLibraryInfo extends Window
 
         return subcategory;
     }
-
     private ComboBox getCollectionCombo()
     {
         List<LookupItem> collectionList =proposalDataProvider.getLookupItems(proposalDataProvider.COLLECTION_LOOKUP);
@@ -345,6 +281,13 @@ public class ProductLibraryInfo extends Window
         collection.setItemCaptionPropertyId(LookupItem.TITLE);
 
         return collection;
+    }
+    private TextField getcategory()
+    {
+        TextField category=new TextField("Category");
+        category.setValue(product.getProductCategoryCode());
+
+        return category;
     }
     private Component getQuoteUploadControl() {
         this.quoteUploadCtrl = new Upload("Upload Image", (filename, mimeType) -> {
@@ -379,7 +322,6 @@ public class ProductLibraryInfo extends Window
         this.quoteUploadCtrl.addSucceededListener((Upload.SucceededListener) event -> {
 
             String filename = event.getFilename();
-            LOG.info("file name" +filename);
             CloudinaryImageUrl cloudinaryImageUrl=new CloudinaryImageUrl();
             cloudinaryImageUrl.setImageurl(uploadedQuoteFile.getAbsolutePath());
             CloudinaryImageUrl p=proposalDataProvider.addToCloudinary(cloudinaryImageUrl);
@@ -401,5 +343,4 @@ public class ProductLibraryInfo extends Window
     private String getUploadBasePath() {
         return proposal.getProposalHeader().getFolderPath();
     }
-
 }

@@ -979,8 +979,15 @@ public class ProductAndAddons extends Window
                 copyProduct.setAmountWoTax(p.getAmountWoTax());
                 copyProduct.setModules(modulesFromOldProduct);
                 copyProduct.setSource(p.getSource());
+                copyProduct.setHinge(p.getHinge());
+                copyProduct.setGlass(p.getGlass());
+                copyProduct.setKnobType(p.getKnobType());
+                copyProduct.setKnobFinish(p.getKnobFinish());
+                copyProduct.setKnobImage(p.getKnobImage());
+                copyProduct.setHandleType(p.getHandleType());
+                copyProduct.setHandleFinish(p.getHandleFinish());
+                copyProduct.setHandleImage(p.getHandleImage());
                 LOG.info("COPIED@"+ copyProduct);
-
                 copyProduct.setAddons(p.getAddons());
 
                 proposalDataProvider.updateProduct(copyProduct);
@@ -1006,6 +1013,7 @@ public class ProductAndAddons extends Window
                 if (product.getType().equals(Product.TYPES.CUSTOMIZED.name()) || product.getType().equals(Product.TYPES.PRODUCT_LIBRARY.name())) {
                     if (product.getModules().isEmpty()) {
                         Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId(),product.getFromVersion());
+
                         product.setModules(productDetails.getModules());
                         product.setAddons(productDetails.getAddons());
                     }
@@ -1014,6 +1022,7 @@ public class ProductAndAddons extends Window
                         List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
                         product.setFileAttachmentList(productAttachments);
                     }
+                    LOG.info("product details " +product);
                     CustomizedProductDetailsWindow.open(proposal, product, proposalVersion,proposalHeader);
                 } else {
                     CatalogueProduct catalogueProduct = new CatalogueProduct();

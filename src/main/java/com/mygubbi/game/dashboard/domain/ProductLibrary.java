@@ -53,6 +53,16 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String IMAGE_PATH="imageurl";
     public static final String PRODUCT_TITLE="productTitle";
     public static final String COLLECTION="collection";
+    public static final String HINGES_TYPE="hinge";
+    public static final String GLASS_TYPE="glass";
+    public static final String HANDLE_TYPE="handleType";
+    public static final String HANDLE_THICKNESS="handleThickness";
+    public static final String KNOB_TYPE="knobType";
+    public static final String KNOB_THICKNESS="knobThickness";
+    public static final String HANDLE_FINISH="handleFinish";
+    public static final String KNOB_Finish="knobFinish";
+    public static final String HANDLE_IMAGE="handleImage";
+    public static final String KNOB_IMAGE="knobImage";
 
 
     private int id;
@@ -97,6 +107,16 @@ public class ProductLibrary implements FileAttachmentsHolder
     private String imageurl;
     private String productTitle;
     private String collection;
+    private String hinge;
+    private String glass;
+    private String handleType;
+    private String handleFinish;
+    private int handleThickness;
+    private String knobType;
+    private String knobFinish;
+    private int knobThickness;
+    private String handleImage;
+    private String knobImage;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -452,6 +472,86 @@ public class ProductLibrary implements FileAttachmentsHolder
         this.collection = collection;
     }
 
+    public String getGlass() {
+        return glass;
+    }
+
+    public void setGlass(String glass) {
+        this.glass = glass;
+    }
+
+    public String getHandleFinish() {
+        return handleFinish;
+    }
+
+    public void setHandleFinish(String handleFinish) {
+        this.handleFinish = handleFinish;
+    }
+
+    public int getHandleThickness() {
+        return handleThickness;
+    }
+
+    public void setHandleThickness(int handleThickness) {
+        this.handleThickness = handleThickness;
+    }
+
+    public String getHandleType() {
+        return handleType;
+    }
+
+    public void setHandleType(String handleType) {
+        this.handleType = handleType;
+    }
+
+    public String getHinge() {
+        return hinge;
+    }
+
+    public void setHinge(String hinge) {
+        this.hinge = hinge;
+    }
+
+    public String getKnobFinish() {
+        return knobFinish;
+    }
+
+    public void setKnobFinish(String knobFinish) {
+        this.knobFinish = knobFinish;
+    }
+
+    public int getKnobThickness() {
+        return knobThickness;
+    }
+
+    public void setKnobThickness(int knobThickness) {
+        this.knobThickness = knobThickness;
+    }
+
+    public String getKnobType() {
+        return knobType;
+    }
+
+    public void setKnobType(String knobType) {
+        this.knobType = knobType;
+    }
+
+    public String getHandleImage() {
+        return handleImage;
+    }
+
+    public void setHandleImage(String handleImage) {
+        this.handleImage = handleImage;
+    }
+
+    public String getKnobImage() {
+        return knobImage;
+    }
+
+    public void setKnobImage(String knobImage) {
+        this.knobImage = knobImage;
+    }
+
     @Override
     public List<FileAttachment> getFileAttachmentList() {
         return null;
@@ -503,6 +603,16 @@ public class ProductLibrary implements FileAttachmentsHolder
                 ", imageurl='" + imageurl + '\'' +
                 ", productTitle='" + productTitle + '\'' +
                 ", collection='" + collection + '\'' +
+                ", hinge='" + hinge + '\'' +
+                ", glass='" + glass + '\'' +
+                ", handleType='" + handleType + '\'' +
+                ", handleFinish='" + handleFinish + '\'' +
+                ", handleThickness=" + handleThickness +
+                ", knobType='" + knobType + '\'' +
+                ", knobFinish='" + knobFinish + '\'' +
+                ", knobThickness=" + knobThickness +
+                ", handleImage='" + handleImage + '\'' +
+                ", knobImage='" + knobImage + '\'' +
                 ", modules=" + modules +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';
