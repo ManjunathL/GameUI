@@ -1553,13 +1553,13 @@ public class ProposalDataProvider {
     }
 
     public List<ProductLibrary> getProductsLibrary(String productTitle,String collection) {
+        try{
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/searchproductlibrary", new HashMap<String, String>() {
             {
-                put("productTitle", productTitle);
-                put("collection", collection);
+                put("productTitle", URLEncoder.encode(productTitle,"UTF-8"));
+                put("collection", URLEncoder.encode(collection,"UTF-8"));
             }
         });
-        try {
             ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
             return new ArrayList<>(Arrays.asList(items));
         }
