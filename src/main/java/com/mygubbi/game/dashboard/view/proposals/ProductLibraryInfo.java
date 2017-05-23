@@ -52,6 +52,7 @@ public class ProductLibraryInfo extends Window
     private ComboBox subcategoryField;
     private Field<?> productTitleField;
     private Field<?> productdescriptionField;
+    private Field<?> categoryField;
     private ComboBox collectionField;
 
     TextField productdescription;
