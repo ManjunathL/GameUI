@@ -361,6 +361,12 @@
   display:block;
   }
 
+   .text-area-size1{
+    width: 213%;
+    height:100%;
+    display:block;
+    }
+
     .optiongroupstyle{
         display: inline-block !important;
     }
@@ -625,14 +631,15 @@
 }
 .checkboxstyle
 {
-    margin-top: 10px !important;
+    color:red !important;
+    margin-top: -37px !important;
 }
 
 .v-formlayout [class*="margin-bottom"] > tbody > [class*="lastrow"] > td {
     padding-bottom: 5px !important;
 }
 .hlayoutsize{
-    margin-top: -9px
+    margin-top: -39px;
 }
 .crmstyle
 {

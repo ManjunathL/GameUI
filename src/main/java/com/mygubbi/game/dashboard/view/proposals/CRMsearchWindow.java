@@ -108,7 +108,7 @@ public class CRMsearchWindow extends Window
                             }
                         }
                         //proposalHeader.setPcity(profile1.getCity());
-                        proposalHeader.setPcity("my city");
+                        //proposalHeader.setPcity("my city");
                         proposalHeader.setCname(profile1.getFirst_name());
                         proposalHeader.setSalesEmail(profile1.getSalesExecUserId());
                         proposalHeader.setSalesName(profile1.getSalesExecName());

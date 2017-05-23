@@ -573,13 +573,13 @@ public class MDW extends Window {
         thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
         formLayout.addComponent(thicknessfield);
 
-        this.remarks = new TextField();
+        /*this.remarks = new TextField();
         this.remarks.setCaption("Remarks");
         formLayout.setWidth("100%");
         formLayout.setHeight("50%");
         formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         binder.bind(this.remarks, Module.REMARKS);
-        formLayout.addComponent(remarks);
+        formLayout.addComponent(remarks);*/
 
         verticalLayoutModule.addComponent(formLayout);
         return verticalLayoutModule;
@@ -588,18 +588,36 @@ public class MDW extends Window {
     {
         HorizontalLayout vlayout=new HorizontalLayout();
 
-        vlayout.setSpacing(true);
-        CheckBox checkBox=new CheckBox("Custom");
+        OptionGroup single = new OptionGroup("");
+        single.addItems("Remarks", "Custom");
+        binder.bind(single,Module.CUSTOM_CHECK);
+        single.select("Remarks");
+        single.setImmediate(true);
+
+        single.addStyleName("checkboxstyle");
+        vlayout.addComponent(single);
+
+        /*vlayout.setSpacing(true);
+        CheckBox checkBox=new CheckBox("Remarks");
         binder.bind(checkBox,Module.CUSTOM_CHECK);
         checkBox.addStyleName("checkboxstyle");
         checkBox.addValueChangeListener(this::checkcustomcheck);
         vlayout.addComponent(checkBox);
         vlayout.setSpacing(true);
 
+        CheckBox checkBox1=new CheckBox("Custom");
+        //binder.bind(checkBox,Module.CUSTOM_CHECK);
+        checkBox1.addStyleName("checkboxstyle");
+        checkBox1.addValueChangeListener(this::checkcustomcheck);
+        vlayout.addComponent(checkBox1);
+        vlayout.setSpacing(true);*/
+
         this.customText=new TextField();
-        binder.bind(this.customText,Module.CUSTOM_TEXT);
+        customText.addStyleName("text-area-size1");
+        //binder.bind(this.customText,Module.CUSTOM_TEXT);
+        binder.bind(this.customText, Module.REMARKS);
         customText.setNullRepresentation(" ");
-        this.customText.setEnabled(false);
+//        this.customText.setEnabled(false);
 
         vlayout.addComponent(customText);
         return vlayout;
