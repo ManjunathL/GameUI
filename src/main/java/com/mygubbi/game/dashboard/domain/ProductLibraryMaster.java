@@ -8,10 +8,12 @@ public class ProductLibraryMaster
     public static final String ID = "id";
     public static final String CATEGORY = "category";
     public static final String SUB_CATEGORY = "subcategory";
+    public static final String COLLECTION = "collection";
 
     private int id;
     private String category;
     private String subcategory;
+    private String collection;
 
     public String getCategory() {
         return category;
@@ -37,12 +39,17 @@ public class ProductLibraryMaster
         this.subcategory = subcategory;
     }
 
+    public String getCollection() {   return collection;   }
+
+    public void setCollection(String collection) {   this.collection = collection;   }
+
     @Override
     public String toString() {
         return "ProductLibraryMaster{" +
-                "category='" + category + '\'' +
-                ", id=" + id +
+                "id=" + id +
+                ", category='" + category + '\'' +
                 ", subcategory='" + subcategory + '\'' +
+                ", collection='" + collection + '\'' +
                 '}';
     }
 }

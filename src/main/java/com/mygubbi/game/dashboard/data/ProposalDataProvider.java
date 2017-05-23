@@ -51,6 +51,7 @@ public class ProposalDataProvider {
     public static final String MODULE_CATEGORY_LOOKUP = "modulecategory";
     private static final String MODULE_SELECTION_LOOKUP = "module";
     public static final String ACCESSORY_LOOKUP = "accessories";
+    public static final String COLLECTION_LOOKUP = "collection";
 
 
     public ProposalDataProvider(DataProviderMode dataProviderMode) {

@@ -48,10 +48,11 @@ public class ProductLibraryInfo extends Window
 
     //TextField subcategory;
     ComboBox subcategory;
+    ComboBox collection;
     private ComboBox subcategoryField;
     private Field<?> productTitleField;
     private Field<?> productdescriptionField;
-    private Field<?> collectionField;
+    private ComboBox collectionField;
 
     TextField productdescription;
     TextField productTitle;
@@ -109,8 +110,9 @@ public class ProductLibraryInfo extends Window
         horizontalLayout.addComponent(formLayoutLeft);
         horizontalLayout.setExpandRatio(formLayoutLeft,0.4f);
 
-        collectionField= binder.buildAndBind("Collection", ProductLibrary.COLLECTION);
-        ((TextField) collectionField).setNullRepresentation("");
+
+        collectionField = getCollectionCombo();
+        binder.bind(collectionField, ProductLibrary.COLLECTION);
         collectionField.setRequired(true);
         formLayoutLeft.addComponent(collectionField);
 
@@ -326,6 +328,23 @@ public class ProductLibraryInfo extends Window
         subcategory.setItemCaptionPropertyId(ProductLibraryMaster.SUB_CATEGORY);
 
         return subcategory;
+    }
+
+    private ComboBox getCollectionCombo()
+    {
+        List<LookupItem> collectionList =proposalDataProvider.getLookupItems(proposalDataProvider.COLLECTION_LOOKUP);
+        LOG.info("111111"+collectionList.size());
+        final BeanContainer<String, LookupItem> container = new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty(LookupItem.TITLE);
+        container.addAll(collectionList);
+
+        collection=new ComboBox("Collection");
+        collection.setWidth("300px");
+        collection.setNullSelectionAllowed(false);
+        collection.setContainerDataSource(container);
+        collection.setItemCaptionPropertyId(LookupItem.TITLE);
+
+        return collection;
     }
     private Component getQuoteUploadControl() {
         this.quoteUploadCtrl = new Upload("Upload Image", (filename, mimeType) -> {
