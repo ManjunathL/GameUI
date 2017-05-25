@@ -155,7 +155,7 @@ public class ProductLibraryInfo extends Window
 
         productLocationField=getProductLocation();
         binder.buildAndBind("Product Location",ProductLibrary.PRODUCT_LOCATION);
-        ((TextField) categoryField).setNullRepresentation("");
+        ((TextField) productLocationField).setNullRepresentation("");
         productLocationField.setRequired(true);
         formLayoutLeft.addComponent(productLocationField);
 
@@ -247,9 +247,9 @@ public class ProductLibraryInfo extends Window
                 product.setKnobImage(product.getKnobImage());
                 productLibrary.setKnobType(product.getKnobType());
                 productLibrary.setKnobFinish(product.getKnobFinish());
-
+                productLibrary.setProductLocation(productLocationField.getValue().toString());
                 boolean success = proposalDataProvider.InsertProductLibrary(productLibrary);
-                LOG.info("field vale " +productdescriptionField.getValue());
+                LOG.info("field vale " +productLocationField.getValue() + " " +productLibrary.getProductLocation());
                 LOG.info("success in " + success);
                 close();
             }
@@ -351,7 +351,7 @@ public class ProductLibraryInfo extends Window
     private TextField getProductLocation()
     {
         TextField productLocation=new TextField("Product Location");
-        productLocation.setValue(product.getProductLocation());
+       // productLocation.setValue(product.getProductLocation());
 
         return productLocation;
     }
@@ -381,7 +381,7 @@ public class ProductLibraryInfo extends Window
         this.length.setCaption("Length");
         this.length.setWidth("60px");
         this.length.addStyleName(Runo.TEXTFIELD_SMALL);
-  //      binder.bind(this.depth,Module.DEPTH);
+        binder.bind(this.length,productLibrary.LENGTH);
         formLayoutDepth.addComponent(length);
         horizontalLayoutDimensions.addComponent(formLayoutDepth);
 
@@ -392,7 +392,7 @@ public class ProductLibraryInfo extends Window
         this.width.setCaption("Width");
         this.width.setWidth("60px");
         this.width.addStyleName(Runo.TEXTFIELD_SMALL);
-//        binder.bind(this.width,Module.WIDTH);
+        binder.bind(this.width,ProductLibrary.WIDTH);
         formLayoutWidth.addComponent(width);
         horizontalLayoutDimensions.addComponent(formLayoutWidth);
 
@@ -403,7 +403,7 @@ public class ProductLibraryInfo extends Window
         this.height.setCaption("Height");
         this.height.setWidth("60px");
         this.height.addStyleName(Runo.TEXTFIELD_SMALL);
-    //    binder.bind(this.height, Module.HEIGHT);
+        binder.bind(this.height, ProductLibrary.HEIGHT);
         formLayoutHeight.addComponent(height);
         horizontalLayoutDimensions.addComponent(formLayoutHeight);
 
