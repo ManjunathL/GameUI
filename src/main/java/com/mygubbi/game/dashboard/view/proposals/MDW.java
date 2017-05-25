@@ -1395,7 +1395,8 @@ public class MDW extends Window {
             //LOG.info("thickness field value " +thicknessfield.getValue().toString());
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
-                if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandleThickness(), "Yes"))
+                LOG.info("ssss " +module.getHandleThickness());
+                if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
                 {
                     NotificationUtil.showNotification("Please select thickness before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
