@@ -18,6 +18,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.HeightMode;
+import com.vaadin.tools.CvalChecker;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -154,7 +155,7 @@ public class AllProposalLibrary extends Window
         addonsGrid.setHeightByRows(11);
         addonsGrid.setHeightMode(HeightMode.ROW);
         addonsGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH);
+        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.LENGTH,ProductLibrary.WIDTH,ProductLibrary.HEIGHT,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH,ProductLibrary.PRODUCT_LOCATION);
 
         addonsGrid.addSelectionListener( selectionEvent -> {
             if (!selectionEvent.getAdded().isEmpty()) {
@@ -167,15 +168,22 @@ public class AllProposalLibrary extends Window
         GridCellFilter filter = new GridCellFilter(addonsGrid);
 
         filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,false);
+        filter.setTextFilter(ProductLibrary.WIDTH,true,false);
+        filter.setTextFilter(ProductLibrary.LENGTH,true,false);
+        filter.setTextFilter(ProductLibrary.HEIGHT,true,false);
         filter.setTextFilter(ProductLibrary.SUB_CATEGORY,true,false);
         filter.setTextFilter(ProductLibrary.PRODUCT_TITLE,true,false);
         filter.setTextFilter(ProductLibrary.COLLECTION,true,false);
         filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,false);
+        filter.setTextFilter(ProductLibrary.PRODUCT_LOCATION,true,false);
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("Collection");
         columns.get(idx++).setHeaderCaption("Product Category");
+        columns.get(idx++).setHeaderCaption("Length");
+        columns.get(idx++).setHeaderCaption("Width");
+        columns.get(idx++).setHeaderCaption("Height");
         columns.get(idx++).setHeaderCaption("Product Subcategory");
         columns.get(idx++).setHeaderCaption("Product Name");
         columns.get(idx++).setHeaderCaption("Image").setRenderer(new HtmlRenderer(), new Converter<String, String>()
@@ -191,6 +199,32 @@ public class AllProposalLibrary extends Window
             public String convertToPresentation(String value, Class<? extends String> targetType, Locale locale)
                     throws com.vaadin.data.util.converter.Converter.ConversionException {
                 return "<img src='" +value+ "' width='100' height='100'> <style> a, a:visited, a:hover { color: #4396ea;} .v-grid-row-selected .img-anc { color: #fff; } .v-grid-row-selected .img-anc:hover { color: #fff; }</style>";
+            }
+
+            @Override
+            public Class<String> getModelType() {
+                return String.class;
+            }
+
+            @Override
+            public Class<String> getPresentationType() {
+                return String.class;
+            }
+        });
+
+        columns.get(idx++).setHeaderCaption("Product Location").setRenderer(new HtmlRenderer(), new Converter<String, String>()
+        {
+            @Override
+            public String convertToModel(String value,
+                                         Class<? extends String> targetType, Locale locale)
+                    throws Converter.ConversionException {
+                return "not implemented";
+            }
+
+            @Override
+            public String convertToPresentation(String value, Class<? extends String> targetType, Locale locale)
+                    throws com.vaadin.data.util.converter.Converter.ConversionException {
+                return "<a href='" + value +"' target='_blank' onclick='window.open('" + value + "' ,'popup','width=600,height=600')>Open Link in Popup </a>";
             }
 
             @Override
