@@ -50,6 +50,7 @@ public class ProposalHeader {
     public static final String UPDATED_BY = "updatedBy";
     public static final String PRICE_DATE = "priceDate";
     public static final String MAX_DISCOUNTPERCENTAGE="maxDiscountPercentage";
+    public static final String BEFORE_PRODUCTION_SPECIFICATION="beforeProductionSpecification";
 
     private int id;
     private String quoteNoNew;
@@ -89,6 +90,7 @@ public class ProposalHeader {
     private String editFlag = EDIT.R.name();
     private java.sql.Date priceDate;
     private double maxDiscountPercentage;
+    private String beforeProductionSpecification;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -403,6 +405,14 @@ public class ProposalHeader {
         this.maxDiscountPercentage = maxDiscountPercentage;
     }
 
+    public String getBeforeProductionSpecification() {
+        return beforeProductionSpecification;
+    }
+
+    public void setBeforeProductionSpecification(String beforeProductionSpecification) {
+        this.beforeProductionSpecification = beforeProductionSpecification;
+    }
+
     @Override
     public String toString() {
         return "ProposalHeader{" +
@@ -444,6 +454,7 @@ public class ProposalHeader {
                 ", editFlag='" + editFlag + '\'' +
                 ", priceDate=" + priceDate +
                 ", maxDiscountPercentage=" + maxDiscountPercentage +
+                ", beforeProductionSpecification='" + beforeProductionSpecification + '\'' +
                 '}';
     }
 }

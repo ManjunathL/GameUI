@@ -13,9 +13,7 @@ public class ModulePrice {
     private double accessoryCost;
     private double hardwareCost;
     private double labourCost;
-    private double handleCost;
-    private double knobCost;
-
+    private double handleAndKnobCost;
 
     public double getShutterCost() {
         return shutterCost;
@@ -81,20 +79,12 @@ public class ModulePrice {
         this.woodworkCost = woodworkCost;
     }
 
-    public double getHandleCost() {
-        return handleCost;
+    public double getHandleAndKnobCost() {
+        return handleAndKnobCost;
     }
 
-    public void setHandleCost(double handleCost) {
-        this.handleCost = handleCost;
-    }
-
-    public double getKnobCost() {
-        return knobCost;
-    }
-
-    public void setKnobCost(double knobCost) {
-        this.knobCost = knobCost;
+    public void setHandleAndKnobCost(double handleAndKnobCost) {
+        this.handleAndKnobCost = handleAndKnobCost;
     }
 
     @Override
@@ -108,8 +98,7 @@ public class ModulePrice {
                 ", carcassCost=" + carcassCost +
                 ", hardwareCost=" + hardwareCost +
                 ", labourCost=" + labourCost +
-                ", handleCost=" + handleCost +
-                ", knobCost=" + knobCost +
+                ", handleAndKnobCost=" + handleAndKnobCost +
                 '}';
     }
 }

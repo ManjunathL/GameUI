@@ -1982,4 +1982,23 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
+
+    public PriceMaster getHandleAndKnobRateDetails(String rateId, Date priceDate, String city)
+    {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/handleknobdetails", new HashMap<String, String>(){
+            {
+                put("rateId", rateId + "");
+                put("priceDate", priceDate + "");
+                put("city",city + "");
+            }
+        });
+        try
+        {
+            return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
+
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
@@ -234,10 +235,19 @@ public class CreateProposalsView extends Panel implements View {
         }
     }
 
-    private void cityLockedForOldProposal() {
-        if (!(this.proposalHeader.getQuoteNoNew() == null)) {
-            quotenew.setReadOnly(true);
-            projectCityField.setReadOnly(true);
+    private void cityLockedForOldProposal()
+    {
+        if (!(this.proposalHeader.getQuoteNoNew() == null))
+        {
+            if(Objects.equals(proposalHeader.getPcity(), "") || proposalHeader.getPcity() == null)
+            {
+                projectCityField.setReadOnly(false);
+                quotenew.setReadOnly(false);
+            }else
+            {
+                projectCityField.setReadOnly(true);
+                quotenew.setReadOnly(true);
+            }
             cancelButton.setVisible(false);
             saveAndCloseButton.setVisible(true);
         }
@@ -1018,7 +1028,7 @@ public class CreateProposalsView extends Panel implements View {
         container.setBeanIdProperty(LookupItem.TITLE);
         container.addAll(list);
 
-        ComboBox select = new ComboBox("Project City");
+        ComboBox select = new ComboBox("Region");
         select.setWidth("300px");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
