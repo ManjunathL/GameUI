@@ -77,6 +77,8 @@ public class Module implements Cloneable {
     public static final String CUSTOM_CHECK="customCheck";
     public static final String HANDLE_QUANTITY="handleQuantity";
     public static final String KNOB_QUANTITY="knobQuantity";
+    public static final String GLASS_TYPE="glassType";
+    public static final String HINGE_TYPE="hingeType";
 
     private int seq;
     private int moduleSequence;
@@ -138,10 +140,12 @@ public class Module implements Cloneable {
     private String handleCode;
     private String knobCode;
     private String customText;
-    private boolean customCheck;
+    private String customCheck;
     private int handleQuantity;
     private int knobQuantity;
     private String newModuleFlag;
+    private String glassType;
+    private String hingeType;
 
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
     private List<HandleMaster> handlePack=new ArrayList<>();
@@ -677,15 +681,13 @@ public class Module implements Cloneable {
         this.customText = customText;
     }
 
-    public boolean getCustomCheck() {
+    public String getCustomCheck() {
         return customCheck;
     }
 
-    public void setCustomCheck(boolean customCheck) {
+    public void setCustomCheck(String customCheck) {
         this.customCheck = customCheck;
     }
-
-
 
     public static void main(String[] args)
     {
@@ -737,6 +739,22 @@ public class Module implements Cloneable {
 
     public void setKnobPresent(String knobPresent) {
         this.knobPresent = knobPresent;
+    }
+
+    public String getGlassType() {
+        return glassType;
+    }
+
+    public void setGlassType(String glassType) {
+        this.glassType = glassType;
+    }
+
+    public String getHingeType() {
+        return hingeType;
+    }
+
+    public void setHingeType(String hingeType) {
+        this.hingeType = hingeType;
     }
 
     @Override
@@ -803,8 +821,11 @@ public class Module implements Cloneable {
                 ", knobCode='" + knobCode + '\'' +
                 ", customText='" + customText + '\'' +
                 ", customCheck=" + customCheck +
-                ", handleQuantity='" + handleQuantity + '\'' +
-                ", knobQuantity='" + knobQuantity + '\'' +
+                ", handleQuantity=" + handleQuantity +
+                ", knobQuantity=" + knobQuantity +
+                ", newModuleFlag='" + newModuleFlag + '\'' +
+                ", glassType='" + glassType + '\'' +
+                ", hingeType='" + hingeType + '\'' +
                 ", accessoryPacks=" + accessoryPacks +
                 ", handlePack=" + handlePack +
                 ", knobPack=" + knobPack +

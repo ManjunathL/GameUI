@@ -71,6 +71,7 @@ public class MarginDetailsWindow extends Window
     Double HardwareCost=0.0;
     Double LabourCost=0.0;
     Double hikeCost=0.0;
+    Double handleAndKnonCost=0.0;
 
     Double productsTotal=0.0;
     Double totalWoAccessories = 0.0;
@@ -92,6 +93,7 @@ public class MarginDetailsWindow extends Window
     Double manufacturingLabourCost =0.0;
     Double manufacturingHardwareCost =0.0;
     Double manufacturingAccessoryCost =0.0;
+    Double manufacturingHandleAndKnobCost =0.0;
     Double FinalmanufacturingAccoryCost=0.0;
     Double manufacturingAccessoryCostForZgeneric=0.0;
     Double manufacturingTotalSalesPrice =0.0;
@@ -385,6 +387,24 @@ public class MarginDetailsWindow extends Window
                 ShutterCost+=modulePrice.getShutterCost();
                 CarcassCost+=modulePrice.getCarcassCost();
                 AccessoryCost += modulePrice.getAccessoryCost();//msp
+                handleAndKnonCost +=modulePrice.getHandleAndKnobCost();
+
+                if(!(module.getHandlePresent()==null))
+                {
+                    PriceMaster handleandknobdetails=proposalDataProvider.getHandleAndKnobRateDetails(module.getHandleCode(),this.priceDate,this.city);
+                    {
+                        LOG.info("handle price master " +handleandknobdetails);
+                        manufacturingHandleAndKnobCost+=(handleandknobdetails.getSourcePrice())*module.getHandleQuantity();
+                    }
+                }
+                if(!(module.getKnobPresent()==null))
+                {
+                    PriceMaster handleandknobdetails=proposalDataProvider.getHandleAndKnobRateDetails(module.getKnobCode(),this.priceDate,this.city);
+                    {
+                        LOG.info("knob price master " +handleandknobdetails);
+                        manufacturingHandleAndKnobCost+=handleandknobdetails.getSourcePrice();
+                    }
+                }
                 List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
                 for(ModuleAccessoryPack moduleAccessoryPack:moduleaccpack)
                 {
@@ -417,24 +437,8 @@ public class MarginDetailsWindow extends Window
                             }
                         }
                     }
-
-                    /*List<AccessoryDetails> accessoryDetailshardware=proposalDataProvider.getAccessoryhwDetails(moduleAccessoryPack.getCode());
-                    for(AccessoryDetails acchwdetails: accessoryDetailshardware)
-                    {
-                        LOG.info("hardware code in string" +acchwdetails.getCode());
-                        PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acchwdetails.getCode(),this.priceDate,this.city);
-                        {
-                            LOG.info("hardware price in string" +hardwareRateMaster);
-                            {
-                                manufacturingHardwareCost += hardwareRateMaster.getSourcePrice();
-                            }
-                        }
-                    }*/
                 }
                 HardwareCost+=modulePrice.getHardwareCost();
-/*
-                if((!module.getMgCode().equals("MG-NS-H-001")) || (!module.getMgCode().equals("MG-NS-H-002")) )
-*/
                 if(!(module.getMgCode().startsWith("MG-NS-H")))
 
                 {
@@ -452,8 +456,8 @@ public class MarginDetailsWindow extends Window
                 }
             }
         }
-        totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost;
-        totalSalesPriceWOAcc =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+hikeCost;
+        totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost+handleAndKnonCost;
+        totalSalesPriceWOAcc =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+hikeCost+handleAndKnonCost;
 
         //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
         totalSalesPriceWOtax = (totalSalesPrice) *rateForProductWOTax;
@@ -468,7 +472,7 @@ public class MarginDetailsWindow extends Window
         //manufacturingAccessoryCost =AccessoryCost/1.546;
         FinalmanufacturingAccoryCost = manufacturingAccessoryCost + manufacturingAccessoryCostForZgeneric;
 
-        manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + FinalmanufacturingAccoryCost;
+        manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + FinalmanufacturingAccoryCost + manufacturingHandleAndKnobCost;
 
         List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (AddonProduct addonProduct:addonProducts)
@@ -532,6 +536,8 @@ public class MarginDetailsWindow extends Window
 
         totalAmount = addonsTotal + productsTotal;
         costOfAccessories = productsTotal - totalWoAccessories;
+
+        LOG.info("total handle cost " +handleAndKnonCost+ "manufa " +manufacturingHandleAndKnobCost);
     }
 
     private margin calculateSalesPriceWithDiscount(margin margin,Double Tsp)

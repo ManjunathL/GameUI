@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
@@ -234,10 +235,19 @@ public class CreateProposalsView extends Panel implements View {
         }
     }
 
-    private void cityLockedForOldProposal() {
-        if (!(this.proposalHeader.getQuoteNoNew() == null)) {
-            quotenew.setReadOnly(true);
-            projectCityField.setReadOnly(true);
+    private void cityLockedForOldProposal()
+    {
+        if (!(this.proposalHeader.getQuoteNoNew() == null))
+        {
+            if(Objects.equals(proposalHeader.getPcity(), "") || proposalHeader.getPcity() == null)
+            {
+                projectCityField.setReadOnly(false);
+                quotenew.setReadOnly(false);
+            }else
+            {
+                projectCityField.setReadOnly(true);
+                quotenew.setReadOnly(true);
+            }
             cancelButton.setVisible(false);
             saveAndCloseButton.setVisible(true);
         }
@@ -824,10 +834,12 @@ public class CreateProposalsView extends Panel implements View {
         customerNameField = binder.buildAndBind("Customer Name", C_NAME);
         customerNameField.setRequired(true);
         ((TextField) customerNameField).setNullRepresentation("");
+        customerNameField.setReadOnly(true);
         formLayoutLeft.addComponent(customerNameField);
 
         customerAddressLine1 = binder.buildAndBind("Address Line 1", C_ADDRESS1);
         ((TextField) customerAddressLine1).setNullRepresentation("");
+        customerAddressLine1.setReadOnly(true);
         formLayoutLeft.addComponent(customerAddressLine1);
 
         /*customerAddressLine2 = binder.buildAndBind("Address Line 2", C_ADDRESS2);
@@ -842,13 +854,15 @@ public class CreateProposalsView extends Panel implements View {
 
         customerEmailField = binder.buildAndBind("Email", C_EMAIL);
         ((TextField) customerEmailField).setNullRepresentation("");
+        customerEmailField.setReadOnly(true);
         formLayoutLeft.addComponent(customerEmailField);
         customerNumberField1 = binder.buildAndBind("Phone 1", C_PHONE1);
         ((TextField) customerNumberField1).setNullRepresentation("");
+        customerNumberField1.setReadOnly(true);
         formLayoutLeft.addComponent(customerNumberField1);
-        customerNumberField2 = binder.buildAndBind("Phone 2", C_PHONE2);
+        /*customerNumberField2 = binder.buildAndBind("Phone 2", C_PHONE2);
         ((TextField) customerNumberField2).setNullRepresentation("");
-        formLayoutLeft.addComponent(customerNumberField2);
+        formLayoutLeft.addComponent(customerNumberField2);*/
 
         return formLayoutLeft;
     }
@@ -866,13 +880,15 @@ public class CreateProposalsView extends Panel implements View {
 
         projectName = binder.buildAndBind("Project Name", PROJECT_NAME);
         ((TextField) projectName).setNullRepresentation("");
+        projectName.setReadOnly(true);
         formLayoutRight.addComponent(projectName);
         projectAddressLine1 = binder.buildAndBind("Address Line 1", P_ADDRESS1);
         ((TextField) projectAddressLine1).setNullRepresentation("");
+        projectAddressLine1.setReadOnly(true);
         formLayoutRight.addComponent(projectAddressLine1);
-        projectAddressLine2 = binder.buildAndBind("Address Line 2", P_ADDRESS2);
+       /* projectAddressLine2 = binder.buildAndBind("Address Line 2", P_ADDRESS2);
         ((TextField) projectAddressLine2).setNullRepresentation("");
-        formLayoutRight.addComponent(projectAddressLine2);
+        formLayoutRight.addComponent(projectAddressLine2);*/
         /*projectCityField = getCityCombo();
         binder.bind(projectCityField, P_CITY);
         projectCityField.setRequired(true);
@@ -1012,7 +1028,7 @@ public class CreateProposalsView extends Panel implements View {
         container.setBeanIdProperty(LookupItem.TITLE);
         container.addAll(list);
 
-        ComboBox select = new ComboBox("Project City");
+        ComboBox select = new ComboBox("Region");
         select.setWidth("300px");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
@@ -1087,6 +1103,7 @@ public class CreateProposalsView extends Panel implements View {
         crmId = binder.buildAndBind("CRM #", CRM_ID);
         crmId.setRequired(true);
         ((TextField) crmId).setNullRepresentation("");
+        crmId.setReadOnly(true);
         formLayoutRight.addComponent(crmId);
 
         quotenew = new TextField("Quotation #");

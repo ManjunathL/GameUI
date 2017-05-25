@@ -293,7 +293,7 @@ public class MDW extends Window {
         width.setReadOnly(true);
         depth.setReadOnly(true);
         carcassMaterialSelection.setReadOnly(true);
-        remarks.setReadOnly(true);
+        //remarks.setReadOnly(true);
         finishTypeSelection.setReadOnly(true);
         shutterFinishSelection.setReadOnly(true);
         colorCombo.setReadOnly(true);
@@ -555,23 +555,26 @@ public class MDW extends Window {
            formLayout.addComponent(importedModule);
        }
 
-        handlequantity=new TextField("Handle Quantity");
-        binder.bind(handlequantity,Module.HANDLE_QUANTITY);
-        handlequantity.setRequired(false);
-        handlequantity.addValueChangeListener(this::handlequantitychanged);
-        formLayout.addComponent(handlequantity);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            handlequantity=new TextField("Handle Quantity");
+            binder.bind(handlequantity,Module.HANDLE_QUANTITY);
+            handlequantity.setRequired(false);
+            handlequantity.addValueChangeListener(this::handlequantitychanged);
+            formLayout.addComponent(handlequantity);
 
-        knobqquantity=new TextField("Knob Quantity");
-        binder.bind(knobqquantity,Module.KNOB_QUANTITY);
-        knobqquantity.setRequired(false);
-        knobqquantity.addValueChangeListener(this::knobquantitychanged);
-        formLayout.addComponent(knobqquantity);
+            knobqquantity=new TextField("Knob Quantity");
+            binder.bind(knobqquantity,Module.KNOB_QUANTITY);
+            knobqquantity.setRequired(false);
+            knobqquantity.addValueChangeListener(this::knobquantitychanged);
+            formLayout.addComponent(knobqquantity);
 
-        thicknessfield=gethandlethickness();
-        binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
-        thicknessfield.setRequired(false);
-        thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
-        formLayout.addComponent(thicknessfield);
+            thicknessfield=gethandlethickness();
+            binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
+            thicknessfield.setRequired(false);
+            thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
+            formLayout.addComponent(thicknessfield);
+        }
 
         /*this.remarks = new TextField();
         this.remarks.setCaption("Remarks");
@@ -589,28 +592,16 @@ public class MDW extends Window {
         HorizontalLayout vlayout=new HorizontalLayout();
 
         OptionGroup single = new OptionGroup("");
-        single.addItems("Remarks", "Custom");
+        single.addItems("General Remarks", "Custom Remarks");
         binder.bind(single,Module.CUSTOM_CHECK);
-        single.select("Remarks");
-        single.setImmediate(true);
-
+        if (module.getCustomCheck()== null)
+        {
+            single.select("General Remarks");
+            single.setImmediate(true);
+        }
         single.addStyleName("checkboxstyle");
+        single.addValueChangeListener(this::customcheckchanged);
         vlayout.addComponent(single);
-
-        /*vlayout.setSpacing(true);
-        CheckBox checkBox=new CheckBox("Remarks");
-        binder.bind(checkBox,Module.CUSTOM_CHECK);
-        checkBox.addStyleName("checkboxstyle");
-        checkBox.addValueChangeListener(this::checkcustomcheck);
-        vlayout.addComponent(checkBox);
-        vlayout.setSpacing(true);
-
-        CheckBox checkBox1=new CheckBox("Custom");
-        //binder.bind(checkBox,Module.CUSTOM_CHECK);
-        checkBox1.addStyleName("checkboxstyle");
-        checkBox1.addValueChangeListener(this::checkcustomcheck);
-        vlayout.addComponent(checkBox1);
-        vlayout.setSpacing(true);*/
 
         this.customText=new TextField();
         customText.addStyleName("text-area-size1");
@@ -621,6 +612,14 @@ public class MDW extends Window {
 
         vlayout.addComponent(customText);
         return vlayout;
+    }
+    private void customcheckchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        module.setCustomCheck(valueChangeEvent.getProperty().getValue().toString());
+        if(valueChangeEvent.getProperty().getValue()=="Custom")
+        {
+            customText.setValue(" ");
+        }
     }
     private void moduleSelectionChangedEvent(Property.ValueChangeEvent valueChangeEvent) {
 
@@ -670,8 +669,11 @@ public class MDW extends Window {
             this.description.setValue(description);
         }
 
-        this.remarks.setReadOnly(false);
-        this.remarks.setValue(description);
+        /*this.remarks.setReadOnly(false);
+        this.remarks.setValue(description);*/
+
+        /*this.customText.setReadOnly(false);
+        this.customText.setValue(description);*/
 
         module.setImportStatus(Module.ImportStatusType.m.name());
         module.setUnitType(mgModule.getUnitType());
@@ -680,45 +682,51 @@ public class MDW extends Window {
         LOG.debug("Module b4 price calc :" + module.toString());
         this.dontCalculatePriceNow = false;
 
-        List<AccessoryDetails> accDetailsforHandle=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"HL");
-        if(accDetailsforHandle.size()==0)
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
-            handlequantity.setValue(" ");
-        }else
-        {
-            for(AccessoryDetails a:accDetailsforHandle)
-            {
-                LOG.info("handle quantity " +a);
-                module.setHandleQuantity(Integer.valueOf(a.getQty()));
-                handlequantity.setValue(a.getQty());
-            }
-        }
+            this.customText.setReadOnly(false);
+            this.customText.setValue(description);
 
-        List<AccessoryDetails> accDetailsforKnob=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"K");
-        if(accDetailsforKnob.size()==0)
-        {
-            knobqquantity.setValue("");
-        }else {
-            for (AccessoryDetails a : accDetailsforKnob) {
-                module.setKnobQuantity(Integer.valueOf(a.getQty()));
-                knobqquantity.setValue(a.getQty());
-            }
-        }
-        List<MGModule> handlePresent=proposalDataProvider.checkHandlePresent(module.getMgCode());
-        for(MGModule m:handlePresent)
-        {
-            if(m.getHandleMandatory().equals("Yes"))
+            List<AccessoryDetails> accDetailsforHandle=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"HL");
+            if(accDetailsforHandle.size()==0)
             {
-                module.setHandlePresent(m.getHandleMandatory());
-                hPresent=m.getHandleMandatory();
-                handlequantity.setRequired(true);
-                thicknessfield.setRequired(true);
-            }
-            if(m.getKnobMandatory().equals("Yes"))
+                handlequantity.setValue("0");
+            }else
             {
-                module.setKnobPresent(m.getKnobMandatory());
-                knobPresent=m.getKnobMandatory();
-                knobqquantity.setRequired(true);
+                for(AccessoryDetails a:accDetailsforHandle)
+                {
+                    LOG.info("handle quantity " +a);
+                    module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                    handlequantity.setValue(a.getQty());
+                }
+            }
+
+            List<AccessoryDetails> accDetailsforKnob=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"K");
+            if(accDetailsforKnob.size()==0)
+            {
+                knobqquantity.setValue("0");
+            }else {
+                for (AccessoryDetails a : accDetailsforKnob) {
+                    module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                    knobqquantity.setValue(a.getQty());
+                }
+            }
+            List<MGModule> handlePresent=proposalDataProvider.checkHandlePresent(module.getMgCode());
+            for(MGModule m:handlePresent)
+            {
+                if(m.getHandleMandatory().equals("Yes"))
+                {
+                    module.setHandlePresent(m.getHandleMandatory());
+                    hPresent=m.getHandleMandatory();
+                    handlequantity.setRequired(true);
+                    thicknessfield.setRequired(true);
+                }
+                if(m.getKnobMandatory().equals("Yes"))
+                {
+                    module.setKnobPresent(m.getKnobMandatory());
+                    knobPresent=m.getKnobMandatory();
+                    knobqquantity.setRequired(true);
+                }
             }
         }
         refreshPrice();
@@ -1384,6 +1392,20 @@ public class MDW extends Window {
                     return;
                 }
             }
+            //LOG.info("thickness field value " +thicknessfield.getValue().toString());
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+            {
+                if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandleThickness(), "Yes"))
+                {
+                    NotificationUtil.showNotification("Please select thickness before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+                if(Objects.equals(module.getCustomCheck(),"Custom Remarks") && Objects.equals(customText.getValue(), "") )
+                {
+                        NotificationUtil.showNotification("Custom Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                }
+            }
 
             if(module.getDepth()== 0 || module.getHeight()==0 || module.getWidth() == 0)
             {
@@ -1690,6 +1712,7 @@ public class MDW extends Window {
     }
     private void thicknessfieldchanged(Property.ValueChangeEvent valueChangeEvent)
     {
+        module.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
         List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",module.getHandleType(),module.getHandleFinish(),thicknessfield.getValue().toString());
         for(HandleMaster h:handleMasters)
         {

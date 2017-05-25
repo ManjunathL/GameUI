@@ -761,19 +761,20 @@ public class CustomizedProductDetailsWindow extends Window {
             horizontalLayout.addComponent(jobcardButton);
 //            footer.setComponentAlignment(jobcardButton, Alignment.TOP_RIGHT);
 
-           /* Button prodSpecButton = new Button("Production Specification&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            prodSpecButton.setCaptionAsHtml(true);
-            prodSpecButton.setIcon(FontAwesome.DOWNLOAD);
-            prodSpecButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-            prodSpecButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-            prodSpecButton.addStyleName(ValoTheme.BUTTON_SMALL);
-            prodSpecButton.setWidth("200px");
+           /* Button marginButton = new Button("Margin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            marginButton.setCaptionAsHtml(true);
+            marginButton.setIcon(FontAwesome.DOWNLOAD);
+            marginButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+            marginButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+            marginButton.addStyleName(ValoTheme.BUTTON_SMALL);
+            soExtractButton.setWidth("100px");
 
 
-            StreamResource prodSpecResource = createProdSpecResource();
-            FileDownloader prodSpecDownloader = new FileDownloader(prodSpecResource);
-            prodSpecDownloader.extend(prodSpecButton);
-            horizontalLayout.addComponent(prodSpecButton);*/
+            StreamResource marginSheetResource = createMarginSheetResource();
+            FileDownloader marginSheetDownloader = new FileDownloader(marginSheetResource);
+            marginSheetDownloader.extend(marginButton);
+            footer.addComponent(marginButton);
+            footer.setComponentAlignment(marginButton, Alignment.TOP_RIGHT);*/
         }
 
 
@@ -869,8 +870,7 @@ public class CustomizedProductDetailsWindow extends Window {
             knobImage.setSource(new ExternalResource(product.getKnobImage()));
         }
         knobImage.setHeight("65px");
-        knobImage.setWidth("120px");
-        knobImage.addStyleName("knobimagestyle");
+        knobImage.setWidth("200px");
         knobImage.setCaption(null);
         knobImage.setImmediate(true);
         verticalLayout.addComponent(knobImage);
@@ -1638,16 +1638,16 @@ public class CustomizedProductDetailsWindow extends Window {
         return new StreamResource(source, "JobCard.xlsx");
     }
 
-   /* private StreamResource createProdSpecResource() {
+    private StreamResource createMarginSheetResource() {
         StreamResource.StreamSource source = () -> {
 
             prepareProductAndAddonObject();
 
             if (this.productAndAddonSelection.getProductIds().size() == 1) {
-                String prodSpecFile = proposalDataProvider.getProdSpecFile(this.productAndAddonSelection);
+                String jobcardFile = proposalDataProvider.getMarginSheet(this.productAndAddonSelection);
                 InputStream input = null;
                 try {
-                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(prodSpecFile)));
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(jobcardFile)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -1656,8 +1656,8 @@ public class CustomizedProductDetailsWindow extends Window {
                 return null;
             }
         };
-        return new StreamResource(source, "ProductionSpecification.xlsx");
-    }*/
+        return new StreamResource(source, "MarginSheet.xlsx");
+    }
 
     private void prepareProductAndAddonObject() {
         this.productAndAddonSelection = new ProductAndAddonSelection();
