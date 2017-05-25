@@ -616,7 +616,7 @@ public class MDW extends Window {
     private void customcheckchanged(Property.ValueChangeEvent valueChangeEvent)
     {
         module.setCustomCheck(valueChangeEvent.getProperty().getValue().toString());
-        if(valueChangeEvent.getProperty().getValue()=="Custom")
+        if(valueChangeEvent.getProperty().getValue()=="Custom Remarks")
         {
             customText.setValue(" ");
         }

@@ -143,7 +143,7 @@ public class CRMsearchWindow extends Window
 
         GridCellFilter filter = new GridCellFilter(crmgrid);
 
-        filter.setTextFilter(Profile.OPPORTUNITY_ID,true,true);
+        filter.setTextFilter(Profile.CRM_ID,true,true);
         filter.setTextFilter(Profile.FIRST_NAME,true,false);
         filter.setTextFilter(Profile.CUSTOMER_EMAIL,true,true);
         filter.setTextFilter(Profile.CUSTOMER_PHONE,true,false);
