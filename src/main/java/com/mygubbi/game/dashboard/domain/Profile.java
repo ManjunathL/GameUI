@@ -25,8 +25,14 @@ public class Profile implements Cloneable
     public static final String SALES_EMAIL="salesExecUserId";
     public static final String SALES_NAME="salesExecName";
     public static final String SALES_MOBILE="salesExecMobile";
-    private ArrayList<ProfileJSON> profile = new ArrayList<>();
+    public static final String PROFILE="profile";
+    public static final String ADDRESS="address";
+    public static final String PROJECT_NAME="projectName";
+    public static final String PROPERTY_ADDRESS_CITY="propertyAddressCity";
 
+    public String address;
+    public String projectName;
+    public String propertyAddressCity;
     private String crmId;
     private String mobile;
     private String displayName;
@@ -42,8 +48,9 @@ public class Profile implements Cloneable
     private String salesExecUserId;
     private String salesExecName;
     private String salesExecMobile;
-
-
+    private String profile;
+    private List<CompleteProfile> completeProfile = new ArrayList<>();
+    //private String completeProfile;
 
     public String getCrmId() {
         return crmId;
@@ -165,19 +172,52 @@ public class Profile implements Cloneable
         this.opportunityId = opportunityId;
     }
 
-    public ArrayList<ProfileJSON> getProfile() {
+    public String getProfile() {
         return profile;
     }
 
-    public void setProfile(ArrayList<ProfileJSON> profile) {
+    public void setProfile(String profile) {
         this.profile = profile;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getPropertyAddressCity() {
+        return propertyAddressCity;
+    }
+
+    public void setPropertyAddressCity(String propertyAddressCity) {
+        this.propertyAddressCity = propertyAddressCity;
+    }
+
+    public List<CompleteProfile> getCompleteProfile() {
+        return completeProfile;
+    }
+
+    public void setCompleteProfile(List<CompleteProfile> completeProfile) {
+        this.completeProfile = completeProfile;
     }
 
     @Override
     public String toString() {
         return "Profile{" +
-                "city='" + city + '\'' +
-                ", profile=" + profile +
+                "address='" + address + '\'' +
+                ", projectName='" + projectName + '\'' +
+                ", propertyAddressCity='" + propertyAddressCity + '\'' +
                 ", crmId='" + crmId + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", displayName='" + displayName + '\'' +
@@ -185,6 +225,7 @@ public class Profile implements Cloneable
                 ", opportunityId='" + opportunityId + '\'' +
                 ", email='" + email + '\'' +
                 ", first_name='" + first_name + '\'' +
+                ", city='" + city + '\'' +
                 ", last_name='" + last_name + '\'' +
                 ", designerUserId='" + designerUserId + '\'' +
                 ", designerName='" + designerName + '\'' +
@@ -192,6 +233,8 @@ public class Profile implements Cloneable
                 ", salesExecUserId='" + salesExecUserId + '\'' +
                 ", salesExecName='" + salesExecName + '\'' +
                 ", salesExecMobile='" + salesExecMobile + '\'' +
+                ", profile='" + profile + '\'' +
+                ", completeProfile=" + completeProfile +
                 '}';
     }
 

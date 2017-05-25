@@ -14,6 +14,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.server.Authentication;
 import org.vaadin.gridutil.cell.GridCellFilter;
 
 import java.util.*;
@@ -99,14 +100,14 @@ public class CRMsearchWindow extends Window
                         proposalHeader.setTitle(profile1.getDisplayName());
                         proposalHeader.setCemail(profile1.getEmail());
                         proposalHeader.setCphone1(profile1.getMobile());
-                        List<LookupItem> lookupItems=proposalDataProvider.getLookupItems("region");
+                        /*List<LookupItem> lookupItems=proposalDataProvider.getLookupItems("region");
                         for(LookupItem l:lookupItems)
                         {
                             if(l.getCode().equals(profile1.getCity()))
                             {
                                 proposalHeader.setPcity(l.getTitle());
                             }
-                        }
+                        }*/
                         //proposalHeader.setPcity(profile1.getCity());
                         //proposalHeader.setPcity("my city");
                         proposalHeader.setCname(profile1.getFirst_name());
@@ -116,6 +117,13 @@ public class CRMsearchWindow extends Window
                         proposalHeader.setDesignerEmail(profile1.getDesignerUserId());
                         proposalHeader.setDesignerName(profile1.getDesignerName());
                         proposalHeader.setDesignerPhone(profile1.getDesignerMobile());
+                        for(CompleteProfile cp : profile1.getCompleteProfile())
+                        {
+                            //LOG.info("complete profile" +profile.getCompleteProfile());
+                            proposalHeader.setCaddress1(cp.getAddress());
+                            proposalHeader.setProjectName(cp.getProjectName());
+                            proposalHeader.setPaddress1(cp.getPropertyAddressCity());
+                        }
                         boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
                         LOG.info("proposal create value in crm search window " +success);
                         LOG.info("proposal header in crm window after save in crm search window" +proposalHeader);
@@ -144,9 +152,8 @@ public class CRMsearchWindow extends Window
         verticalLayout.setSpacing(true);
         verticalLayout.addComponent(crmgrid);
 
-        UserProfile userProfile=new UserProfile();
-        userProfile.setCrmId("SAL-1705-001505");
-        List<UserProfile> userProfiles=proposalDataProvider.getUserProfileDetails("SAL-1705-001505");
+        //UserProfile userProfile=new UserProfile();
+        List<UserProfile> userProfiles=proposalDataProvider.getUserProfileDetails("SAL-1705-221656");
         LOG.info("$$$" +userProfiles.toString());
 
         for(UserProfile u:userProfiles)
@@ -170,10 +177,16 @@ public class CRMsearchWindow extends Window
                 p.setSalesExecUserId(profile.getSalesExecUserId());
                 p.setSalesExecName(profile.getSalesExecName());
                 p.setSalesExecMobile(profile.getSalesExecMobile());
+                for(CompleteProfile cp : profile.getCompleteProfile())
+                {
+                    LOG.info("complete profile" +profile.getCompleteProfile());
+                    p.setAddress(cp.getAddress());
+                    p.setPropertyAddressCity(cp.getPropertyAddressCity());
+                    p.setProjectName(cp.getProjectName());
+                }
                 profiles.add(p);
                 LOG.info("created profile " +p);
             }
-            //profiles.add((Profile)u.getProfile());
             LOG.info("profile " +profiles.toString());
         }
         userprofilecontainer.addAll(profiles);

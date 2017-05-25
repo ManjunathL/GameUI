@@ -76,6 +76,7 @@ public class UserProfile
     public String toString() {
         return "UserProfile{" +
                 "active='" + active + '\'' +
+                ", id='" + id + '\'' +
                 ", fbid='" + fbid + '\'' +
                 ", email='" + email + '\'' +
                 ", crmId='" + crmId + '\'' +

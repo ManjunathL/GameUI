@@ -822,6 +822,8 @@ public class CustomizedProductDetailsWindow extends Window {
                     module.setHandleFinish(product.getHandleFinish());
                     module.setKnobType(product.getKnobType());
                     module.setKnobFinish(product.getKnobFinish());
+                    module.setGlassType(product.getGlass());
+                    module.setHingeType(product.getHinge());
                     MDW.open(module, product, 0, proposalVersion, proposalHeader);
                 }
         });
