@@ -17,6 +17,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -54,6 +55,10 @@ public class ProductLibraryInfo extends Window
     private Field<?> productdescriptionField;
     private Field<?> categoryField;
     private ComboBox collectionField;
+    private TextField width;
+    private TextField length;
+    private TextField height;
+    private Field<?> productLocationField;
 
     TextField productdescription;
     TextField productTitle;
@@ -124,6 +129,9 @@ public class ProductLibraryInfo extends Window
         categoryField.setReadOnly(true);
         formLayoutLeft.addComponent(categoryField);
 
+        Component size=getDimensionsPanel();
+        formLayoutLeft.addComponent(size);
+
         List<ProductLibraryMaster> productLibraryMasters=proposalDataProvider.getProductsubcategory(product.getProductCategoryCode());
         for(ProductLibraryMaster productLibraryMaster:productLibraryMasters)
         {
@@ -144,6 +152,12 @@ public class ProductLibraryInfo extends Window
         productdescriptionField.setRequired(true);
         formLayoutLeft.addComponent(productdescriptionField);
         formLayoutLeft.addComponent(getQuoteUploadControl());
+
+        productLocationField=getProductLocation();
+        binder.buildAndBind("Product Location",ProductLibrary.PRODUCT_LOCATION);
+        ((TextField) productLocationField).setNullRepresentation("");
+        productLocationField.setRequired(true);
+        formLayoutLeft.addComponent(productLocationField);
 
         return formLayoutLeft;
     }
@@ -233,9 +247,9 @@ public class ProductLibraryInfo extends Window
                 product.setKnobImage(product.getKnobImage());
                 productLibrary.setKnobType(product.getKnobType());
                 productLibrary.setKnobFinish(product.getKnobFinish());
-
+                productLibrary.setProductLocation(productLocationField.getValue().toString());
                 boolean success = proposalDataProvider.InsertProductLibrary(productLibrary);
-                LOG.info("field vale " +productdescriptionField.getValue());
+                LOG.info("field vale " +productLocationField.getValue() + " " +productLibrary.getProductLocation());
                 LOG.info("success in " + success);
                 close();
             }
@@ -333,6 +347,14 @@ public class ProductLibraryInfo extends Window
         });
         return quoteUploadCtrl;
     }
+
+    private TextField getProductLocation()
+    {
+        TextField productLocation=new TextField("Product Location");
+       // productLocation.setValue(product.getProductLocation());
+
+        return productLocation;
+    }
     private boolean commitValues() {
         try {
             binder.commit();
@@ -344,5 +366,47 @@ public class ProductLibraryInfo extends Window
     }
     private String getUploadBasePath() {
         return proposal.getProposalHeader().getFolderPath();
+    }
+    private HorizontalLayout getDimensionsPanel() {
+        HorizontalLayout horizontalLayoutDimensions = new HorizontalLayout();
+        horizontalLayoutDimensions.setSizeFull();
+        horizontalLayoutDimensions.setMargin(new MarginInfo(false,true,false,true));
+        horizontalLayoutDimensions.setCaption("Dimensions");
+        horizontalLayoutDimensions.setSpacing(false);
+
+        FormLayout formLayoutDepth = new FormLayout();
+        formLayoutDepth.setSizeFull();
+        formLayoutDepth.setMargin(new MarginInfo(false,false,false,false));
+        this.length = new TextField();
+        this.length.setCaption("Length");
+        this.length.setWidth("60px");
+        this.length.addStyleName(Runo.TEXTFIELD_SMALL);
+        binder.bind(this.length,productLibrary.LENGTH);
+        formLayoutDepth.addComponent(length);
+        horizontalLayoutDimensions.addComponent(formLayoutDepth);
+
+        FormLayout formLayoutWidth = new FormLayout();
+        formLayoutWidth.setSizeFull();
+        formLayoutWidth.setMargin(new MarginInfo(false,false,false,false));
+        this.width = new TextField();
+        this.width.setCaption("Width");
+        this.width.setWidth("60px");
+        this.width.addStyleName(Runo.TEXTFIELD_SMALL);
+        binder.bind(this.width,ProductLibrary.WIDTH);
+        formLayoutWidth.addComponent(width);
+        horizontalLayoutDimensions.addComponent(formLayoutWidth);
+
+        FormLayout formLayoutHeight = new FormLayout();
+        formLayoutHeight.setSizeFull();
+        formLayoutHeight.setMargin(new MarginInfo(false,false,false,false));
+        this.height = new TextField();
+        this.height.setCaption("Height");
+        this.height.setWidth("60px");
+        this.height.addStyleName(Runo.TEXTFIELD_SMALL);
+        binder.bind(this.height, ProductLibrary.HEIGHT);
+        formLayoutHeight.addComponent(height);
+        horizontalLayoutDimensions.addComponent(formLayoutHeight);
+
+        return horizontalLayoutDimensions;
     }
 }

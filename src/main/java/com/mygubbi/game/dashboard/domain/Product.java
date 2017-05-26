@@ -60,6 +60,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String KNOB_Finish="knobFinish";
     public static final String HANDLE_IMAGE="handleImage";
     public static final String KNOB_IMAGE="knobImage";
+    public static final String PRODUCT_LOCATION="productLocation";
 
     private int id;
     private int proposalId;
@@ -111,6 +112,7 @@ public class Product implements FileAttachmentsHolder {
     private double manufactureAmount;
     private String handleImage;
     private String knobImage;
+    private String productLocation;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -531,6 +533,10 @@ public class Product implements FileAttachmentsHolder {
         this.knobImage = knobImage;
     }
 
+    public String getProductLocation() {    return productLocation;  }
+
+    public void setProductLocation(String productLocation) {  this.productLocation = productLocation;  }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -555,8 +561,7 @@ public class Product implements FileAttachmentsHolder {
     @Override
     public String toString() {
         return "Product{" +
-                "addons=" + addons +
-                ", id=" + id +
+                "id=" + id +
                 ", proposalId=" + proposalId +
                 ", fromVersion='" + fromVersion + '\'' +
                 ", title='" + title + '\'' +
@@ -603,7 +608,11 @@ public class Product implements FileAttachmentsHolder {
                 ", margin=" + margin +
                 ", amountWoTax=" + amountWoTax +
                 ", manufactureAmount=" + manufactureAmount +
+                ", handleImage='" + handleImage + '\'' +
+                ", knobImage='" + knobImage + '\'' +
+                ", productLocation='" + productLocation + '\'' +
                 ", modules=" + modules +
+                ", addons=" + addons +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';
     }

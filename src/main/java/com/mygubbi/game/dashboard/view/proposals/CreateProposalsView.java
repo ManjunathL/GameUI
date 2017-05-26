@@ -600,7 +600,7 @@ public class CreateProposalsView extends Panel implements View {
 
         List<Product> products = proposalDataProvider.getProposalProducts(proposalHeader.getId());
 
-        if ((!(proposalHeader.getQuoteNoNew() == null) && !(products.size()==0))) {
+        if ((proposalHeader.getQuoteNoNew() == null) && !(products.size()==0)) {
             proposalDataProvider.updatePriceForNewProposal(proposalHeader);
         }
 

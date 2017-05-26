@@ -63,6 +63,10 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String KNOB_Finish="knobFinish";
     public static final String HANDLE_IMAGE="handleImage";
     public static final String KNOB_IMAGE="knobImage";
+    public static final String WIDTH="width";
+    public static final String LENGTH="length";
+    public static final String HEIGHT="height";
+    public static final String PRODUCT_LOCATION = "productLocation";
 
 
     private int id;
@@ -117,6 +121,10 @@ public class ProductLibrary implements FileAttachmentsHolder
     private int knobThickness;
     private String handleImage;
     private String knobImage;
+    private int width;
+    private int length;
+    private int height;
+    private String productLocation;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -552,6 +560,35 @@ public class ProductLibrary implements FileAttachmentsHolder
         this.knobImage = knobImage;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public String getProductLocation() {  return productLocation; }
+
+    public void setProductLocation(String productLocation) {  this.productLocation = productLocation; }
+
+
     @Override
     public List<FileAttachment> getFileAttachmentList() {
         return null;
@@ -560,8 +597,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     @Override
     public String toString() {
         return "ProductLibrary{" +
-                "addons=" + addons +
-                ", id=" + id +
+                "id=" + id +
                 ", proposalId=" + proposalId +
                 ", fromVersion='" + fromVersion + '\'' +
                 ", title='" + title + '\'' +
@@ -613,7 +649,12 @@ public class ProductLibrary implements FileAttachmentsHolder
                 ", knobThickness=" + knobThickness +
                 ", handleImage='" + handleImage + '\'' +
                 ", knobImage='" + knobImage + '\'' +
+                ", width='" + width + '\'' +
+                ", length='" + length + '\'' +
+                ", height='" + height + '\'' +
+                ", productLocation='" + productLocation + '\'' +
                 ", modules=" + modules +
+                ", addons=" + addons +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';
     }

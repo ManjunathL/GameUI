@@ -783,6 +783,17 @@ public class ProposalDataProvider {
         }
     }
 
+   /* public String getProdSpecFile(ProductAndAddonSelection productAndAddonSelection) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
+            JSONObject obj = dataProviderMode.postResource("proposal/downloadprodspecfile", productSelectionsJson);
+            return obj.getString("prodSpecFile");
+        } catch (JSONException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }*/
+
     public String getJobCardFile(ProductAndAddonSelection productAndAddonSelection) {
         try {
             String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
