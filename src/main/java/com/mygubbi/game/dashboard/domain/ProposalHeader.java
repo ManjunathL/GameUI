@@ -51,6 +51,7 @@ public class ProposalHeader {
     public static final String PRICE_DATE = "priceDate";
     public static final String MAX_DISCOUNTPERCENTAGE="maxDiscountPercentage";
     public static final String BEFORE_PRODUCTION_SPECIFICATION="beforeProductionSpecification";
+    public static final String PACKAGE_FLAG="packageFlag";
 
     private int id;
     private String quoteNoNew;
@@ -91,6 +92,7 @@ public class ProposalHeader {
     private java.sql.Date priceDate;
     private double maxDiscountPercentage;
     private String beforeProductionSpecification;
+    private String packageFlag;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -413,6 +415,14 @@ public class ProposalHeader {
         this.beforeProductionSpecification = beforeProductionSpecification;
     }
 
+    public String getPackageFlag() {
+        return packageFlag;
+    }
+
+    public void setPackageFlag(String packageFlag) {
+        this.packageFlag = packageFlag;
+    }
+
     @Override
     public String toString() {
         return "ProposalHeader{" +
@@ -455,6 +465,7 @@ public class ProposalHeader {
                 ", priceDate=" + priceDate +
                 ", maxDiscountPercentage=" + maxDiscountPercentage +
                 ", beforeProductionSpecification='" + beforeProductionSpecification + '\'' +
+                ", packageFlag='" + packageFlag + '\'' +
                 '}';
     }
 }

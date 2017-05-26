@@ -124,6 +124,7 @@ public class MDW extends Window {
     private ComboBox thickness;
     private ComboBox knobthickness;
     private TextField customText;
+    OptionGroup single;
     private String hPresent;
     private String knobPresent;
 
@@ -247,7 +248,7 @@ public class MDW extends Window {
         this.allowDimensionChangesForModule();
         updateValues();
         handleState();
-
+        handlepackage();
         this.dontCalculatePriceNow = false;
 
         this.refreshPrice();
@@ -591,7 +592,7 @@ public class MDW extends Window {
     {
         HorizontalLayout vlayout=new HorizontalLayout();
 
-        OptionGroup single = new OptionGroup("");
+        single = new OptionGroup("");
         single.addItems("General Remarks", "Custom Remarks");
         binder.bind(single,Module.CUSTOM_CHECK);
         if (module.getCustomCheck()== null)
@@ -691,6 +692,8 @@ public class MDW extends Window {
             if(accDetailsforHandle.size()==0)
             {
                 handlequantity.setValue("0");
+                handlequantity.setRequired(false);
+                thicknessfield.setRequired(false);
             }else
             {
                 for(AccessoryDetails a:accDetailsforHandle)
@@ -705,6 +708,7 @@ public class MDW extends Window {
             if(accDetailsforKnob.size()==0)
             {
                 knobqquantity.setValue("0");
+                knobqquantity.setRequired(false);
             }else {
                 for (AccessoryDetails a : accDetailsforKnob) {
                     module.setKnobQuantity(Integer.valueOf(a.getQty()));
@@ -1757,6 +1761,46 @@ public class MDW extends Window {
     {
         handlequantity.setValue("");
         knobqquantity.setValue("");
+    }
+    private void handlepackage()
+    {
+        if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+        {
+            moduleCategory.setReadOnly(true);
+            moduleSelection.setReadOnly(true);
+            handlequantity.setReadOnly(true);
+            knobqquantity.setReadOnly(true);
+            carcassMaterialSelection.setReadOnly(true);
+            finishTypeSelection.setReadOnly(true);
+            shutterFinishSelection.setReadOnly(true);
+            thicknessfield.setReadOnly(true);
+            //remarks.setReadOnly(true);
+            customText.setReadOnly(true);
+            height.setReadOnly(true);
+            width.setReadOnly(true);
+            depth.setReadOnly(true);
+            description.setReadOnly(true);
+            exposedBack.setReadOnly(true);
+            exposedBottom.setReadOnly(true);
+            exposedOpen.setReadOnly(true);
+            exposedLeft.setReadOnly(true);
+            exposedRight.setReadOnly(true);
+            exposedTop.setReadOnly(true);
+            accessoryPack1.setReadOnly(true);
+            accessoryPack2.setReadOnly(true);
+            accessoryPack3.setReadOnly(true);
+            addons11.setReadOnly(true);
+            addons12.setReadOnly(true);
+            addons13.setReadOnly(true);
+            addons21.setReadOnly(true);
+            addons22.setReadOnly(true);
+            addons23.setReadOnly(true);
+            addons31.setReadOnly(true);
+            addons32.setReadOnly(true);
+            addons33.setReadOnly(true);
+            single.setReadOnly(true);
+        }
+
     }
 }
 

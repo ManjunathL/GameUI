@@ -185,6 +185,7 @@ public class ProductAndAddons extends Window
         //updateTotal();
         calculateTotal();
         handleState();
+        handlepackage();
     }
 
 
@@ -935,6 +936,12 @@ public class ProductAndAddons extends Window
                     Notification.show("Cannot copy on Published, Confirmed and Locked versions");
                     return;
                 }
+
+                if(("Yes").equals(proposalHeader.getPackageFlag()))
+                {
+                    Notification.show("Cannot copy Products");
+                    return;
+                }
                 Product p = (Product) rendererClickEvent.getItemId();
 
                 productContainer.removeAllItems();
@@ -1300,27 +1307,13 @@ public class ProductAndAddons extends Window
     }
     private void checkProductsAndAddonsAvailable(Button.ClickEvent clickEvent) {
 
-            if (proposal.getProducts().isEmpty() )
+            if (proposal.getProducts().isEmpty() && proposal.getAddons().isEmpty())
             {
                 NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
             }
-           /* else
-            {
-                LOG.info("else part");
-                List<Product> product=proposal.getProducts();
-                for(Product product1:product)
-                {
-                    LOG.info("product" +product1);
-                    if(product1.getManualSeq()==0)
-                    {
-                        NotificationUtil.showNotification("Manual sequence cannot be zero", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-                        return false;
-                    }
-                }
-            }*/
-            if (proposal.getAddons().isEmpty()) {
+           /* if (proposal.getAddons().isEmpty()) {
                 NotificationUtil.showNotification("No Addons found.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-            }
+            }*/
     }
     private StringToDoubleConverter getAmountConverter() {
         return new StringToDoubleConverter() {
@@ -1410,6 +1403,11 @@ public class ProductAndAddons extends Window
     private void submit(Button.ClickEvent clickEvent) {
         if(proposalHeader.getMaxDiscountPercentage()>=Double.valueOf(discountPercentage.getValue())) {
             try {
+                if(proposalVersion.getAmount()== 0)
+                {
+                    NotificationUtil.showNotification("Total amount is zero,Cannot publish", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
                 binder.commit();
 
                 LOG.info("value in submit" + totalWithoutDiscount.getValue());
@@ -1946,4 +1944,15 @@ public class ProductAndAddons extends Window
         }
     }
 
+    private void handlepackage()
+    {
+        if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+        {
+            addKitchenOrWardrobeButton.setEnabled(false);
+            addFromProductLibrary.setEnabled(false);
+            addFromCatalogueButton.setEnabled(false);
+            /*addonAddButton.setEnabled(true);
+            customAddonAddButton.setEnabled(true);*/
+        }
+    }
 }

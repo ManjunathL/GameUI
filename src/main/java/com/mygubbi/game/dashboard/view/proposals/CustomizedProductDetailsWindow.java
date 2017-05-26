@@ -220,6 +220,7 @@ public class CustomizedProductDetailsWindow extends Window {
         handleState();
         updatePsftCosts();
         updateTotalAmount();
+        handlepackage();
 
     }
 
@@ -1111,6 +1112,12 @@ public class CustomizedProductDetailsWindow extends Window {
                 if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()) || ("DSO").equals(proposalVersion.getInternalStatus()) || ("PSO").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot copy on Published, Confirmed amd Locked versions");
+                    return;
+                }
+
+                if(("Yes").equals(proposalHeader.getPackageFlag()))
+                {
+                    Notification.show("Cannot copy modules");
                     return;
                 }
 
@@ -2009,6 +2016,8 @@ public class CustomizedProductDetailsWindow extends Window {
         handle.setReadOnly(true);
         knobType.setReadOnly(true);
         knob.setReadOnly(true);
+        hingesSelection.setReadOnly(true);
+        glassSelection.setReadOnly(true);
     }
     private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
@@ -2069,5 +2078,31 @@ public class CustomizedProductDetailsWindow extends Window {
             product.setKnobImage(h.getImagePath());
             knobImage.setSource(new ExternalResource(h.getImagePath()));
         }
+    }
+    private void handlepackage()
+    {
+        if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+        {
+            itemTitleField.setReadOnly(true);
+            productSelection.setReadOnly(true);
+            roomText.setReadOnly(true);
+            shutterDesign.setReadOnly(true);
+            baseCarcassSelection.setReadOnly(true);
+            wallCarcassSelection.setReadOnly(true);
+            finishTypeSelection.setReadOnly(true);
+            shutterFinishSelection.setReadOnly(true);
+            quoteUploadCtrl.setEnabled(false);
+            closeBtn.setCaption(CLOSE);
+            fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
+            fileAttachmentComponent.setReadOnly(true);
+            addModules.setEnabled(false);
+            handleType.setReadOnly(true);
+            handle.setReadOnly(true);
+            knobType.setReadOnly(true);
+            knob.setReadOnly(true);
+            hingesSelection.setReadOnly(true);
+            glassSelection.setReadOnly(true);
+        }
+
     }
 }

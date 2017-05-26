@@ -243,12 +243,13 @@ public class CreateProposalsView extends Panel implements View {
             {
                 projectCityField.setReadOnly(false);
                 quotenew.setReadOnly(false);
+                cancelButton.setVisible(true);
             }else
             {
                 projectCityField.setReadOnly(true);
                 quotenew.setReadOnly(true);
+                cancelButton.setVisible(false);
             }
-            cancelButton.setVisible(false);
             saveAndCloseButton.setVisible(true);
         }
         else
@@ -837,7 +838,7 @@ public class CreateProposalsView extends Panel implements View {
         customerNameField.setReadOnly(true);
         formLayoutLeft.addComponent(customerNameField);
 
-        customerAddressLine1 = binder.buildAndBind("Address Line 1", C_ADDRESS1);
+        customerAddressLine1 = binder.buildAndBind("Address Line", C_ADDRESS1);
         ((TextField) customerAddressLine1).setNullRepresentation("");
         customerAddressLine1.setReadOnly(true);
         formLayoutLeft.addComponent(customerAddressLine1);
@@ -856,7 +857,7 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) customerEmailField).setNullRepresentation("");
         customerEmailField.setReadOnly(true);
         formLayoutLeft.addComponent(customerEmailField);
-        customerNumberField1 = binder.buildAndBind("Phone 1", C_PHONE1);
+        customerNumberField1 = binder.buildAndBind("Phone", C_PHONE1);
         ((TextField) customerNumberField1).setNullRepresentation("");
         customerNumberField1.setReadOnly(true);
         formLayoutLeft.addComponent(customerNumberField1);
@@ -882,7 +883,7 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) projectName).setNullRepresentation("");
         projectName.setReadOnly(true);
         formLayoutRight.addComponent(projectName);
-        projectAddressLine1 = binder.buildAndBind("Address Line 1", P_ADDRESS1);
+        projectAddressLine1 = binder.buildAndBind("Address Line", P_ADDRESS1);
         ((TextField) projectAddressLine1).setNullRepresentation("");
         projectAddressLine1.setReadOnly(true);
         formLayoutRight.addComponent(projectAddressLine1);
@@ -1153,15 +1154,31 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.addComponent(projectCityField);
         projectCityField.addValueChangeListener(this::cityChanged);
 
-            maxDiscountPercentage = new TextField("Max Discount Percentage");
-            maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()));
-            formLayoutLeft.addComponent(maxDiscountPercentage);
+        maxDiscountPercentage = new TextField("Max Discount Percentage");
+        maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()));
+        formLayoutLeft.addComponent(maxDiscountPercentage);
 
         if(!(("admin").equals(role)) )
         {
             maxDiscountPercentage.setVisible(false);
         }
 
+        OptionGroup single = new OptionGroup("Package");
+        single.addItems("Yes", "No");
+        binder.bind(single,PACKAGE_FLAG);
+        if (proposalHeader.getPackageFlag()== null)
+        {
+            single.select("No");
+            single.setImmediate(true);
+        }
+        single.addStyleName("horizontal");
+        single.addValueChangeListener(this::packageselectionchanged);
+        formLayoutLeft.addComponent(single);
+
+        if(!(("admin").equals(role)) )
+        {
+            single.setVisible(false);
+        }
 
         return formLayoutLeft;
     }
@@ -1356,6 +1373,12 @@ public class CreateProposalsView extends Panel implements View {
     private void callWindow()
     {
         CRMsearchWindow.open(proposalHeader);
+    }
+
+
+    private void packageselectionchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        proposalHeader.setPackageFlag(valueChangeEvent.getProperty().getValue().toString());
     }
 }
 
