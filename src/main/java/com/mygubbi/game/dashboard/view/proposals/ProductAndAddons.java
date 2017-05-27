@@ -1951,8 +1951,9 @@ public class ProductAndAddons extends Window
             addKitchenOrWardrobeButton.setEnabled(false);
             addFromProductLibrary.setEnabled(false);
             addFromCatalogueButton.setEnabled(false);
-            /*addonAddButton.setEnabled(true);
-            customAddonAddButton.setEnabled(true);*/
+            discountAmount.setReadOnly(true);
+            discountPercentage.setReadOnly(true);
         }
     }
 }
+

@@ -435,6 +435,13 @@ public class CreateProposalsView extends Panel implements View {
             ProposalHeader proposalHeaderNew;
             proposalHeaderNew = new ProposalHeader();
             proposalHeaderNew = proposalDataProvider.createProposal();
+            if("Yes".equals(proposalHeader.getPackageFlag()))
+            {
+                proposalHeaderNew.setPackageFlag(proposalHeader.getPackageFlag());
+                proposalHeaderNew.setMaxDiscountPercentage(proposalHeader.getMaxDiscountPercentage());
+                proposalDataProvider.saveProposal(proposalHeaderNew);
+
+            }
 
             ProposalVersion copyVersion = new ProposalVersion();
 
