@@ -285,35 +285,38 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutLeft.addComponent(this.hingesSelection);
 
-        glassList=proposalDataProvider.getHinges("glass");
-        this.glassSelection=getHingesFilledComboBox("Glass",glassList,null);
-        glassSelection.setRequired(true);
-        binder.bind(glassSelection,GLASS_TYPE);
-        this.glassSelection.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, LookupItem>) this.glassSelection.getContainerDataSource()).addAll(glassList);
-        if(glassSelection.size()>0)
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
-            String code = StringUtils.isNotEmpty(product.getGlass()) ? product.getGlass() : (String) glassSelection.getItemIds().iterator().next();
-            glassSelection.setValue(code);
+            glassList=proposalDataProvider.getHinges("glass");
+            this.glassSelection=getHingesFilledComboBox("Glass",glassList,null);
+            glassSelection.setRequired(true);
+            binder.bind(glassSelection,GLASS_TYPE);
+            this.glassSelection.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, LookupItem>) this.glassSelection.getContainerDataSource()).addAll(glassList);
+            if(glassSelection.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getGlass()) ? product.getGlass() : (String) glassSelection.getItemIds().iterator().next();
+                glassSelection.setValue(code);
+            }
+            formLayoutLeft.addComponent(this.glassSelection);
+
+            handletitlelist=proposalDataProvider.getHandleTitle("Handle");
+            this.handleType=getHanldeTypefilledComboBox("Handle Type",handletitlelist,null);
+            handleType.setRequired(true);
+            binder.bind(handleType,HANDLE_TYPE);
+            handleType.addValueChangeListener(this::handletypechanged);
+            LOG.info("handle value " +handleType.getValue().toString());
+            formLayoutLeft.addComponent(this.handleType);
+
+            knobtitlelist=proposalDataProvider.getHandleTitle("knob");
+            LOG.info("knob value " +knobtitlelist.size());
+            this.knobType=getknobTypefilledComboBox("Knob Type",knobtitlelist,null);
+            knobType.setRequired(true);
+            binder.bind(knobType,KNOB_TYPE);
+            knobType.addValueChangeListener(this::knobtypechanged);
+            LOG.info("knob type " +knobType.getValue().toString());
+            formLayoutLeft.addComponent(this.knobType);
         }
-        formLayoutLeft.addComponent(this.glassSelection);
-
-        handletitlelist=proposalDataProvider.getHandleTitle("Handle");
-        this.handleType=getHanldeTypefilledComboBox("Handle Type",handletitlelist,null);
-        handleType.setRequired(true);
-        binder.bind(handleType,HANDLE_TYPE);
-        handleType.addValueChangeListener(this::handletypechanged);
-        LOG.info("handle value " +handleType.getValue().toString());
-        formLayoutLeft.addComponent(this.handleType);
-
-        knobtitlelist=proposalDataProvider.getHandleTitle("knob");
-        LOG.info("knob value " +knobtitlelist.size());
-        this.knobType=getknobTypefilledComboBox("Knob Type",knobtitlelist,null);
-        knobType.setRequired(true);
-        binder.bind(knobType,KNOB_TYPE);
-        knobType.addValueChangeListener(this::knobtypechanged);
-        LOG.info("knob type " +knobType.getValue().toString());
-        formLayoutLeft.addComponent(this.knobType);
 
         areaInSft = new TextField("Area in sft : ");
         areaInSft.setValue("0");
@@ -678,38 +681,41 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         formLayoutRight.addComponent(this.shutterDesign);
 
-        handlefinishlist=proposalDataProvider.getHandleFinish(handleType.getValue().toString(),"Handle");
-        LOG.info("handle finish list" +handlefinishlist.size());
-        this.handle=getHanldeFinishfilledComboBox("Handle Finish",handlefinishlist,null);
-        LOG.info("handle finish list" +handlefinishlist.size());
-        handle.setRequired(true);
-        binder.bind(handle,HANDLE_FINISH);
-        this.handle.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, HandleMaster>) this.handle.getContainerDataSource()).addAll(handlefinishlist);
-        if(handle.size()>0)
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
-            String code = StringUtils.isNotEmpty(product.getHandleFinish()) ? product.getHandleFinish() : (String) handle.getItemIds().iterator().next();
-            handle.setValue(code);
-        }
-        handle.addValueChangeListener(this::handlefinishchanged);
-        formLayoutRight.addComponent(this.handle);
+            handlefinishlist=proposalDataProvider.getHandleFinish(handleType.getValue().toString(),"Handle");
+            LOG.info("handle finish list" +handlefinishlist.size());
+            this.handle=getHanldeFinishfilledComboBox("Handle Finish",handlefinishlist,null);
+            LOG.info("handle finish list" +handlefinishlist.size());
+            handle.setRequired(true);
+            binder.bind(handle,HANDLE_FINISH);
+            this.handle.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, HandleMaster>) this.handle.getContainerDataSource()).addAll(handlefinishlist);
+            if(handle.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getHandleFinish()) ? product.getHandleFinish() : (String) handle.getItemIds().iterator().next();
+                handle.setValue(code);
+            }
+            handle.addValueChangeListener(this::handlefinishchanged);
+            formLayoutRight.addComponent(this.handle);
 
-        LOG.info("knob value " +knobType.getValue().toString());
-        knobfinishlist=proposalDataProvider.getHandleFinish(knobType.getValue().toString(),"knob");
-        LOG.info("knob finish list" +knobfinishlist.size());
-        this.knob=getKnobFinishedComboBox("Knob Finish",knobfinishlist,null);
-        knob.setRequired(true);
-        binder.bind(knob,KNOB_Finish);
-        this.knob.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, HandleMaster>) this.knob.getContainerDataSource()).addAll(knobfinishlist);
-        if(knob.size()>0)
-        {
-            String code = StringUtils.isNotEmpty(product.getKnobFinish()) ? product.getKnobFinish() : (String) knob.getItemIds().iterator().next();
-            knob.setValue(code);
-        }
-        this.knob.addValueChangeListener(this::knobfinishchanged);
-        formLayoutRight.addComponent(this.knob);
+            LOG.info("knob value " +knobType.getValue().toString());
+            knobfinishlist=proposalDataProvider.getHandleFinish(knobType.getValue().toString(),"knob");
+            LOG.info("knob finish list" +knobfinishlist.size());
+            this.knob=getKnobFinishedComboBox("Knob Finish",knobfinishlist,null);
+            knob.setRequired(true);
+            binder.bind(knob,KNOB_Finish);
+            this.knob.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, HandleMaster>) this.knob.getContainerDataSource()).addAll(knobfinishlist);
+            if(knob.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getKnobFinish()) ? product.getKnobFinish() : (String) knob.getItemIds().iterator().next();
+                knob.setValue(code);
+            }
+            this.knob.addValueChangeListener(this::knobfinishchanged);
+            formLayoutRight.addComponent(this.knob);
 
+        }
         totalAmount = new TextField("<h2>Total Amount:</h2>");
         totalAmount.setValue("0");
         totalAmount.setImmediate(true);
@@ -819,10 +825,13 @@ public class CustomizedProductDetailsWindow extends Window {
                     module.setCarcassCodeBasedOnUnitType(product);
                     module.setFinishTypeCode(product.getFinishTypeCode());
                     module.setFinishCode(product.getFinishCode());
-                    module.setHandleType(product.getHandleType());
-                    module.setHandleFinish(product.getHandleFinish());
-                    module.setKnobType(product.getKnobType());
-                    module.setKnobFinish(product.getKnobFinish());
+                    if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                    {
+                        module.setHandleType(product.getHandleType());
+                        module.setHandleFinish(product.getHandleFinish());
+                        module.setKnobType(product.getKnobType());
+                        module.setKnobFinish(product.getKnobFinish());
+                    }
                     MDW.open(module, product, 0, proposalVersion, proposalHeader);
                 }
         });
@@ -833,49 +842,41 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayout.setSizeFull();
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         String basePath = ConfigHolder.getInstance().getImageBasePath();
-
-        handleImage = new Image();
-        if (StringUtils.isEmpty(product.getHandleImage()))
-        {
-            handlethickness=proposalDataProvider.getHandleImages("Handle",handleType.getValue().toString(),handle.getValue().toString());
-            for(HandleMaster h: handlethickness)
-            {
-                LOG.info("handle master data for image " +h);
-                product.setHandleImage(h.getImagePath());
-                handleImage.setSource(new ExternalResource(h.getImagePath()));
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            handleImage = new Image();
+            if (StringUtils.isEmpty(product.getHandleImage())) {
+                handlethickness = proposalDataProvider.getHandleImages("Handle", handleType.getValue().toString(), handle.getValue().toString());
+                for (HandleMaster h : handlethickness) {
+                    LOG.info("handle master data for image " + h);
+                    product.setHandleImage(h.getImagePath());
+                    handleImage.setSource(new ExternalResource(h.getImagePath()));
+                }
+            } else {
+                handleImage.setSource(new ExternalResource(product.getHandleImage()));
             }
-        }
-        else
-        {
-            handleImage.setSource(new ExternalResource(product.getHandleImage()));
-        }
-        handleImage.setCaption(null);
-        handleImage.setHeight("65px");
-        handleImage.setWidth("200px");
-        handleImage.setImmediate(true);
-        verticalLayout.addComponent(handleImage);
+            handleImage.setCaption(null);
+            handleImage.setHeight("65px");
+            handleImage.setWidth("200px");
+            handleImage.setImmediate(true);
+            verticalLayout.addComponent(handleImage);
 
-        knobImage = new Image();
-        if (StringUtils.isEmpty(product.getKnobImage()))
-        {
-            Knobthickness=proposalDataProvider.getHandleImages("knob",knobType.getValue().toString(),knob.getValue().toString());
-            for(HandleMaster h: Knobthickness)
-            {
-                LOG.info("knob master data for image " +h);
-                product.setKnobImage(h.getImagePath());
-                knobImage.setSource(new ExternalResource(h.getImagePath()));
+            knobImage = new Image();
+            if (StringUtils.isEmpty(product.getKnobImage())) {
+                Knobthickness = proposalDataProvider.getHandleImages("knob", knobType.getValue().toString(), knob.getValue().toString());
+                for (HandleMaster h : Knobthickness) {
+                    LOG.info("knob master data for image " + h);
+                    product.setKnobImage(h.getImagePath());
+                    knobImage.setSource(new ExternalResource(h.getImagePath()));
+                }
+            } else {
+                knobImage.setSource(new ExternalResource(product.getKnobImage()));
             }
+            knobImage.setHeight("65px");
+            knobImage.setWidth("200px");
+            knobImage.setCaption(null);
+            knobImage.setImmediate(true);
+            verticalLayout.addComponent(knobImage);
         }
-        else
-        {
-            knobImage.setSource(new ExternalResource(product.getKnobImage()));
-        }
-        knobImage.setHeight("65px");
-        knobImage.setWidth("200px");
-        knobImage.setCaption(null);
-        knobImage.setImmediate(true);
-        verticalLayout.addComponent(knobImage);
-
         /*costWithoutAccessories = new TextField("Cost w/o Accessories : ");
         costWithoutAccessories.setValue("0");
         costWithoutAccessories.setImmediate(true);

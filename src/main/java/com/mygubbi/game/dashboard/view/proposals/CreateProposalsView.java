@@ -244,13 +244,13 @@ public class CreateProposalsView extends Panel implements View {
                 projectCityField.setReadOnly(false);
                 quotenew.setReadOnly(false);
                 cancelButton.setVisible(true);
+                saveAndCloseButton.setVisible(false);
             }else
             {
                 projectCityField.setReadOnly(true);
                 quotenew.setReadOnly(true);
                 cancelButton.setVisible(false);
             }
-            saveAndCloseButton.setVisible(true);
         }
         else
         {
@@ -838,7 +838,7 @@ public class CreateProposalsView extends Panel implements View {
         customerNameField.setReadOnly(true);
         formLayoutLeft.addComponent(customerNameField);
 
-        customerAddressLine1 = binder.buildAndBind("Address Line", C_ADDRESS1);
+        customerAddressLine1 = binder.buildAndBind("Address", C_ADDRESS1);
         ((TextField) customerAddressLine1).setNullRepresentation("");
         customerAddressLine1.setReadOnly(true);
         formLayoutLeft.addComponent(customerAddressLine1);
@@ -883,7 +883,7 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) projectName).setNullRepresentation("");
         projectName.setReadOnly(true);
         formLayoutRight.addComponent(projectName);
-        projectAddressLine1 = binder.buildAndBind("Address Line", P_ADDRESS1);
+        projectAddressLine1 = binder.buildAndBind("Address", P_ADDRESS1);
         ((TextField) projectAddressLine1).setNullRepresentation("");
         projectAddressLine1.setReadOnly(true);
         formLayoutRight.addComponent(projectAddressLine1);

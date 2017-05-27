@@ -1736,8 +1736,7 @@ public class ProposalDataProvider {
     public List<UserProfile> getUserProfileDetails(String crmID) {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectuserprofiledata", new HashMap<String, String>() {
             {
-                put("crmId", crmID);
-
+                /*put("crmId", crmID);*/
             }
         });
         try {
@@ -1747,8 +1746,23 @@ public class ProposalDataProvider {
             e.printStackTrace();
             return new ArrayList<>();
         }
-
     }
+
+    /*public UserProfile getUserProfileDetails(String crmID) {
+        JSONObject jsonArray = dataProviderMode.getResource("proposal/selectuserprofiledata", new HashMap<String, String>() {
+            {
+                put("crmId", crmID);
+
+            }
+        });
+        try {
+            return this.mapper.readValue(jsonArray.toString(), UserProfile.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }*/
 
     public List<UserProfile> getUserProfileDetailsonCRMId(String crmID) {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/userprofiledatabasedoncrmid", new HashMap<String, String>() {
@@ -2011,5 +2025,21 @@ public class ProposalDataProvider {
             NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             throw new RuntimeException(e);
         }
+    }
+
+    public List<User> getUsersByEmail(String Email) {
+        JSONArray array = dataProviderMode.getResourceArray("user/listbyemail", new HashMap<String, String>() {
+            {
+                put("email", Email);
+            }
+        });
+        try {
+            User[] items = this.mapper.readValue(array.toString(), User[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+
     }
 }
