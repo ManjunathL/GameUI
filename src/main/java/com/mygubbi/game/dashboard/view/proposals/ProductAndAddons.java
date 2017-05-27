@@ -1476,7 +1476,7 @@ public class ProductAndAddons extends Window
 
     private SendToCRMOnPublish updatePriceInCRMOnPublish() {
         SendToCRMOnPublish sendToCRM = new SendToCRMOnPublish();
-        sendToCRM.setOpportunity_name("SAL-1702-001036");
+        sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
         sendToCRM.setEstimated_project_cost_c(proposalVersion.getFinalAmount());
         sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
         LOG.debug("Send to CRM : " + sendToCRM.toString());
@@ -1489,7 +1489,6 @@ public class ProductAndAddons extends Window
         sendToCRM.setFinal_proposal_amount_c(proposalVersion.getFinalAmount());
         sendToCRM.setEstimated_project_cost_c(proposalVersion.getFinalAmount());
         sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
-        sendToCRM.setOpportunity_name("SAL-1702-001036");
         LOG.debug("Send to CRM : " + sendToCRM.toString());
 
         return sendToCRM;
