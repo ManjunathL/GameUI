@@ -658,9 +658,6 @@ public class MDW extends Window {
         {
             module.setDescription("");
             module.setRemarks("");
-            module.setHeight(0);
-            module.setDepth(0);
-            module.setWidth(0);
         }
         moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
 

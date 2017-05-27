@@ -136,7 +136,7 @@ public class CRMsearchWindow extends Window
                             proposalHeader.setProjectName(cp.getProjectName());
                             proposalHeader.setPaddress1(cp.getPropertyAddressCity());
                         }
-                        proposalHeader.setPackageFlag("No");
+                        //proposalHeader.setPackageFlag("No");
                         boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
                         LOG.info("proposal create value in crm search window " +success);
                         LOG.info("proposal header in crm window after save in crm search window" +proposalHeader);
