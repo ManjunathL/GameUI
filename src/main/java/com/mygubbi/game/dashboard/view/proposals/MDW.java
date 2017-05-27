@@ -649,6 +649,18 @@ public class MDW extends Window {
             module.setRemarks(mgModule.getDescription());
         } else if (module.getModuleType().equals("N")) {
             module.setImagePath("image.jpg");
+            module.setDescription("");
+            module.setRemarks("");
+            module.setHeight(0);
+            module.setDepth(0);
+            module.setWidth(0);
+        } else if(module.getModuleType().equals("hike"))
+        {
+            module.setDescription("");
+            module.setRemarks("");
+            module.setHeight(0);
+            module.setDepth(0);
+            module.setWidth(0);
         }
         moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
 
