@@ -695,7 +695,9 @@ public class ProductAndAddons extends Window
                     discountPercent = 0.0;
                 }
                 discountAmount = productsTotal * (discountPercent / 100.0);
+                this.discountAmount.setReadOnly(false);
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                this.discountAmount.setReadOnly(true);
                 disAmount=discountAmount.intValue();
             }
             else
@@ -753,7 +755,9 @@ public class ProductAndAddons extends Window
 
                 discountAmount = totalWoAccessories * (discountPercent / 100) ;
                 //double res = discountAmount - discountAmount % 100;
+                this.discountAmount.setReadOnly(false);
                 this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                this.discountAmount.setReadOnly(true);
                 disAmount=discountAmount.intValue();
                 //this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
             }
