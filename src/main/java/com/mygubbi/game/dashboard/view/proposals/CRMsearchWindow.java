@@ -112,11 +112,23 @@ public class CRMsearchWindow extends Window
                         //proposalHeader.setPcity("my city");
                         proposalHeader.setCname(profile1.getFirst_name());
                         proposalHeader.setSalesEmail(profile1.getSalesExecUserId());
-                        proposalHeader.setSalesName(profile1.getSalesExecName());
-                        proposalHeader.setSalesPhone(profile1.getSalesExecMobile());
+                        List<User> Salesusers=proposalDataProvider.getUsersByEmail(profile1.getSalesExecUserId());
+                        for(User user:Salesusers)
+                        {
+                            proposalHeader.setSalesName(user.getName());
+                            proposalHeader.setSalesPhone(user.getPhone());
+                        }
+                        /*proposalHeader.setSalesName(profile1.getSalesExecName());
+                        proposalHeader.setSalesPhone(profile1.getSalesExecMobile());*/
                         proposalHeader.setDesignerEmail(profile1.getDesignerUserId());
-                        proposalHeader.setDesignerName(profile1.getDesignerName());
-                        proposalHeader.setDesignerPhone(profile1.getDesignerMobile());
+                        List<User> designusers=proposalDataProvider.getUsersByEmail(profile1.getDesignerUserId());
+                        for(User user:designusers)
+                        {
+                            proposalHeader.setDesignerName(user.getName());
+                            proposalHeader.setDesignerPhone(user.getPhone());
+                        }
+                        /*proposalHeader.setDesignerName(profile1.getDesignerName());
+                        proposalHeader.setDesignerPhone(profile1.getDesignerMobile());*/
                         for(CompleteProfile cp : profile1.getCompleteProfile())
                         {
                             //LOG.info("complete profile" +profile.getCompleteProfile());
