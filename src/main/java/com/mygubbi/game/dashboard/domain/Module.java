@@ -156,6 +156,7 @@ public class Module implements Cloneable {
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
     private List<HandleMaster> handlePack=new ArrayList<>();
     private List<HandleMaster> knobPack=new ArrayList<>();
+    private List<ModuleHingeMap> hingePack=new ArrayList<>();
 
     public String getExpSides() {
         return expSides;
@@ -787,6 +788,14 @@ public class Module implements Cloneable {
         this.hingeQuantity = hingeQuantity;
     }
 
+    public List<ModuleHingeMap> getHingePack() {
+        return hingePack;
+    }
+
+    public void setHingePack(List<ModuleHingeMap> hingePack) {
+        this.hingePack = hingePack;
+    }
+
     @Override
     public String toString() {
         return "Module{" +
@@ -862,6 +871,7 @@ public class Module implements Cloneable {
                 ", accessoryPacks=" + accessoryPacks +
                 ", handlePack=" + handlePack +
                 ", knobPack=" + knobPack +
+                ", hingePack=" + hingePack +
                 '}';
     }
 }

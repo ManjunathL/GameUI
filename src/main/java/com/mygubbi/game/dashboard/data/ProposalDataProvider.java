@@ -2040,6 +2040,21 @@ public class ProposalDataProvider {
             NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             throw new RuntimeException(e);
         }
-
+    }
+    public List<ModuleHingeMap> getHinges(String moduleCode,String Type)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthingedata", new HashMap<String, String>() {
+                {
+                    put("moduleCode", URLEncoder.encode(moduleCode, "UTF-8"));
+                    put("type", URLEncoder.encode(Type, "UTF-8"));
+                }
+            });
+            ModuleHingeMap[] items = this.mapper.readValue(jsonArray.toString(), ModuleHingeMap[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }

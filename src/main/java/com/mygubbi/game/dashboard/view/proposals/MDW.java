@@ -748,9 +748,18 @@ public class MDW extends Window {
             //hinges
             List<MGModule> hingesPresent=proposalDataProvider.checkHandlePresent(module.getMgCode());
             LOG.info("hinge present " +hingesPresent);
+            List<ModuleHingeMap> hingeMaps1=proposalDataProvider.getHinges(module.getMgCode(),module.getHingeType());
+            LOG.info("size of hinge" +hingeMaps1.size());
+            module.setHingePack(hingeMaps1);
             for(MGModule m:hingesPresent)
             {
                 if(m.getHingeMandatory().equals("Yes"))
+                {
+                    module.setHingePresent(m.getHingeMandatory());
+                    List<ModuleHingeMap> hingeMaps=proposalDataProvider.getHinges(module.getMgCode(),module.getHingeType());
+                    module.setHingePack(hingeMaps);
+                }
+                /*if(m.getHingeMandatory().equals("Yes"))
                 {
                     LOG.info("if stmt");
                     module.setHingePresent(m.getHingeMandatory());
@@ -771,7 +780,8 @@ public class MDW extends Window {
                             }
                         }
                     }
-                }
+               }*/
+
             }
         }
         refreshPrice();
@@ -808,7 +818,9 @@ public class MDW extends Window {
         }
     }
 
-    private void refreshAccPacks(){
+    private void refreshAccPacks()
+    {
+
         accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
         this.accessoryPack1.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, AccessoryPack>) this.accessoryPack1.getContainerDataSource()).addAll(accessoryPackList);
@@ -819,6 +831,7 @@ public class MDW extends Window {
         this.accessoryPack3.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, AccessoryPack>) this.accessoryPack3.getContainerDataSource()).addAll(accessoryPackList);
 
+        refreshPrice();
     }
 
     private void isDimensionsEmpty() {
@@ -944,14 +957,21 @@ public class MDW extends Window {
     }
 
     private void accessoryPack1Changed(Property.ValueChangeEvent valueChangeEvent) {
-
         accessoryPackChanged(accessoryPack1, addons11, addons12, addons13);
         refreshPrice();
     }
 
     private void accessoryPackChanged(ComboBox accessoryPack, ComboBox addons1, ComboBox addons2, ComboBox addons3) {
         String accessoryPackCode = (String) accessoryPack.getValue();
+        LOG.info("Acc PAck code" +accessoryPackCode);
+        if(accessoryPackCode==null)
+        {
+            List<ModuleAccessoryPack> accPacks = getModuleAccessoryPacks();
+            this.module.setAccessoryPacks(accPacks);
+            LOG.info("remove addons " +module.getAccessoryPacks());
+        }
         List<AccessoryAddon> accessoryAddons = proposalDataProvider.getAccessoryAddons(accessoryPackCode);
+        LOG.info("Acc addon " +accessoryAddons.size());
         addons1.getContainerDataSource().removeAllItems();
         refreshPrice();
         ((BeanContainer<String, AccessoryAddon>) addons1.getContainerDataSource()).addAll(accessoryAddons);
@@ -961,8 +981,8 @@ public class MDW extends Window {
         addons3.getContainerDataSource().removeAllItems();
         refreshPrice();
         ((BeanContainer<String, AccessoryAddon>) addons3.getContainerDataSource()).addAll(accessoryAddons);
-
         refreshAccessoryImages();
+        LOG.info("module acc pack change " +module.getAccessoryPacks());
     }
 
     private Component buildAccPack2Component() {
@@ -1056,9 +1076,9 @@ public class MDW extends Window {
     private void refreshAccessoryImages() {
         emptyAccessoryImages();
 
-        this.validateAndAddAccessoryPackImages((String) accessoryPack1.getValue(), accessoryPack1);
+        /*this.validateAndAddAccessoryPackImages((String) accessoryPack1.getValue(), accessoryPack1);
         this.validateAndAddAccessoryPackImages((String) accessoryPack2.getValue(), accessoryPack2);
-        this.validateAndAddAccessoryPackImages((String) accessoryPack3.getValue(), accessoryPack3);
+        this.validateAndAddAccessoryPackImages((String) accessoryPack3.getValue(), accessoryPack3);*/
 
         this.addAddonImageToPanel(this.addons11);
         this.addAddonImageToPanel(this.addons12);
@@ -1077,7 +1097,7 @@ public class MDW extends Window {
         if (selectedValue != null)
         {
             AccessoryAddon addon = (AccessoryAddon) ((BeanItem) addonCombo.getItem(selectedValue)).getBean();
-            if (addon != null) this.addImageToAccessoryPanel(addon.getImagePath(), addon.getTitle());
+            //if (addon != null) this.addImageToAccessoryPanel(addon.getImagePath(), addon.getTitle());
         }
     }
 
@@ -1241,7 +1261,14 @@ public class MDW extends Window {
     private List<ModuleAccessoryPack> getModuleAccessoryPacks() {
         List<ModuleAccessoryPack> accPacks = new ArrayList<>();
         ModuleAccessoryPack moduleAccessoryPack = this.getModuleAccessoryPack(this.accessoryPack1, this.addons11, this.addons12, this.addons13);
-        if (moduleAccessoryPack != null) accPacks.add(moduleAccessoryPack);
+        if (moduleAccessoryPack != null)
+        {
+            accPacks.add(moduleAccessoryPack);
+        }
+        else
+        {
+            accPacks.clear();
+        }
 
         moduleAccessoryPack = this.getModuleAccessoryPack(this.accessoryPack2, this.addons21, this.addons22, this.addons23);
         if (moduleAccessoryPack != null) accPacks.add(moduleAccessoryPack);
@@ -1273,6 +1300,11 @@ public class MDW extends Window {
         if (StringUtils.isNotEmpty(value)) addons.add(value);
 
         accPack.setAccessories(addons);
+        LOG.info("ADDONS###");
+        for(String addon:addons)
+        {
+            LOG.info("!!!" +addon);
+        }
         return accPack;
     }
 
@@ -1299,9 +1331,15 @@ public class MDW extends Window {
         refreshPrice();
     }
 
-    private void addImageAndrefreshPrice(Property.ValueChangeEvent valueChangeEvent) {
+    private void addImageAndrefreshPrice(Property.ValueChangeEvent valueChangeEvent)
+    {
+        List<ModuleAccessoryPack> accPacks = getModuleAccessoryPacks();
+        this.module.setAccessoryPacks(accPacks);
+
+        LOG.info("addon in addons1" +module.getAccessoryPacks());
         refreshPrice();
         refreshAccessoryImages();
+        LOG.info("addon in addons1" +module.getAccessoryPacks());
     }
 
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
