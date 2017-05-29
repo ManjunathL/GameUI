@@ -1737,12 +1737,6 @@ public class MDW extends Window {
             module.setHandleCode(h.getCode());
         }
 
-        List<HandleMaster> knobmaster=proposalDataProvider.getHandles("knob",module.getKnobType(),module.getKnobFinish(),"0");
-        for(HandleMaster h:knobmaster)
-        {
-            module.setKnobCode(h.getCode());
-        }
-
         LOG.info("handle code " +module.getHandleCode() + "knob code " +module.getKnobCode());
         List<HandleMaster> handleMasters1=proposalDataProvider.getHandleArray(module.getHandleCode());
         module.setHandlePack(handleMasters1);
@@ -1764,10 +1758,17 @@ public class MDW extends Window {
     }
     private void knobquantitychanged(Property.ValueChangeEvent valueChangeEvent)
     {
+        List<HandleMaster> knobmaster=proposalDataProvider.getHandles("knob",module.getKnobType(),module.getKnobFinish(),"0");
+        for(HandleMaster h:knobmaster)
+        {
+            module.setKnobCode(h.getCode());
+        }
+
         String s = valueChangeEvent.getProperty().getValue().toString();
         Integer integer = Integer.parseInt(s);
         this.knobqquantity.setValue(s);
         module.setKnobQuantity(integer);
+        LOG.info("knob quantity  " +valueChangeEvent);
         refreshPrice();
     }
     private void removeHandleAndKnobQuantity()
