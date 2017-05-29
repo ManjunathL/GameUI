@@ -79,6 +79,9 @@ public class Module implements Cloneable {
     public static final String KNOB_QUANTITY="knobQuantity";
     public static final String GLASS_TYPE="glassType";
     public static final String HINGE_TYPE="hingeType";
+    public static final String HINGE_PRESENT="hingePresent";
+    public static final String HINGE_CODE="hingeCode";
+    public static final String HINGE_QUANTITY="hingeQuantity";
 
     private int seq;
     private int moduleSequence;
@@ -146,6 +149,9 @@ public class Module implements Cloneable {
     private String newModuleFlag;
     private String glassType;
     private String hingeType;
+    private String hingePresent;
+    private String hingeCode;
+    private int hingeQuantity;
 
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
     private List<HandleMaster> handlePack=new ArrayList<>();
@@ -757,6 +763,30 @@ public class Module implements Cloneable {
         this.hingeType = hingeType;
     }
 
+    public String getHingePresent() {
+        return hingePresent;
+    }
+
+    public void setHingePresent(String hingePresent) {
+        this.hingePresent = hingePresent;
+    }
+
+    public String getHingeCode() {
+        return hingeCode;
+    }
+
+    public void setHingeCode(String hingeCode) {
+        this.hingeCode = hingeCode;
+    }
+
+    public int getHingeQuantity() {
+        return hingeQuantity;
+    }
+
+    public void setHingeQuantity(int hingeQuantity) {
+        this.hingeQuantity = hingeQuantity;
+    }
+
     @Override
     public String toString() {
         return "Module{" +
@@ -820,12 +850,15 @@ public class Module implements Cloneable {
                 ", handleCode='" + handleCode + '\'' +
                 ", knobCode='" + knobCode + '\'' +
                 ", customText='" + customText + '\'' +
-                ", customCheck=" + customCheck +
+                ", customCheck='" + customCheck + '\'' +
                 ", handleQuantity=" + handleQuantity +
                 ", knobQuantity=" + knobQuantity +
                 ", newModuleFlag='" + newModuleFlag + '\'' +
                 ", glassType='" + glassType + '\'' +
                 ", hingeType='" + hingeType + '\'' +
+                ", hingePresent='" + hingePresent + '\'' +
+                ", hingeCode='" + hingeCode + '\'' +
+                ", hingeQuantity=" + hingeQuantity +
                 ", accessoryPacks=" + accessoryPacks +
                 ", handlePack=" + handlePack +
                 ", knobPack=" + knobPack +

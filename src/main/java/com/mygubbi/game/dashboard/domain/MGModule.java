@@ -17,6 +17,7 @@ public class MGModule {
     public static final String HANDLE_MANDATORY = "handleMandatory";
     public static final String KNOB_MANDATORY = "knobMandatory";
     public static final String SQFT_CALCULATION = "sqftCalculation";
+    public static final String HINGE_MANDATORY = "hingeMandatory";
 
 
     private String code;
@@ -35,6 +36,7 @@ public class MGModule {
     private String handleMandatory;
     private String KnobMandatory;
     private String sqftCalculation;
+    private String hingeMandatory;
 
     private String concat;
     private List<ModuleAccessory> accessories = new ArrayList<>();
@@ -187,6 +189,14 @@ public class MGModule {
         this.sqftCalculation = sqftCalculation;
     }
 
+    public String getHingeMandatory() {
+        return hingeMandatory;
+    }
+
+    public void setHingeMandatory(String hingeMandatory) {
+        this.hingeMandatory = hingeMandatory;
+    }
+
     @Override
     public String toString() {
         return "MGModule{" +
@@ -207,6 +217,7 @@ public class MGModule {
                 ", handleMandatory='" + handleMandatory + '\'' +
                 ", KnobMandatory='" + KnobMandatory + '\'' +
                 ", sqftCalculation='" + sqftCalculation + '\'' +
+                ", hingeMandatory='" + hingeMandatory + '\'' +
                 ", concat='" + concat + '\'' +
                 '}';
     }

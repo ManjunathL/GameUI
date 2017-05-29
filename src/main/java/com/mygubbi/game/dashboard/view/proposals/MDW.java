@@ -562,6 +562,12 @@ public class MDW extends Window {
 
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
+            thicknessfield=gethandlethickness();
+            binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
+            thicknessfield.setRequired(false);
+            thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
+            formLayout.addComponent(thicknessfield);
+
             handlequantity=new TextField("Handle Quantity");
             binder.bind(handlequantity,Module.HANDLE_QUANTITY);
             handlequantity.setRequired(false);
@@ -573,12 +579,6 @@ public class MDW extends Window {
             knobqquantity.setRequired(false);
             knobqquantity.addValueChangeListener(this::knobquantitychanged);
             formLayout.addComponent(knobqquantity);
-
-            thicknessfield=gethandlethickness();
-            binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
-            thicknessfield.setRequired(false);
-            thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
-            formLayout.addComponent(thicknessfield);
         }
 
         /*this.remarks = new TextField();
@@ -743,6 +743,34 @@ public class MDW extends Window {
                     module.setKnobPresent(m.getKnobMandatory());
                     knobPresent=m.getKnobMandatory();
                     knobqquantity.setRequired(true);
+                }
+            }
+            //hinges
+            List<MGModule> hingesPresent=proposalDataProvider.checkHandlePresent(module.getMgCode());
+            LOG.info("hinge present " +hingesPresent);
+            for(MGModule m:hingesPresent)
+            {
+                if(m.getHingeMandatory().equals("Yes"))
+                {
+                    LOG.info("if stmt");
+                    module.setHingePresent(m.getHingeMandatory());
+                    List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Hinge",module.getHingeType(),"0" ,"0");
+                    for(HandleMaster h:handleMasters)
+                    {
+                        module.setHingeCode(h.getCode());
+                        List<AccessoryDetails> hingeQuantity=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"HI");
+                        if(hingeQuantity.size()==0)
+                        {
+                            module.setHingeQuantity(0);
+                        }else
+                        {
+                            for(AccessoryDetails a:accDetailsforHandle)
+                            {
+                                LOG.info("hinge quantity " +a);
+                                module.setHingeQuantity(Integer.valueOf(a.getQty()));
+                            }
+                        }
+                    }
                 }
             }
         }
