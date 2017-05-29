@@ -272,21 +272,21 @@ public class CustomizedProductDetailsWindow extends Window {
         itemTitleField.setNullRepresentation("");
         formLayoutLeft.addComponent(itemTitleField);
 
-        hingesList=proposalDataProvider.getHinges("hinges");
-        this.hingesSelection=getHingesFilledComboBox("Hinges",hingesList,null);
-        hingesSelection.setRequired(true);
-        binder.bind(hingesSelection,HINGES_TYPE);
-        this.hingesSelection.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, LookupItem>) this.hingesSelection.getContainerDataSource()).addAll(hingesList);
-        if(hingesSelection.size()>0)
-        {
-            String code = StringUtils.isNotEmpty(product.getHinge()) ? product.getHinge() : (String) hingesSelection.getItemIds().iterator().next();
-            hingesSelection.setValue(code);
-        }
-        formLayoutLeft.addComponent(this.hingesSelection);
-
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
+            hingesList=proposalDataProvider.getHinges("hinges");
+            this.hingesSelection=getHingesFilledComboBox("Hinges",hingesList,null);
+            hingesSelection.setRequired(true);
+            binder.bind(hingesSelection,HINGES_TYPE);
+            this.hingesSelection.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, LookupItem>) this.hingesSelection.getContainerDataSource()).addAll(hingesList);
+            if(hingesSelection.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getHinge()) ? product.getHinge() : (String) hingesSelection.getItemIds().iterator().next();
+                hingesSelection.setValue(code);
+            }
+            formLayoutLeft.addComponent(this.hingesSelection);
+
             glassList=proposalDataProvider.getHinges("glass");
             this.glassSelection=getHingesFilledComboBox("Glass",glassList,null);
             glassSelection.setRequired(true);
@@ -2001,12 +2001,14 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.setEnabled(false);
         fileAttachmentComponent.setReadOnly(true);
         addModules.setEnabled(false);
-        handleType.setReadOnly(true);
-        handle.setReadOnly(true);
-        knobType.setReadOnly(true);
-        knob.setReadOnly(true);
-        hingesSelection.setReadOnly(true);
-        glassSelection.setReadOnly(true);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            handleType.setReadOnly(true);
+            handle.setReadOnly(true);
+            knobType.setReadOnly(true);
+            knob.setReadOnly(true);
+            hingesSelection.setReadOnly(true);
+            glassSelection.setReadOnly(true);
+        }
     }
     private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
@@ -2085,12 +2087,15 @@ public class CustomizedProductDetailsWindow extends Window {
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
             fileAttachmentComponent.setReadOnly(true);
             addModules.setEnabled(false);
-            handleType.setReadOnly(true);
-            handle.setReadOnly(true);
-            knobType.setReadOnly(true);
-            knob.setReadOnly(true);
-            hingesSelection.setReadOnly(true);
-            glassSelection.setReadOnly(true);
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+                handleType.setReadOnly(true);
+                handle.setReadOnly(true);
+                knobType.setReadOnly(true);
+                knob.setReadOnly(true);
+                hingesSelection.setReadOnly(true);
+                glassSelection.setReadOnly(true);
+            }
+
         }
 
     }

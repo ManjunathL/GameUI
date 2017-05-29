@@ -317,9 +317,13 @@ public class MDW extends Window {
         addons31.setReadOnly(true);
         addons32.setReadOnly(true);
         addons33.setReadOnly(true);
-        handlequantity.setReadOnly(true);
-        knobqquantity.setReadOnly(true);
-        customText.setReadOnly(true);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            handlequantity.setReadOnly(true);
+            knobqquantity.setReadOnly(true);
+            customText.setReadOnly(true);
+        }
+
     }
 
 
@@ -1777,12 +1781,10 @@ public class MDW extends Window {
         {
             moduleCategory.setReadOnly(true);
             moduleSelection.setReadOnly(true);
-            handlequantity.setReadOnly(true);
-            knobqquantity.setReadOnly(true);
             carcassMaterialSelection.setReadOnly(true);
             finishTypeSelection.setReadOnly(true);
             shutterFinishSelection.setReadOnly(true);
-            thicknessfield.setReadOnly(true);
+
             //remarks.setReadOnly(true);
             customText.setReadOnly(true);
             height.setReadOnly(true);
@@ -1807,7 +1809,14 @@ public class MDW extends Window {
             addons31.setReadOnly(true);
             addons32.setReadOnly(true);
             addons33.setReadOnly(true);
-            single.setReadOnly(true);
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+            {
+                single.setReadOnly(true);
+                handlequantity.setReadOnly(true);
+                knobqquantity.setReadOnly(true);
+                thicknessfield.setReadOnly(true);
+            }
+
         }
 
     }
