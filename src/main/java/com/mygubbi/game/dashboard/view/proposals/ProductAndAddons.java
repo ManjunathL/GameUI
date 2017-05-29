@@ -695,9 +695,17 @@ public class ProductAndAddons extends Window
                     discountPercent = 0.0;
                 }
                 discountAmount = productsTotal * (discountPercent / 100.0);
-                this.discountAmount.setReadOnly(false);
-                this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
-                this.discountAmount.setReadOnly(true);
+                if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+                {
+                    this.discountAmount.setReadOnly(false);
+                    this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                    this.discountAmount.setReadOnly(true);
+                }
+                else
+                {
+                    this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                }
+
                 disAmount=discountAmount.intValue();
             }
             else
@@ -754,12 +762,17 @@ public class ProductAndAddons extends Window
                 }
 
                 discountAmount = totalWoAccessories * (discountPercent / 100) ;
-                //double res = discountAmount - discountAmount % 100;
-                this.discountAmount.setReadOnly(false);
-                this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
-                this.discountAmount.setReadOnly(true);
+                if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+                {
+                    this.discountAmount.setReadOnly(false);
+                    this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                    this.discountAmount.setReadOnly(true);
+                }
+                else
+                {
+                    this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                }
                 disAmount=discountAmount.intValue();
-                //this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
             }
             else
             {
