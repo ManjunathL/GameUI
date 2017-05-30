@@ -874,9 +874,10 @@ public class CustomizedProductDetailsWindow extends Window {
                 knobImage.setSource(new ExternalResource(product.getKnobImage()));
             }
             knobImage.setHeight("65px");
-            knobImage.setWidth("200px");
+            knobImage.setWidth("100px");
             knobImage.setCaption(null);
             knobImage.setImmediate(true);
+            knobImage.setStyleName("knobimagestyle");
             verticalLayout.addComponent(knobImage);
         }
         /*costWithoutAccessories = new TextField("Cost w/o Accessories : ");
@@ -1830,7 +1831,6 @@ public class CustomizedProductDetailsWindow extends Window {
     }*/
     private ComboBox getShutterDesignCombo()
     {
-        LOG.info("#####"+proposalDataProvider.getShutterCodes(shutterFinishSelection.getValue().toString()));
         List<Finish> finishes=proposalDataProvider.getShutterCodes(shutterFinishSelection.getValue().toString());
         LOG.info("Finish size " +finishes.size());
         final BeanContainer<String, Finish> container = new BeanContainer<>(Finish.class);

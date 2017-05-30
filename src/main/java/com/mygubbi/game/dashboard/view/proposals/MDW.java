@@ -564,6 +564,11 @@ public class MDW extends Window {
         {
             thicknessfield=gethandlethickness();
             binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
+            if(thicknessfield.size()>0) {
+                String code = StringUtils.isNotEmpty(module.getHandleThickness()) ? module.getHandleThickness() : (String) thicknessfield.getItemIds().iterator().next();
+                thicknessfield.setValue(code);
+        }
+
             thicknessfield.setRequired(false);
             thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
             formLayout.addComponent(thicknessfield);
@@ -1479,11 +1484,11 @@ public class MDW extends Window {
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
                 LOG.info("ssss " +module.getHandleThickness());
-                if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
+                if(thicknessfield.getValue()==null && Objects.equals(module.getHandlePresent(), "Yes"))
                 {
-                    NotificationUtil.showNotification("Please select thickness before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return;
-                }
+                NotificationUtil.showNotification("Please select thickness before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
                 if(Objects.equals(module.getCustomCheck(),"Custom Remarks") && Objects.equals(customText.getValue(), "") )
                 {
                         NotificationUtil.showNotification("Custom Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
