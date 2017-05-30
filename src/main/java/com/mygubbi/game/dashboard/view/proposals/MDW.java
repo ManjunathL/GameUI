@@ -728,7 +728,7 @@ public class MDW extends Window {
                     knobqquantity.setValue(a.getQty());
                 }
             }
-            List<MGModule> handlePresent=proposalDataProvider.checkHandlePresent(module.getMgCode());
+            List<MGModule> handlePresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
             for(MGModule m:handlePresent)
             {
                 if(m.getHandleMandatory().equals("Yes"))
@@ -746,12 +746,12 @@ public class MDW extends Window {
                 }
             }
             //hinges
-            List<MGModule> hingesPresent=proposalDataProvider.checkHandlePresent(module.getMgCode());
-            LOG.info("hinge present " +hingesPresent);
+//            List<MGModule> hingesPresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+            LOG.info("hinge present " +handlePresent);
             List<ModuleHingeMap> hingeMaps1=proposalDataProvider.getHinges(module.getMgCode(),module.getHingeType());
             LOG.info("size of hinge" +hingeMaps1.size());
             module.setHingePack(hingeMaps1);
-            for(MGModule m:hingesPresent)
+            for(MGModule m:handlePresent)
             {
                 if(m.getHingeMandatory().equals("Yes"))
                 {
