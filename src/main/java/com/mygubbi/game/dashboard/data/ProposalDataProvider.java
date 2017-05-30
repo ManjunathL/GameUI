@@ -1797,10 +1797,10 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
-    public List<MGModule> checkHandlePresent(String mgcode)
+    public List<MGModule> retrieveModuleDetails(String mgcode)
     {
         try {
-            JSONArray jsonArray = dataProviderMode.getResourceArray("module/checkhandlepresent", new HashMap<String, String>() {
+            JSONObject jsonArray = dataProviderMode.getResource("module/checkhandlepresent", new HashMap<String, String>() {
                 {
                     put("code",URLEncoder.encode(mgcode, "UTF-8"));
                 }
@@ -2041,13 +2041,14 @@ public class ProposalDataProvider {
             throw new RuntimeException(e);
         }
     }
-    public List<ModuleHingeMap> getHinges(String moduleCode,String Type)
+    public List<ModuleHingeMap> getHinges(String moduleCode,String type)
     {
+        LOG.debug("hinges inside proposal data provider : " + moduleCode  +" :" + type);
         try {
             JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthingedata", new HashMap<String, String>() {
                 {
                     put("moduleCode", URLEncoder.encode(moduleCode, "UTF-8"));
-                    put("type", URLEncoder.encode(Type, "UTF-8"));
+                    put("type", URLEncoder.encode(type, "UTF-8"));
                 }
             });
             ModuleHingeMap[] items = this.mapper.readValue(jsonArray.toString(), ModuleHingeMap[].class);

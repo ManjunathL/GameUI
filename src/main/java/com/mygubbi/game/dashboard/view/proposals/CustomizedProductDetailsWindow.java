@@ -285,6 +285,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 String code = StringUtils.isNotEmpty(product.getHinge()) ? product.getHinge() : (String) hingesSelection.getItemIds().iterator().next();
                 hingesSelection.setValue(code);
             }
+            this.hingesSelection.addValueChangeListener(this::hingeTypeChanged);
             formLayoutLeft.addComponent(this.hingesSelection);
 
             glassList=proposalDataProvider.getHinges("glass");
@@ -2045,6 +2046,27 @@ public class CustomizedProductDetailsWindow extends Window {
         if (next.equals(prevCode)) {
             this.knobfinishchanged(null);
         }
+    }
+
+    private void hingeTypeChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        String hingeTypeValueChange = (String) valueChangeEvent.getProperty().getValue();
+            for (Module module : product.getModules()) {
+                if (product.getModules() == null || hingeTypeValueChange == null) return;
+                List<MGModule> hingesPresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), hingeTypeValueChange);
+                module.getHandlePack().clear();
+                module.setHingePack(hingeMaps1);
+                for (MGModule m : hingesPresent) {
+                    if (m.getHingeMandatory().equals("Yes")) {
+                        module.setHingePresent(m.getHingeMandatory());
+                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), hingeTypeValueChange);
+                        module.setHingePack(hingeMaps);
+                    }
+                }
+            }
+            refreshPrice(null);
+
     }
     private void  handlefinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
