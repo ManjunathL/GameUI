@@ -95,6 +95,7 @@ public class MarginDetailsWindow extends Window
     Double manufacturingHardwareCost =0.0;
     Double manufacturingAccessoryCost =0.0;
     Double manufacturingHandleAndKnobCost =0.0;
+    Double manufacturingHingeCost =0.0;
     Double FinalmanufacturingAccoryCost=0.0;
     Double manufacturingAccessoryCostForZgeneric=0.0;
     Double manufacturingTotalSalesPrice =0.0;
@@ -407,11 +408,14 @@ public class MarginDetailsWindow extends Window
                         manufacturingHandleAndKnobCost+=handleandknobdetails.getSourcePrice();
                     }
                 }
-               /* PriceMaster hingedetails=proposalDataProvider.getHandleAndKnobRateDetails(module.getKnobCode(),this.priceDate,this.city);
+                for(ModuleHingeMap moduleHingeMap:module.getHingePack())
                 {
-                    LOG.info("knob price master " +handleandknobdetails);
-                    manufacturingHandleAndKnobCost+=handleandknobdetails.getSourcePrice();
-                }*/
+                    PriceMaster hingedetails=proposalDataProvider.getHingeRateDetails(moduleHingeMap.getHingecode(),this.priceDate,this.city);
+                    {
+                        manufacturingHingeCost+=hingedetails.getSourcePrice();
+                    }
+                }
+
                 List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
                 for(ModuleAccessoryPack moduleAccessoryPack:moduleaccpack)
                 {
@@ -463,8 +467,8 @@ public class MarginDetailsWindow extends Window
                 }
             }
         }
-        totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost+handleAndKnonCost;
-        totalSalesPriceWOAcc =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+hikeCost+handleAndKnonCost;
+        totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost+handleAndKnonCost+hingeCost;
+        totalSalesPriceWOAcc =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+hikeCost+handleAndKnonCost+manufacturingHingeCost;
 
         //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
         totalSalesPriceWOtax = (totalSalesPrice) *rateForProductWOTax;

@@ -1455,23 +1455,27 @@ public class MDW extends Window {
             //LOG.info("thickness field value " +thicknessfield.getValue().toString());
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
-                LOG.info("ssss " +module.getHandleThickness() +" " +module.getHandlePresent());
-                if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
-                {
-                    NotificationUtil.showNotification("Please select thickness before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return;
-                }
-                LOG.info("handlequantity.getValue()" +handlequantity.getValue() +" " +module.getHandlePresent());
-                if(Integer.parseInt(handlequantity.getValue())== 0 && Objects.equals(module.getHandlePresent(), "Yes"))
-                {
-                    NotificationUtil.showNotification("Please enter valid quantity", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return;
+                if(!("Profile Handle").equals(module.getHandleTypeSelection())) {
+                    LOG.info("ssss " +module.getHandleThickness() +" " +module.getHandlePresent());
+                    if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
+                    {
+
+                        NotificationUtil.showNotification("Please select thickness before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                    LOG.info("handlequantity.getValue()" +handlequantity.getValue() +" " +module.getHandlePresent());
+                    if(Integer.parseInt(handlequantity.getValue())== 0 && Objects.equals(module.getHandlePresent(), "Yes"))
+                    {
+                        NotificationUtil.showNotification("Please enter valid quantity", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
                 }
                 if(Objects.equals(module.getCustomCheck(),"Custom Remarks") && Objects.equals(customText.getValue(), "") )
                 {
-                        NotificationUtil.showNotification("Custom Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        return;
+                    NotificationUtil.showNotification("Custom Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
                 }
+
             }
 
             if(module.getDepth()== 0 || module.getHeight()==0 || module.getWidth() == 0)

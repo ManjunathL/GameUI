@@ -1536,30 +1536,27 @@ public class CustomizedProductDetailsWindow extends Window {
                 List<Module> modules = this.product.getModules();
                 for (Module module : modules)
                 {
-                    if (("Yes").equals(module.getAccessoryPackDefault()))
-                    {
-                        if (module.getAccessoryPacks().size() == 0)
-                        {
-                            NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                            return;
+                    if(!("Profile Handle").equals(product.getHandleTypeSelection())) {
+                        if (("Yes").equals(module.getAccessoryPackDefault())) {
+                            if (module.getAccessoryPacks().size() == 0) {
+                                NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                return;
+                            }
+                        }
+                        if (("Yes").equals(module.getHandlePresent())) {
+                            if (module.getHandleQuantity() == 0) {
+                                NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                return;
+                            }
+                        }
+                        if (("Yes").equals(module.getKnobPresent())) {
+                            if (module.getKnobQuantity() == 0) {
+                                NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                return;
+                            }
                         }
                     }
-                    if(("Yes").equals(module.getHandlePresent()))
-                    {
-                        if(module.getHandleQuantity()==0)
-                        {
-                            NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                            return;
-                        }
-                    }
-                    if(("Yes").equals(module.getKnobPresent()))
-                    {
-                        if(module.getKnobQuantity()==0)
-                        {
-                            NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                            return;
-                        }
-                    }
+
                 }
 
                 List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
