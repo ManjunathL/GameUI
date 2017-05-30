@@ -72,6 +72,7 @@ public class MarginDetailsWindow extends Window
     Double LabourCost=0.0;
     Double hikeCost=0.0;
     Double handleAndKnonCost=0.0;
+    Double hingeCost=0.0;
 
     Double productsTotal=0.0;
     Double totalWoAccessories = 0.0;
@@ -388,6 +389,7 @@ public class MarginDetailsWindow extends Window
                 CarcassCost+=modulePrice.getCarcassCost();
                 AccessoryCost += modulePrice.getAccessoryCost();//msp
                 handleAndKnonCost +=modulePrice.getHandleAndKnobCost();
+                hingeCost+=modulePrice.getHingeCost();
 
                 if(!(module.getHandlePresent()==null))
                 {
@@ -405,6 +407,11 @@ public class MarginDetailsWindow extends Window
                         manufacturingHandleAndKnobCost+=handleandknobdetails.getSourcePrice();
                     }
                 }
+               /* PriceMaster hingedetails=proposalDataProvider.getHandleAndKnobRateDetails(module.getKnobCode(),this.priceDate,this.city);
+                {
+                    LOG.info("knob price master " +handleandknobdetails);
+                    manufacturingHandleAndKnobCost+=handleandknobdetails.getSourcePrice();
+                }*/
                 List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
                 for(ModuleAccessoryPack moduleAccessoryPack:moduleaccpack)
                 {

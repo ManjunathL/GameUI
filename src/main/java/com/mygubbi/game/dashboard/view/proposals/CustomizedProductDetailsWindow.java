@@ -195,7 +195,7 @@ public class CustomizedProductDetailsWindow extends Window {
         horizontalLayout1.setStyleName("product-details-grid-tabs");
 
         tabSheet = new TabSheet();
-        tabSheet.addStyleName("tabsheetstyle");
+        //tabSheet.addStyleName("tabsheetstyle");
         tabSheet.setSizeFull();
         tabSheet.addTab(buildModulesGrid(), "Modules");
 
@@ -215,7 +215,7 @@ public class CustomizedProductDetailsWindow extends Window {
         horizontalLayout1.addComponent(tabSheet);
         horizontalLayout1.setHeightUndefined();
         vLayout.addComponent(horizontalLayout1);
-        vLayout.setExpandRatio(horizontalLayout1, 0.57f);
+        vLayout.setExpandRatio(horizontalLayout1, 0.40f);
 
         Component footerLayOut = buildFooter();
         vLayout.addComponent(footerLayOut);
@@ -587,14 +587,56 @@ public class CustomizedProductDetailsWindow extends Window {
                     moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
                     moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
                     moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
-                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue("0");
+                }else
+                {
+                    List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
+                    if (accDetailsforHandle.size() == 0) {
+                        module.setHandleQuantity(0);
+                    } else {
+                        for (AccessoryDetails a : accDetailsforHandle) {
+                            LOG.info("handle quantity " + a);
+                            module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                        }
+                    }
+
+                    List<AccessoryDetails> accDetailsforKnob = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "K");
+                    if (accDetailsforKnob.size() == 0) {
+                       module.setKnobQuantity(0);
+                    } else {
+                        for (AccessoryDetails a : accDetailsforKnob) {
+                            module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                        }
+                    }
                 }
             }
             else if(component==glassSelection)
             {
                 moduleContainer.getItem(module).getItemProperty(Module.GLASS_TYPE).setValue(glassSelection.getValue());
             }
-
+            else if(component==handleType)
+            {
+                LOG.info("handle type changed");
+                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue(handleType.getValue());
+                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
+                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+                /*moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(null);*/
+                //module.setHandleThickness(null);
+            }
+            else if(component==knobType)
+            {
+                LOG.info("knob type changed");
+                moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(knobType.getValue());
+                moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
+                moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+            }
+            else if(component==knob)
+            {
+                moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
+            }
+            else if(component==handle)
+            {
+                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
+            }
             if (StringUtils.isNotEmpty(module.getMgCode()))
             {
                 String unitType = module.getUnitType();
@@ -1462,7 +1504,7 @@ public class CustomizedProductDetailsWindow extends Window {
         HorizontalLayout footer = new HorizontalLayout();
         footer.setSizeFull();
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-
+        //footer.addStyleName("footerstyle");
         HorizontalLayout right = new HorizontalLayout();
         right.setSpacing(true);
 
@@ -1498,6 +1540,22 @@ public class CustomizedProductDetailsWindow extends Window {
                         if (module.getAccessoryPacks().size() == 0)
                         {
                             NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            return;
+                        }
+                    }
+                    if(("Yes").equals(module.getHandlePresent()))
+                    {
+                        if(module.getHandleQuantity()==0)
+                        {
+                            NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            return;
+                        }
+                    }
+                    if(("Yes").equals(module.getKnobPresent()))
+                    {
+                        if(module.getKnobQuantity()==0)
+                        {
+                            NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                             return;
                         }
                     }
@@ -2066,6 +2124,7 @@ public class CustomizedProductDetailsWindow extends Window {
         {
             this.handlefinishchanged(null);
         }
+        refreshPrice(valueChangeEvent);
     }
     private void knobtypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
@@ -2117,6 +2176,7 @@ public class CustomizedProductDetailsWindow extends Window {
             product.setHandleImage(h.getImagePath());
             handleImage.setSource(new ExternalResource(h.getImagePath()));
         }
+        refreshPrice(valueChangeEvent);
     }
     private void knobfinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
@@ -2129,6 +2189,7 @@ public class CustomizedProductDetailsWindow extends Window {
             product.setKnobImage(h.getImagePath());
             knobImage.setSource(new ExternalResource(h.getImagePath()));
         }
+        refreshPrice(valueChangeEvent);
     }
     private void handlepackage()
     {

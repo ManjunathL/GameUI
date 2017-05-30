@@ -1800,7 +1800,7 @@ public class ProposalDataProvider {
     public List<MGModule> retrieveModuleDetails(String mgcode)
     {
         try {
-            JSONObject jsonArray = dataProviderMode.getResource("module/checkhandlepresent", new HashMap<String, String>() {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/checkhandlepresent", new HashMap<String, String>() {
                 {
                     put("code",URLEncoder.encode(mgcode, "UTF-8"));
                 }

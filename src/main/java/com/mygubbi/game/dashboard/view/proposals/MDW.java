@@ -565,11 +565,11 @@ public class MDW extends Window {
             thicknessfield=gethandlethickness();
             binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
             thicknessfield.setRequired(false);
-            if(thicknessfield.size()>0)
+            /*if(thicknessfield.size()>0)
             {
                 String code = StringUtils.isNotEmpty(module.getHandleThickness()) ? module.getHandleThickness() : (String) thicknessfield.getItemIds().iterator().next();
                 thicknessfield.setValue(code);
-            }
+            }*/
             thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
             formLayout.addComponent(thicknessfield);
 
@@ -701,14 +701,11 @@ public class MDW extends Window {
         LOG.debug("Module b4 price calc :" + module.toString());
         this.dontCalculatePriceNow = false;
 
-        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
-        {
-            if(module.getHandleTypeSelection()=="Profile Handle")
-            {
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            if (module.getHandleTypeSelection() == "Profile Handle") {
                 handlequantity.setValue("0");
                 knobqquantity.setValue("0");
-            }
-            else {
+            } else {
                 this.customText.setReadOnly(false);
                 this.customText.setValue(description);
 
@@ -735,7 +732,8 @@ public class MDW extends Window {
                         knobqquantity.setValue(a.getQty());
                     }
                 }
-                List<MGModule> handlePresent = proposalDataProvider.checkHandlePresent(module.getMgCode());
+                LOG.info("mg code"  +module.getMgCode());
+                List<MGModule> handlePresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
                 for (MGModule m : handlePresent) {
                     if (m.getHandleMandatory().equals("Yes")) {
                         module.setHandlePresent(m.getHandleMandatory());
@@ -749,44 +747,18 @@ public class MDW extends Window {
                         knobqquantity.setRequired(true);
                     }
                 }
-            }
-            //hinges
-//            List<MGModule> hingesPresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
-            LOG.info("hinge present " +handlePresent);
-            List<ModuleHingeMap> hingeMaps1=proposalDataProvider.getHinges(module.getMgCode(),module.getHingeType());
-            LOG.info("size of hinge" +hingeMaps1.size());
-            module.setHingePack(hingeMaps1);
-            for(MGModule m:handlePresent)
-            {
-                if(m.getHingeMandatory().equals("Yes"))
-                {
-                    module.setHingePresent(m.getHingeMandatory());
-                    List<ModuleHingeMap> hingeMaps=proposalDataProvider.getHinges(module.getMgCode(),module.getHingeType());
-                    module.setHingePack(hingeMaps);
-                }
-                /*if(m.getHingeMandatory().equals("Yes"))
-                {
-                    LOG.info("if stmt");
-                    module.setHingePresent(m.getHingeMandatory());
-                    List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Hinge",module.getHingeType(),"0" ,"0");
-                    for(HandleMaster h:handleMasters)
-                    {
-                        module.setHingeCode(h.getCode());
-                        List<AccessoryDetails> hingeQuantity=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"HI");
-                        if(hingeQuantity.size()==0)
-                        {
-                            module.setHingeQuantity(0);
-                        }else
-                        {
-                            for(AccessoryDetails a:accDetailsforHandle)
-                            {
-                                LOG.info("hinge quantity " +a);
-                                module.setHingeQuantity(Integer.valueOf(a.getQty()));
-                            }
-                        }
+                //hinges
+//              List<MGModule> hingesPresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                LOG.info("size of hinge" + hingeMaps1.size());
+                module.setHingePack(hingeMaps1);
+                for (MGModule m : handlePresent) {
+                    if (m.getHingeMandatory().equals("Yes")) {
+                        module.setHingePresent(m.getHingeMandatory());
+                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                        module.setHingePack(hingeMaps);
                     }
-               }*/
-
+                }
             }
         }
         refreshPrice();
@@ -1483,10 +1455,16 @@ public class MDW extends Window {
             //LOG.info("thickness field value " +thicknessfield.getValue().toString());
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
-                LOG.info("ssss " +module.getHandleThickness());
+                LOG.info("ssss " +module.getHandleThickness() +" " +module.getHandlePresent());
                 if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
                 {
                     NotificationUtil.showNotification("Please select thickness before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+                LOG.info("handlequantity.getValue()" +handlequantity.getValue() +" " +module.getHandlePresent());
+                if(Integer.parseInt(handlequantity.getValue())== 0 && Objects.equals(module.getHandlePresent(), "Yes"))
+                {
+                    NotificationUtil.showNotification("Please enter valid quantity", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
                 if(Objects.equals(module.getCustomCheck(),"Custom Remarks") && Objects.equals(customText.getValue(), "") )
@@ -1812,9 +1790,11 @@ public class MDW extends Window {
         List<HandleMaster> handleMasters1=proposalDataProvider.getHandleArray(module.getHandleCode());
         module.setHandlePack(handleMasters1);
 
-        List<HandleMaster> knobmaster1=proposalDataProvider.getHandleArray(module.getKnobCode());
-        module.setKnobPack(knobmaster1);
-
+        if(module.getKnobCode()!=null)
+        {
+            List<HandleMaster> knobmaster1=proposalDataProvider.getHandleArray(module.getKnobCode());
+            module.setKnobPack(knobmaster1);
+        }
         refreshPrice();
     }
 
