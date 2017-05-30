@@ -289,7 +289,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 String code = StringUtils.isNotEmpty(product.getHinge()) ? product.getHinge() : (String) hingesSelection.getItemIds().iterator().next();
                 hingesSelection.setValue(code);
             }
-            hingesSelection.addValueChangeListener(this::refreshPrice);
+            this.hingesSelection.addValueChangeListener(this::hingeTypeChanged);
             formLayoutLeft.addComponent(this.hingesSelection);
 
             glassList=proposalDataProvider.getHinges("glass");
@@ -589,17 +589,6 @@ public class CustomizedProductDetailsWindow extends Window {
                     moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
                     moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue("0");
                 }
-            }
-            else if(component==hingesSelection)
-            {
-                LOG.info("handle Selection");
-                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HINGE_TYPE).getValue();
-                LOG.info("text value" +text);
-                LOG.info("mg code " +module.getMgCode() +" hinge " +product.getHinge() + " " +hingesSelection.getValue());
-                List<ModuleHingeMap> hingeMaps1=proposalDataProvider.getHinges(this.module.getMgCode(),product.getHinge());
-                LOG.info("size of hinge" +hingeMaps1.size());
-                moduleContainer.getItem(module).getItemProperty(Module.HINGE_PACK).setValue(hingeMaps1);
-                //module.setHingePack(hingeMaps1);
             }
             else if(component==glassSelection)
             {
@@ -2094,6 +2083,27 @@ public class CustomizedProductDetailsWindow extends Window {
             this.knobfinishchanged(null);
         }
     }
+
+    private void hingeTypeChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        String hingeTypeValueChange = (String) valueChangeEvent.getProperty().getValue();
+            for (Module module : product.getModules()) {
+                if (product.getModules() == null || hingeTypeValueChange == null) return;
+                List<MGModule> hingesPresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), hingeTypeValueChange);
+                module.getHandlePack().clear();
+                module.setHingePack(hingeMaps1);
+                for (MGModule m : hingesPresent) {
+                    if (m.getHingeMandatory().equals("Yes")) {
+                        module.setHingePresent(m.getHingeMandatory());
+                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), hingeTypeValueChange);
+                        module.setHingePack(hingeMaps);
+                    }
+                }
+            }
+            refreshPrice(null);
+
+    }
     private void  handlefinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
         //LOG.info("Title " +valueChangeEvent.getProperty().getValue().toString());
@@ -2147,9 +2157,6 @@ public class CustomizedProductDetailsWindow extends Window {
             }
 
         }
-    }
-    public void checkboxvaluechanged(Property.ValueChangeEvent valueChangeEvent)
-    {
 
     }
 }
