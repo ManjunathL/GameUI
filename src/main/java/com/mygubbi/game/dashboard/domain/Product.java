@@ -61,6 +61,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String HANDLE_IMAGE="handleImage";
     public static final String KNOB_IMAGE="knobImage";
     public static final String PRODUCT_LOCATION="productLocation";
+    public static final String HANDLETYPE_SELECTION="handleTypeSelection";
 
     private int id;
     private int proposalId;
@@ -87,6 +88,7 @@ public class Product implements FileAttachmentsHolder {
     private String knobType;
     private String knobFinish;
     private int knobThickness;
+    private String handleTypeSelection;
 
     private String baseCarcass;
     private String baseCarcassCode;
@@ -537,6 +539,14 @@ public class Product implements FileAttachmentsHolder {
 
     public void setProductLocation(String productLocation) {  this.productLocation = productLocation;  }
 
+    public String getHandleTypeSelection() {
+        return handleTypeSelection;
+    }
+
+    public void setHandleTypeSelection(String handleTypeSelection) {
+        this.handleTypeSelection = handleTypeSelection;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -561,7 +571,8 @@ public class Product implements FileAttachmentsHolder {
     @Override
     public String toString() {
         return "Product{" +
-                "id=" + id +
+                "addons=" + addons +
+                ", id=" + id +
                 ", proposalId=" + proposalId +
                 ", fromVersion='" + fromVersion + '\'' +
                 ", title='" + title + '\'' +
@@ -586,6 +597,7 @@ public class Product implements FileAttachmentsHolder {
                 ", knobType='" + knobType + '\'' +
                 ", knobFinish='" + knobFinish + '\'' +
                 ", knobThickness=" + knobThickness +
+                ", handleTypeSelection='" + handleTypeSelection + '\'' +
                 ", baseCarcass='" + baseCarcass + '\'' +
                 ", baseCarcassCode='" + baseCarcassCode + '\'' +
                 ", wallCarcass='" + wallCarcass + '\'' +
@@ -612,7 +624,6 @@ public class Product implements FileAttachmentsHolder {
                 ", knobImage='" + knobImage + '\'' +
                 ", productLocation='" + productLocation + '\'' +
                 ", modules=" + modules +
-                ", addons=" + addons +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';
     }

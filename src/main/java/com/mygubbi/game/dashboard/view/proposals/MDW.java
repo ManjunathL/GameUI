@@ -565,6 +565,11 @@ public class MDW extends Window {
             thicknessfield=gethandlethickness();
             binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
             thicknessfield.setRequired(false);
+            if(thicknessfield.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(module.getHandleThickness()) ? module.getHandleThickness() : (String) thicknessfield.getItemIds().iterator().next();
+                thicknessfield.setValue(code);
+            }
             thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
             formLayout.addComponent(thicknessfield);
 
@@ -698,51 +703,59 @@ public class MDW extends Window {
 
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
-            this.customText.setReadOnly(false);
-            this.customText.setValue(description);
-
-            List<AccessoryDetails> accDetailsforHandle=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"HL");
-            if(accDetailsforHandle.size()==0)
+            if(module.getHandleTypeSelection()=="Profile Handle")
             {
                 handlequantity.setValue("0");
-                handlequantity.setRequired(false);
-                thicknessfield.setRequired(false);
-            }else
-            {
-                for(AccessoryDetails a:accDetailsforHandle)
-                {
-                    LOG.info("handle quantity " +a);
-                    module.setHandleQuantity(Integer.valueOf(a.getQty()));
-                    handlequantity.setValue(a.getQty());
-                }
-            }
-
-            List<AccessoryDetails> accDetailsforKnob=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"K");
-            if(accDetailsforKnob.size()==0)
-            {
                 knobqquantity.setValue("0");
-                knobqquantity.setRequired(false);
-            }else {
-                for (AccessoryDetails a : accDetailsforKnob) {
-                    module.setKnobQuantity(Integer.valueOf(a.getQty()));
-                    knobqquantity.setValue(a.getQty());
-                }
             }
-            List<MGModule> handlePresent=proposalDataProvider.checkHandlePresent(module.getMgCode());
-            for(MGModule m:handlePresent)
+            else
             {
-                if(m.getHandleMandatory().equals("Yes"))
+                this.customText.setReadOnly(false);
+                this.customText.setValue(description);
+
+                List<AccessoryDetails> accDetailsforHandle=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"HL");
+                if(accDetailsforHandle.size()==0)
                 {
-                    module.setHandlePresent(m.getHandleMandatory());
-                    hPresent=m.getHandleMandatory();
-                    handlequantity.setRequired(true);
-                    thicknessfield.setRequired(true);
+                    handlequantity.setValue("0");
+                    handlequantity.setRequired(false);
+                    thicknessfield.setRequired(false);
+                }else
+                {
+                    for(AccessoryDetails a:accDetailsforHandle)
+                    {
+                        LOG.info("handle quantity " +a);
+                        module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                        handlequantity.setValue(a.getQty());
+                    }
                 }
-                if(m.getKnobMandatory().equals("Yes"))
+
+                List<AccessoryDetails> accDetailsforKnob=proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(),"K");
+                if(accDetailsforKnob.size()==0)
                 {
-                    module.setKnobPresent(m.getKnobMandatory());
-                    knobPresent=m.getKnobMandatory();
-                    knobqquantity.setRequired(true);
+                    knobqquantity.setValue("0");
+                    knobqquantity.setRequired(false);
+                }else {
+                    for (AccessoryDetails a : accDetailsforKnob) {
+                        module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                        knobqquantity.setValue(a.getQty());
+                    }
+                }
+                List<MGModule> handlePresent=proposalDataProvider.checkHandlePresent(module.getMgCode());
+                for(MGModule m:handlePresent)
+                {
+                    if(m.getHandleMandatory().equals("Yes"))
+                    {
+                        module.setHandlePresent(m.getHandleMandatory());
+                        hPresent=m.getHandleMandatory();
+                        handlequantity.setRequired(true);
+                        thicknessfield.setRequired(true);
+                    }
+                    if(m.getKnobMandatory().equals("Yes"))
+                    {
+                        module.setKnobPresent(m.getKnobMandatory());
+                        knobPresent=m.getKnobMandatory();
+                        knobqquantity.setRequired(true);
+                    }
                 }
             }
             //hinges
@@ -783,6 +796,18 @@ public class MDW extends Window {
                }*/
 
             }
+            List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",module.getHandleType(),module.getHandleFinish(),thicknessfield.getValue().toString());
+            for(HandleMaster h:handleMasters)
+            {
+                module.setHandleCode(h.getCode());
+            }
+
+            LOG.info("handle code " +module.getHandleCode() + "knob code " +module.getKnobCode());
+            List<HandleMaster> handleMasters1=proposalDataProvider.getHandleArray(module.getHandleCode());
+            module.setHandlePack(handleMasters1);
+
+            List<HandleMaster> knobmaster1=proposalDataProvider.getHandleArray(module.getKnobCode());
+            module.setKnobPack(knobmaster1);
         }
         refreshPrice();
         refreshAccPacks();
@@ -1478,8 +1503,9 @@ public class MDW extends Window {
             //LOG.info("thickness field value " +thicknessfield.getValue().toString());
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
-                LOG.info("ssss " +module.getHandleThickness());
-                if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
+                LOG.info("ssss " +module.getHandleThickness() +module.getHandlePresent());
+                //if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
+                if(thicknessfield.getValue()==null && Objects.equals(module.getHandlePresent(), "Yes"))
                 {
                     NotificationUtil.showNotification("Please select thickness before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;

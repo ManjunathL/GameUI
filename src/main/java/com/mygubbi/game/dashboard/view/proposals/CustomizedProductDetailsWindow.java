@@ -137,6 +137,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox knobfield;
     private ComboBox knobthickness;
     private ComboBox knobthicknessfield;
+    private OptionGroup handleSelection;
     private Image knobImage;
 
     private List<HandleMaster> handlethickness;
@@ -171,6 +172,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setSizeFull();
+        vLayout.addStyleName("vLayoutScroll");
 
         vLayout.setMargin(new MarginInfo(true, true, true, true));
         setContent(vLayout);
@@ -184,7 +186,8 @@ public class CustomizedProductDetailsWindow extends Window {
         horizontalLayout0.addComponent(buildAddItemBasicFormLayoutRight());
         vLayout.addComponent(horizontalLayout0);
         horizontalLayout0.setHeightUndefined();
-        vLayout.setSpacing(true);
+        horizontalLayout0.setSizeFull();
+        //vLayout.setSpacing(true);
         vLayout.setExpandRatio(horizontalLayout0, 0.60f);
 
         HorizontalLayout horizontalLayout1 = new HorizontalLayout();
@@ -192,6 +195,7 @@ public class CustomizedProductDetailsWindow extends Window {
         horizontalLayout1.setStyleName("product-details-grid-tabs");
 
         tabSheet = new TabSheet();
+        tabSheet.addStyleName("tabsheetstyle");
         tabSheet.setSizeFull();
         tabSheet.addTab(buildModulesGrid(), "Modules");
 
@@ -285,6 +289,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 String code = StringUtils.isNotEmpty(product.getHinge()) ? product.getHinge() : (String) hingesSelection.getItemIds().iterator().next();
                 hingesSelection.setValue(code);
             }
+            hingesSelection.addValueChangeListener(this::refreshPrice);
             formLayoutLeft.addComponent(this.hingesSelection);
 
             glassList=proposalDataProvider.getHinges("glass");
@@ -298,7 +303,21 @@ public class CustomizedProductDetailsWindow extends Window {
                 String code = StringUtils.isNotEmpty(product.getGlass()) ? product.getGlass() : (String) glassSelection.getItemIds().iterator().next();
                 glassSelection.setValue(code);
             }
+            glassSelection.addValueChangeListener(this::refreshPrice);
             formLayoutLeft.addComponent(this.glassSelection);
+
+            handleSelection=new OptionGroup("Handle Selection");
+            handleSelection.addItem("Normal");
+            handleSelection.addItem("Profile Handle");
+            binder.bind(handleSelection,Product.HANDLETYPE_SELECTION);
+            if (product.getHandleTypeSelection()== null)
+            {
+                handleSelection.select("Normal");
+                handleSelection.setImmediate(true);
+            }
+            handleSelection.addStyleName("horizontal");
+            handleSelection.addValueChangeListener(this::refreshPrice);
+            formLayoutLeft.addComponent(handleSelection);
 
             handletitlelist=proposalDataProvider.getHandleTitle("Handle");
             this.handleType=getHanldeTypefilledComboBox("Handle Type",handletitlelist,null);
@@ -557,7 +576,35 @@ public class CustomizedProductDetailsWindow extends Window {
                     moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH).setValue(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
                 }
             }
-
+            else if(component == handleSelection)
+            {
+                LOG.info("handle Selection");
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).getValue();
+                LOG.info("text value" +text);
+                if(handleSelection.getValue()=="Profile Handle")
+                {
+                    LOG.info("inside profile handle");
+                    moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
+                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue("0");
+                }
+            }
+            else if(component==hingesSelection)
+            {
+                LOG.info("handle Selection");
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HINGE_TYPE).getValue();
+                LOG.info("text value" +text);
+                LOG.info("mg code " +module.getMgCode() +" hinge " +product.getHinge() + " " +hingesSelection.getValue());
+                List<ModuleHingeMap> hingeMaps1=proposalDataProvider.getHinges(this.module.getMgCode(),product.getHinge());
+                LOG.info("size of hinge" +hingeMaps1.size());
+                moduleContainer.getItem(module).getItemProperty(Module.HINGE_PACK).setValue(hingeMaps1);
+                //module.setHingePack(hingeMaps1);
+            }
+            else if(component==glassSelection)
+            {
+                moduleContainer.getItem(module).getItemProperty(Module.GLASS_TYPE).setValue(glassSelection.getValue());
+            }
 
             if (StringUtils.isNotEmpty(module.getMgCode()))
             {
@@ -833,6 +880,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         module.setKnobFinish(product.getKnobFinish());
                         module.setHingeType(product.getHinge());
                         module.setGlassType(product.getGlass());
+                        module.setHandleTypeSelection(product.getHandleTypeSelection());
                     }
                     MDW.open(module, product, 0, proposalVersion, proposalHeader);
                 }
@@ -2099,6 +2147,9 @@ public class CustomizedProductDetailsWindow extends Window {
             }
 
         }
+    }
+    public void checkboxvaluechanged(Property.ValueChangeEvent valueChangeEvent)
+    {
 
     }
 }
