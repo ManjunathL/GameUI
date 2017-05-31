@@ -1817,8 +1817,8 @@ public class ProposalDataProvider {
         try {
             JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthandlefinish", new HashMap<String, String>() {
                 {
-                    put("title", URLEncoder.encode(Title, "UTF-8"));
-                    put("type", type);
+                    put("title", URLEncoder.encode(Title, "UTF-8") + "");
+                    put("type", type + "");
                 }
             });
             HandleMaster[] items = this.mapper.readValue(jsonArray.toString(), HandleMaster[].class);
@@ -2020,6 +2020,25 @@ public class ProposalDataProvider {
         try
         {
             return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
+
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public HandleMaster getHandleorKnobDetails(String title, String finish, String thickness)
+    {
+        try{
+        JSONObject jsonObject = dataProviderMode.getResource("handle/handleorknobdetails", new HashMap<String, String>(){
+            {
+                put("title",URLEncoder.encode(title, "UTF-8"));
+                put("finish", URLEncoder.encode(finish, "UTF-8"));
+                put("thickness", URLEncoder.encode(thickness, "UTF-8"));
+            }
+        });
+
+            return this.mapper.readValue(jsonObject.toString(), HandleMaster.class);
 
         } catch (Exception e) {
             NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);

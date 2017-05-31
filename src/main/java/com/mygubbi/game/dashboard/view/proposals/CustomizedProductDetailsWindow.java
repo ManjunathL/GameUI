@@ -37,6 +37,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.xpath.operations.Mod;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
@@ -549,6 +550,9 @@ public class CustomizedProductDetailsWindow extends Window {
 
         for (Module module : modules) {
 
+            int oldhandleThickness = 0;
+            int oldKnobThickness = 0;
+
             LOG.debug("Inside For loop :");
             if (component == baseCarcassSelection &&
                      (module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name()))) {
@@ -615,28 +619,40 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             else if(component==handleType)
             {
-                LOG.info("handle type changed");
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue(handleType.getValue());
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
-                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
-                /*moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(null);*/
-                //module.setHandleThickness(null);
+
+                Notification.show("The selected handle size for each of the modules may not be available for the new Handle chosen. We have defaulted the handle size to the nearest match. Please review for each module and change if required.",Type.HUMANIZED_MESSAGE);
+                oldhandleThickness = Integer.parseInt(module.getHandleThickness());
+               /* module.getHandlePack().clear();
+                module.setHandleType(String.valueOf(this.handleType.getValue()));*/
+
             }
             else if(component==knobType)
             {
-                LOG.info("knob type changed");
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(knobType.getValue());
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
-                moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+
+                Notification.show("The selected knob size for each of the modules may not be available for the new Handle chosen. We have defaulted the knob to the nearest match. Please review for each module and change if required.",Type.HUMANIZED_MESSAGE);
+
+/*
+                module.getKnobPack().clear();
+*/
+                /*module.setKnobType(String.valueOf(this.knobType.getValue()));*/
+               /*
+                moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);*/
             }
             else if(component==knob)
             {
-                moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
+              moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
+                /*module.setKnobFinish(String.valueOf(this.knob.getValue()));*/
             }
             else if(component==handle)
             {
-                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
+               moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
+                /*module.setHandleFinish(String.valueOf(this.handle.getValue()));*/
             }
+            updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
             if (StringUtils.isNotEmpty(module.getMgCode()))
             {
                 String unitType = module.getUnitType();
@@ -684,6 +700,88 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         updateTotalAmount();
         updatePsftCosts();
+    }
+
+    private void updateHandleAndKnobforModule(Module module, int oldHingeQty, int oldKnobQty)
+    {
+
+        List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
+        if (accDetailsforHandle.size() == 0) {
+            module.setHandleQuantity(0);
+        } else {
+            for (AccessoryDetails a : accDetailsforHandle) {
+                module.setHandleQuantity(Integer.valueOf(a.getQty()));
+            }
+        }
+
+        List<AccessoryDetails> accDetailsforKnob = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "K");
+        if (accDetailsforKnob.size() == 0) {
+            module.setKnobQuantity(0);
+        } else {
+            for (AccessoryDetails a : accDetailsforKnob) {
+                module.setKnobQuantity(Integer.valueOf(a.getQty()));
+            }
+        }
+
+        Object handleTypeValue = handleType.getValue();
+        Object handleFinishValue = handle.getValue();
+        Object knobTypeValue = knobType.getValue();
+        Object knobFinishValue = knob.getValue();
+        List<HandleMaster> handlethickness=proposalDataProvider.getHandleThickness(String.valueOf(handleTypeValue), String.valueOf(handleFinishValue),"Handle");
+        for (HandleMaster handleMaster : handlethickness)
+        {
+            if (Integer.parseInt(handleMaster.getThickness()) == oldHingeQty)
+            {
+                module.setHandleThickness(String.valueOf(oldHingeQty));
+            }
+            else
+            {
+                int handleDistance = Math.abs(Integer.parseInt(handlethickness.get(0).getThickness()) - oldHingeQty);
+                int handleIdx = 0;
+                for(int c = 1; c < handlethickness.size(); c++){
+                    int cdistance = Math.abs(Integer.parseInt(handlethickness.get(c).getThickness()) - oldHingeQty);
+                    if(cdistance < handleDistance){
+                        handleIdx = c;
+                        handleDistance = cdistance;
+                    }
+                }
+                module.setHandleThickness(handlethickness.get(handleIdx).getThickness());
+            }
+        }
+
+      /*  LOG.debug("Handle changed code : " + module.getHandleType() + " :" + module.getHandleThickness() +  " : " + module.getHandleFinish() );
+        LOG.debug("Handle changed code : " + module.getKnobType() + " :" + "0" +  " : " + module.getKnobFinish() );*/
+
+
+        List<HandleMaster> knobThickness=proposalDataProvider.getHandleThickness(String.valueOf(knobTypeValue), String.valueOf(knobFinishValue),"Knob");
+        for (HandleMaster handleMaster : knobThickness)
+        {
+            if (Integer.parseInt(handleMaster.getThickness()) == oldKnobQty)
+            {
+                module.setKnobThickness(String.valueOf(oldHingeQty));
+            }
+            else
+            {
+                int knobDistance = Math.abs(Integer.parseInt(knobThickness.get(0).getThickness()) - oldHingeQty);
+                int knobIdx = 0;
+                for(int c = 1; c < knobThickness.size(); c++){
+                    int cdistance = Math.abs(Integer.parseInt(knobThickness.get(c).getThickness()) - oldHingeQty);
+                    if(cdistance < knobDistance){
+                        knobIdx = c;
+                        knobDistance = cdistance;
+                    }
+                }
+                module.setKnobThickness(handlethickness.get(knobIdx).getThickness());
+            }
+        }
+
+        List<HandleMaster> handleMasterDetails = proposalDataProvider.getHandles("Handle",String.valueOf(handleTypeValue),String.valueOf(handleFinishValue),module.getHandleThickness());
+        module.setHandleCode(handleMasterDetails.get(0).getCode());
+
+
+        List<HandleMaster> knobMasterDetails = proposalDataProvider.getHandles("Knob",String.valueOf(knobTypeValue),String.valueOf(knobFinishValue),"0");
+        module.setKnobCode(knobMasterDetails.get(0).getCode());
+
     }
 
 
@@ -1258,6 +1356,9 @@ public class CustomizedProductDetailsWindow extends Window {
                 copyModule.setKnobQuantity(m.getKnobQuantity());
                 copyModule.setKnobFinish(m.getKnobFinish());
                 copyModule.setKnobPresent(m.getKnobPresent());
+                copyModule.setHandleTypeSelection(m.getHandleTypeSelection());
+                copyModule.setHingePack(m.getHingePack());
+                copyModule.setGlassType(m.getGlassType());
 
                 DashboardEventBus.post(new ProposalEvent.ModuleUpdated(copyModule,false,false,product.getModules().size(),CustomizedProductDetailsWindow.this));
                 DashboardEventBus.unregister(this);
@@ -2102,12 +2203,14 @@ public class CustomizedProductDetailsWindow extends Window {
             knob.setReadOnly(true);
             hingesSelection.setReadOnly(true);
             glassSelection.setReadOnly(true);
+            handleSelection.setReadOnly(true);
         }
     }
     private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
         //String prevCode = product.getHandleFinish();
         String prevCode = handle.getValue().toString();
+        LOG.info("value change " +valueChangeEvent.getProperty().getValue().toString());
         LOG.info("prevcode " +prevCode);
         String title=valueChangeEvent.getProperty().getValue().toString();
         handlefinishlist=proposalDataProvider.getHandleFinish(title,"Handle");
@@ -2116,7 +2219,6 @@ public class CustomizedProductDetailsWindow extends Window {
         Object next=this.handle.getItemIds().iterator().next();
         LOG.info("next " +next.toString());
         handle.setValue(next);
-
         if (next.equals(prevCode))
         {
             this.handlefinishchanged(null);
@@ -2125,7 +2227,7 @@ public class CustomizedProductDetailsWindow extends Window {
     }
     private void knobtypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        LOG.info("knov type changed" +valueChangeEvent.getProperty().getValue().toString());
+        LOG.info("knob type changed" +valueChangeEvent.getProperty().getValue().toString());
         //String prevCode=product.getKnobFinish();
         String prevCode=knob.getValue().toString();
         String title=valueChangeEvent.getProperty().getValue().toString();
@@ -2138,6 +2240,7 @@ public class CustomizedProductDetailsWindow extends Window {
         if (next.equals(prevCode)) {
             this.knobfinishchanged(null);
         }
+        refreshPrice(valueChangeEvent);
     }
 
     private void hingeTypeChanged(Property.ValueChangeEvent valueChangeEvent)
