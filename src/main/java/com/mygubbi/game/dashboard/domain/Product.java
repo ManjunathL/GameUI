@@ -62,6 +62,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String KNOB_IMAGE="knobImage";
     public static final String PRODUCT_LOCATION="productLocation";
     public static final String HANDLETYPE_SELECTION="handleTypeSelection";
+    public static final String SHUTTER_IMAGE="shutterImage";
 
     private int id;
     private int proposalId;
@@ -115,6 +116,7 @@ public class Product implements FileAttachmentsHolder {
     private String handleImage;
     private String knobImage;
     private String productLocation;
+    private String shutterImage;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -545,6 +547,14 @@ public class Product implements FileAttachmentsHolder {
 
     public void setHandleTypeSelection(String handleTypeSelection) {
         this.handleTypeSelection = handleTypeSelection;
+    }
+
+    public String getShutterDesignImage() {
+        return shutterImage;
+    }
+
+    public void setShutterDesignImage(String shutterDesignImage) {
+        this.shutterImage = shutterDesignImage;
     }
 
     @Override
