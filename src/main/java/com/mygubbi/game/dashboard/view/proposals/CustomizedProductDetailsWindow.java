@@ -619,7 +619,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 LOG.info("handle type changed");
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue(handleType.getValue());
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
-                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+               //moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
                 /*moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(null);*/
                 //module.setHandleThickness(null);
             }
@@ -628,7 +628,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 LOG.info("knob type changed");
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(knobType.getValue());
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
-                moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+                //moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
             }
             else if(component==knob)
             {
@@ -1299,6 +1299,9 @@ public class CustomizedProductDetailsWindow extends Window {
                 copyModule.setKnobQuantity(m.getKnobQuantity());
                 copyModule.setKnobFinish(m.getKnobFinish());
                 copyModule.setKnobPresent(m.getKnobPresent());
+                copyModule.setHandleTypeSelection(m.getHandleTypeSelection());
+                copyModule.setHingePack(m.getHingePack());
+                copyModule.setGlassType(m.getGlassType());
 
                 DashboardEventBus.post(new ProposalEvent.ModuleUpdated(copyModule,false,false,product.getModules().size(),CustomizedProductDetailsWindow.this));
                 DashboardEventBus.unregister(this);
