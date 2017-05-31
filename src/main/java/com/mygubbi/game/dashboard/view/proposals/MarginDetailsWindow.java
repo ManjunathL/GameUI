@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by shruthi on 14-Feb-17.
@@ -306,18 +307,7 @@ public class MarginDetailsWindow extends Window
             codeForAddonSourcePrice=addonsourceprice.getCode();
         }
 
-        PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
-        rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
-        PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
-        rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
-        PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
-        rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
-        PriceMaster labourcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForManfLabourCost,this.priceDate,this.city);
-        rateForManfLabourCost=labourcostpriceMaster.getSourcePrice();
-        PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
-        rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
-        PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
-        rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
+
 
         products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for(Product product:products)
@@ -327,6 +317,27 @@ public class MarginDetailsWindow extends Window
 
         for(Product product:products)
         {
+            if(Objects.equals(product.getProductCategoryCode(), "Wardrobe"))
+            {
+                PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails("STDMC:Wardrobe",this.priceDate,this.city);
+                rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
+            }
+            else
+            {
+                PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
+                rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
+            }
+            PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
+            rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
+            PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
+            rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
+            PriceMaster labourcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForManfLabourCost,this.priceDate,this.city);
+            rateForManfLabourCost=labourcostpriceMaster.getSourcePrice();
+            PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
+            rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
+            PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
+            rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
+
             Amount+=product.getAmount();
             List<Module> modules=product.getModules();
             for(Module module:modules)
