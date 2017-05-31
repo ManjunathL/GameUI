@@ -37,7 +37,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.xpath.operations.Mod;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
@@ -132,6 +131,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox thickness;
     private ComboBox thicknessfield;
     private Image handleImage;
+    private Image shutterImage;
     private ComboBox knobType;
     private ComboBox knobTypefield;
     private ComboBox knob;
@@ -855,6 +855,7 @@ public class CustomizedProductDetailsWindow extends Window {
             String code = StringUtils.isNotEmpty(product.getShutterDesignCode()) ? product.getShutterDesignCode() : (String) shutterDesign.getItemIds().iterator().next();
             shutterDesign.setValue(code);
         }
+        shutterDesign.addValueChangeListener(this::shutterDesignchanged);
         formLayoutRight.addComponent(this.shutterDesign);
 
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
@@ -1021,7 +1022,29 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayout.setSizeFull();
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         String basePath = ConfigHolder.getInstance().getImageBasePath();
+
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            shutterImage=new Image();
+            if (StringUtils.isEmpty(product.getShutterDesignImage())) {
+                List<Finish> finishes=proposalDataProvider.getShutterCodes(shutterFinishSelection.getValue().toString());
+                for(Finish f:finishes)
+                {
+                    product.setShutterDesignImage(f.getImagePath());
+                    shutterImage.setSource(new ExternalResource(product.getShutterDesignImage()));
+                    //shutterImage.setSource(new ExternalResource("https://res.cloudinary.com/mygubbi/image/upload/v1494849877/handle/HANDLE01.jpg"));
+                }
+            }
+            else
+            {
+                shutterImage.setSource(new ExternalResource(product.getShutterDesignImage()));
+                //shutterImage.setSource(new ExternalResource("https://res.cloudinary.com/mygubbi/image/upload/v1494849877/handle/HANDLE01.jpg"));
+            }
+            shutterImage.setCaption("Shutter");
+            shutterImage.setHeight("65px");
+            shutterImage.setWidth("200px");
+            shutterImage.setImmediate(true);
+            //verticalLayout.addComponent(shutterImage);
+
             handleImage = new Image();
             if (StringUtils.isEmpty(product.getHandleImage())) {
                 handlethickness = proposalDataProvider.getHandleImages("Handle", handleType.getValue().toString(), handle.getValue().toString());
@@ -1033,11 +1056,15 @@ public class CustomizedProductDetailsWindow extends Window {
             } else {
                 handleImage.setSource(new ExternalResource(product.getHandleImage()));
             }
-            handleImage.setCaption(null);
+            handleImage.setCaption("Handle");
             handleImage.setHeight("65px");
             handleImage.setWidth("200px");
             handleImage.setImmediate(true);
-            verticalLayout.addComponent(handleImage);
+
+            HorizontalLayout horizontalLayout1=new HorizontalLayout();
+            horizontalLayout1.addComponent(shutterImage);
+            horizontalLayout1.addComponent(handleImage);
+            verticalLayout.addComponent(horizontalLayout1);
 
             knobImage = new Image();
             if (StringUtils.isEmpty(product.getKnobImage())) {
@@ -1052,7 +1079,7 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             knobImage.setHeight("65px");
             knobImage.setWidth("100px");
-            knobImage.setCaption(null);
+            knobImage.setCaption("knob");
             knobImage.setImmediate(true);
             knobImage.setStyleName("knobimagestyle");
             verticalLayout.addComponent(knobImage);
@@ -1099,6 +1126,19 @@ public class CustomizedProductDetailsWindow extends Window {
         if (finishes.size() > 0)
             shutterDesign.setValue(shutterDesign.getItemIds().iterator().next());
         refreshPrice(valueChangeEvent);
+    }
+
+    private void shutterDesignchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        LOG.info("shutter design changed " +valueChangeEvent);
+        List<Finish> finishes=proposalDataProvider.getShutterImages(valueChangeEvent.getProperty().getValue().toString());
+        for(Finish f:finishes)
+        {
+            product.setShutterDesignImage(f.getImagePath());
+            LOG.info("shutter image in design change " +f.getImagePath());
+            shutterImage.setSource(new ExternalResource(f.getImagePath()));
+            //shutterImage.setSource(new ExternalResource("https://res.cloudinary.com/mygubbi/image/upload/v1494849877/handle/HANDLE01.jpg"));
+        }
     }
 
     private Component getQuoteUploadControl() {
@@ -1627,6 +1667,7 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.addClickListener(event -> {
             try {
                 try {
+                    LOG.info("on save "+ product.getShutterDesignImage());
                     binder.commit();
                 } catch (FieldGroup.CommitException e) {
                     NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2025,15 +2066,16 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox getShutterDesignCombo()
     {
         List<Finish> finishes=proposalDataProvider.getShutterCodes(shutterFinishSelection.getValue().toString());
-        LOG.info("Finish size " +finishes.size());
+        LOG.info("Finish size " +finishes.toString());
         final BeanContainer<String, Finish> container = new BeanContainer<>(Finish.class);
-        container.setBeanIdProperty(Finish.TITLE);    container.addAll(finishes);
+        container.setBeanIdProperty(Finish.SHUTTER_CODE);//value changed
+        container.addAll(finishes);
         ComboBox select = new ComboBox("Shutter Design");
         select.setNullSelectionAllowed(false);
         select.setWidth("250px");
-        select.setStyleName("designs-combo");
+        //select.setStyleName("designs-combo");
         select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId(Finish.TITLE);
+        select.setItemCaptionPropertyId(Finish.SHUTTER_CODE);
         if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
 
@@ -2219,6 +2261,7 @@ public class CustomizedProductDetailsWindow extends Window {
         Object next=this.handle.getItemIds().iterator().next();
         LOG.info("next " +next.toString());
         handle.setValue(next);
+
         if (next.equals(prevCode))
         {
             this.handlefinishchanged(null);
@@ -2315,6 +2358,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 knob.setReadOnly(true);
                 hingesSelection.setReadOnly(true);
                 glassSelection.setReadOnly(true);
+                handleSelection.setReadOnly(true);
             }
 
         }

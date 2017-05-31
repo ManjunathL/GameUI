@@ -734,17 +734,27 @@ public class MDW extends Window {
                 }
                 LOG.info("mg code"  +module.getMgCode());
                 List<MGModule> handlePresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
-                for (MGModule m : handlePresent) {
+                for (MGModule m : handlePresent)
+                {
+                    LOG.info("module mand " +m.toString());
                     if (m.getHandleMandatory().equals("Yes")) {
                         module.setHandlePresent(m.getHandleMandatory());
                         hPresent = m.getHandleMandatory();
                         handlequantity.setRequired(true);
                         thicknessfield.setRequired(true);
                     }
+                    else {
+                        module.setHandlePresent(m.getHandleMandatory());
+                        handlequantity.setRequired(false);
+                        thicknessfield.setRequired(false);
+                    }
                     if (m.getKnobMandatory().equals("Yes")) {
                         module.setKnobPresent(m.getKnobMandatory());
                         knobPresent = m.getKnobMandatory();
                         knobqquantity.setRequired(true);
+                    }
+                    else {
+                        module.setKnobPresent(m.getKnobMandatory());
                     }
                 }
                 //hinges

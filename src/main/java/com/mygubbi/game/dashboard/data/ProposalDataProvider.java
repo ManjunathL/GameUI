@@ -2095,4 +2095,19 @@ public class ProposalDataProvider {
             throw new RuntimeException(e);
         }
     }
+    public List<Finish> getShutterImages(String title) {
+        JSONArray array = dataProviderMode.getResourceArray("module/selectshutterimage", new HashMap<String, String>() {
+            {
+                put("shutterCode",title);
+            }
+        });
+        try {
+            Finish[] items = this.mapper.readValue(array.toString(), Finish[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
 }
