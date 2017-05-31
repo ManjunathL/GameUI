@@ -322,6 +322,7 @@ public class MDW extends Window {
             handlequantity.setReadOnly(true);
             knobqquantity.setReadOnly(true);
             customText.setReadOnly(true);
+
         }
 
     }
@@ -558,6 +559,7 @@ public class MDW extends Window {
            this.importedModule = (TextField) binder.buildAndBind("Module", Module.MG_MODULE_CODE);
            this.importedModule.setReadOnly(true);
            formLayout.addComponent(importedModule);
+
        }
 
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
@@ -1771,6 +1773,7 @@ public class MDW extends Window {
 
     private ComboBox gethandlethickness()
     {
+        LOG.debug("Handle Thickness test : " + module.getHandleType() + ":" + module.getHandleFinish());
         List<HandleMaster> handlethickness=proposalDataProvider.getHandleThickness(module.getHandleType(),module.getHandleFinish(),"Handle");
         final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
         container.setBeanIdProperty(HandleMaster.THICKNESS);
@@ -1881,6 +1884,7 @@ public class MDW extends Window {
                 handlequantity.setReadOnly(true);
                 knobqquantity.setReadOnly(true);
                 thicknessfield.setReadOnly(true);
+                thickness.setReadOnly(true);
             }
 
         }

@@ -589,7 +589,9 @@ public class CustomizedProductDetailsWindow extends Window {
                 {
                     LOG.info("inside profile handle");
                     moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
-                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+//                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+                    module.setHandleQuantity(0);
+
                     moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
                 }else
                 {
@@ -600,6 +602,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         for (AccessoryDetails a : accDetailsforHandle) {
                             LOG.info("handle quantity " + a);
                             module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                            LOG.debug("Module Handle QTY : " + module.getHandleQuantity());
                         }
                     }
 
@@ -609,6 +612,8 @@ public class CustomizedProductDetailsWindow extends Window {
                     } else {
                         for (AccessoryDetails a : accDetailsforKnob) {
                             module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                            LOG.debug("Module KNob QTY : " + module.getKnobQuantity());
+
                         }
                     }
                 }
@@ -652,6 +657,7 @@ public class CustomizedProductDetailsWindow extends Window {
                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
                 /*module.setHandleFinish(String.valueOf(this.handle.getValue()));*/
             }
+            if (!(handleSelection.getValue()=="Profile Handle"))
             updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
             if (StringUtils.isNotEmpty(module.getMgCode()))
             {
@@ -723,10 +729,18 @@ public class CustomizedProductDetailsWindow extends Window {
             }
         }
 
+
+
         Object handleTypeValue = handleType.getValue();
         Object handleFinishValue = handle.getValue();
         Object knobTypeValue = knobType.getValue();
         Object knobFinishValue = knob.getValue();
+
+        LOG.debug("HandleType Value : " + handleTypeValue);
+        LOG.debug("HandleFinish Value : " + handleFinishValue);
+        LOG.debug("Knob type Value : " + knobTypeValue);
+        LOG.debug("KNob finish Value : " + knobFinishValue);
+
         List<HandleMaster> handlethickness=proposalDataProvider.getHandleThickness(String.valueOf(handleTypeValue), String.valueOf(handleFinishValue),"Handle");
         for (HandleMaster handleMaster : handlethickness)
         {
@@ -776,11 +790,10 @@ public class CustomizedProductDetailsWindow extends Window {
         }
 
         List<HandleMaster> handleMasterDetails = proposalDataProvider.getHandles("Handle",String.valueOf(handleTypeValue),String.valueOf(handleFinishValue),module.getHandleThickness());
-        module.setHandleCode(handleMasterDetails.get(0).getCode());
-
+        if (!(handleMasterDetails.size() == 0)) module.setHandleCode(handleMasterDetails.get(0).getCode());
 
         List<HandleMaster> knobMasterDetails = proposalDataProvider.getHandles("Knob",String.valueOf(knobTypeValue),String.valueOf(knobFinishValue),"0");
-        module.setKnobCode(knobMasterDetails.get(0).getCode());
+        if (!(knobMasterDetails.size() == 0))  module.setKnobCode(knobMasterDetails.get(0).getCode());
 
     }
 
