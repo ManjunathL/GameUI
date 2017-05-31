@@ -84,6 +84,7 @@ public class Module implements Cloneable {
     public static final String HINGE_QUANTITY="hingeQuantity";
     public static final String HNADLE_SELECTION_TYPE="handleTypeSelection";
     public static final String HINGE_PACK="hingePack";
+    public static final String HINGE_CHANGED_FLAG="handleChangedFlag";
 
     private int seq;
     private int moduleSequence;
@@ -155,6 +156,8 @@ public class Module implements Cloneable {
     private String hingeCode;
     private int hingeQuantity;
     private String handleTypeSelection;
+    private boolean handleChangedFlag;
+    private boolean knobChangedFlag;
 
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
     private List<HandleMaster> handlePack=new ArrayList<>();
@@ -805,6 +808,22 @@ public class Module implements Cloneable {
 
     public void setHandleTypeSelection(String handleTypeSelection) {
         this.handleTypeSelection = handleTypeSelection;
+    }
+
+    public boolean getHandleChangedFlag() {
+        return handleChangedFlag;
+    }
+
+    public void setHandleChangedFlag(boolean handleChangedFlag) {
+        this.handleChangedFlag = handleChangedFlag;
+    }
+
+    public boolean getKnobChangedFlag() {
+        return knobChangedFlag;
+    }
+
+    public void setKnobChangedFlag(boolean knobChangedFlag) {
+        this.knobChangedFlag = knobChangedFlag;
     }
 
     @Override
