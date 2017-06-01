@@ -4,6 +4,7 @@ package com.mygubbi.game.dashboard.view.proposals;
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
+import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
@@ -94,6 +95,8 @@ public class CreateProposalsView extends Panel implements View {
     private ComboBox designPartner;
     private Field<?> designPartnerEmail;
     private Field<?> designPartnerContact;
+
+    Button searchcrmid;
 
     private Grid productsGrid;
     private Label proposalTitleLabel;
@@ -232,6 +235,7 @@ public class CreateProposalsView extends Panel implements View {
         if (("Yes").contains(cityStatus)) {
             quotenew.setReadOnly(true);
             projectCityField.setReadOnly(true);
+            searchcrmid.setEnabled(false);
         }
     }
 
@@ -249,6 +253,7 @@ public class CreateProposalsView extends Panel implements View {
             {
                 projectCityField.setReadOnly(true);
                 quotenew.setReadOnly(true);
+                searchcrmid.setEnabled(false);
                 cancelButton.setVisible(false);
             }
         }
@@ -461,7 +466,71 @@ public class CreateProposalsView extends Panel implements View {
 
             proposalDataProvider.createProposalVersion(copyVersion);
 
-            proposalDataProvider.createNewProductFromOldProposal(copyVersion);
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+                proposalDataProvider.createNewProductFromOldProposal(copyVersion);
+            }
+            else
+            {
+                ProposalVersion proposalVersion=proposalDataProvider.createNewProductFromOldQuotation(copyVersion);
+                List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
+                for (Product product : products)
+                {
+                    List<Module> modules = product.getModules();
+                    for (Module module : modules)
+                    {
+                        module.setHandleType(product.getHandleType());
+                        module.setHandleFinish(product.getHandleFinish());
+                        module.setKnobType(product.getKnobType());
+                        module.setKnobFinish(product.getKnobFinish());
+                        module.setHingeType(product.getHinge());
+                        module.setGlassType(product.getGlass());
+                        module.setHandleTypeSelection(product.getHandleTypeSelection());
+
+                        if (module.getHandleTypeSelection() == "Profile Handle") {
+                            module.setHandleQuantity(0);
+                            module.setKnobQuantity(0);
+                        } else {
+                            List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
+                            if (accDetailsforHandle.size() == 0) {
+                                module.setHandleQuantity(0);
+                            } else {
+                                for (AccessoryDetails a : accDetailsforHandle) {
+                                    LOG.info("handle quantity " + a);
+                                    module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                                }
+                            }
+
+                            List<AccessoryDetails> accDetailsforKnob = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "K");
+                            if (accDetailsforKnob.size() == 0) {
+                                module.setKnobQuantity(0);
+                            } else {
+                                for (AccessoryDetails a : accDetailsforKnob) {
+                                    module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                                }
+                            }
+                            LOG.info("mg code"  +module.getMgCode());
+                            List<MGModule> handlePresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                            for (MGModule m : handlePresent) {
+                                LOG.info("module mand " + m.toString());
+                                if (m.getHandleMandatory().equals("Yes")) {
+                                    module.setHandlePresent(m.getHandleMandatory());
+                                } else {
+                                    module.setHandlePresent(m.getHandleMandatory());
+                                }
+                                if (m.getKnobMandatory().equals("Yes")) {
+                                    module.setKnobPresent(m.getKnobMandatory());
+                                } else {
+                                    module.setKnobPresent(m.getKnobMandatory());
+                                }
+                            }
+                        }
+
+                    }
+                    proposalDataProvider.updateProduct(product);
+                }
+
+            }
+
             proposalDataProvider.createNewAddonFromOldProposal(copyVersion);
 
             int proposalId = proposalHeaderNew.getId();
@@ -602,12 +671,11 @@ public class CreateProposalsView extends Panel implements View {
 
     }
 
-
     private void save(Button.ClickEvent clickEvent) {
 
         List<Product> products = proposalDataProvider.getProposalProducts(proposalHeader.getId());
-
-        if ((proposalHeader.getQuoteNoNew() == null) && !(products.size()==0)) {
+        boolean b = (Objects.equals(proposalHeader.getQuoteNoNew(), "") || proposalHeader.getQuoteNoNew() == null || proposalHeader.getQuoteNoNew().isEmpty()) && !(products.size() == 0);
+        if (b) {
             proposalDataProvider.updatePriceForNewProposal(proposalHeader);
         }
 
@@ -795,7 +863,7 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.addComponent(horizontalLayout0);
 
         HorizontalLayout hlayout=new HorizontalLayout();
-        Button searchcrmid=new Button("Search Customer");
+        searchcrmid =new Button("Search Customer");
         hlayout.addStyleName("crmstyle");
         searchcrmid.addClickListener(this::searchCRMData);
         hlayout.addComponent(searchcrmid);
@@ -842,7 +910,6 @@ public class CreateProposalsView extends Panel implements View {
         customerNameField = binder.buildAndBind("Customer Name", C_NAME);
         customerNameField.setRequired(true);
         ((TextField) customerNameField).setNullRepresentation("");
-        customerNameField.setReadOnly(true);
         formLayoutLeft.addComponent(customerNameField);
 
         customerAddressLine1 = binder.buildAndBind("Address", C_ADDRESS1);
@@ -865,8 +932,8 @@ public class CreateProposalsView extends Panel implements View {
         customerEmailField.setReadOnly(true);
         formLayoutLeft.addComponent(customerEmailField);
         customerNumberField1 = binder.buildAndBind("Phone", C_PHONE1);
-        ((TextField) customerNumberField1).setNullRepresentation("");
         customerNumberField1.setReadOnly(true);
+        ((TextField) customerNumberField1).setNullRepresentation("");
         formLayoutLeft.addComponent(customerNumberField1);
         /*customerNumberField2 = binder.buildAndBind("Phone 2", C_PHONE2);
         ((TextField) customerNumberField2).setNullRepresentation("");
@@ -1210,7 +1277,6 @@ public class CreateProposalsView extends Panel implements View {
         LocalDate today = LocalDate.now();
         month = today.getMonthValue();
 
-
         int value = 0;
         List<ProposalCity> count = proposalDataProvider.getMonthCount(month, cityCode);
         value = count.size();
@@ -1219,7 +1285,18 @@ public class CreateProposalsView extends Panel implements View {
         valueStr = Integer.toString(value);
         valueStr = String.format("%04d", value + 1);
         String date = new SimpleDateFormat("yyyy-MM").format(new Date());
-        QuoteNumNew = cityCode + "-" + date + "-" + valueStr;
+        String s = cityCode + "-" + date + "-" + valueStr;
+        for(ProposalCity proposalCity : count)
+        {
+            if (Objects.equals(proposalCity.getQuoteNo(), s)){
+                valueStr = String.format("%04d", value + 2);
+                s = cityCode + "-" + date + "-" + valueStr;
+
+            }
+        }
+        QuoteNumNew = s;
+
+
         //proposalHeader.setQuoteNoNew(QuoteNumNew);
         //         quotenew.setValue(QuoteNumNew);
     }

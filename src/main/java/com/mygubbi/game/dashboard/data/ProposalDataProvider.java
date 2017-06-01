@@ -622,6 +622,7 @@ public class ProposalDataProvider {
                 put("lookupType", type);
             }
         });
+
         try {
             LookupItem[] items = this.mapper.readValue(array.toString(), LookupItem[].class);
             List<LookupItem> lookupItems = new ArrayList<>(Arrays.asList(items));
@@ -730,6 +731,18 @@ public class ProposalDataProvider {
             String productJson = this.mapper.writeValueAsString(proposalVersion);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/createnewfromoldproposal", productJson);
+
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
+    }
+
+    public ProposalVersion createNewProductFromOldQuotation(ProposalVersion proposalVersion) {
+        try {
+            String productJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/createnewbeforeproductionspecification", productJson);
 
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         } catch (IOException e) {

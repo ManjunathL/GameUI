@@ -100,32 +100,36 @@ public class CRMsearchWindow extends Window
                         proposalHeader.setTitle(profile1.getDisplayName());
                         proposalHeader.setCemail(profile1.getEmail());
                         proposalHeader.setCphone1(profile1.getMobile());
-                        /*List<LookupItem> lookupItems=proposalDataProvider.getLookupItems("region");
-                        for(LookupItem l:lookupItems)
-                        {
-                            if(l.getCode().equals(profile1.getCity()))
-                            {
-                                proposalHeader.setPcity(l.getTitle());
-                            }
-                        }*/
-                        //proposalHeader.setPcity(profile1.getCity());
-                        //proposalHeader.setPcity("my city");
+
                         proposalHeader.setCname(profile1.getFirst_name());
                         proposalHeader.setSalesEmail(profile1.getSalesExecUserId());
                         List<User> Salesusers=proposalDataProvider.getUsersByEmail(profile1.getSalesExecUserId());
-                        for(User user:Salesusers)
+                        if (Salesusers.size()==0)
                         {
-                            proposalHeader.setSalesName(user.getName());
-                            proposalHeader.setSalesPhone(user.getPhone());
+                            proposalHeader.setSalesName(null);
+                            proposalHeader.setSalesPhone(null);
                         }
-                        /*proposalHeader.setSalesName(profile1.getSalesExecName());
-                        proposalHeader.setSalesPhone(profile1.getSalesExecMobile());*/
+                        else
+                        {
+                            for(User user:Salesusers)
+                            {
+                                proposalHeader.setSalesName(user.getName());
+                                proposalHeader.setSalesPhone(user.getPhone());
+                            }
+                        }
+
                         proposalHeader.setDesignerEmail(profile1.getDesignerUserId());
                         List<User> designusers=proposalDataProvider.getUsersByEmail(profile1.getDesignerUserId());
-                        for(User user:designusers)
+                        if (designusers.size() == 0)
                         {
-                            proposalHeader.setDesignerName(user.getName());
-                            proposalHeader.setDesignerPhone(user.getPhone());
+                            proposalHeader.setDesignerName(null);
+                            proposalHeader.setDesignerPhone(null);
+                        }
+                        else {
+                            for (User user : designusers) {
+                                proposalHeader.setDesignerName(user.getName());
+                                proposalHeader.setDesignerPhone(user.getPhone());
+                            }
                         }
                         /*proposalHeader.setDesignerName(profile1.getDesignerName());
                         proposalHeader.setDesignerPhone(profile1.getDesignerMobile());*/
@@ -159,9 +163,9 @@ public class CRMsearchWindow extends Window
 
         GridCellFilter filter = new GridCellFilter(crmgrid);
 
-        filter.setTextFilter(Profile.CRM_ID,true,true);
+        filter.setTextFilter(Profile.CRM_ID,true,false);
         filter.setTextFilter(Profile.FIRST_NAME,true,false);
-        filter.setTextFilter(Profile.CUSTOMER_EMAIL,true,true);
+        filter.setTextFilter(Profile.CUSTOMER_EMAIL,true,false);
         filter.setTextFilter(Profile.CUSTOMER_PHONE,true,false);
 
         verticalLayout.addComponent(horizontalLayout);

@@ -228,13 +228,11 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setProposalId(product.getProposalId());
                 productLibrary.setQuantity(product.getQuantity());
                 productLibrary.setQuoteFilePath(product.getQuoteFilePath());
-                productLibrary.setRoom(product.getRoom());
                 productLibrary.setRoomCode(product.getRoomCode());
                 productLibrary.setSeq(product.getSeq());
                 productLibrary.setShutterDesign(product.getShutterDesign());
                 productLibrary.setShutterDesignCode(product.getShutterDesignCode());
                 productLibrary.setSource(product.getSource());
-                productLibrary.setTitle(product.getTitle());
                 productLibrary.setType(Product.TYPES.PRODUCT_LIBRARY.name());
                 productLibrary.setUpdatedBy(product.getUpdatedBy());
                 productLibrary.setWallCarcass(product.getWallCarcass());
@@ -252,6 +250,7 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setKnobType(product.getKnobType());
                 productLibrary.setKnobFinish(product.getKnobFinish());
                 productLibrary.setProductLocation(productLocationField.getValue().toString());
+                productLibrary.setSize(String.valueOf(sizeField.getValue()));
                 boolean success = proposalDataProvider.InsertProductLibrary(productLibrary);
                 LOG.info("field vale " +productLocationField.getValue() + " " +productLibrary.getProductLocation());
                 LOG.info("success in " + success);

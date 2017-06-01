@@ -311,7 +311,7 @@ public class CustomizedProductDetailsWindow extends Window {
             handleSelection.addItem("Normal");
             handleSelection.addItem("Profile Handle");
             binder.bind(handleSelection,Product.HANDLETYPE_SELECTION);
-            if (product.getHandleTypeSelection()== null)
+            if (product.getHandleTypeSelection()== null || product.getHandleTypeSelection().isEmpty())
             {
                 handleSelection.select("Normal");
                 handleSelection.setImmediate(true);
@@ -553,6 +553,22 @@ public class CustomizedProductDetailsWindow extends Window {
             int oldhandleThickness = 0;
             int oldKnobThickness = 0;
 
+            LOG.info(("handle thickness old " +module.getHandleThickness()));
+            LOG.info(("knob thickness old " +module.getKnobThickness()));
+
+            if (!(module.getHandleThickness() == null))
+            {
+                oldhandleThickness = Integer.parseInt(module.getHandleThickness());
+            }
+
+            if (!(module.getKnobThickness() == null))
+            {
+                oldKnobThickness = Integer.parseInt(module.getKnobThickness());
+            }
+
+
+
+
             LOG.debug("Inside For loop :");
             if (component == baseCarcassSelection &&
                      (module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name()))) {
@@ -588,10 +604,9 @@ public class CustomizedProductDetailsWindow extends Window {
                 if(handleSelection.getValue()=="Profile Handle")
                 {
                     LOG.info("inside profile handle");
+                    NotificationUtil.showNotification("Current handle prices have been removed. Please add profile handle in addons",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
-//                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
-                    module.setHandleQuantity(0);
-
+                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
                     moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
                 }else
                 {
@@ -627,8 +642,8 @@ public class CustomizedProductDetailsWindow extends Window {
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue(handleType.getValue());
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
 
-                Notification.show("The selected handle size for each of the modules may not be available for the new Handle chosen. We have defaulted the handle size to the nearest match. Please review for each module and change if required.",Type.HUMANIZED_MESSAGE);
-                oldhandleThickness = Integer.parseInt(module.getHandleThickness());
+                NotificationUtil.showNotification("Please review the size for each module since the previous handle size may not be available for the new handle chosen",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+
                /* module.getHandlePack().clear();
                 module.setHandleType(String.valueOf(this.handleType.getValue()));*/
 
@@ -638,7 +653,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(knobType.getValue());
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
 
-                Notification.show("The selected knob size for each of the modules may not be available for the new Handle chosen. We have defaulted the knob to the nearest match. Please review for each module and change if required.",Type.HUMANIZED_MESSAGE);
+                NotificationUtil.showNotification("Please review the quantity for each module since the knob quantity may not be available for the new knob chosen",NotificationUtil.STYLE_BAR_ERROR_SMALL);
 
 /*
                 module.getKnobPack().clear();
@@ -729,18 +744,10 @@ public class CustomizedProductDetailsWindow extends Window {
             }
         }
 
-
-
         Object handleTypeValue = handleType.getValue();
         Object handleFinishValue = handle.getValue();
         Object knobTypeValue = knobType.getValue();
         Object knobFinishValue = knob.getValue();
-
-        LOG.debug("HandleType Value : " + handleTypeValue);
-        LOG.debug("HandleFinish Value : " + handleFinishValue);
-        LOG.debug("Knob type Value : " + knobTypeValue);
-        LOG.debug("KNob finish Value : " + knobFinishValue);
-
         List<HandleMaster> handlethickness=proposalDataProvider.getHandleThickness(String.valueOf(handleTypeValue), String.valueOf(handleFinishValue),"Handle");
         for (HandleMaster handleMaster : handlethickness)
         {
@@ -750,7 +757,8 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             else
             {
-                int handleDistance = Math.abs(Integer.parseInt(handlethickness.get(0).getThickness()) - oldHingeQty);
+                int i = Integer.parseInt(handlethickness.get(0).getThickness());
+                int handleDistance = Math.abs(i - oldHingeQty);
                 int handleIdx = 0;
                 for(int c = 1; c < handlethickness.size(); c++){
                     int cdistance = Math.abs(Integer.parseInt(handlethickness.get(c).getThickness()) - oldHingeQty);
@@ -870,6 +878,8 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         shutterDesign.addValueChangeListener(this::shutterDesignchanged);
         formLayoutRight.addComponent(this.shutterDesign);
+
+        formLayoutRight.addComponent(new Label(""));
 
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
@@ -1053,8 +1063,8 @@ public class CustomizedProductDetailsWindow extends Window {
                 //shutterImage.setSource(new ExternalResource("https://res.cloudinary.com/mygubbi/image/upload/v1494849877/handle/HANDLE01.jpg"));
             }
             shutterImage.setCaption("Shutter");
-            shutterImage.setHeight("65px");
-            shutterImage.setWidth("200px");
+            shutterImage.setHeight("69px");
+            shutterImage.setWidth("80px");
             shutterImage.setImmediate(true);
             //verticalLayout.addComponent(shutterImage);
 
@@ -1092,7 +1102,7 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             knobImage.setHeight("65px");
             knobImage.setWidth("100px");
-            knobImage.setCaption("knob");
+            knobImage.setCaption("Knob");
             knobImage.setImmediate(true);
             knobImage.setStyleName("knobimagestyle");
             verticalLayout.addComponent(knobImage);
@@ -1707,6 +1717,12 @@ public class CustomizedProductDetailsWindow extends Window {
                         if (("Yes").equals(module.getKnobPresent())) {
                             if (module.getKnobQuantity() == 0) {
                                 NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                return;
+                            }
+                        }
+                        if (("Yes").equals(module.getHandlePresent())) {
+                            if (module.getHandleThickness() == null) {
+                                NotificationUtil.showNotification("Please select appropriate handle size for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                                 return;
                             }
                         }

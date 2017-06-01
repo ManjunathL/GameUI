@@ -886,11 +886,14 @@ public class ProductAndAddons extends Window
         hLayoutInner.addComponent(addFromCatalogueButton);
         hLayoutInner.setComponentAlignment(addFromCatalogueButton,Alignment.TOP_RIGHT);
 
-        addFromProductLibrary = new Button("From Product Library");
-        addFromProductLibrary.setIcon(FontAwesome.PLUS_CIRCLE);
-        addFromProductLibrary.addStyleName(ValoTheme.BUTTON_SMALL);
-        hLayoutInner.addComponent(addFromProductLibrary);
-        hLayoutInner.setComponentAlignment(addFromProductLibrary,Alignment.TOP_RIGHT);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            addFromProductLibrary = new Button("From Product Library");
+            addFromProductLibrary.setIcon(FontAwesome.PLUS_CIRCLE);
+            addFromProductLibrary.addStyleName(ValoTheme.BUTTON_SMALL);
+            hLayoutInner.addComponent(addFromProductLibrary);
+            hLayoutInner.setComponentAlignment(addFromProductLibrary,Alignment.TOP_RIGHT);
+        }
 
         horizontalLayout.addComponent(hLayoutInner);
         horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
@@ -915,13 +918,17 @@ public class ProductAndAddons extends Window
                 }
         );
 
-        addFromProductLibrary.addClickListener(
-                clickEvent -> {
-                    //AllProductsDetailsWindow.open();
-                    //Dummy.open(proposal,proposalVersion,proposalHeader);
-                    AllProposalLibrary.open(proposal,proposalVersion,proposalHeader);
-                }
-        );
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            addFromProductLibrary.addClickListener(
+                    clickEvent -> {
+                        //AllProductsDetailsWindow.open();
+                        //Dummy.open(proposal,proposalVersion,proposalHeader);
+                        AllProposalLibrary.open(proposal,proposalVersion,proposalHeader);
+                    }
+            );
+        }
+
 
         productContainer = new BeanItemContainer<>(Product.class);
 
@@ -1010,6 +1017,7 @@ public class ProductAndAddons extends Window
                 copyProduct.setHandleType(p.getHandleType());
                 copyProduct.setHandleFinish(p.getHandleFinish());
                 copyProduct.setHandleImage(p.getHandleImage());
+                copyProduct.setHandleTypeSelection(p.getHandleTypeSelection());
                 LOG.info("COPIED@"+ copyProduct);
                 copyProduct.setAddons(p.getAddons());
 
@@ -1460,7 +1468,11 @@ public class ProductAndAddons extends Window
                             addKitchenOrWardrobeButton.setVisible(false);
                             addFromCatalogueButton.setVisible(false);
                             addonAddButton.setVisible(false);
-                            addFromProductLibrary.setVisible(false);
+                            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                            {
+                                addFromProductLibrary.setVisible(false);
+                            }
+
                             customAddonAddButton.setVisible(false);
                         /*versionStatus.setValue("Published");*/
                             NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
@@ -1477,8 +1489,11 @@ public class ProductAndAddons extends Window
             }
             proposalDataProvider.updateVersion(proposalVersion);
 
-            SendToCRMOnPublish sendToCRM = updatePriceInCRMOnPublish();
-            proposalDataProvider.updateCrmPriceOnPublish(sendToCRM);
+            if (!(proposalVersion.getVersion().startsWith("2.")))
+            {
+                SendToCRMOnPublish sendToCRM = updatePriceInCRMOnPublish();
+                proposalDataProvider.updateCrmPriceOnPublish(sendToCRM);
+            }
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             DashboardEventBus.unregister(this);
             close();
@@ -1590,8 +1605,6 @@ public class ProductAndAddons extends Window
                         success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                         proposalHeader.setVersion(proposalVersion.getVersion());
-                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
-                        proposalDataProvider.updateCrmPrice(sendToCRM);
                         proposalDataProvider.saveProposal(proposalHeader);
                     }
 
@@ -1763,7 +1776,11 @@ public class ProductAndAddons extends Window
                 case Draft:
                     submitButton.setVisible(true);
                     addKitchenOrWardrobeButton.setEnabled(true);
-                    addFromProductLibrary.setEnabled(true);
+                    if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                    {
+                        addFromProductLibrary.setEnabled(true);
+                    }
+
                     addFromCatalogueButton.setEnabled(true);
                     designSignOffButton.setVisible(false);
                     productionSignOffButton.setVisible(false);
@@ -1811,7 +1828,11 @@ public class ProductAndAddons extends Window
                     submitButton.setVisible(false);
                     confirmButton.setVisible(false);
                     addKitchenOrWardrobeButton.setVisible(false);
-                    addFromProductLibrary.setVisible(false);
+                    if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                    {
+                        addFromProductLibrary.setVisible(false);
+                    }
+
                     addFromCatalogueButton.setVisible(false);
                     addonAddButton.setVisible(false);
                     customAddonAddButton.setVisible(false);
@@ -1906,7 +1927,9 @@ public class ProductAndAddons extends Window
         addFromCatalogueButton.setEnabled(false);
         addonAddButton.setEnabled(false);
         customAddonAddButton.setEnabled(false);
-        addFromProductLibrary.setEnabled(false);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            addFromProductLibrary.setEnabled(false);
+        }
     }
 
     @Subscribe

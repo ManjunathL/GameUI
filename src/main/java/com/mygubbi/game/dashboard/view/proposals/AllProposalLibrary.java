@@ -155,8 +155,7 @@ public class AllProposalLibrary extends Window
         addonsGrid.setHeightByRows(11);
         addonsGrid.setHeightMode(HeightMode.ROW);
         addonsGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SIZE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH,ProductLibrary.PRODUCT_LOCATION);
-
+        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.SIZE,ProductLibrary.AMOUNT,ProductLibrary.IMAGE_PATH,ProductLibrary.PRODUCT_LOCATION);
         addonsGrid.addSelectionListener( selectionEvent -> {
             if (!selectionEvent.getAdded().isEmpty()) {
                 Object selected = ((Grid.SingleSelectionModel) addonsGrid.getSelectionModel()).getSelectedRow();
@@ -167,21 +166,22 @@ public class AllProposalLibrary extends Window
 
         GridCellFilter filter = new GridCellFilter(addonsGrid);
 
+        filter.setTextFilter(ProductLibrary.COLLECTION,true,false);
         filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,false);
         filter.setTextFilter(ProductLibrary.SIZE,true,false);
         filter.setTextFilter(ProductLibrary.SUB_CATEGORY,true,false);
         filter.setTextFilter(ProductLibrary.PRODUCT_TITLE,true,false);
-        filter.setTextFilter(ProductLibrary.COLLECTION,true,false);
         filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,false);
-        filter.setTextFilter(ProductLibrary.PRODUCT_LOCATION,true,false);
+        filter.setTextFilter(ProductLibrary.AMOUNT,true,false);
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("Collection");
-        columns.get(idx++).setHeaderCaption("Product Category");
+        columns.get(idx++).setHeaderCaption("Category");
+        columns.get(idx++).setHeaderCaption("Subcategory");
+        columns.get(idx++).setHeaderCaption("Name");
         columns.get(idx++).setHeaderCaption("Size");
-        columns.get(idx++).setHeaderCaption("Product Subcategory");
-        columns.get(idx++).setHeaderCaption("Product Name");
+        columns.get(idx++).setHeaderCaption("Price");
         columns.get(idx++).setHeaderCaption("Image").setRenderer(new HtmlRenderer(), new Converter<String, String>()
         {
             @Override
@@ -208,7 +208,7 @@ public class AllProposalLibrary extends Window
             }
         });
 
-        columns.get(idx++).setHeaderCaption("Product Location").setRenderer(new HtmlRenderer(), new Converter<String, String>()
+        columns.get(idx++).setHeaderCaption("Location").setRenderer(new HtmlRenderer(), new Converter<String, String>()
         {
             @Override
             public String convertToModel(String value,
@@ -325,11 +325,11 @@ public class AllProposalLibrary extends Window
             //product.setSeq(length);
             product.setProposalId(proposalHeader.getId());
             product.setFromVersion(proposalVersion.getVersion());
-            product.setTitle(p.getTitle());
+          //  product.setTitle(p.getTitle());
             product.setProductCategory(p.getProductCategory());
             product.setProductCategoryCode(p.getProductCategoryCode());
-            product.setRoom(p.getRoom());
-            product.setRoomCode(p.getRoomCode());
+           // product.setRoom(p.getRoom());
+            //product.setRoomCode(p.getRoomCode());
             product.setShutterDesign(p.getShutterDesign());
             product.setShutterDesignCode(p.getShutterDesignCode());
             product.setCatalogueName(p.getCatalogueName());
