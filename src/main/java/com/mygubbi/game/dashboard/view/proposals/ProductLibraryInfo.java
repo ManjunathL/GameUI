@@ -54,6 +54,7 @@ public class ProductLibraryInfo extends Window
     private Field<?> productTitleField;
     private Field<?> productdescriptionField;
     private Field<?> categoryField;
+    private Field<?> sizeField;
     private ComboBox collectionField;
     private TextField width;
     private TextField length;
@@ -129,8 +130,11 @@ public class ProductLibraryInfo extends Window
         categoryField.setReadOnly(true);
         formLayoutLeft.addComponent(categoryField);
 
-        Component size=getDimensionsPanel();
-        formLayoutLeft.addComponent(size);
+        sizeField=getsize();
+        binder.buildAndBind("Size",ProductLibrary.SIZE);
+        ((TextField) sizeField).setNullRepresentation("");
+        sizeField.setRequired(true);
+        formLayoutLeft.addComponent(sizeField);
 
         List<ProductLibraryMaster> productLibraryMasters=proposalDataProvider.getProductsubcategory(product.getProductCategoryCode());
         for(ProductLibraryMaster productLibraryMaster:productLibraryMasters)
@@ -156,7 +160,6 @@ public class ProductLibraryInfo extends Window
         productLocationField=getProductLocation();
         binder.buildAndBind("Product Location",ProductLibrary.PRODUCT_LOCATION);
         ((TextField) productLocationField).setNullRepresentation("");
-        productLocationField.setRequired(true);
         formLayoutLeft.addComponent(productLocationField);
 
         return formLayoutLeft;
@@ -184,6 +187,7 @@ public class ProductLibraryInfo extends Window
             try
             {
                 binder.commit();
+
             }
             catch (FieldGroup.CommitException e)
             {
@@ -305,6 +309,12 @@ public class ProductLibraryInfo extends Window
 
         return category;
     }
+
+    private TextField getsize()
+    {
+        TextField size=new TextField("Size");
+        return size;
+    }
     private Component getQuoteUploadControl() {
         this.quoteUploadCtrl = new Upload("Upload Image", (filename, mimeType) -> {
             LOG.debug("Received upload - " + filename);
@@ -367,7 +377,7 @@ public class ProductLibraryInfo extends Window
     private String getUploadBasePath() {
         return proposal.getProposalHeader().getFolderPath();
     }
-    private HorizontalLayout getDimensionsPanel() {
+   /* private HorizontalLayout getDimensionsPanel() {
         HorizontalLayout horizontalLayoutDimensions = new HorizontalLayout();
         horizontalLayoutDimensions.setSizeFull();
         horizontalLayoutDimensions.setMargin(new MarginInfo(false,true,false,true));
@@ -378,7 +388,9 @@ public class ProductLibraryInfo extends Window
         formLayoutDepth.setSizeFull();
         formLayoutDepth.setMargin(new MarginInfo(false,false,false,false));
         this.length = new TextField();
+        this.length.setNullRepresentation("");
         this.length.setCaption("Length");
+        this.length.setRequired(true);
         this.length.setWidth("60px");
         this.length.addStyleName(Runo.TEXTFIELD_SMALL);
         binder.bind(this.length,productLibrary.LENGTH);
@@ -389,7 +401,9 @@ public class ProductLibraryInfo extends Window
         formLayoutWidth.setSizeFull();
         formLayoutWidth.setMargin(new MarginInfo(false,false,false,false));
         this.width = new TextField();
+        this.width.setNullRepresentation("");
         this.width.setCaption("Width");
+        this.width.setRequired(true);
         this.width.setWidth("60px");
         this.width.addStyleName(Runo.TEXTFIELD_SMALL);
         binder.bind(this.width,ProductLibrary.WIDTH);
@@ -400,7 +414,9 @@ public class ProductLibraryInfo extends Window
         formLayoutHeight.setSizeFull();
         formLayoutHeight.setMargin(new MarginInfo(false,false,false,false));
         this.height = new TextField();
+        this.height.setNullRepresentation("");
         this.height.setCaption("Height");
+        this.height.setRequired(true);
         this.height.setWidth("60px");
         this.height.addStyleName(Runo.TEXTFIELD_SMALL);
         binder.bind(this.height, ProductLibrary.HEIGHT);
@@ -408,5 +424,5 @@ public class ProductLibraryInfo extends Window
         horizontalLayoutDimensions.addComponent(formLayoutHeight);
 
         return horizontalLayoutDimensions;
-    }
+    }*/
 }

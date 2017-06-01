@@ -878,7 +878,6 @@ public class ProductAndAddons extends Window
         addKitchenOrWardrobeButton.addStyleName(ValoTheme.BUTTON_SMALL);
         hLayoutInner.addComponent(addKitchenOrWardrobeButton);
         hLayoutInner.setComponentAlignment(addKitchenOrWardrobeButton,Alignment.TOP_RIGHT);
-
         hLayoutInner.setSpacing(true);
 
         addFromCatalogueButton = new Button("From Catalogue");

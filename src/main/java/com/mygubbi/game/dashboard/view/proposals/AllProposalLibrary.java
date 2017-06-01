@@ -155,7 +155,7 @@ public class AllProposalLibrary extends Window
         addonsGrid.setHeightByRows(11);
         addonsGrid.setHeightMode(HeightMode.ROW);
         addonsGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.LENGTH,ProductLibrary.WIDTH,ProductLibrary.HEIGHT,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH,ProductLibrary.PRODUCT_LOCATION);
+        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SIZE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.IMAGE_PATH,ProductLibrary.PRODUCT_LOCATION);
 
         addonsGrid.addSelectionListener( selectionEvent -> {
             if (!selectionEvent.getAdded().isEmpty()) {
@@ -168,9 +168,7 @@ public class AllProposalLibrary extends Window
         GridCellFilter filter = new GridCellFilter(addonsGrid);
 
         filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,false);
-        filter.setTextFilter(ProductLibrary.WIDTH,true,false);
-        filter.setTextFilter(ProductLibrary.LENGTH,true,false);
-        filter.setTextFilter(ProductLibrary.HEIGHT,true,false);
+        filter.setTextFilter(ProductLibrary.SIZE,true,false);
         filter.setTextFilter(ProductLibrary.SUB_CATEGORY,true,false);
         filter.setTextFilter(ProductLibrary.PRODUCT_TITLE,true,false);
         filter.setTextFilter(ProductLibrary.COLLECTION,true,false);
@@ -181,9 +179,7 @@ public class AllProposalLibrary extends Window
         int idx = 0;
         columns.get(idx++).setHeaderCaption("Collection");
         columns.get(idx++).setHeaderCaption("Product Category");
-        columns.get(idx++).setHeaderCaption("Length");
-        columns.get(idx++).setHeaderCaption("Width");
-        columns.get(idx++).setHeaderCaption("Height");
+        columns.get(idx++).setHeaderCaption("Size");
         columns.get(idx++).setHeaderCaption("Product Subcategory");
         columns.get(idx++).setHeaderCaption("Product Name");
         columns.get(idx++).setHeaderCaption("Image").setRenderer(new HtmlRenderer(), new Converter<String, String>()

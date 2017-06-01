@@ -320,13 +320,16 @@ public class MarginDetailsWindow extends Window
             if(Objects.equals(product.getProductCategoryCode(), "Wardrobe"))
             {
                 PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails("STDMC:Wardrobe",this.priceDate,this.city);
-                rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
+                rateForStdManfCost=productWOtaxpriceMaster.getSourcePrice();
             }
             else
             {
-                PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
-                rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
+                PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
+                rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
             }
+            LOG.info("rateForProductWOTax" +rateForStdManfCost);
+            PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
+            rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
             PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
             rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
             PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);

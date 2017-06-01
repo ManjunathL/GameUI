@@ -1470,7 +1470,7 @@ public class MDW extends Window {
                     if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
                     {
 
-                        NotificationUtil.showNotification("Please select thickness before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        NotificationUtil.showNotification("Please select handle size before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                     }
                     LOG.info("handlequantity.getValue()" +handlequantity.getValue() +" " +module.getHandlePresent());
@@ -1776,7 +1776,7 @@ public class MDW extends Window {
         container.setBeanIdProperty(HandleMaster.THICKNESS);
         container.addAll(handlethickness);
 
-        thickness=new ComboBox("Handle Width");
+        thickness=new ComboBox("Handle Size");
         thickness.setNullSelectionAllowed(false);
         thickness.setContainerDataSource(container);
         thickness.setItemCaptionPropertyId(HandleMaster.THICKNESS);
