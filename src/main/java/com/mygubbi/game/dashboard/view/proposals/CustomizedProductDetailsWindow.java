@@ -1691,6 +1691,7 @@ public class CustomizedProductDetailsWindow extends Window {
             try {
                 try {
                     LOG.info("on save "+ product.getShutterDesignImage());
+                    product.setCloseButtonFlag("No");
                     binder.commit();
                 } catch (FieldGroup.CommitException e) {
                     NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -1803,7 +1804,8 @@ public class CustomizedProductDetailsWindow extends Window {
         });
         closeBtn.focus();
 
-        if (!(Objects.equals(product.getType(), TYPES.PRODUCT_LIBRARY.name()))) {
+        LOG.info("product.getCloseButtonFlag() " +product.getCloseButtonFlag());
+        if (!(Objects.equals(product.getType(), TYPES.PRODUCT_LIBRARY.name()) && product.getCloseButtonFlag()=="Yes")) {
             right.addComponent(closeBtn);
             right.setComponentAlignment(closeBtn, Alignment.MIDDLE_RIGHT);
         }
