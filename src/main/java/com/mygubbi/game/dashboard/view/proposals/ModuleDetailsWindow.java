@@ -2008,7 +2008,7 @@ public class ModuleDetailsWindow extends Window {
     }
     private ComboBox gethandlethickness()
     {
-        thickness=new ComboBox("Handle Thickness");
+        thickness=new ComboBox("Handle Size");
         thickness.setNullSelectionAllowed(false);
         thickness.setItemCaptionPropertyId(HandleMaster.THICKNESS);
         return thickness;
