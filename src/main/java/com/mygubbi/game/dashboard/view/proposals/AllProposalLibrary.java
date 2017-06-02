@@ -361,6 +361,8 @@ public class AllProposalLibrary extends Window
             product.setKnobImage(p.getKnobImage());
             product.setGlass(p.getGlass());
             product.setHinge(p.getHinge());
+            product.setHandleTypeSelection(p.getHandleTypeSelection());
+            product.setCloseButtonFlag("Yes");
 
             List<Module> modules = p.getModules();
             List<Module> refreshedModules = new ArrayList<>();

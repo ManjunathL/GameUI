@@ -65,6 +65,8 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String KNOB_IMAGE="knobImage";
     public static final String SIZE="size";
     public static final String PRODUCT_LOCATION = "productLocation";
+    public static final String CLOSE_BUTTON_FLAG = "closebuttonFlag";
+    public static final String HANDLE_TYPE_SELECTION = "handleTypeSelection";
 
 
     private int id;
@@ -121,6 +123,8 @@ public class ProductLibrary implements FileAttachmentsHolder
     private String knobImage;
     private String size;
     private String productLocation;
+    private String closebuttonFlag;
+    private String handleTypeSelection;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -568,6 +572,21 @@ public class ProductLibrary implements FileAttachmentsHolder
 
     public void setProductLocation(String productLocation) {  this.productLocation = productLocation; }
 
+    public String getClosebuttonFlag() {
+        return closebuttonFlag;
+    }
+
+    public void setClosebuttonFlag(String closebuttonFlag) {
+        this.closebuttonFlag = closebuttonFlag;
+    }
+
+    public String getHandleTypeSelection() {
+        return handleTypeSelection;
+    }
+
+    public void setHandleTypeSelection(String handleTypeSelection) {
+        this.handleTypeSelection = handleTypeSelection;
+    }
 
     @Override
     public List<FileAttachment> getFileAttachmentList() {

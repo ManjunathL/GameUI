@@ -63,6 +63,8 @@ public class Product implements FileAttachmentsHolder {
     public static final String PRODUCT_LOCATION="productLocation";
     public static final String HANDLETYPE_SELECTION="handleTypeSelection";
     public static final String SHUTTER_IMAGE="shutterImage";
+    public static final String SHUTTER_CODE="shutterCode";
+    public static final String CLOSE_BUTTON_FLAG="closeButtonFlag";
 
     private int id;
     private int proposalId;
@@ -117,6 +119,8 @@ public class Product implements FileAttachmentsHolder {
     private String knobImage;
     private String productLocation;
     private String shutterImage;
+    private String shutterCode;
+    private String closeButtonFlag;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -557,6 +561,30 @@ public class Product implements FileAttachmentsHolder {
         this.shutterImage = shutterDesignImage;
     }
 
+    public String getShutterCode() {
+        return shutterCode;
+    }
+
+    public void setShutterCode(String shutterCode) {
+        this.shutterCode = shutterCode;
+    }
+
+    public String getShutterImage() {
+        return shutterImage;
+    }
+
+    public void setShutterImage(String shutterImage) {
+        this.shutterImage = shutterImage;
+    }
+
+    public String getCloseButtonFlag() {
+        return closeButtonFlag;
+    }
+
+    public void setCloseButtonFlag(String closeButtonFlag) {
+        this.closeButtonFlag = closeButtonFlag;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -633,6 +661,8 @@ public class Product implements FileAttachmentsHolder {
                 ", handleImage='" + handleImage + '\'' +
                 ", knobImage='" + knobImage + '\'' +
                 ", productLocation='" + productLocation + '\'' +
+                ", shutterImage='" + shutterImage + '\'' +
+                ", shutterCode='" + shutterCode + '\'' +
                 ", modules=" + modules +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';
