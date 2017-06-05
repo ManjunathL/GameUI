@@ -1122,7 +1122,7 @@ public class CustomizedProductDetailsWindow extends Window {
             shutterImage.setHeight("69px");
             shutterImage.setWidth("80px");
             shutterImage.setImmediate(true);
-            //verticalLayout.addComponent(shutterImage);
+            verticalLayout.addComponent(shutterImage);
 
             handleImage = new Image();
             if (StringUtils.isEmpty(product.getHandleImage())) {
