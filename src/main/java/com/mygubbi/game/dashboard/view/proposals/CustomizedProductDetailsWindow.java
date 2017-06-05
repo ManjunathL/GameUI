@@ -117,10 +117,12 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private List<LookupItem> hingesList;
     private List<LookupItem> glassList;
+    private List<LookupItem> handleselectionList;
     private List<HandleMaster> handletitlelist;
     private List<HandleMaster> knobtitlelist;
     private List<HandleMaster> handlefinishlist;
     private List<HandleMaster> knobfinishlist;
+    private List<HandleMaster> handlesizelist;
     private ComboBox hingesSelection;
     private ComboBox glassSelection;
 
@@ -138,16 +140,19 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox knobfield;
     private ComboBox knobthickness;
     private ComboBox knobthicknessfield;
-    private OptionGroup handleSelection;
+    private ComboBox handleSelection;
     private Image knobImage;
+    private TextField noOfHandle;
 
     private List<HandleMaster> handlethickness;
     private List<HandleMaster> Knobthickness;
     private String basePath = ConfigHolder.getInstance().getImageBasePath();
     private BeanContainer<String, HandleMaster> handlefinishBeanContainer;
     private BeanContainer<String, HandleMaster> knobfinishBeanContainer;
+    private BeanContainer<String, HandleMaster> handlethicknessBeanContainer;
 
     public CustomizedProductDetailsWindow(Proposal proposal, Product product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
+        LOG.info("Productaszasasc" +product);
         this.proposal = proposal;
         this.product = product;
         this.proposalVersion = proposalVersion;
@@ -307,26 +312,23 @@ public class CustomizedProductDetailsWindow extends Window {
             glassSelection.addValueChangeListener(this::refreshPrice);
             formLayoutLeft.addComponent(this.glassSelection);
 
-            handleSelection=new OptionGroup("Handle Selection");
-            handleSelection.addItem("Normal");
-            handleSelection.addItem("Profile Handle");
+            handleselectionList=proposalDataProvider.getHinges("handleselection");
+            this.handleSelection=getHandleSelectionFilledComboBox("Handle Selection",handleselectionList,null);
+            handleSelection.setRequired(true);
             binder.bind(handleSelection,Product.HANDLETYPE_SELECTION);
-            if (product.getHandleTypeSelection()== null || product.getHandleTypeSelection().isEmpty())
+            ((BeanContainer<String, LookupItem>) this.handleSelection.getContainerDataSource()).addAll(handleselectionList);
+            if(handleSelection.size()>0)
             {
-                handleSelection.select("Normal");
-                handleSelection.setImmediate(true);
+                String code = StringUtils.isNotEmpty(product.getHandleTypeSelection()) ? product.getHandleTypeSelection() : (String) handleSelection.getItemIds().iterator().next();
+                handleSelection.setValue(code);
             }
-            handleSelection.addStyleName("horizontal");
-            handleSelection.addValueChangeListener(this::refreshPrice);
-            formLayoutLeft.addComponent(handleSelection);
+            handleSelection.addValueChangeListener(this::handleselectionchanged);
+            formLayoutLeft.addComponent(this.handleSelection);
 
-            handletitlelist=proposalDataProvider.getHandleTitle("Handle");
-            this.handleType=getHanldeTypefilledComboBox("Handle Type",handletitlelist,null);
-            handleType.setRequired(true);
-            binder.bind(handleType,HANDLE_TYPE);
-            handleType.addValueChangeListener(this::handletypechanged);
-            LOG.info("handle value " +handleType.getValue().toString());
-            formLayoutLeft.addComponent(this.handleType);
+            noOfHandle=new TextField("# of Handle");
+            binder.bind(noOfHandle,Product.NO_OF_LENGTHS);
+            noOfHandle.addValueChangeListener(this::refreshPrice);
+            formLayoutLeft.addComponent(noOfHandle);
 
             knobtitlelist=proposalDataProvider.getHandleTitle("knob");
             LOG.info("knob value " +knobtitlelist.size());
@@ -336,6 +338,22 @@ public class CustomizedProductDetailsWindow extends Window {
             knobType.addValueChangeListener(this::knobtypechanged);
             LOG.info("knob type " +knobType.getValue().toString());
             formLayoutLeft.addComponent(this.knobType);
+
+            LOG.info("knob value " +knobType.getValue().toString());
+            knobfinishlist=proposalDataProvider.getHandleFinish(knobType.getValue().toString(),"knob");
+            LOG.info("knob finish list" +knobfinishlist.size());
+            this.knob=getKnobFinishedComboBox("Knob Finish",knobfinishlist,null);
+            knob.setRequired(true);
+            binder.bind(knob,KNOB_Finish);
+            this.knob.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, HandleMaster>) this.knob.getContainerDataSource()).addAll(knobfinishlist);
+            if(knob.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getKnobFinish()) ? product.getKnobFinish() : (String) knob.getItemIds().iterator().next();
+                knob.setValue(code);
+            }
+            this.knob.addValueChangeListener(this::knobfinishchanged);
+            formLayoutLeft.addComponent(this.knob);
         }
 
         areaInSft = new TextField("Area in sft : ");
@@ -601,13 +619,18 @@ public class CustomizedProductDetailsWindow extends Window {
                 LOG.info("handle Selection");
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).getValue();
                 LOG.info("text value" +text);
-                if(handleSelection.getValue()=="Profile Handle")
+                if(!(handleSelection.getValue()=="Normal"))
                 {
                     LOG.info("inside profile handle");
                     NotificationUtil.showNotification("Current handle prices have been removed. Please add profile handle in addons",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
-                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
-                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+                    if(!module.getModuleCategory().contains("Loft"))
+                    {
+                        LOG.info("inside category");
+                        moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+                        moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+                    }
+
                 }else
                 {
                     List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
@@ -672,6 +695,14 @@ public class CustomizedProductDetailsWindow extends Window {
                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
                 /*module.setHandleFinish(String.valueOf(this.handle.getValue()));*/
             }
+            else if(component==thicknessfield)
+            {
+                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(thicknessfield.getValue());
+            }
+            else if(component==noOfHandle)
+            {
+                this.product.setNoOfLengths(Double.valueOf(noOfHandle.getValue()));
+            }
             if (!(handleSelection.getValue()=="Profile Handle"))
             updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
             if (StringUtils.isNotEmpty(module.getMgCode()))
@@ -701,6 +732,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         moduleForPrice.setCity(proposalHeader.getPcity());
 
                         moduleForPrice.setModule(module);
+                        moduleForPrice.setProduct(product);
                         ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
 
                         amount = round(modulePrice.getTotalCost());
@@ -879,14 +911,20 @@ public class CustomizedProductDetailsWindow extends Window {
         shutterDesign.addValueChangeListener(this::shutterDesignchanged);
         formLayoutRight.addComponent(this.shutterDesign);
 
-        formLayoutRight.addComponent(new Label(""));
+
 
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
+            handletitlelist=proposalDataProvider.getHandleTitle("Handle");
+            this.handleType=getHanldeTypefilledComboBox("Handle Type",handletitlelist,null);
+            handleType.setRequired(true);
+            binder.bind(handleType,HANDLE_TYPE);
+            handleType.addValueChangeListener(this::handletypechanged);
+            LOG.info("handle value " +handleType.getValue().toString());
+            formLayoutRight.addComponent(this.handleType);
+
             handlefinishlist=proposalDataProvider.getHandleFinish(handleType.getValue().toString(),"Handle");
-            LOG.info("handle finish list" +handlefinishlist.size());
             this.handle=getHanldeFinishfilledComboBox("Handle Finish",handlefinishlist,null);
-            LOG.info("handle finish list" +handlefinishlist.size());
             handle.setRequired(true);
             binder.bind(handle,HANDLE_FINISH);
             this.handle.getContainerDataSource().removeAllItems();
@@ -899,21 +937,19 @@ public class CustomizedProductDetailsWindow extends Window {
             handle.addValueChangeListener(this::handlefinishchanged);
             formLayoutRight.addComponent(this.handle);
 
-            LOG.info("knob value " +knobType.getValue().toString());
-            knobfinishlist=proposalDataProvider.getHandleFinish(knobType.getValue().toString(),"knob");
-            LOG.info("knob finish list" +knobfinishlist.size());
-            this.knob=getKnobFinishedComboBox("Knob Finish",knobfinishlist,null);
-            knob.setRequired(true);
-            binder.bind(knob,KNOB_Finish);
-            this.knob.getContainerDataSource().removeAllItems();
-            ((BeanContainer<String, HandleMaster>) this.knob.getContainerDataSource()).addAll(knobfinishlist);
-            if(knob.size()>0)
+            handlesizelist=proposalDataProvider.getHandleThickness(handleType.getValue().toString(),handle.getValue().toString(),"Handle");
+            this.thicknessfield=gethandlethickness("Handle Size",handlesizelist,null);
+            thicknessfield.setRequired(true);
+            binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
+            this.thicknessfield.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, HandleMaster>) this.thicknessfield.getContainerDataSource()).addAll(handlesizelist);
+            if(thicknessfield.size()>0)
             {
-                String code = StringUtils.isNotEmpty(product.getKnobFinish()) ? product.getKnobFinish() : (String) knob.getItemIds().iterator().next();
-                knob.setValue(code);
+                String code=StringUtils.isNotEmpty(product.getHandleThickness())? product.getHandleThickness() : (String) thicknessfield.getItemIds().iterator().next();
+                thicknessfield.setValue(code);
             }
-            this.knob.addValueChangeListener(this::knobfinishchanged);
-            formLayoutRight.addComponent(this.knob);
+            //thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
+            formLayoutRight.addComponent(thicknessfield);
 
         }
         totalAmount = new TextField("<h2>Total Amount:</h2>");
@@ -927,6 +963,25 @@ public class CustomizedProductDetailsWindow extends Window {
 
         formLayoutRight.setSpacing(true);
         return formLayoutRight;
+    }
+
+    private ComboBox gethandlethickness(String caption,List<HandleMaster> list,Property.ValueChangeListener listener)
+    {
+        handlethicknessBeanContainer = new BeanContainer<>(HandleMaster.class);
+        handlethicknessBeanContainer.setBeanIdProperty(HandleMaster.THICKNESS);
+        handlethicknessBeanContainer.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(handlethicknessBeanContainer);
+        select.setItemCaptionPropertyId(HandleMaster.THICKNESS);
+
+        if(StringUtils.isNotEmpty(product.getHandleThickness()))
+        {
+            select.setValue(product.getHandleThickness());
+        }
+        return select;
     }
 
     private VerticalLayout buildAddItemBasicFormLayoutRight() {
@@ -1033,7 +1088,8 @@ public class CustomizedProductDetailsWindow extends Window {
                         module.setKnobFinish(product.getKnobFinish());
                         module.setHingeType(product.getHinge());
                         module.setGlassType(product.getGlass());
-                        module.setHandleTypeSelection(product.getHandleTypeSelection());
+                       //module.setHandleTypeSelection(product.getHandleTypeSelection());
+                        module.setHandleThickness(product.getHandleThickness());
                     }
                     MDW.open(module, product, 0, proposalVersion, proposalHeader);
                 }
@@ -1513,6 +1569,15 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setWallCarcassCode((String) this.wallCarcassSelection.getValue());
         product.setBaseCarcassCode((String) this.baseCarcassSelection.getValue());
         product.setTitle(itemTitleField.getValue());
+        product.setHandleType(handleType.getValue().toString());
+        product.setHandleFinish(handle.getValue().toString());
+        product.setHandleTypeSelection(handleSelection.getValue().toString());
+        product.setKnobType(knobType.getValue().toString());
+        product.setKnobFinish(knob.getValue().toString());
+        product.setHandleThickness(thicknessfield.getValue().toString());
+        product.setGlass(glassSelection.getValue().toString());
+        product.setHinge(hingesSelection.getValue().toString());
+        product.setNoOfLengths(Integer.valueOf(noOfHandle.getValue()));
         product.setModules(this.product.getModules());
         return product;
     }
@@ -1978,6 +2043,21 @@ public class CustomizedProductDetailsWindow extends Window {
         if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
     }
+    private ComboBox getHandleSelectionFilledComboBox(String caption,List<LookupItem> list,Property.ValueChangeListener listener)
+    {
+        final BeanContainer<String, LookupItem> container = new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty(LookupItem.TITLE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(LookupItem.TITLE);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
+    }
     private ComboBox getHanldeTypefilledComboBox(String caption,List<HandleMaster> list,Property.ValueChangeListener listener)
     {
         final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
@@ -2281,16 +2361,12 @@ public class CustomizedProductDetailsWindow extends Window {
     }
     private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        //String prevCode = product.getHandleFinish();
         String prevCode = handle.getValue().toString();
-        LOG.info("value change " +valueChangeEvent.getProperty().getValue().toString());
-        LOG.info("prevcode " +prevCode);
         String title=valueChangeEvent.getProperty().getValue().toString();
         handlefinishlist=proposalDataProvider.getHandleFinish(title,"Handle");
         this.handlefinishBeanContainer.removeAllItems();
         this.handlefinishBeanContainer.addAll(handlefinishlist);
         Object next=this.handle.getItemIds().iterator().next();
-        LOG.info("next " +next.toString());
         handle.setValue(next);
 
         if (next.equals(prevCode))
@@ -2339,8 +2415,6 @@ public class CustomizedProductDetailsWindow extends Window {
     }
     private void  handlefinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        //LOG.info("Title " +valueChangeEvent.getProperty().getValue().toString());
-        //String title=valueChangeEvent.getProperty().getValue().toString();
         String title=handle.getValue().toString();
         handlethickness=proposalDataProvider.getHandleImages("Handle",handleType.getValue().toString(),title);
         LOG.info("size " +handlethickness.size());
@@ -2350,6 +2424,14 @@ public class CustomizedProductDetailsWindow extends Window {
             product.setHandleImage(h.getImagePath());
             handleImage.setSource(new ExternalResource(h.getImagePath()));
         }
+
+        handlesizelist=proposalDataProvider.getHandleThickness(handleType.getValue().toString(),handle.getValue().toString(),"Handle");
+        this.handlethicknessBeanContainer.removeAllItems();
+        this.handlethicknessBeanContainer.addAll(handlesizelist);
+
+        /*Object next=this.thicknessfield.getItemIds().iterator().next();
+        thicknessfield.setValue(next);*/
+
         refreshPrice(valueChangeEvent);
     }
     private void knobfinishchanged(Property.ValueChangeEvent valueChangeEvent)
@@ -2391,8 +2473,18 @@ public class CustomizedProductDetailsWindow extends Window {
                 glassSelection.setReadOnly(true);
                 handleSelection.setReadOnly(true);
             }
-
         }
-
+    }
+    private void handleselectionchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        LOG.info("handle selection value changed" +valueChangeEvent);
+        LOG.info("noOfHandle.getValue()" +noOfHandle.getValue());
+        product.setHandleTypeSelection(valueChangeEvent.getProperty().getValue().toString());
+        if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
+        {
+            NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
+        refreshPrice(valueChangeEvent);
     }
 }

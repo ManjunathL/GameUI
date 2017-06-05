@@ -44,6 +44,7 @@ public class MDW extends Window {
     private final String DEF_CODE_PREFIX = "def_";
     private static final String LABEL_WARNING = "warning";
     private final int moduleIndex;
+    String defaultValueForWardrobe="224";
 
     private Label accessoryHeading;
 
@@ -534,6 +535,12 @@ public class MDW extends Window {
                     ((BeanContainer<String, MGModule>) this.moduleSelection.getContainerDataSource()).addAll(mgModules);
                     moduleSelection.setValue(moduleSelection.getItemIds().iterator().next());
                 }
+                if(module.getModuleCategory().equals("S - Hinged Wardrobe 2100") ||module.getModuleCategory().equals("S - Hinged Wardrobe 2400") || module.getModuleCategory().equals("S - Sliding Wardrobe 2100") ||module.getModuleCategory().equals("S - Sliding Wardrobe 2400") )
+                {
+                    LOG.info("handle thickness changed ");
+                    module.setHandleThickness(defaultValueForWardrobe);
+                    thicknessfield.setValue(defaultValueForWardrobe);
+                }
             });
 
 
@@ -771,6 +778,18 @@ public class MDW extends Window {
                         module.setHingePack(hingeMaps);
                     }
                 }
+            }
+
+            List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",module.getHandleType(),module.getHandleFinish(),thicknessfield.getValue().toString());
+            for(HandleMaster h:handleMasters)
+            {
+                module.setHandleCode(h.getCode());
+            }
+
+            List<HandleMaster> knobmaster=proposalDataProvider.getHandles("knob",module.getKnobType(),module.getKnobFinish(),"0");
+            for(HandleMaster h:knobmaster)
+            {
+                module.setKnobCode(h.getCode());
             }
         }
         refreshPrice();
@@ -1206,7 +1225,7 @@ public class MDW extends Window {
         this.module.setExposedBack(exposedBack.getValue());
         this.module.setExposedOpen(exposedOpen.getValue());
         moduleForPrice.setModule(module);
-
+        moduleForPrice.setProduct(product);
 
         Date priceDate = proposalHeader.getPriceDate();
         if (!("Draft").equals(proposalVersion.getStatus()))

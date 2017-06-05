@@ -61,10 +61,11 @@ public class Product implements FileAttachmentsHolder {
     public static final String HANDLE_IMAGE="handleImage";
     public static final String KNOB_IMAGE="knobImage";
     public static final String PRODUCT_LOCATION="productLocation";
-    public static final String HANDLETYPE_SELECTION="handleTypeSelection";
     public static final String SHUTTER_IMAGE="shutterImage";
     public static final String SHUTTER_CODE="shutterCode";
     public static final String CLOSE_BUTTON_FLAG="closeButtonFlag";
+    public static final String NO_OF_LENGTHS="noOfLengths";
+    public static final String HANDLETYPE_SELECTION="handleTypeSelection";
 
     private int id;
     private int proposalId;
@@ -87,7 +88,7 @@ public class Product implements FileAttachmentsHolder {
     private String glass;
     private String handleType;
     private String handleFinish;
-    private int handleThickness;
+    private String handleThickness;
     private String knobType;
     private String knobFinish;
     private int knobThickness;
@@ -121,6 +122,7 @@ public class Product implements FileAttachmentsHolder {
     private String shutterImage;
     private String shutterCode;
     private String closeButtonFlag;
+    private double noOfLengths;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -477,11 +479,11 @@ public class Product implements FileAttachmentsHolder {
         this.hinge = hinge;
     }
 
-    public int getHandleThickness() {
+    public String getHandleThickness() {
         return handleThickness;
     }
 
-    public void setHandleThickness(int handleThickness) {
+    public void setHandleThickness(String handleThickness) {
         this.handleThickness = handleThickness;
     }
 
@@ -598,6 +600,14 @@ public class Product implements FileAttachmentsHolder {
 
     }
 
+    public double getNoOfLengths() {
+        return noOfLengths;
+    }
+
+    public void setNoOfLengths(double noOfLengths) {
+        this.noOfLengths = noOfLengths;
+    }
+
     @Override
     public int hashCode() {
         int result = id;
@@ -631,7 +641,7 @@ public class Product implements FileAttachmentsHolder {
                 ", glass='" + glass + '\'' +
                 ", handleType='" + handleType + '\'' +
                 ", handleFinish='" + handleFinish + '\'' +
-                ", handleThickness=" + handleThickness +
+                ", handleThickness='" + handleThickness + '\'' +
                 ", knobType='" + knobType + '\'' +
                 ", knobFinish='" + knobFinish + '\'' +
                 ", knobThickness=" + knobThickness +
@@ -663,6 +673,8 @@ public class Product implements FileAttachmentsHolder {
                 ", productLocation='" + productLocation + '\'' +
                 ", shutterImage='" + shutterImage + '\'' +
                 ", shutterCode='" + shutterCode + '\'' +
+                ", closeButtonFlag='" + closeButtonFlag + '\'' +
+                ", noOfLengths=" + noOfLengths +
                 ", modules=" + modules +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';

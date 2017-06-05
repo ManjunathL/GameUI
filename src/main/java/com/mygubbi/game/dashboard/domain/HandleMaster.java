@@ -19,7 +19,7 @@ public class HandleMaster
     public static final String SOURCE_PRICE = "sourcePrice";
     public static final String MSP = "msp";
     public static final String IMAGE_PATH = "imagePath";
-    //public static final String QUANTITY="quantity";
+    public static final String PRODUCT_CATEGORY="productCategory";
     private List<AccessoryDetails> quantity=new ArrayList<>();
 
     private String code;
@@ -31,6 +31,7 @@ public class HandleMaster
     private int sourcePrice;
     private int msp;
     private String imagePath;
+    private String productCategory;
 
     public String getFinish() {
         return finish;
@@ -112,6 +113,14 @@ public class HandleMaster
         this.imagePath = imagePath;
     }
 
+    public String getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
     @Override
     public String toString() {
         return "HandleMaster{" +
@@ -125,6 +134,7 @@ public class HandleMaster
                 ", sourcePrice=" + sourcePrice +
                 ", msp=" + msp +
                 ", imagePath='" + imagePath + '\'' +
+                ", productCategory='" + productCategory + '\'' +
                 '}';
     }
 }
