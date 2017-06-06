@@ -563,24 +563,24 @@ public class CustomizedProductDetailsWindow extends Window {
         List<Module> modules = product.getModules();
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
-        if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
-        {
-            NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            return;
-        }
-
         Component component = valueChangeEvent == null ? null : ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
         this.noPricingErrors();
 
         for (Module module : modules) {
 
-            int oldhandleThickness = 0;
+            /*int oldhandleThickness = 0;
             int oldKnobThickness = 0;
 
             LOG.info(("handle thickness old " +module.getHandleThickness()));
-            LOG.info(("knob thickness old " +module.getKnobThickness()));
+            LOG.info(("knob thickness old " +module.getKnobThickness()));*/
 
-            if (!(module.getHandleThickness() == null))
+            if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
+            {
+                NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+
+           /* if (!(module.getHandleThickness() == null))
             {
                 oldhandleThickness = Integer.parseInt(module.getHandleThickness());
             }
@@ -589,7 +589,7 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 oldKnobThickness = Integer.parseInt(module.getKnobThickness());
             }
-
+*/
 
 
 
@@ -673,44 +673,48 @@ public class CustomizedProductDetailsWindow extends Window {
 
                 NotificationUtil.showNotification("Please review the size for each module since the previous handle size may not be available for the new handle chosen",NotificationUtil.STYLE_BAR_ERROR_SMALL);
 
-               /* module.getHandlePack().clear();
-                module.setHandleType(String.valueOf(this.handleType.getValue()));*/
-
             }
             else if(component==knobType)
             {
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(knobType.getValue());
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
-
                 NotificationUtil.showNotification("Please review the quantity for each module since the knob quantity may not be available for the new knob chosen",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-
-/*
-                module.getKnobPack().clear();
-*/
-                /*module.setKnobType(String.valueOf(this.knobType.getValue()));*/
-               /*
-                moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);*/
             }
             else if(component==knob)
             {
               moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
-                /*module.setKnobFinish(String.valueOf(this.knob.getValue()));*/
             }
             else if(component==handle)
             {
                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
-                /*module.setHandleFinish(String.valueOf(this.handle.getValue()));*/
             }
             else if(component==thicknessfield)
             {
+                module.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+                for(HandleMaster h:handleMasters)
+                {
+                    module.setHandleCode(h.getCode());
+                }
+                this.product.setHandleThickness(thicknessfield.getValue().toString());
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(thicknessfield.getValue());
+                LOG.info("handle_thickness " +thicknessfield.getValue());
             }
             else if(component==noOfHandle)
             {
+                if(!module.getModuleCategory().contains("Loft"))
+                {
+                    LOG.info("inside category");
+                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+                    LOG.info("this.modulehandlequantity" +module.getHandleQuantity());
+                    LOG.info("this.modulehandlequantity" +module.getKnobQuantity());
+                }
                 this.product.setNoOfLengths(Double.valueOf(noOfHandle.getValue()));
             }
-            if (!(handleSelection.getValue()=="Profile Handle"))
-            updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
+           /* if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
+                updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
+            }*/
             if (StringUtils.isNotEmpty(module.getMgCode()))
             {
                 String unitType = module.getUnitType();
@@ -792,6 +796,7 @@ public class CustomizedProductDetailsWindow extends Window {
             if (Integer.parseInt(handleMaster.getThickness()) == oldHingeQty)
             {
                 module.setHandleThickness(String.valueOf(oldHingeQty));
+                product.setHandleThickness(String.valueOf(oldHingeQty));
             }
             else
             {
@@ -806,6 +811,8 @@ public class CustomizedProductDetailsWindow extends Window {
                     }
                 }
                 module.setHandleThickness(handlethickness.get(handleIdx).getThickness());
+                product.setHandleThickness(handlethickness.get(handleIdx).getThickness());
+                thicknessfield.setValue(product.getHandleThickness());
             }
         }
 
@@ -954,7 +961,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 String code=StringUtils.isNotEmpty(product.getHandleThickness())? product.getHandleThickness() : (String) thicknessfield.getItemIds().iterator().next();
                 thicknessfield.setValue(code);
             }
-            //thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
+            thicknessfield.addValueChangeListener(this::refreshPrice);
             formLayoutRight.addComponent(thicknessfield);
 
         }
@@ -1493,7 +1500,11 @@ public class CustomizedProductDetailsWindow extends Window {
 
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
-
+                if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
+                {
+                    NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
                 if (!binder.isValid()) {
                     NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -1583,7 +1594,7 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setHandleThickness(thicknessfield.getValue().toString());
         product.setGlass(glassSelection.getValue().toString());
         product.setHinge(hingesSelection.getValue().toString());
-        product.setNoOfLengths(Integer.valueOf(noOfHandle.getValue()));
+        product.setNoOfLengths(Double.valueOf(noOfHandle.getValue()));
         product.setModules(this.product.getModules());
         return product;
     }
@@ -1773,7 +1784,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 List<Module> modules = this.product.getModules();
                 for (Module module : modules)
                 {
-                    if(!("Profile Handle").equals(product.getHandleTypeSelection())) {
+                    if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
                         if (("Yes").equals(module.getAccessoryPackDefault())) {
                             if (module.getAccessoryPacks().size() == 0) {
                                 NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2379,6 +2390,24 @@ public class CustomizedProductDetailsWindow extends Window {
         {
             this.handlefinishchanged(null);
         }
+
+        List<Module> modules = product.getModules();
+        for (Module module : modules) {
+            int oldhandleThickness = 0;
+            int oldKnobThickness = 0;
+            LOG.info("module.getHandleThickness() " +module.getHandleThickness());
+            if (!(module.getHandleThickness() == null))
+            {
+                oldhandleThickness = Integer.parseInt(module.getHandleThickness());
+            }
+
+            if (!(module.getKnobThickness() == null))
+            {
+                oldKnobThickness = Integer.parseInt(module.getKnobThickness());
+            }
+            updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
+        }
+
         refreshPrice(valueChangeEvent);
     }
     private void knobtypechanged(Property.ValueChangeEvent valueChangeEvent)
@@ -2396,6 +2425,24 @@ public class CustomizedProductDetailsWindow extends Window {
         if (next.equals(prevCode)) {
             this.knobfinishchanged(null);
         }
+
+        List<Module> modules = product.getModules();
+        for (Module module : modules) {
+            int oldhandleThickness = 0;
+            int oldKnobThickness = 0;
+            LOG.info("module.getHandleThickness() " +module.getHandleThickness());
+            if (!(module.getHandleThickness() == null))
+            {
+                oldhandleThickness = Integer.parseInt(module.getHandleThickness());
+            }
+
+            if (!(module.getKnobThickness() == null))
+            {
+                oldKnobThickness = Integer.parseInt(module.getKnobThickness());
+            }
+            updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
+        }
+
         refreshPrice(valueChangeEvent);
     }
 
@@ -2485,8 +2532,12 @@ public class CustomizedProductDetailsWindow extends Window {
     {
         LOG.info("handle selection value changed" +valueChangeEvent);
         LOG.info("noOfHandle.getValue()" +noOfHandle.getValue());
+        if(!handleSelection.getValue().equals("Gola Profile"))
+        {
+            noOfHandle.setValue(String.valueOf(0));
+            product.setNoOfLengths(Double.valueOf(noOfHandle.getValue()));
+        }
         product.setHandleTypeSelection(valueChangeEvent.getProperty().getValue().toString());
-
         refreshPrice(valueChangeEvent);
     }
 }

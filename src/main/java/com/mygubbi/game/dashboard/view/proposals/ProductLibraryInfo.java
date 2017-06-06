@@ -251,6 +251,8 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setKnobFinish(product.getKnobFinish());
                 productLibrary.setProductLocation(productLocationField.getValue().toString());
                 productLibrary.setSize(String.valueOf(sizeField.getValue()));
+                productLibrary.setHandleTypeSelection(product.getHandleTypeSelection());
+                productLibrary.setShutterDesign(product.getShutterDesignCode());
                 boolean success = proposalDataProvider.InsertProductLibrary(productLibrary);
                 LOG.info("field vale " +productLocationField.getValue() + " " +productLibrary.getProductLocation());
                 LOG.info("success in " + success);
