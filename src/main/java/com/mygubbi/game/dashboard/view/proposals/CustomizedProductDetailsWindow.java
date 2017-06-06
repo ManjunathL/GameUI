@@ -563,6 +563,12 @@ public class CustomizedProductDetailsWindow extends Window {
         List<Module> modules = product.getModules();
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
+        if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
+        {
+            NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
+
         Component component = valueChangeEvent == null ? null : ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
         this.noPricingErrors();
 
@@ -621,8 +627,6 @@ public class CustomizedProductDetailsWindow extends Window {
                 LOG.info("text value" +text);
                 if(!(handleSelection.getValue()=="Normal"))
                 {
-                    LOG.info("inside profile handle");
-                    NotificationUtil.showNotification("Current handle prices have been removed. Please add profile handle in addons",NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
                     if(!module.getModuleCategory().contains("Loft"))
                     {
@@ -2480,11 +2484,7 @@ public class CustomizedProductDetailsWindow extends Window {
         LOG.info("handle selection value changed" +valueChangeEvent);
         LOG.info("noOfHandle.getValue()" +noOfHandle.getValue());
         product.setHandleTypeSelection(valueChangeEvent.getProperty().getValue().toString());
-        if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
-        {
-            NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            return;
-        }
+
         refreshPrice(valueChangeEvent);
     }
 }

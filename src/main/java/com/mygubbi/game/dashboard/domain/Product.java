@@ -662,7 +662,6 @@ public class Product implements FileAttachmentsHolder {
                 ", knobImage='" + knobImage + '\'' +
                 ", productLocation='" + productLocation + '\'' +
                 ", shutterImage='" + shutterImage + '\'' +
-                ", shutterCode='" + shutterCode + '\'' +
                 ", closeButtonFlag='" + closeButtonFlag + '\'' +
                 ", noOfLengths=" + noOfLengths +
                 ", modules=" + modules +
