@@ -2374,6 +2374,7 @@ public class CustomizedProductDetailsWindow extends Window {
             hingesSelection.setReadOnly(true);
             glassSelection.setReadOnly(true);
             handleSelection.setReadOnly(true);
+            noOfHandle.setReadOnly(true);
         }
     }
     private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
@@ -2525,6 +2526,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 hingesSelection.setReadOnly(true);
                 glassSelection.setReadOnly(true);
                 handleSelection.setReadOnly(true);
+                noOfHandle.setReadOnly(true);
             }
         }
     }
