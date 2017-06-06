@@ -1757,6 +1757,11 @@ public class CustomizedProductDetailsWindow extends Window {
                 try {
                     LOG.info("on save "+ product.getShutterDesignImage());
                     product.setCloseButtonFlag("No");
+                    if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
+                    {
+                        NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
                     binder.commit();
                 } catch (FieldGroup.CommitException e) {
                     NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2480,11 +2485,6 @@ public class CustomizedProductDetailsWindow extends Window {
         LOG.info("handle selection value changed" +valueChangeEvent);
         LOG.info("noOfHandle.getValue()" +noOfHandle.getValue());
         product.setHandleTypeSelection(valueChangeEvent.getProperty().getValue().toString());
-        if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
-        {
-            NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            return;
-        }
         refreshPrice(valueChangeEvent);
     }
 }
