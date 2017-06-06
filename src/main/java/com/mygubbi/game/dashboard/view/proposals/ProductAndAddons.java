@@ -286,7 +286,7 @@ public class ProductAndAddons extends Window
                     clickEvent -> {
                         //MarginComputationWindow.open(proposalVersion);
                         saveVersionAmounts();
-                        MarginDetailsWindow.open(proposalVersion,this.proposalHeader);
+                        MarginDetailsWindow.open(proposalVersion,this.proposalHeader, this.products);
 
                     }
             );

@@ -133,13 +133,13 @@ public class MarginDetailsWindow extends Window
 
     //private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
-    public static void open(ProposalVersion proposalVersion, ProposalHeader proposalHeader)
+    public static void open(ProposalVersion proposalVersion, ProposalHeader proposalHeader,List<Product> products)
     {
-        MarginDetailsWindow w=new MarginDetailsWindow(proposalVersion,proposalHeader);
+        MarginDetailsWindow w=new MarginDetailsWindow(proposalVersion,proposalHeader,products);
         UI.getCurrent().addWindow(w);
         w.focus();
     }
-    public MarginDetailsWindow(ProposalVersion proposalVersion, ProposalHeader proposalHeader)
+    public MarginDetailsWindow(ProposalVersion proposalVersion, ProposalHeader proposalHeader, List<Product> products)
     {
         DashboardEventBus.register(this);
         this.proposalVersion=proposalVersion;
@@ -349,6 +349,7 @@ public class MarginDetailsWindow extends Window
                 ModuleForPrice moduleForPrice = new ModuleForPrice();
                 moduleForPrice.setCity(proposalHeader.getPcity());
                 moduleForPrice.setModule(module);
+                moduleForPrice.setProduct(product);
                 if (proposalHeader.getPriceDate() == null)
                 {
                     Date dateToBeUsed = new Date(System.currentTimeMillis());
@@ -374,6 +375,7 @@ public class MarginDetailsWindow extends Window
                 ModuleForPrice moduleForPrice = new ModuleForPrice();
                 moduleForPrice.setCity(proposalHeader.getPcity());
                 moduleForPrice.setModule(module);
+                moduleForPrice.setProduct(product);
                 if (proposalHeader.getPriceDate() == null)
                 {
                     Date dateToBeUsed = new Date(System.currentTimeMillis());
@@ -404,6 +406,7 @@ public class MarginDetailsWindow extends Window
                 CarcassCost+=modulePrice.getCarcassCost();
                 AccessoryCost += modulePrice.getAccessoryCost();//msp
                 handleAndKnonCost +=modulePrice.getHandleAndKnobCost();
+                LOG.info("module price " +modulePrice);
                 hingeCost+=modulePrice.getHingeCost();
 
                 if(!(module.getHandlePresent()==null))
@@ -485,6 +488,8 @@ public class MarginDetailsWindow extends Window
             }
         }
         totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost+handleAndKnonCost+hingeCost;
+        LOG.debug("TSP :" + totalSalesPrice);
+        LOG.debug("TSP :" + totalSalesPrice + ":" + SWoodWorkCost + ":" + HardwareCost + ":" + LabourCost + ":" + handleAndKnonCost + ":" + hingeCost );
         totalSalesPriceWOAcc =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+hikeCost+handleAndKnonCost+hingeCost;
 
         //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
