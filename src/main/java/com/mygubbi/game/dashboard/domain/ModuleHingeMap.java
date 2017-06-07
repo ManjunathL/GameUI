@@ -16,16 +16,8 @@ public class ModuleHingeMap
     private String hingecode;
     private int qty;
     private String type;
-    private String qtyFormula;
     private String qtyFlag;
-
-    public String getHingecode() {
-        return hingecode;
-    }
-
-    public void setHingecode(String hingecode) {
-        this.hingecode = hingecode;
-    }
+    private String qtyFormula;
 
     public String getModulecode() {
         return modulecode;
@@ -35,12 +27,28 @@ public class ModuleHingeMap
         this.modulecode = modulecode;
     }
 
+    public String getHingecode() {
+        return hingecode;
+    }
+
+    public void setHingecode(String hingecode) {
+        this.hingecode = hingecode;
+    }
+
     public int getQty() {
         return qty;
     }
 
     public void setQty(int qty) {
         this.qty = qty;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getQtyFlag() {
@@ -59,23 +67,15 @@ public class ModuleHingeMap
         this.qtyFormula = qtyFormula;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     @Override
     public String toString() {
         return "ModuleHingeMap{" +
-                "hingecode='" + hingecode + '\'' +
-                ", modulecode='" + modulecode + '\'' +
+                "modulecode='" + modulecode + '\'' +
+                ", hingecode='" + hingecode + '\'' +
                 ", qty=" + qty +
                 ", type='" + type + '\'' +
-                ", qtyFormula='" + qtyFormula + '\'' +
                 ", qtyFlag='" + qtyFlag + '\'' +
+                ", qtyFormula='" + qtyFormula + '\'' +
                 '}';
     }
 }

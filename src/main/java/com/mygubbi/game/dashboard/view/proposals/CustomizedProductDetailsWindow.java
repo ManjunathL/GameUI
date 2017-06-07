@@ -1153,11 +1153,6 @@ public class CustomizedProductDetailsWindow extends Window {
             handleImage.setWidth("200px");
             handleImage.setImmediate(true);
 
-            HorizontalLayout horizontalLayout1=new HorizontalLayout();
-            horizontalLayout1.addComponent(shutterImage);
-            horizontalLayout1.addComponent(handleImage);
-            verticalLayout.addComponent(horizontalLayout1);
-
             knobImage = new Image();
             if (StringUtils.isEmpty(product.getKnobImage())) {
                 Knobthickness = proposalDataProvider.getHandleImages("knob", knobType.getValue().toString(), knob.getValue().toString());
@@ -1173,8 +1168,14 @@ public class CustomizedProductDetailsWindow extends Window {
             knobImage.setWidth("100px");
             knobImage.setCaption("Knob");
             knobImage.setImmediate(true);
-            knobImage.setStyleName("knobimagestyle");
-            verticalLayout.addComponent(knobImage);
+            //knobImage.setStyleName("knobimagestyle");
+            //verticalLayout.addComponent(knobImage);
+
+            HorizontalLayout horizontalLayout1=new HorizontalLayout();
+            horizontalLayout1.addComponent(handleImage);
+            horizontalLayout1.addComponent(knobImage);
+            horizontalLayout1.setSpacing(true);
+            verticalLayout.addComponent(horizontalLayout1);
         }
         /*costWithoutAccessories = new TextField("Cost w/o Accessories : ");
         costWithoutAccessories.setValue("0");
