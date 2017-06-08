@@ -130,10 +130,9 @@ public class ProductLibraryInfo extends Window
         categoryField.setReadOnly(true);
         formLayoutLeft.addComponent(categoryField);
 
-        sizeField=getsize();
-        binder.buildAndBind("Size",ProductLibrary.SIZE);
-        ((TextField) sizeField).setNullRepresentation("");
+        sizeField = binder.buildAndBind("Size", ProductLibrary.SIZE);
         sizeField.setRequired(true);
+        ((TextField) sizeField).setNullRepresentation("");
         formLayoutLeft.addComponent(sizeField);
 
         List<ProductLibraryMaster> productLibraryMasters=proposalDataProvider.getProductsubcategory(product.getProductCategoryCode());
@@ -191,7 +190,7 @@ public class ProductLibraryInfo extends Window
             }
             catch (FieldGroup.CommitException e)
             {
-                NotificationUtil.showNotification("Validation Error, please fill all mandatory fields in header tab", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Validation Error, please fill all mandatory fields", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
             String proposalID=String.valueOf(product.getProposalId()).replace(",","");
@@ -253,6 +252,7 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setSize(String.valueOf(sizeField.getValue()));
                 productLibrary.setHandleTypeSelection(product.getHandleTypeSelection());
                 productLibrary.setShutterDesign(product.getShutterDesignCode());
+                productLibrary.setShutterImageUrl(product.getShutterDesignImage());
                 boolean success = proposalDataProvider.InsertProductLibrary(productLibrary);
                 LOG.info("field vale " +productLocationField.getValue() + " " +productLibrary.getProductLocation());
                 LOG.info("success in " + success);

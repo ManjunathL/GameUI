@@ -67,6 +67,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String PRODUCT_LOCATION = "productLocation";
     public static final String CLOSE_BUTTON_FLAG = "closebuttonFlag";
     public static final String HANDLE_TYPE_SELECTION = "handleTypeSelection";
+    public static final String SHUTTER_IMAGE_URL = "shutterImageUrl";
 
 
     private int id;
@@ -125,6 +126,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     private String productLocation;
     private String closebuttonFlag;
     private String handleTypeSelection;
+    private String shutterImageUrl;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -586,6 +588,14 @@ public class ProductLibrary implements FileAttachmentsHolder
 
     public void setHandleTypeSelection(String handleTypeSelection) {
         this.handleTypeSelection = handleTypeSelection;
+    }
+
+    public String getShutterImageUrl() {
+        return shutterImageUrl;
+    }
+
+    public void setShutterImageUrl(String shutterImageUrl) {
+        this.shutterImageUrl = shutterImageUrl;
     }
 
     @Override
