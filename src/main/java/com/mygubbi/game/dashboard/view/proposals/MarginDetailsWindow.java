@@ -540,7 +540,7 @@ public class MarginDetailsWindow extends Window
             PriceMaster addonMasterRate=proposalDataProvider.getAddonRate(addonProduct.getCode(),this.priceDate,this.city);
             //PriceMaster addonMasters=proposalDataProvider.getAddonRate(addonProduct.getCode(),moduleForPrice.getPriceDate(),moduleForPrice.getCity());
             {
-                addonDealerPrice+=Double.valueOf(addonMasterRate.getSourcePrice());
+                addonDealerPrice+=Double.valueOf(addonMasterRate.getSourcePrice())*addonProduct.getQuantity();
                 //addonsTotalWOtax+=Double.valueOf(addonMaster.getDealerPrice());
                 //addonsProfit+=addonsTotalWOtax-Double.valueOf(addonMaster.getDealerPrice());*/
             }

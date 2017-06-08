@@ -2376,6 +2376,7 @@ public class CustomizedProductDetailsWindow extends Window {
             glassSelection.setReadOnly(true);
             handleSelection.setReadOnly(true);
             noOfHandle.setReadOnly(true);
+            thicknessfield.setReadOnly(true);
         }
     }
     private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
@@ -2528,6 +2529,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 glassSelection.setReadOnly(true);
                 handleSelection.setReadOnly(true);
                 noOfHandle.setReadOnly(true);
+                thicknessfield.setReadOnly(true);
             }
         }
     }
