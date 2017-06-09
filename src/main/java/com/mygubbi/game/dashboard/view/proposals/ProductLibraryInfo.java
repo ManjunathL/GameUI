@@ -253,6 +253,7 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setHandleTypeSelection(product.getHandleTypeSelection());
                 productLibrary.setShutterDesign(product.getShutterDesignCode());
                 productLibrary.setShutterImageUrl(product.getShutterDesignImage());
+                productLibrary.setHandleThickness(product.getHandleThickness());
                 boolean success = proposalDataProvider.InsertProductLibrary(productLibrary);
                 LOG.info("field vale " +productLocationField.getValue() + " " +productLibrary.getProductLocation());
                 LOG.info("success in " + success);

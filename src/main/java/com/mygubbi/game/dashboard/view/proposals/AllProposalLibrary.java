@@ -364,6 +364,7 @@ public class AllProposalLibrary extends Window
             product.setHandleTypeSelection(p.getHandleTypeSelection());
             product.setCloseButtonFlag("Yes");
             product.setShutterDesignImage(p.getShutterImageUrl());
+            product.setHandleThickness(p.getHandleThickness());
             List<Module> modules = p.getModules();
             List<Module> refreshedModules = new ArrayList<>();
             for (Module refreshedModule: modules)

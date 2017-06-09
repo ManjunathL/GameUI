@@ -116,7 +116,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     private String glass;
     private String handleType;
     private String handleFinish;
-    private int handleThickness;
+    private String handleThickness;
     private String knobType;
     private String knobFinish;
     private int knobThickness;
@@ -498,11 +498,11 @@ public class ProductLibrary implements FileAttachmentsHolder
         this.handleFinish = handleFinish;
     }
 
-    public int getHandleThickness() {
+    public String  getHandleThickness() {
         return handleThickness;
     }
 
-    public void setHandleThickness(int handleThickness) {
+    public void setHandleThickness(String handleThickness) {
         this.handleThickness = handleThickness;
     }
 
