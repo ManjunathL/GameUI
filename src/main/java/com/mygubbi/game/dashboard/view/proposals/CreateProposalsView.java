@@ -673,78 +673,134 @@ public class CreateProposalsView extends Panel implements View {
 
     private void save(Button.ClickEvent clickEvent) {
 
-        List<Product> products = proposalDataProvider.getProposalProducts(proposalHeader.getId());
-        boolean b = (Objects.equals(proposalHeader.getQuoteNoNew(), "") || proposalHeader.getQuoteNoNew() == null || proposalHeader.getQuoteNoNew().isEmpty()) && !(products.size() == 0);
-        if (b) {
-            proposalDataProvider.updatePriceForNewProposal(proposalHeader);
-        }
+
 
         LOG.debug("Proposal Header inside save :" + this.proposalHeader.toString());
-        /*boolean duplicateCrm = checkForDuplicateCRM();
 
-        LOG.debug("duplicate crm" + duplicateCrm);
 
-        if (duplicateCrm) {
-            NotificationUtil.showNotification("Quotation with same crmId already exists", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            return;
-        }*/
-
-        if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
-            this.proposalHeader.setTitle(NEW_TITLE);
-        }
-        try {
-            binder.commit();
-        } catch (FieldGroup.CommitException e) {
-            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            return;
-        }
-        ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
-        this.proposalHeader.setStatus(proposalVersionLatest.getStatus());
-        this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
-        this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
-
-        try {
-
-            List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
-            if (!(insertCity.size() >= 1)) {
-                proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
-                LOG.info("success");
-            }
-        } catch (Exception e) {
-            LOG.info(e);
-        }
-
-        checkQuoteNoNew();
-        this.proposalHeader.setQuoteNoNew(QuoteNumNew);
-        boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
-
-        setMaxDiscountPercentange();
-        if(proposalHeader.getMaxDiscountPercentage()==0 ) {
-            maxDiscountPercentage.setReadOnly(false);
-            maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
-            this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
-            proposalDataProvider.saveProposal(this.proposalHeader);
-            if(!(("admin").equals(role))) {
-                maxDiscountPercentage.setReadOnly(true);
-            }
-        }
-
-        /*String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-        if(!(("admin").equals(role)) && !(("Deleted").equals(proposalHeader.getStatus())))
+        List<Product> products = proposalDataProvider.getProposalProducts(proposalHeader.getId());
+        if ((Objects.equals(proposalHeader.getQuoteNoNew(), "") || proposalHeader.getQuoteNoNew() == null || proposalHeader.getQuoteNoNew().isEmpty()) && !((products.size() == 0)))
         {
-            maxDiscountPercentage.setReadOnly(true);
-        }*/
+            LOG.debug("Inside If save");
+            LOG.debug("This proposal header 1" + this.proposalHeader);
+            proposalDataProvider.updatePriceForNewProposal(proposalHeader);
 
-        cancelButton.setVisible(false);
-        saveAndCloseButton.setVisible(true);
+            if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
+                this.proposalHeader.setTitle(NEW_TITLE);
+            }
+            try {
+                binder.commit();
+            } catch (FieldGroup.CommitException e) {
+                NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+            ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
+            this.proposalHeader.setStatus(proposalVersionLatest.getStatus());
+            this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
+            this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
 
-        if (success) {
+            try {
 
-            NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-            cityLockedForSave();
-        } else {
-            NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
+                if (!(insertCity.size() >= 1)) {
+                    proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                    LOG.info("success");
+                }
+            } catch (Exception e) {
+                LOG.info(e);
+            }
+
+            checkQuoteNoNew();
+            this.proposalHeader.setQuoteNoNew(QuoteNumNew);
+            boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
+            LOG.debug("This proposal header 2" + this.proposalHeader);
+
+            proposalDataProvider.updatePriceForNewProposal(this.proposalHeader);
+
+            setMaxDiscountPercentange();
+            if(proposalHeader.getMaxDiscountPercentage()==0 ) {
+                maxDiscountPercentage.setReadOnly(false);
+                maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
+                this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
+                proposalDataProvider.saveProposal(this.proposalHeader);
+                if(!(("admin").equals(role))) {
+                    maxDiscountPercentage.setReadOnly(true);
+                }
+            }
+
+            cancelButton.setVisible(false);
+            saveAndCloseButton.setVisible(true);
+
+            if (success) {
+
+                NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                cityLockedForSave();
+            } else {
+                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }
         }
+        else {
+
+            LOG.debug("Inside else save");
+            LOG.debug("This proposal header 1" + this.proposalHeader);
+
+            if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
+                this.proposalHeader.setTitle(NEW_TITLE);
+            }
+            try {
+                binder.commit();
+            } catch (FieldGroup.CommitException e) {
+                NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+            ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
+            this.proposalHeader.setStatus(proposalVersionLatest.getStatus());
+            this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
+            this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
+
+            try {
+
+                List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
+                if (!(insertCity.size() >= 1)) {
+                    proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                    LOG.info("success");
+                }
+            } catch (Exception e) {
+                LOG.info(e);
+            }
+
+            checkQuoteNoNew();
+            this.proposalHeader.setQuoteNoNew(QuoteNumNew);
+            boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
+
+
+            LOG.debug("Inside else save");
+            LOG.debug("This proposal header 2" + this.proposalHeader);
+
+            setMaxDiscountPercentange();
+            if(proposalHeader.getMaxDiscountPercentage()==0 ) {
+                maxDiscountPercentage.setReadOnly(false);
+                maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
+                this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
+                proposalDataProvider.saveProposal(this.proposalHeader);
+                if(!(("admin").equals(role))) {
+                    maxDiscountPercentage.setReadOnly(true);
+                }
+            }
+
+            cancelButton.setVisible(false);
+            saveAndCloseButton.setVisible(true);
+
+            if (success) {
+
+                NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                cityLockedForSave();
+            } else {
+                NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }
+
+        }
+
     }
 
     private void checkQuoteNoNew() {

@@ -317,6 +317,7 @@ public class MarginDetailsWindow extends Window
 
         for(Product product:products)
         {
+            LOG.debug("Product Wardrobe :" + product.toString());
             if(Objects.equals(product.getProductCategoryCode(), "Wardrobe"))
             {
                 PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails("STDMC:Wardrobe",this.priceDate,this.city);
@@ -330,8 +331,8 @@ public class MarginDetailsWindow extends Window
             LOG.info("rateForProductWOTax" +rateForStdManfCost);
             PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
             rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
-            PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
-            rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
+//            PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
+//            rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
             PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
             rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
             PriceMaster labourcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForManfLabourCost,this.priceDate,this.city);
@@ -509,7 +510,7 @@ public class MarginDetailsWindow extends Window
         manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + FinalmanufacturingAccoryCost + manufacturingHandleAndKnobCost + manufacturingHingeCost;
         LOG.debug("Total Manufacturing cost : " + manufacturingTotalSalesPrice);
 
-        LOG.info("std manu cost " +stdModuleManufacturingCost+ "non std man cost " + nonStdModuleManufacturingCost+ "labour cost " +manufacturingLabourCost+ "Hardware cost " +manufacturingHardwareCost+ "acc cost " +FinalmanufacturingAccoryCost+ "manuf H&K cost " +manufacturingHandleAndKnobCost);
+        LOG.info("std manu cost " +stdModuleManufacturingCost+ "non std man cost " + nonStdModuleManufacturingCost+ "labour cost " +manufacturingLabourCost+ "Hardware cost " +manufacturingHardwareCost+ "acc cost " +FinalmanufacturingAccoryCost+ "manuf H&K cost " +manufacturingHandleAndKnobCost + " :" + "Total hinge cost :" + manufacturingHingeCost);
 
         List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (AddonProduct addonProduct:addonProducts)

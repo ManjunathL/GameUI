@@ -325,7 +325,7 @@ public class CustomizedProductDetailsWindow extends Window {
             handleSelection.addValueChangeListener(this::handleselectionchanged);
             formLayoutLeft.addComponent(this.handleSelection);
 
-            noOfHandle=new TextField("# of Handle");
+            noOfHandle=new TextField("# of Lengths");
             binder.bind(noOfHandle,Product.NO_OF_LENGTHS);
             noOfHandle.addValueChangeListener(this::refreshPrice);
             formLayoutLeft.addComponent(noOfHandle);

@@ -382,6 +382,7 @@ public class AllProposalLibrary extends Window
                 }
 
                 moduleForPrice.setCity(proposalHeader.getPcity());
+                moduleForPrice.setProduct(product);
 
                 moduleForPrice.setModule(refreshedModule);
                 ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
