@@ -574,11 +574,7 @@ public class CustomizedProductDetailsWindow extends Window {
             LOG.info(("handle thickness old " +module.getHandleThickness()));
             LOG.info(("knob thickness old " +module.getKnobThickness()));*/
 
-            if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
-            {
-                NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                return;
-            }
+
 
            /* if (!(module.getHandleThickness() == null))
             {
@@ -625,7 +621,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 LOG.info("handle Selection");
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).getValue();
                 LOG.info("text value" +text);
-                if(!(handleSelection.getValue()=="Normal"))
+                if(!(handleSelection.getValue().equals("Normal")))
                 {
                     LOG.info("inside profile handle");
                     NotificationUtil.showNotification("Current handle prices have been removed. Please add profile handle in addons",NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -700,7 +696,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(thicknessfield.getValue());
                 LOG.info("handle_thickness " +thicknessfield.getValue());
             }
-            else if(component==noOfHandle)
+            /*else if(component==noOfHandle)
             {
                 if(!module.getModuleCategory().contains("Loft"))
                 {
@@ -711,6 +707,12 @@ public class CustomizedProductDetailsWindow extends Window {
                     LOG.info("this.modulehandlequantity" +module.getKnobQuantity());
                 }
                 this.product.setNoOfLengths(Double.valueOf(noOfHandle.getValue()));
+            }*/
+
+            if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
+            {
+                NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
             }
            /* if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
                 updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
