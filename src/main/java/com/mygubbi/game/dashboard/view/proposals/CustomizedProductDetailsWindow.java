@@ -2,14 +2,12 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 
 import com.google.common.eventbus.Subscribe;
-import com.google.gwt.thirdparty.javascript.rhino.head.ast.FunctionNode;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
-import com.mygubbi.game.dashboard.domain.JsonPojo.ShutterDesign;
 import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
@@ -44,7 +42,6 @@ import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 import java.io.*;
 import java.sql.Date;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.*;
 import static java.lang.StrictMath.round;
@@ -142,7 +139,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox knobthicknessfield;
     private ComboBox handleSelection;
     private Image knobImage;
-    private TextField noOfHandle;
+    private TextField noOfLengths;
 
     private List<HandleMaster> handlethickness;
     private List<HandleMaster> Knobthickness;
@@ -325,10 +322,10 @@ public class CustomizedProductDetailsWindow extends Window {
             handleSelection.addValueChangeListener(this::handleselectionchanged);
             formLayoutLeft.addComponent(this.handleSelection);
 
-            noOfHandle=new TextField("# of Lengths");
-            binder.bind(noOfHandle,Product.NO_OF_LENGTHS);
-            noOfHandle.addValueChangeListener(this::refreshPrice);
-            formLayoutLeft.addComponent(noOfHandle);
+            noOfLengths =new TextField("# of Lengths");
+            binder.bind(noOfLengths,Product.NO_OF_LENGTHS);
+            noOfLengths.addValueChangeListener(this::refreshPrice);
+            formLayoutLeft.addComponent(noOfLengths);
 
             knobtitlelist=proposalDataProvider.getHandleTitle("knob");
             LOG.info("knob value " +knobtitlelist.size());
@@ -564,9 +561,18 @@ public class CustomizedProductDetailsWindow extends Window {
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
         Component component = valueChangeEvent == null ? null : ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
+
         this.noPricingErrors();
 
+        modules.get(0).setGolaProfileFlag("Yes");
+
         for (Module module : modules) {
+
+            for (int i = 1; i < modules.size() ; i++)
+            {
+                modules.get(i).setGolaProfileFlag("No");
+            }
+
 
             /*int oldhandleThickness = 0;
             int oldKnobThickness = 0;
@@ -620,15 +626,13 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 LOG.info("handle Selection");
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).getValue();
-                LOG.info("text value" +text);
                 if(!(handleSelection.getValue().equals("Normal")))
                 {
                     LOG.info("inside profile handle");
-                    NotificationUtil.showNotification("Current handle prices have been removed. Please add profile handle in addons",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    NotificationUtil.showNotification("Current handle prices have been removed and replaced with profile handles",NotificationUtil.STYLE_BAR_WARNING_SMALL);
                     moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
                     if(!module.getModuleCategory().contains("Loft"))
                     {
-                        LOG.info("inside category");
                         moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
                         moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
                     }
@@ -696,7 +700,11 @@ public class CustomizedProductDetailsWindow extends Window {
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(thicknessfield.getValue());
                 LOG.info("handle_thickness " +thicknessfield.getValue());
             }
-            /*else if(component==noOfHandle)
+            else if ((component==noOfLengths))
+            {
+                product.setNoOfLengths(Double.parseDouble(String.valueOf(valueChangeEvent.getProperty().getValue())));
+            }
+            /*else if(component==noOfLengths)
             {
                 if(!module.getModuleCategory().contains("Loft"))
                 {
@@ -706,12 +714,12 @@ public class CustomizedProductDetailsWindow extends Window {
                     LOG.info("this.modulehandlequantity" +module.getHandleQuantity());
                     LOG.info("this.modulehandlequantity" +module.getKnobQuantity());
                 }
-                this.product.setNoOfLengths(Double.valueOf(noOfHandle.getValue()));
+                this.product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
             }*/
 
-            if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
+            if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
             {
-                NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
            /* if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
@@ -1503,9 +1511,9 @@ public class CustomizedProductDetailsWindow extends Window {
 
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
-                if(handleSelection.getValue().equals("Gola Profile") && noOfHandle.getValue().equals("0"))
+                if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
                 {
-                    NotificationUtil.showNotification("No Of Handle should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
                 if (!binder.isValid()) {
@@ -1597,7 +1605,7 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setHandleThickness(thicknessfield.getValue().toString());
         product.setGlass(glassSelection.getValue().toString());
         product.setHinge(hingesSelection.getValue().toString());
-        product.setNoOfLengths(Double.valueOf(noOfHandle.getValue()));
+        product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
         product.setModules(this.product.getModules());
         return product;
     }
@@ -1787,7 +1795,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 List<Module> modules = this.product.getModules();
                 for (Module module : modules)
                 {
-                    if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
+                    if(("Normal").equals(product.getHandleTypeSelection())) {
                         if (("Yes").equals(module.getAccessoryPackDefault())) {
                             if (module.getAccessoryPacks().size() == 0) {
                                 NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2377,7 +2385,7 @@ public class CustomizedProductDetailsWindow extends Window {
             hingesSelection.setReadOnly(true);
             glassSelection.setReadOnly(true);
             handleSelection.setReadOnly(true);
-            noOfHandle.setReadOnly(true);
+            noOfLengths.setReadOnly(true);
             thicknessfield.setReadOnly(true);
         }
     }
@@ -2530,7 +2538,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 hingesSelection.setReadOnly(true);
                 glassSelection.setReadOnly(true);
                 handleSelection.setReadOnly(true);
-                noOfHandle.setReadOnly(true);
+                noOfLengths.setReadOnly(true);
                 thicknessfield.setReadOnly(true);
             }
         }
@@ -2538,11 +2546,11 @@ public class CustomizedProductDetailsWindow extends Window {
     private void handleselectionchanged(Property.ValueChangeEvent valueChangeEvent)
     {
         LOG.info("handle selection value changed" +valueChangeEvent);
-        LOG.info("noOfHandle.getValue()" +noOfHandle.getValue());
+        LOG.info("noOfLengths.getValue()" + noOfLengths.getValue());
         if(!handleSelection.getValue().equals("Gola Profile"))
         {
-            noOfHandle.setValue(String.valueOf(0));
-            product.setNoOfLengths(Double.valueOf(noOfHandle.getValue()));
+            noOfLengths.setValue(String.valueOf(0));
+            product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
         }
         product.setHandleTypeSelection(valueChangeEvent.getProperty().getValue().toString());
         refreshPrice(valueChangeEvent);

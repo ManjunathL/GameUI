@@ -86,6 +86,7 @@ public class Module implements Cloneable {
     public static final String HINGE_PACK="hingePack";
     public static final String HINGE_CHANGED_FLAG="handleChangedFlag";
     public static final String NO_OF_HANDLE="noOFHandle";
+    public static final String GOLA_PROFILE_FLAG = "golaProfileFlag";
 
     private int seq;
     private int moduleSequence;
@@ -160,6 +161,7 @@ public class Module implements Cloneable {
     private boolean handleChangedFlag;
     private boolean knobChangedFlag;
     private int noOFHandle;
+    private String golaProfileFlag;
 
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
     private List<HandleMaster> handlePack=new ArrayList<>();
@@ -702,6 +704,14 @@ public class Module implements Cloneable {
 
     public void setCustomCheck(String customCheck) {
         this.customCheck = customCheck;
+    }
+
+    public String getGolaProfileFlag() {
+        return golaProfileFlag;
+    }
+
+    public void setGolaProfileFlag(String golaProfileFlag) {
+        this.golaProfileFlag = golaProfileFlag;
     }
 
     public static void main(String[] args)
