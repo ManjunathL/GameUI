@@ -385,6 +385,7 @@ public class AllProposalLibrary extends Window
                 moduleForPrice.setProduct(product);
 
                 moduleForPrice.setModule(refreshedModule);
+                moduleForPrice.setProduct(product);
                 ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
                 double amount = round(modulePrice.getTotalCost());
                 double areainsft = modulePrice.getModuleArea();

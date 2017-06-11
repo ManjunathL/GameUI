@@ -1486,7 +1486,7 @@ public class MDW extends Window {
             //LOG.info("thickness field value " +thicknessfield.getValue().toString());
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
-                if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
+                if(("Normal").equals(product.getHandleTypeSelection())) {
                     LOG.info("ssss " +module.getHandleThickness() +" " +module.getHandlePresent());
                     if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
                     {
