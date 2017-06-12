@@ -65,6 +65,9 @@ public class Product implements FileAttachmentsHolder {
     public static final String CLOSE_BUTTON_FLAG="closeButtonFlag";
     public static final String NO_OF_LENGTHS="noOfLengths";
     public static final String HANDLETYPE_SELECTION="handleTypeSelection";
+    public static final String HANDLE_CODE="handleCode";
+    public static final String KNOB_CODE="knobCode";
+    public static final String LCONNECTOR_PRICE="lConnectorPrice";
 
     private int id;
     private int proposalId;
@@ -121,6 +124,9 @@ public class Product implements FileAttachmentsHolder {
     private String shutterImage;
     private String closeButtonFlag;
     private double noOfLengths;
+    private String handleCode;
+    private String knobCode;
+    private double lConnectorPrice;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -577,6 +583,30 @@ public class Product implements FileAttachmentsHolder {
         this.closeButtonFlag = closeButtonFlag;
     }
 
+    public String getKnobCode() {
+        return knobCode;
+    }
+
+    public void setKnobCode(String knobCode) {
+        this.knobCode = knobCode;
+    }
+
+    public String getHandleCode() {
+        return handleCode;
+    }
+
+    public void setHandleCode(String handleCode) {
+        this.handleCode = handleCode;
+    }
+
+    public double getlConnectorPrice() {
+        return lConnectorPrice;
+    }
+
+    public void setlConnectorPrice(double lConnectorPrice) {
+        this.lConnectorPrice = lConnectorPrice;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -664,6 +694,9 @@ public class Product implements FileAttachmentsHolder {
                 ", shutterImage='" + shutterImage + '\'' +
                 ", closeButtonFlag='" + closeButtonFlag + '\'' +
                 ", noOfLengths=" + noOfLengths +
+                ", handleCode='" + handleCode + '\'' +
+                ", knobCode='" + knobCode + '\'' +
+                ", lConnectorPrice=" + lConnectorPrice +
                 ", modules=" + modules +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';

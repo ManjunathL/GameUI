@@ -570,7 +570,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         this.noPricingErrors();
 
-        modules.get(0).setGolaProfileFlag("Yes");
+        //modules.get(0).setGolaProfileFlag("Yes");
 
         for (Module module : modules) {
 
@@ -676,7 +676,11 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue(handleType.getValue());
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
-
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+                for(HandleMaster h:handleMasters)
+                {
+                    this.product.setHandleCode(h.getCode());
+                }
                 NotificationUtil.showNotification("Please review the size for each module since the previous handle size may not be available for the new handle chosen",NotificationUtil.STYLE_BAR_ERROR_SMALL);
 
             }
@@ -684,15 +688,32 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(knobType.getValue());
                 moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Knob",knobType.getValue().toString(),knob.getValue().toString(),"0");
+                for(HandleMaster h:handleMasters)
+                {
+                    module.setKnobCode(h.getCode());
+                    this.product.setKnobCode(h.getCode());
+                }
                 NotificationUtil.showNotification("Please review the quantity for each module since the knob quantity may not be available for the new knob chosen",NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
             else if(component==knob)
             {
               moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Knob",knobType.getValue().toString(),knob.getValue().toString(),"0");
+                for(HandleMaster h:handleMasters)
+                {
+                    module.setKnobCode(h.getCode());
+                    this.product.setKnobCode(h.getCode());
+                }
             }
             else if(component==handle)
             {
                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+                for(HandleMaster h:handleMasters)
+                {
+                    this.product.setHandleCode(h.getCode());
+                }
             }
             else if(component==thicknessfield)
             {
@@ -701,8 +722,10 @@ public class CustomizedProductDetailsWindow extends Window {
                 for(HandleMaster h:handleMasters)
                 {
                     module.setHandleCode(h.getCode());
+                    this.product.setHandleCode(h.getCode());
                 }
                 this.product.setHandleThickness(thicknessfield.getValue().toString());
+
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(thicknessfield.getValue());
                 LOG.info("handle_thickness " +thicknessfield.getValue());
             }
@@ -1013,6 +1036,19 @@ public class CustomizedProductDetailsWindow extends Window {
                 thicknessfield.setValue(code);
             }
             thicknessfield.addValueChangeListener(this::refreshPrice);
+
+            List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+            for(HandleMaster h:handleMasters)
+            {
+                this.product.setHandleCode(h.getCode());
+            }
+
+            List<HandleMaster> knobMasters=proposalDataProvider.getHandles("knob",knobType.getValue().toString(),knob.getValue().toString(),"0");
+            for(HandleMaster h:knobMasters)
+            {
+                this.product.setKnobCode(h.getCode());
+            }
+
             formLayoutRight.addComponent(thicknessfield);
 
         }
@@ -2286,7 +2322,7 @@ public class CustomizedProductDetailsWindow extends Window {
         amount += lConnectorPrice;
 
         LOG.debug("L connector prices : " + product.getNoOfLengths() + " :" + drawerModuleCount);
-
+        this.product.setlConnectorPrice(lConnectorPrice);
         totalAmount.setReadOnly(false);
         totalAmount.setValue(amount + "");
         totalAmount.setReadOnly(true);
@@ -2451,6 +2487,13 @@ public class CustomizedProductDetailsWindow extends Window {
         handlefinishlist=proposalDataProvider.getHandleFinish(title,"Handle");
         this.handlefinishBeanContainer.removeAllItems();
         this.handlefinishBeanContainer.addAll(handlefinishlist);
+
+        List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+        for(HandleMaster h:handleMasters)
+        {
+            this.product.setHandleCode(h.getCode());
+        }
+        LOG.info("handle code in handle type changed " +product.getHandleCode());
         Object next=this.handle.getItemIds().iterator().next();
         handle.setValue(next);
 
