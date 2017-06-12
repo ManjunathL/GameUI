@@ -703,6 +703,41 @@ public class CustomizedProductDetailsWindow extends Window {
             else if ((component==noOfLengths))
             {
                 product.setNoOfLengths(Double.parseDouble(String.valueOf(valueChangeEvent.getProperty().getValue())));
+                if(!(handleSelection.getValue().equals("Normal")))
+                {
+                    LOG.info("inside profile handle");
+                    NotificationUtil.showNotification("Current handle prices have been removed and replaced with profile handles",NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                    moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
+                    if(!module.getModuleCategory().contains("Loft"))
+                    {
+                        moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+                        moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+                    }
+
+                }else
+                {
+                    List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
+                    if (accDetailsforHandle.size() == 0) {
+                        module.setHandleQuantity(0);
+                    } else {
+                        for (AccessoryDetails a : accDetailsforHandle) {
+                            LOG.info("handle quantity " + a);
+                            module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                            LOG.debug("Module Handle QTY : " + module.getHandleQuantity());
+                        }
+                    }
+
+                    List<AccessoryDetails> accDetailsforKnob = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "K");
+                    if (accDetailsforKnob.size() == 0) {
+                        module.setKnobQuantity(0);
+                    } else {
+                        for (AccessoryDetails a : accDetailsforKnob) {
+                            module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                            LOG.debug("Module KNob QTY : " + module.getKnobQuantity());
+
+                        }
+                    }
+                }
             }
             /*else if(component==noOfLengths)
             {
@@ -1795,7 +1830,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 List<Module> modules = this.product.getModules();
                 for (Module module : modules)
                 {
-                    if(("Normal").equals(product.getHandleTypeSelection())) {
+                    if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
                         if (("Yes").equals(module.getAccessoryPackDefault())) {
                             if (module.getAccessoryPacks().size() == 0) {
                                 NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
