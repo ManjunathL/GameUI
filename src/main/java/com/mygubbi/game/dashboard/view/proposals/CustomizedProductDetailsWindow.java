@@ -2266,9 +2266,8 @@ public class CustomizedProductDetailsWindow extends Window {
         double lConnectorPrice = 0;
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
-        PriceMaster lConnectorRate=proposalDataProvider.getFactorRatePriceDetails("H074",this.priceDate,this.city);
-        rateForLconnectorPrice=lConnectorRate.getSourcePrice();
-
+        PriceMaster lConnectorRate=proposalDataProvider.getHardwareRateDetails("H074",this.priceDate,this.city);
+        rateForLconnectorPrice=lConnectorRate.getPrice();
 
         int drawerModuleCount = 0;
         for (Module module : modules) {
@@ -2288,7 +2287,11 @@ public class CustomizedProductDetailsWindow extends Window {
             amount += addon.getAmount();
         }
 
-        amount += drawerModuleCount * rateForLconnectorPrice;
+        lConnectorPrice = drawerModuleCount * rateForLconnectorPrice;
+
+        amount += lConnectorPrice;
+
+        LOG.debug("L connector prices : " + rateForLconnectorPrice + " :" + drawerModuleCount);
 
         totalAmount.setReadOnly(false);
         totalAmount.setValue(amount + "");
