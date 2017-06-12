@@ -109,6 +109,7 @@ public class CustomizedProductDetailsWindow extends Window {
     double rateForManfLabourCost;
     double rateForAddonWOTax;
     double rateForAddonSourcePrice;
+    double rateForLconnectorPrice;
     private java.sql.Date priceDate;
     private String city;
 
@@ -439,6 +440,7 @@ public class CustomizedProductDetailsWindow extends Window {
             codeForAddonSourcePrice=addonsourceprice.getCode();
         }
 
+
         PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
         rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
         PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
@@ -452,8 +454,11 @@ public class CustomizedProductDetailsWindow extends Window {
         PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
         rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
 
+
         for (Module module : modules)
         {
+
+
             totalCostWOAccessories += module.getAmountWOAccessories();
             List<MGModule> mgModules=proposalDataProvider.checksqftCalculation(module.getMgCode());
             for(MGModule m:mgModules)
@@ -538,6 +543,7 @@ public class CustomizedProductDetailsWindow extends Window {
             manufacturingProfit = totalSalesPriceWOtax - manufacturingTotalSalesPrice;
             marginCompute=(manufacturingProfit / totalSalesPriceWOtax)*100;
         }
+
         product.setCostWoAccessories(round(totalCostWOAccessories));
         product.setProfit(round(manufacturingProfit));
         product.setMargin(round(marginCompute));
@@ -2257,16 +2263,33 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void updateTotalAmount() {
         double amount = 0;
+        double lConnectorPrice = 0;
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+
+        PriceMaster lConnectorRate=proposalDataProvider.getFactorRatePriceDetails("H074",this.priceDate,this.city);
+        rateForLconnectorPrice=lConnectorRate.getSourcePrice();
+
+
+        int drawerModuleCount = 0;
         for (Module module : modules) {
+            if (module.getModuleCategory().contains("Drawer"))
+            {
+                drawerModuleCount = drawerModuleCount + 1;
+            }
+
             amount += module.getAmount();
 
+
         }
+
 
         List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
         for (AddonProduct addon : addons) {
             amount += addon.getAmount();
         }
+
+        amount += drawerModuleCount * rateForLconnectorPrice;
+
         totalAmount.setReadOnly(false);
         totalAmount.setValue(amount + "");
         totalAmount.setReadOnly(true);
