@@ -2271,13 +2271,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         int drawerModuleCount = 0;
         for (Module module : modules) {
-            if (module.getModuleCategory().contains("Drawer"))
-            {
-                drawerModuleCount = drawerModuleCount + 1;
-            }
-
             amount += module.getAmount();
-
 
         }
 
@@ -2287,11 +2281,11 @@ public class CustomizedProductDetailsWindow extends Window {
             amount += addon.getAmount();
         }
 
-        lConnectorPrice = drawerModuleCount * rateForLconnectorPrice;
+        lConnectorPrice = product.getNoOfLengths() * rateForLconnectorPrice;
 
         amount += lConnectorPrice;
 
-        LOG.debug("L connector prices : " + rateForLconnectorPrice + " :" + drawerModuleCount);
+        LOG.debug("L connector prices : " + product.getNoOfLengths() + " :" + drawerModuleCount);
 
         totalAmount.setReadOnly(false);
         totalAmount.setValue(amount + "");
