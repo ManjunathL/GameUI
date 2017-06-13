@@ -2319,10 +2319,12 @@ public class CustomizedProductDetailsWindow extends Window {
 
         lConnectorPrice = product.getNoOfLengths() * rateForLconnectorPrice;
 
-        amount += lConnectorPrice;
+        if (handleType.getValue().toString().equals("Gola Profile"))
+        {
+            amount += lConnectorPrice;
+            this.product.setlConnectorPrice(lConnectorPrice);
+        }
 
-        LOG.debug("L connector prices : " + product.getNoOfLengths() + " :" + drawerModuleCount);
-        this.product.setlConnectorPrice(lConnectorPrice);
         totalAmount.setReadOnly(false);
         totalAmount.setValue(amount + "");
         totalAmount.setReadOnly(true);
