@@ -267,6 +267,9 @@ public class CustomizedProductDetailsWindow extends Window {
             String code = (String) valueChangeEvent.getProperty().getValue();
             String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
             product.setProductCategory(title);
+            if(productSelection.getValue().equals("Wardrobe")){
+                handleSelection.setReadOnly(true);
+            }
         });
         if (productSelection.size() > 0)
         {
@@ -319,6 +322,9 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 String code = StringUtils.isNotEmpty(product.getHandleTypeSelection()) ? product.getHandleTypeSelection() : (String) handleSelection.getItemIds().iterator().next();
                 handleSelection.setValue(code);
+            }
+            if(productSelection.getValue().equals("Wardrobe")){
+                handleSelection.setReadOnly(true);
             }
             handleSelection.addValueChangeListener(this::handleselectionchanged);
             formLayoutLeft.addComponent(this.handleSelection);
