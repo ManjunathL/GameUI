@@ -345,13 +345,18 @@ public class MarginDetailsWindow extends Window
             rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
             PriceMaster lConnectorRate=proposalDataProvider.getHardwareRateDetails("H074",this.priceDate,this.city);
             rateForLconnectorPrice=lConnectorRate.getSourcePrice();
-
+            LOG.info("rateForLconnectorPrice " +rateForLconnectorPrice);
             Amount+=product.getAmount();
-            if(product.getHandleType().equals("Gola Profile"))
+            LOG.info(product.getHandleTypeSelection().equals("Gola Profile"));
+            LOG.info("product type " +product.getHandleTypeSelection());
+            if(product.getHandleTypeSelection().equals("Gola Profile"))
             {
+                LOG.info("inside if");
                 lConnectorPrice = product.getNoOfLengths() * rateForLconnectorPrice;
             }
-
+            manufacturingHandleAndKnobCost=lConnectorPrice;
+            LOG.info("lconnectorprice" +lConnectorPrice);
+            LOG.info("rateForStdManfCost" +rateForStdManfCost+ "rateForNStdManfCost" +rateForNStdManfCost+ "rateForManfLabourCost" +rateForManfLabourCost);
             List<Module> modules=product.getModules();
             for(Module module:modules)
             {
@@ -416,7 +421,8 @@ public class MarginDetailsWindow extends Window
                 CarcassCost+=modulePrice.getCarcassCost();
                 AccessoryCost += modulePrice.getAccessoryCost();//msp
                 handleAndKnonCost +=modulePrice.getHandleAndKnobCost();
-                manufacturingHandleAndKnobCost+=modulePrice.getHandleAndKnobSourceCost()+lConnectorPrice;
+                LOG.info(lConnectorPrice);
+                manufacturingHandleAndKnobCost+=modulePrice.getHandleAndKnobSourceCost();
                 LOG.info("manufacturing handle and knob cost" +manufacturingHandleAndKnobCost);
                 LOG.info("module price " +modulePrice);
                 hingeCost+=modulePrice.getHingeCost();
