@@ -711,10 +711,15 @@ public class MDW extends Window {
         this.dontCalculatePriceNow = false;
 
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
-            if (module.getHandleTypeSelection() == "Profile Handle") {
+            LOG.info("product handletype selection " +product.getHandleTypeSelection());
+            LOG.info("product.getHandleTypeSelection().equals(\"Normal\")" +!product.getHandleTypeSelection().equals("Normal"));
+            if(!(product.getHandleTypeSelection().equals("Normal")))
+            {
                 handlequantity.setValue("0");
                 knobqquantity.setValue("0");
-            } else {
+            }
+            else
+            {
                 this.customText.setReadOnly(false);
                 this.customText.setValue(description);
 
@@ -743,16 +748,14 @@ public class MDW extends Window {
                 }
                 LOG.info("mg code"  +module.getMgCode());
                 List<MGModule> handlePresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
-                for (MGModule m : handlePresent)
-                {
-                    LOG.info("module mand " +m.toString());
+                for (MGModule m : handlePresent) {
+                    LOG.info("module mand " + m.toString());
                     if (m.getHandleMandatory().equals("Yes")) {
                         module.setHandlePresent(m.getHandleMandatory());
                         hPresent = m.getHandleMandatory();
                         handlequantity.setRequired(true);
                         thicknessfield.setRequired(true);
-                    }
-                    else {
+                    } else {
                         module.setHandlePresent(m.getHandleMandatory());
                         handlequantity.setRequired(false);
                         thicknessfield.setRequired(false);
@@ -761,24 +764,14 @@ public class MDW extends Window {
                         module.setKnobPresent(m.getKnobMandatory());
                         knobPresent = m.getKnobMandatory();
                         knobqquantity.setRequired(true);
-                    }
-                    else {
+                    } else {
                         module.setKnobPresent(m.getKnobMandatory());
                     }
                 }
+            }
+
                 //hinges
 //              List<MGModule> hingesPresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
-                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
-                LOG.info("size of hinge" + hingeMaps1.size());
-                module.setHingePack(hingeMaps1);
-                for (MGModule m : handlePresent) {
-                    if (m.getHingeMandatory().equals("Yes")) {
-                        module.setHingePresent(m.getHingeMandatory());
-                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
-                        module.setHingePack(hingeMaps);
-                    }
-                }
-            }
 
             List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",module.getHandleType(),module.getHandleFinish(),thicknessfield.getValue().toString());
             for(HandleMaster h:handleMasters)
@@ -828,7 +821,6 @@ public class MDW extends Window {
 
     private void refreshAccPacks()
     {
-
         accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
         this.accessoryPack1.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, AccessoryPack>) this.accessoryPack1.getContainerDataSource()).addAll(accessoryPackList);
@@ -1839,8 +1831,16 @@ public class MDW extends Window {
         LOG.info("handle quantity changed");
         String s = valueChangeEvent.getProperty().getValue().toString();
         Integer integer = Integer.parseInt(s);
-        this.handlequantity.setValue(s);
-        module.setHandleQuantity(integer);
+        if(!(product.getHandleTypeSelection().equals("Normal")))
+        {
+            this.handlequantity.setValue("0");
+            module.setHandleQuantity(0);
+
+        }else {
+            this.handlequantity.setValue(s);
+            module.setHandleQuantity(integer);
+        }
+
         refreshPrice();
     }
     private void knobquantitychanged(Property.ValueChangeEvent valueChangeEvent)
@@ -1853,8 +1853,17 @@ public class MDW extends Window {
 
         String s = valueChangeEvent.getProperty().getValue().toString();
         Integer integer = Integer.parseInt(s);
-        this.knobqquantity.setValue(s);
-        module.setKnobQuantity(integer);
+        if(!(product.getHandleTypeSelection().equals("Normal")))
+        {
+            this.knobqquantity.setValue("0");
+            module.setKnobQuantity(0);
+        }
+        else {
+
+            this.knobqquantity.setValue(s);
+            module.setKnobQuantity(integer);
+        }
+
         LOG.info("knob quantity  " +valueChangeEvent);
         refreshPrice();
     }
