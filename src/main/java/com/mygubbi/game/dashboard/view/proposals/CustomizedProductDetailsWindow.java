@@ -567,39 +567,11 @@ public class CustomizedProductDetailsWindow extends Window {
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
         Component component = valueChangeEvent == null ? null : ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
+        LOG.debug("Get component :" + component);
 
         this.noPricingErrors();
 
-        //modules.get(0).setGolaProfileFlag("Yes");
-
         for (Module module : modules) {
-
-            for (int i = 1; i < modules.size() ; i++)
-            {
-                modules.get(i).setGolaProfileFlag("No");
-            }
-
-
-            /*int oldhandleThickness = 0;
-            int oldKnobThickness = 0;
-
-            LOG.info(("handle thickness old " +module.getHandleThickness()));
-            LOG.info(("knob thickness old " +module.getKnobThickness()));*/
-
-
-
-           /* if (!(module.getHandleThickness() == null))
-            {
-                oldhandleThickness = Integer.parseInt(module.getHandleThickness());
-            }
-
-            if (!(module.getKnobThickness() == null))
-            {
-                oldKnobThickness = Integer.parseInt(module.getKnobThickness());
-            }
-*/
-
-
 
             LOG.debug("Inside For loop :");
             if (component == baseCarcassSelection &&
@@ -730,6 +702,8 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             else if(component==thicknessfield)
             {
+                LOG.debug("Product Json :" + product);
+
                 module.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
                 List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
                 for(HandleMaster h:handleMasters)
@@ -793,6 +767,9 @@ public class CustomizedProductDetailsWindow extends Window {
                 }
                 this.product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
             }*/
+
+            LOG.debug("Product Json outside component:" + product);
+
 
             if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
             {
@@ -2332,7 +2309,9 @@ public class CustomizedProductDetailsWindow extends Window {
 
         lConnectorPrice = product.getNoOfLengths() * rateForLconnectorPrice;
 
-        if (handleType.getValue().toString().equals("Gola Profile"))
+        LOG.debug("Handle Type Selection ");
+
+        if (handleSelection.getValue().toString().equals("Gola Profile"))
         {
             amount += lConnectorPrice;
             this.product.setlConnectorPrice(lConnectorPrice);
