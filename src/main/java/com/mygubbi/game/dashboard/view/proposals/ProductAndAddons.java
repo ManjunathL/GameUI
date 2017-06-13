@@ -1023,6 +1023,7 @@ public class ProductAndAddons extends Window
                 copyProduct.setKnobCode(p.getKnobCode());
                 copyProduct.setlConnectorPrice(p.getlConnectorPrice());
                 copyProduct.setHandleThickness(p.getHandleThickness());
+                copyProduct.setNoOfLengths(p.getNoOfLengths());
                 LOG.info("COPIED@"+ copyProduct);
                 copyProduct.setAddons(p.getAddons());
 
