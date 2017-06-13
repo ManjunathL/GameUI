@@ -267,8 +267,9 @@ public class CustomizedProductDetailsWindow extends Window {
             String code = (String) valueChangeEvent.getProperty().getValue();
             String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
             product.setProductCategory(title);
-            if(productSelection.getValue().equals("Wardrobe")){
-                handleSelection.setReadOnly(true);
+            if(productSelection.getValue().equals("Wardrobe"))
+            {
+                handleSelection.setValue("Normal");
             }
         });
         if (productSelection.size() > 0)
@@ -322,9 +323,6 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 String code = StringUtils.isNotEmpty(product.getHandleTypeSelection()) ? product.getHandleTypeSelection() : (String) handleSelection.getItemIds().iterator().next();
                 handleSelection.setValue(code);
-            }
-            if(productSelection.getValue().equals("Wardrobe")){
-                handleSelection.setReadOnly(true);
             }
             handleSelection.addValueChangeListener(this::handleselectionchanged);
             formLayoutLeft.addComponent(this.handleSelection);
@@ -837,18 +835,21 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void updateHandleAndKnobforModule(Module module, int oldHingeQty, int oldKnobQty)
     {
-
+        LOG.info("handleSelection.getValue() " + !(handleSelection.getValue().equals("Normal")));
         List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
-        if (accDetailsforHandle.size() == 0) {
+        LOG.info("accDetailsforHandle.size() == 0 " +(accDetailsforHandle.size() == 0));
+        if(!(handleSelection.getValue().equals("Normal")) || accDetailsforHandle.size() == 0)
+        {
             module.setHandleQuantity(0);
-        } else {
+        }
+        else {
             for (AccessoryDetails a : accDetailsforHandle) {
                 module.setHandleQuantity(Integer.valueOf(a.getQty()));
             }
         }
 
         List<AccessoryDetails> accDetailsforKnob = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "K");
-        if (accDetailsforKnob.size() == 0) {
+        if (!(handleSelection.getValue().equals("Normal")) || accDetailsforKnob.size() == 0) {
             module.setKnobQuantity(0);
         } else {
             for (AccessoryDetails a : accDetailsforKnob) {
@@ -1152,6 +1153,11 @@ public class CustomizedProductDetailsWindow extends Window {
             public void buttonClick(Button.ClickEvent clickEvent) {
 
                     if (!commitValues()) return;
+                if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+                {
+                    NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
                     Module module = new Module();
                     product.setType(TYPES.CUSTOMIZED.name());
                     if (product.getSource() == null) {
@@ -2657,12 +2663,17 @@ public class CustomizedProductDetailsWindow extends Window {
     }
     private void handleselectionchanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        LOG.info("handle selection value changed" +valueChangeEvent);
-        LOG.info("noOfLengths.getValue()" + noOfLengths.getValue());
         if(!handleSelection.getValue().equals("Gola Profile"))
         {
             noOfLengths.setValue(String.valueOf(0));
             product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
+        }
+        if(!handleSelection.getValue().equals("Normal"))
+        {
+            if(productSelection.getValue().equals("Wardrobe")) {
+                NotificationUtil.showNotification("Select Only Normal handle for kitchen", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                handleSelection.setValue("Normal");
+            }
         }
         product.setHandleTypeSelection(valueChangeEvent.getProperty().getValue().toString());
         refreshPrice(valueChangeEvent);
