@@ -68,6 +68,10 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String CLOSE_BUTTON_FLAG = "closebuttonFlag";
     public static final String HANDLE_TYPE_SELECTION = "handleTypeSelection";
     public static final String SHUTTER_IMAGE_URL = "shutterImageUrl";
+    public static final String HANDLE_CODE="handleCode";
+    public static final String KNOB_CODE="knobCode";
+    public static final String LCONNECTOR_PRICE="lConnectorPrice";
+    public static final String NO_OF_LENGTHS="noOfLengths";
 
 
     private int id;
@@ -127,6 +131,11 @@ public class ProductLibrary implements FileAttachmentsHolder
     private String closebuttonFlag;
     private String handleTypeSelection;
     private String shutterImageUrl;
+    private String handleCode;
+    private String knobCode;
+    private double lConnectorPrice;
+    private double noOfLengths;
+
 
     private List<Module> modules = new ArrayList<>();
 
@@ -603,10 +612,43 @@ public class ProductLibrary implements FileAttachmentsHolder
         return null;
     }
 
+    public String getHandleCode() {
+        return handleCode;
+    }
+
+    public void setHandleCode(String handleCode) {
+        this.handleCode = handleCode;
+    }
+
+    public String getKnobCode() {
+        return knobCode;
+    }
+
+    public void setKnobCode(String knobCode) {
+        this.knobCode = knobCode;
+    }
+
+    public double getlConnectorPrice() {
+        return lConnectorPrice;
+    }
+
+    public void setlConnectorPrice(double lConnectorPrice) {
+        this.lConnectorPrice = lConnectorPrice;
+    }
+
+    public double getNoOfLengths() {
+        return noOfLengths;
+    }
+
+    public void setNoOfLengths(double noOfLengths) {
+        this.noOfLengths = noOfLengths;
+    }
+
     @Override
     public String toString() {
         return "ProductLibrary{" +
-                "id=" + id +
+                "addons=" + addons +
+                ", id=" + id +
                 ", proposalId=" + proposalId +
                 ", fromVersion='" + fromVersion + '\'' +
                 ", title='" + title + '\'' +
@@ -652,7 +694,7 @@ public class ProductLibrary implements FileAttachmentsHolder
                 ", glass='" + glass + '\'' +
                 ", handleType='" + handleType + '\'' +
                 ", handleFinish='" + handleFinish + '\'' +
-                ", handleThickness=" + handleThickness +
+                ", handleThickness='" + handleThickness + '\'' +
                 ", knobType='" + knobType + '\'' +
                 ", knobFinish='" + knobFinish + '\'' +
                 ", knobThickness=" + knobThickness +
@@ -660,8 +702,14 @@ public class ProductLibrary implements FileAttachmentsHolder
                 ", knobImage='" + knobImage + '\'' +
                 ", size='" + size + '\'' +
                 ", productLocation='" + productLocation + '\'' +
+                ", closebuttonFlag='" + closebuttonFlag + '\'' +
+                ", handleTypeSelection='" + handleTypeSelection + '\'' +
+                ", shutterImageUrl='" + shutterImageUrl + '\'' +
+                ", handleCode='" + handleCode + '\'' +
+                ", knobCode='" + knobCode + '\'' +
+                ", lConnectorPrice=" + lConnectorPrice +
+                ", noOfLengths=" + noOfLengths +
                 ", modules=" + modules +
-                ", addons=" + addons +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';
     }

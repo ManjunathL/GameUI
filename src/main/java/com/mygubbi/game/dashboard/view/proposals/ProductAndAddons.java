@@ -1019,6 +1019,10 @@ public class ProductAndAddons extends Window
                 copyProduct.setHandleImage(p.getHandleImage());
                 copyProduct.setHandleTypeSelection(p.getHandleTypeSelection());
                 copyProduct.setShutterDesignImage(p.getShutterDesignImage());
+                copyProduct.setHandleCode(p.getHandleCode());
+                copyProduct.setKnobCode(p.getKnobCode());
+                copyProduct.setlConnectorPrice(p.getlConnectorPrice());
+                copyProduct.setHandleThickness(p.getHandleThickness());
                 LOG.info("COPIED@"+ copyProduct);
                 copyProduct.setAddons(p.getAddons());
 
