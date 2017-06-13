@@ -128,6 +128,7 @@ public class MarginDetailsWindow extends Window
     double rateForManfLabourCost;
     double rateForAddonWOTax;
     double rateForAddonSourcePrice;
+    double rateForLconnectorPrice;
 
     //private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
@@ -275,6 +276,7 @@ public class MarginDetailsWindow extends Window
     private void updateTotal()
     {
         Double Amount=0.0;
+        Double lConnectorPrice=0.0;
         List<Product> products;
 
         List<RateCard> rateCard=proposalDataProvider.getFactorRateCodeDetails("F:PRODWOTAX");
@@ -341,8 +343,15 @@ public class MarginDetailsWindow extends Window
             rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
             PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
             rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
+            PriceMaster lConnectorRate=proposalDataProvider.getHardwareRateDetails("H074",this.priceDate,this.city);
+            rateForLconnectorPrice=lConnectorRate.getSourcePrice();
 
             Amount+=product.getAmount();
+            if(product.getHandleType().equals("Gola Profile"))
+            {
+                lConnectorPrice = product.getNoOfLengths() * rateForLconnectorPrice;
+            }
+
             List<Module> modules=product.getModules();
             for(Module module:modules)
             {
@@ -407,7 +416,7 @@ public class MarginDetailsWindow extends Window
                 CarcassCost+=modulePrice.getCarcassCost();
                 AccessoryCost += modulePrice.getAccessoryCost();//msp
                 handleAndKnonCost +=modulePrice.getHandleAndKnobCost();
-                manufacturingHandleAndKnobCost+=modulePrice.getHandleAndKnobSourceCost();
+                manufacturingHandleAndKnobCost+=modulePrice.getHandleAndKnobSourceCost()+lConnectorPrice;
                 LOG.info("manufacturing handle and knob cost" +manufacturingHandleAndKnobCost);
                 LOG.info("module price " +modulePrice);
                 hingeCost+=modulePrice.getHingeCost();

@@ -666,6 +666,19 @@ public class CustomizedProductDetailsWindow extends Window {
 
                         }
                     }
+
+                    List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+                    for(HandleMaster h:handleMasters)
+                    {
+                        this.product.setHandleCode(h.getCode());
+                    }
+
+                    List<HandleMaster> knobMasters=proposalDataProvider.getHandles("Knob",knobType.getValue().toString(),knob.getValue().toString(),"0");
+                    for(HandleMaster h:knobMasters)
+                    {
+                        module.setKnobCode(h.getCode());
+                        this.product.setKnobCode(h.getCode());
+                    }
                 }
             }
             else if(component==glassSelection)
