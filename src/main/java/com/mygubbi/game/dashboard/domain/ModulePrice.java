@@ -14,6 +14,7 @@ public class ModulePrice {
     private double hardwareCost;
     private double labourCost;
     private double handleAndKnobCost;
+    private double handleAndKnobSourceCost;
     private double hingeCost;
 
     public double getShutterCost() {
@@ -96,6 +97,14 @@ public class ModulePrice {
         this.hingeCost = hingeCost;
     }
 
+    public double getHandleAndKnobSourceCost() {
+        return handleAndKnobSourceCost;
+    }
+
+    public void setHandleAndKnobSourceCost(double handleAndKnobSourceCost) {
+        this.handleAndKnobSourceCost = handleAndKnobSourceCost;
+    }
+
     @Override
     public String toString() {
         return "ModulePrice{" +
@@ -108,6 +117,7 @@ public class ModulePrice {
                 ", hardwareCost=" + hardwareCost +
                 ", labourCost=" + labourCost +
                 ", handleAndKnobCost=" + handleAndKnobCost +
+                ", handleAndKnobSourceCost=" + handleAndKnobSourceCost +
                 ", hingeCost=" + hingeCost +
                 '}';
     }

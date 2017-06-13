@@ -1035,7 +1035,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 String code=StringUtils.isNotEmpty(product.getHandleThickness())? product.getHandleThickness() : (String) thicknessfield.getItemIds().iterator().next();
                 thicknessfield.setValue(code);
             }
-            thicknessfield.addValueChangeListener(this::refreshPrice);
+            thicknessfield.addValueChangeListener(this::handledlethcknesschanged);
 
             List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
             for(HandleMaster h:handleMasters)
@@ -2600,6 +2600,18 @@ public class CustomizedProductDetailsWindow extends Window {
 
         refreshPrice(valueChangeEvent);
     }
+    private void handledlethcknesschanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        this.product.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
+        List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+        LOG.info("handle size" +handleMasters.size());
+        for(HandleMaster h:handleMasters)
+        {
+            this.product.setHandleCode(h.getCode());
+        }
+        refreshPrice(valueChangeEvent);
+    }
+
     private void knobfinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
         //String title=valueChangeEvent.getProperty().getValue().toString();

@@ -407,17 +407,20 @@ public class MarginDetailsWindow extends Window
                 CarcassCost+=modulePrice.getCarcassCost();
                 AccessoryCost += modulePrice.getAccessoryCost();//msp
                 handleAndKnonCost +=modulePrice.getHandleAndKnobCost();
+                manufacturingHandleAndKnobCost+=modulePrice.getHandleAndKnobSourceCost();
+                LOG.info("manufacturing handle and knob cost" +manufacturingHandleAndKnobCost);
                 LOG.info("module price " +modulePrice);
                 hingeCost+=modulePrice.getHingeCost();
 
-                if(!(module.getHandlePresent()==null))
+                /*if(!(module.getHandlePresent()==null))
                 {
                     PriceMaster handleandknobdetails=proposalDataProvider.getHandleAndKnobRateDetails(module.getHandleCode(),this.priceDate,this.city);
                     {
                         LOG.info("Manufacturing handle price " +handleandknobdetails.getSourcePrice() + ":" + handleandknobdetails.getRateId());
                         manufacturingHandleAndKnobCost+=(handleandknobdetails.getSourcePrice())*module.getHandleQuantity();
                     }
-                }
+                }*/
+
                 if(!(module.getKnobPresent()==null))
                 {
                     PriceMaster handleandknobdetails=proposalDataProvider.getHandleAndKnobRateDetails(module.getKnobCode(),this.priceDate,this.city);
