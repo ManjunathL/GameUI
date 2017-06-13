@@ -1674,6 +1674,8 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setHinge(hingesSelection.getValue().toString());
         product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
         product.setModules(this.product.getModules());
+        product.setHandleCode(this.product.getHandleCode());
+        product.setKnobCode(this.product.getKnobCode());
         return product;
     }
 
