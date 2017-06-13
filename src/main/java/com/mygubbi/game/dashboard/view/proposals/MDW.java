@@ -831,7 +831,6 @@ public class MDW extends Window {
         this.accessoryPack3.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, AccessoryPack>) this.accessoryPack3.getContainerDataSource()).addAll(accessoryPackList);
 
-        refreshPrice();
     }
 
     private void isDimensionsEmpty() {
@@ -963,15 +962,7 @@ public class MDW extends Window {
 
     private void accessoryPackChanged(ComboBox accessoryPack, ComboBox addons1, ComboBox addons2, ComboBox addons3) {
         String accessoryPackCode = (String) accessoryPack.getValue();
-        LOG.info("Acc PAck code" +accessoryPackCode);
-        if(accessoryPackCode==null)
-        {
-            List<ModuleAccessoryPack> accPacks = getModuleAccessoryPacks();
-            this.module.setAccessoryPacks(accPacks);
-            LOG.info("remove addons " +module.getAccessoryPacks());
-        }
         List<AccessoryAddon> accessoryAddons = proposalDataProvider.getAccessoryAddons(accessoryPackCode);
-        LOG.info("Acc addon " +accessoryAddons.size());
         addons1.getContainerDataSource().removeAllItems();
         refreshPrice();
         ((BeanContainer<String, AccessoryAddon>) addons1.getContainerDataSource()).addAll(accessoryAddons);
@@ -981,8 +972,8 @@ public class MDW extends Window {
         addons3.getContainerDataSource().removeAllItems();
         refreshPrice();
         ((BeanContainer<String, AccessoryAddon>) addons3.getContainerDataSource()).addAll(accessoryAddons);
+
         refreshAccessoryImages();
-        LOG.info("module acc pack change " +module.getAccessoryPacks());
     }
 
     private Component buildAccPack2Component() {
@@ -1076,9 +1067,9 @@ public class MDW extends Window {
     private void refreshAccessoryImages() {
         emptyAccessoryImages();
 
-        /*this.validateAndAddAccessoryPackImages((String) accessoryPack1.getValue(), accessoryPack1);
+        this.validateAndAddAccessoryPackImages((String) accessoryPack1.getValue(), accessoryPack1);
         this.validateAndAddAccessoryPackImages((String) accessoryPack2.getValue(), accessoryPack2);
-        this.validateAndAddAccessoryPackImages((String) accessoryPack3.getValue(), accessoryPack3);*/
+        this.validateAndAddAccessoryPackImages((String) accessoryPack3.getValue(), accessoryPack3);
 
         this.addAddonImageToPanel(this.addons11);
         this.addAddonImageToPanel(this.addons12);
@@ -1097,7 +1088,7 @@ public class MDW extends Window {
         if (selectedValue != null)
         {
             AccessoryAddon addon = (AccessoryAddon) ((BeanItem) addonCombo.getItem(selectedValue)).getBean();
-            //if (addon != null) this.addImageToAccessoryPanel(addon.getImagePath(), addon.getTitle());
+            if (addon != null) this.addImageToAccessoryPanel(addon.getImagePath(), addon.getTitle());
         }
     }
 
@@ -1286,7 +1277,6 @@ public class MDW extends Window {
         }
         ModuleAccessoryPack accPack = new ModuleAccessoryPack();
         accPack.setCode(value);
-        LOG.info("caption" +accPackCombo.getItemCaptionPropertyId().toString());
 
         List<String> addons = new ArrayList<>();
 
@@ -1300,11 +1290,6 @@ public class MDW extends Window {
         if (StringUtils.isNotEmpty(value)) addons.add(value);
 
         accPack.setAccessories(addons);
-        LOG.info("ADDONS###");
-        for(String addon:addons)
-        {
-            LOG.info("!!!" +addon);
-        }
         return accPack;
     }
 
@@ -1331,15 +1316,9 @@ public class MDW extends Window {
         refreshPrice();
     }
 
-    private void addImageAndrefreshPrice(Property.ValueChangeEvent valueChangeEvent)
-    {
-        List<ModuleAccessoryPack> accPacks = getModuleAccessoryPacks();
-        this.module.setAccessoryPacks(accPacks);
-
-        LOG.info("addon in addons1" +module.getAccessoryPacks());
+    private void addImageAndrefreshPrice(Property.ValueChangeEvent valueChangeEvent) {
         refreshPrice();
         refreshAccessoryImages();
-        LOG.info("addon in addons1" +module.getAccessoryPacks());
     }
 
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
