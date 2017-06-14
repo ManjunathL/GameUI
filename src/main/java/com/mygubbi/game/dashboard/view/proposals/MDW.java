@@ -768,10 +768,19 @@ public class MDW extends Window {
                         module.setKnobPresent(m.getKnobMandatory());
                     }
                 }
-            }
-
                 //hinges
 //              List<MGModule> hingesPresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                LOG.info("size of hinge" + hingeMaps1.size());
+                module.setHingePack(hingeMaps1);
+                for (MGModule m : handlePresent) {
+                    if (m.getHingeMandatory().equals("Yes")) {
+                        module.setHingePresent(m.getHingeMandatory());
+                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                        module.setHingePack(hingeMaps);
+                    }
+                }
+            }
 
             List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",module.getHandleType(),module.getHandleFinish(),thicknessfield.getValue().toString());
             for(HandleMaster h:handleMasters)
@@ -1458,14 +1467,12 @@ public class MDW extends Window {
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
                 if(("Normal").equals(product.getHandleTypeSelection())) {
-                    LOG.info("ssss " +module.getHandleThickness() +" " +module.getHandlePresent());
                     if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
                     {
 
                         NotificationUtil.showNotification("Please select handle size before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                     }
-                    LOG.info("handlequantity.getValue()" +handlequantity.getValue() +" " +module.getHandlePresent());
                     if(Integer.parseInt(handlequantity.getValue())== 0 && Objects.equals(module.getHandlePresent(), "Yes"))
                     {
                         NotificationUtil.showNotification("Please enter valid quantity", NotificationUtil.STYLE_BAR_ERROR_SMALL);
