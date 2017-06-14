@@ -84,7 +84,7 @@ public class ProposalHeader {
     private String designPartnerPhone;
     private double amount;
     private String folderPath;
-    private Date createdOn;
+    private java.sql.Date createdOn;
     private String createdBy;
     private java.sql.Date updatedOn;
     private String updatedBy;
@@ -162,12 +162,12 @@ public class ProposalHeader {
         this.status = status;
     }
 
-    public Date getCreatedOn() {
+    public java.sql.Date getCreatedOn() {
 
         return createdOn;
     }
 
-    public void setCreatedOn(Date createdOn) {
+    public void setCreatedOn(java.sql.Date createdOn) {
         this.createdOn = createdOn;
     }
 
