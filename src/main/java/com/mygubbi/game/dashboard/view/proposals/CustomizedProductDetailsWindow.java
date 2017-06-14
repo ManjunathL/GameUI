@@ -1153,6 +1153,7 @@ public class CustomizedProductDetailsWindow extends Window {
             public void buttonClick(Button.ClickEvent clickEvent) {
 
                     if (!commitValues()) return;
+                LOG.info("handle selection value " +handleSelection.getValue());
                 if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
                 {
                     NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -1876,7 +1877,13 @@ public class CustomizedProductDetailsWindow extends Window {
                 List<Module> modules = this.product.getModules();
                 for (Module module : modules)
                 {
-                    if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
+                    if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+                    {
+                        NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+
+                    if(("Normal").equals(product.getHandleTypeSelection())) {
                         if (("Yes").equals(module.getAccessoryPackDefault())) {
                             if (module.getAccessoryPacks().size() == 0) {
                                 NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
