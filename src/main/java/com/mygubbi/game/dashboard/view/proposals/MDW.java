@@ -1794,6 +1794,7 @@ public class MDW extends Window {
     private void thicknessfieldchanged(Property.ValueChangeEvent valueChangeEvent)
     {
         module.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
+        module.setHandleOverrideFlag("Yes");
         List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",module.getHandleType(),module.getHandleFinish(),thicknessfield.getValue().toString());
         for(HandleMaster h:handleMasters)
         {

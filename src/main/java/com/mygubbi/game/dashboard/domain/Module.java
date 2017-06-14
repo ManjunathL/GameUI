@@ -87,6 +87,7 @@ public class Module implements Cloneable {
     public static final String HINGE_CHANGED_FLAG="handleChangedFlag";
     public static final String NO_OF_HANDLE="noOFHandle";
     public static final String GOLA_PROFILE_FLAG = "golaProfileFlag";
+    public static final String HANDLE_OVERRIDE_FLAG="handleOverrideFlag";
 
     private int seq;
     private int moduleSequence;
@@ -162,6 +163,7 @@ public class Module implements Cloneable {
     private boolean knobChangedFlag;
     private int noOFHandle;
     private String golaProfileFlag;
+    private String handleOverrideFlag;
 
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
     private List<HandleMaster> handlePack=new ArrayList<>();
@@ -854,6 +856,14 @@ public class Module implements Cloneable {
         this.noOFHandle = noOFHandle;
     }
 
+    public String getHandleOverrideFlag() {
+        return handleOverrideFlag;
+    }
+
+    public void setHandleOverrideFlag(String handleOverrideFlag) {
+        this.handleOverrideFlag = handleOverrideFlag;
+    }
+
     @Override
     public String toString() {
         return "Module{" +
@@ -926,6 +936,12 @@ public class Module implements Cloneable {
                 ", hingePresent='" + hingePresent + '\'' +
                 ", hingeCode='" + hingeCode + '\'' +
                 ", hingeQuantity=" + hingeQuantity +
+                ", handleTypeSelection='" + handleTypeSelection + '\'' +
+                ", handleChangedFlag=" + handleChangedFlag +
+                ", knobChangedFlag=" + knobChangedFlag +
+                ", noOFHandle=" + noOFHandle +
+                ", golaProfileFlag='" + golaProfileFlag + '\'' +
+                ", handleOverrideFlag='" + handleOverrideFlag + '\'' +
                 ", accessoryPacks=" + accessoryPacks +
                 ", handlePack=" + handlePack +
                 ", knobPack=" + knobPack +
