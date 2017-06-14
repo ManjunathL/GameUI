@@ -1024,7 +1024,7 @@ public class CustomizedProductDetailsWindow extends Window {
             handlesizelist=proposalDataProvider.getHandleThickness(handleType.getValue().toString(),handle.getValue().toString(),"Handle");
             this.thicknessfield=gethandlethickness("Handle Size",handlesizelist,null);
             thicknessfield.setRequired(true);
-            binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
+            binder.bind(thicknessfield, HANDLE_THICKNESS);
             this.thicknessfield.getContainerDataSource().removeAllItems();
             ((BeanContainer<String, HandleMaster>) this.thicknessfield.getContainerDataSource()).addAll(handlesizelist);
             if(thicknessfield.size()>0)
