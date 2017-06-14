@@ -718,8 +718,7 @@ public class MDW extends Window {
                 handlequantity.setValue("0");
                 knobqquantity.setValue("0");
             }
-            else
-            {
+            else {
                 this.customText.setReadOnly(false);
                 this.customText.setValue(description);
 
@@ -746,6 +745,11 @@ public class MDW extends Window {
                         knobqquantity.setValue(a.getQty());
                     }
                 }
+            }
+
+
+
+
                 LOG.info("mg code"  +module.getMgCode());
                 List<MGModule> handlePresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
                 for (MGModule m : handlePresent) {
@@ -780,7 +784,7 @@ public class MDW extends Window {
                         module.setHingePack(hingeMaps);
                     }
                 }
-            }
+
 
             List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",module.getHandleType(),module.getHandleFinish(),thicknessfield.getValue().toString());
             for(HandleMaster h:handleMasters)
