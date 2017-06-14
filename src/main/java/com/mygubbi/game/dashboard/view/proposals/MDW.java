@@ -318,12 +318,15 @@ public class MDW extends Window {
         addons31.setReadOnly(true);
         addons32.setReadOnly(true);
         addons33.setReadOnly(true);
+        applyButton.setVisible(false);
+        applyNextButton.setVisible(false);
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
             handlequantity.setReadOnly(true);
             knobqquantity.setReadOnly(true);
             customText.setReadOnly(true);
-
+            thicknessfield.setReadOnly(true);
+            single.setReadOnly(true);
         }
 
     }
