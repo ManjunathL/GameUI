@@ -102,6 +102,7 @@ public class MarginDetailsWindow extends Window
     Double manufacturingTotalSalesPrice =0.0;
     Double manufacturingProfit =0.0;
     Double marginCompute=0.0;
+    Double lConnectorPrice=0.0;
     int nonStdModuleCount =0;
     int standardModuleCount =0;
     Double addonDealerPrice=0.0;
@@ -276,7 +277,7 @@ public class MarginDetailsWindow extends Window
     private void updateTotal()
     {
         Double Amount=0.0;
-        Double lConnectorPrice=0.0;
+        Double lConnectorSourcePrice=0.0;
         List<Product> products;
 
         List<RateCard> rateCard=proposalDataProvider.getFactorRateCodeDetails("F:PRODWOTAX");
@@ -315,6 +316,7 @@ public class MarginDetailsWindow extends Window
         for(Product product:products)
         {
             LOG.info("products" +product);
+            lConnectorPrice+=product.getlConnectorPrice();
         }
 
         for(Product product:products)
@@ -351,11 +353,10 @@ public class MarginDetailsWindow extends Window
             LOG.info("product type " +product.getHandleTypeSelection());
             if(product.getHandleTypeSelection().equals("Gola Profile"))
             {
-                LOG.info("inside if");
-                lConnectorPrice = product.getNoOfLengths() * rateForLconnectorPrice;
+                lConnectorSourcePrice = product.getNoOfLengths() * rateForLconnectorPrice;
             }
-            manufacturingHandleAndKnobCost=lConnectorPrice;
-            LOG.info("lconnectorprice" +lConnectorPrice);
+            manufacturingHandleAndKnobCost+=lConnectorSourcePrice;
+            LOG.info("lConnectorSourcePrice" +lConnectorSourcePrice);
             LOG.info("rateForStdManfCost" +rateForStdManfCost+ "rateForNStdManfCost" +rateForNStdManfCost+ "rateForManfLabourCost" +rateForManfLabourCost);
             List<Module> modules=product.getModules();
             for(Module module:modules)
@@ -421,7 +422,7 @@ public class MarginDetailsWindow extends Window
                 CarcassCost+=modulePrice.getCarcassCost();
                 AccessoryCost += modulePrice.getAccessoryCost();//msp
                 handleAndKnonCost +=modulePrice.getHandleAndKnobCost();
-                LOG.info(lConnectorPrice);
+                LOG.info(lConnectorSourcePrice);
                 manufacturingHandleAndKnobCost+=modulePrice.getHandleAndKnobSourceCost();
                 LOG.info("manufacturing handle and knob cost" +manufacturingHandleAndKnobCost);
                 LOG.info("module price " +modulePrice);
@@ -524,16 +525,16 @@ public class MarginDetailsWindow extends Window
                             }
 
                             manufacturingHardwareCost += hardwareRateMaster.getSourcePrice() * quantity;
-                            LOG.debug("Manufacturing hardware cost : "  + hardwareRateMaster.getSourcePrice()  +" :" + hardwareRateMaster.getRateId()+ "qty " +acchwdetails.getQuantity());
+                            LOG.debug("Manufacturing hardware cost : "  + hardwareRateMaster.getSourcePrice()  +" :" + hardwareRateMaster.getRateId()+ "qty " +quantity);
                         }
                     }
                 }
             }
         }
-        totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost+handleAndKnonCost+hingeCost;
+        totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost+handleAndKnonCost+hingeCost+lConnectorPrice;
         LOG.debug("TSP :" + totalSalesPrice);
         LOG.debug("TSP :" + totalSalesPrice + ":" + SWoodWorkCost + ":Hardware cost" + HardwareCost + ":" + LabourCost + ":" + handleAndKnonCost + ":" + hingeCost );
-        totalSalesPriceWOAcc =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+hikeCost+handleAndKnonCost+hingeCost;
+        totalSalesPriceWOAcc =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+hikeCost+handleAndKnonCost+hingeCost+lConnectorPrice;
 
         //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
         totalSalesPriceWOtax = (totalSalesPrice) *rateForProductWOTax;
