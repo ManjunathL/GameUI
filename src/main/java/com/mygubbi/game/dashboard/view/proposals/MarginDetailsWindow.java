@@ -436,14 +436,14 @@ public class MarginDetailsWindow extends Window
                     }
                 }*/
 
-                if(!(module.getKnobPresent()==null))
+              /*  if(!(module.getKnobPresent()==null))
                 {
                     PriceMaster handleandknobdetails=proposalDataProvider.getHandleAndKnobRateDetails(module.getKnobCode(),this.priceDate,this.city);
                     {
                         LOG.info("Manufacturing Knob Price " +handleandknobdetails.getSourcePrice() + ":" + handleandknobdetails.getRateId());
                         manufacturingHandleAndKnobCost+=handleandknobdetails.getSourcePrice() * module.getKnobQuantity() ;
                     }
-                }
+                }*/
                 for(ModuleHingeMap moduleHingeMap:module.getHingePack())
                 {
                     PriceMaster hingedetails=proposalDataProvider.getHingeRateDetails(moduleHingeMap.getHingecode(),this.priceDate,this.city);
