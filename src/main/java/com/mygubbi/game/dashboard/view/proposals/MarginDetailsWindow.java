@@ -512,9 +512,10 @@ public class MarginDetailsWindow extends Window
                 {
                     PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acchwdetails.getCompcode(),this.priceDate,this.city);
                     {
+                        LOG.debug("Get Hardware details in margin : " + acchwdetails);
                         {
                             double quantity = 0.0;
-                            if (acchwdetails.getQuantityFlag() == null)
+                            if (acchwdetails.getQuantityFlag() == null || acchwdetails.getQuantityFlag().equals("") || acchwdetails.getQuantityFlag().equals("F") )
                             {
                                 quantity = acchwdetails.getQuantity();
                             }
@@ -524,7 +525,7 @@ public class MarginDetailsWindow extends Window
                             }
 
                             manufacturingHardwareCost += hardwareRateMaster.getSourcePrice() * quantity;
-                            LOG.debug("Manufacturing hardware cost : "  + hardwareRateMaster.getSourcePrice()  +" :" + hardwareRateMaster.getRateId()+ "qty " +acchwdetails.getQuantity());
+                            LOG.debug("Manufacturing hardware cost : "  + hardwareRateMaster.getSourcePrice()  +" :" + hardwareRateMaster.getRateId()+ "qty " +quantity);
                         }
                     }
                 }
