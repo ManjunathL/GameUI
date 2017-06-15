@@ -431,6 +431,14 @@ public class CreateProposalsView extends Panel implements View {
         }));
         columns.get(idx++).setHeaderCaption("CNC").setRenderer(new ViewButtonValueRenderer((ViewButtonValueRenderer.RendererClickListener) rendererClickEvent -> {
 
+            ProposalHeader proposalHeaderCreateDate = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
+            java.util.Date currentDate = proposalHeaderCreateDate.getCreatedOn();
+            java.util.Date date = new Date(117,2,15,0,0,00);
+            if (!currentDate.after(date))
+            {
+                NotificationUtil.showNotification("Cannot copy a proposal created before March 15", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
             if(("Deleted").equals(this.proposalHeader.getStatus())) {
                 NotificationUtil.showNotification("Validation Error, please save the quote before proceeding", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
