@@ -40,6 +40,7 @@ public class MarginDetailsWindow extends Window
     Label actualSalesPrice;
     Label amt;
     Label actualSalesPriceWOtax;
+    Label actualCost;
     Label actualSalesMargin;
     Label actualProfit;
     Label profitPercentage;
@@ -49,6 +50,7 @@ public class MarginDetailsWindow extends Window
 
     Label discountedSalesPrice;
     Label discountedSalesPriceWOtax;
+    Label discountedManufacturingCost;
     Label discountedSalesMargin;
     Label discountedProfit;
 
@@ -56,6 +58,7 @@ public class MarginDetailsWindow extends Window
     TextField manualInputDiscountAmount;
     TextField manualInputDiscountPercentage;
     Label manualInputSalesPriceWOtax;
+    Label  manualInputCost;
     Label manualInputMargin;
     Label manualInputProfitPercentage;
 
@@ -131,10 +134,6 @@ public class MarginDetailsWindow extends Window
     double rateForAddonSourcePrice;
     double rateForLconnectorPrice;
 
-    //private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
-
-    //private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
-
     public static void open(ProposalVersion proposalVersion, ProposalHeader proposalHeader,List<Product> products)
     {
         MarginDetailsWindow w=new MarginDetailsWindow(proposalVersion,proposalHeader,products);
@@ -153,7 +152,6 @@ public class MarginDetailsWindow extends Window
             this.priceDate = new Date(System.currentTimeMillis());
         }
         setModal(true);
-        LOG.info("Proposal in margin" +proposalHeader);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("75%");
         setClosable(false);
@@ -162,7 +160,6 @@ public class MarginDetailsWindow extends Window
         updateTotal();
 
         VerticalLayout verticalLayout = new VerticalLayout();
-        //verticalLayout.setMargin(new MarginInfo(true, true, true, true));
         Responsive.makeResponsive(this);
 
         HorizontalLayout mainhorizontalLayout= new HorizontalLayout();
@@ -171,7 +168,6 @@ public class MarginDetailsWindow extends Window
         mainhorizontalLayout.addComponent(buildTsp());
         verticalLayout.addComponent(mainhorizontalLayout);
         verticalLayout.setComponentAlignment(mainhorizontalLayout,Alignment.TOP_CENTER);
-        //mainhorizontalLayout.setHeightUndefined();
 
         HorizontalLayout checkboxlayout= new HorizontalLayout();
         checkboxlayout.setMargin(new MarginInfo(false, false, false, false));
@@ -236,20 +232,6 @@ public class MarginDetailsWindow extends Window
         checkProduct.addValueChangeListener(this::checkSelectedValue);
         horizontalLayout.addComponent(checkProduct);
 
-        /*checkproduct=new CheckBox("Products Only");
-        checkproduct.setValue(true);
-        horizontalLayout.addComponent(checkproduct);
-
-        checkaddon=new CheckBox("Adons Only");
-        checkaddon.setValue(true);
-        horizontalLayout.addComponent(checkaddon);*/
-
-        /*checkAddon=new OptionGroup("Addon");
-        horizontalLayout.addComponent(checkAddon);
-
-        checkboth=new OptionGroup("Product&Addon");
-        horizontalLayout.addComponent(checkboth);*/
-
         return horizontalLayout;
     }
 
@@ -310,18 +292,17 @@ public class MarginDetailsWindow extends Window
             codeForAddonSourcePrice=addonsourceprice.getCode();
         }
 
-
-
         products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for(Product product:products)
         {
-            LOG.info("products" +product);
-            lConnectorPrice+=product.getlConnectorPrice();
+            if(product.getHandleTypeSelection().equals("Gola Profile"))
+            {
+                lConnectorPrice+=product.getlConnectorPrice();
+            }
         }
 
         for(Product product:products)
         {
-            LOG.debug("Product Wardrobe :" + product.toString());
             if(Objects.equals(product.getProductCategoryCode(), "Wardrobe"))
             {
                 PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails("STDMC:Wardrobe",this.priceDate,this.city);
@@ -332,11 +313,9 @@ public class MarginDetailsWindow extends Window
                 PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
                 rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
             }
-            LOG.info("rateForProductWOTax" +rateForStdManfCost);
+            LOG.info("rate for standard manufacture cost" +rateForStdManfCost);
             PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
             rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
-//            PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
-//            rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
             PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
             rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
             PriceMaster labourcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForManfLabourCost,this.priceDate,this.city);
@@ -349,8 +328,6 @@ public class MarginDetailsWindow extends Window
             rateForLconnectorPrice=lConnectorRate.getSourcePrice();
             LOG.info("rateForLconnectorPrice " +rateForLconnectorPrice);
             Amount+=product.getAmount();
-            LOG.info(product.getHandleTypeSelection().equals("Gola Profile"));
-            LOG.info("product type " +product.getHandleTypeSelection());
             if(product.getHandleTypeSelection().equals("Gola Profile"))
             {
                 lConnectorSourcePrice = product.getNoOfLengths() * rateForLconnectorPrice;
@@ -361,7 +338,6 @@ public class MarginDetailsWindow extends Window
             List<Module> modules=product.getModules();
             for(Module module:modules)
             {
-                LOG.info("module component" +module);
                 ModuleForPrice moduleForPrice = new ModuleForPrice();
                 moduleForPrice.setCity(proposalHeader.getPcity());
                 moduleForPrice.setModule(module);
@@ -375,10 +351,6 @@ public class MarginDetailsWindow extends Window
                     moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
                 }
                 ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
-             /*   if(module.getMgCode().equals("MG-NS-H-001") || ("MG-NS-H-002").equals(module.getMgCode()))
-                {
-                    hikeCost+=modulePrice.getWoodworkCost();
-                }*/
                 if(module.getMgCode().startsWith("MG-NS-H"))
                 {
                     hikeCost+=modulePrice.getWoodworkCost();
@@ -400,14 +372,12 @@ public class MarginDetailsWindow extends Window
                 else
                 {
                     moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
-
                 }
                 ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
                 TotalCost+=modulePrice.getTotalCost();
                 if (module.getMgCode().startsWith("MG-NS"))
                 {
                     nonStdModuleCount++;
-                    /*if((!module.getMgCode().equals("MG-NS-H-001")) || (!module.getMgCode().equals("MG-NS-H-002")))*/
                     if(!(module.getMgCode().startsWith("MG-NS-H")))
                     {
                         NSWoodWorkCost+=modulePrice.getCarcassCost()+modulePrice.getShutterCost();
@@ -424,34 +394,13 @@ public class MarginDetailsWindow extends Window
                 handleAndKnonCost +=modulePrice.getHandleAndKnobCost();
                 LOG.info(lConnectorSourcePrice);
                 manufacturingHandleAndKnobCost+=modulePrice.getHandleAndKnobSourceCost();
-                LOG.info("manufacturing handle and knob cost" +manufacturingHandleAndKnobCost);
-                LOG.info("module price " +modulePrice);
                 hingeCost+=modulePrice.getHingeCost();
 
-                /*if(!(module.getHandlePresent()==null))
-                {
-                    PriceMaster handleandknobdetails=proposalDataProvider.getHandleAndKnobRateDetails(module.getHandleCode(),this.priceDate,this.city);
-                    {
-                        LOG.info("Manufacturing handle price " +handleandknobdetails.getSourcePrice() + ":" + handleandknobdetails.getRateId());
-                        manufacturingHandleAndKnobCost+=(handleandknobdetails.getSourcePrice())*module.getHandleQuantity();
-                    }
-                }*/
-
-              /*  if(!(module.getKnobPresent()==null))
-                {
-                    PriceMaster handleandknobdetails=proposalDataProvider.getHandleAndKnobRateDetails(module.getKnobCode(),this.priceDate,this.city);
-                    {
-                        LOG.info("Manufacturing Knob Price " +handleandknobdetails.getSourcePrice() + ":" + handleandknobdetails.getRateId());
-                        manufacturingHandleAndKnobCost+=handleandknobdetails.getSourcePrice() * module.getKnobQuantity() ;
-                    }
-                }*/
                 for(ModuleHingeMap moduleHingeMap:module.getHingePack())
                 {
                     PriceMaster hingedetails=proposalDataProvider.getHingeRateDetails(moduleHingeMap.getHingecode(),this.priceDate,this.city);
                     {
                         manufacturingHingeCost+=hingedetails.getSourcePrice() * moduleHingeMap.getQty();
-                        LOG.debug("Manufacturing hinge Cost : " + hingedetails.getSourcePrice() + ":" + hingedetails.getRateId() );
-
                     }
                 }
 
@@ -461,49 +410,36 @@ public class MarginDetailsWindow extends Window
                     List<String> acccode=moduleAccessoryPack.getAccessories();
                     for(String ZgenericAccessory: acccode)
                     {
-                        LOG.info("acc code" +ZgenericAccessory);
                         PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(ZgenericAccessory,this.priceDate,this.city);
                         {
-                            LOG.info("Manufacturing Z generic accessory cost" +accessoryRateMaster.getSourcePrice());
                             manufacturingAccessoryCost+=accessoryRateMaster.getSourcePrice();
                         }
                     }
 
                     List <AccessoryDetails> accesoryNormal=proposalDataProvider.getAccessoryhwDetails(moduleAccessoryPack.getCode());
-                    LOG.info("accnormal price size " +accesoryNormal.size());
                     for(AccessoryDetails acc: accesoryNormal)
                     {
-                        LOG.info("Accessory code " +acc);
                         PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acc.getCode(),this.priceDate,this.city);
                         {
-                            LOG.info("hardwareRateMaster.getSourcePrice()" +hardwareRateMaster);
                             manufacturingHardwareCost+=hardwareRateMaster.getSourcePrice()*Double.valueOf(acc.getQty());
-                            LOG.info("manufacturingHardwareCost" + manufacturingHardwareCost);
                         }
                     }
                     List <AccessoryDetails>  accesoryHardwareMasters =proposalDataProvider.getAccessoryDetails(moduleAccessoryPack.getCode());
-                    /*LOG.info("Accessory code z generic" +moduleAccessoryPack.getCode());
-                    PriceMaster accessoryRateMaster1=proposalDataProvider.getHardwareRateDetails("H030",this.priceDate,this.city);
-                    LOG.info("$$$$" +accessoryRateMaster1);*/
                     for(AccessoryDetails acc: accesoryHardwareMasters)
                     {
                         PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(acc.getCode(),this.priceDate,this.city);
-                        LOG.info("price data" +accessoryRateMaster);
                         {
                             manufacturingAccessoryCostForZgeneric+=accessoryRateMaster.getSourcePrice();
                         }
                         PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acc.getCode(),this.priceDate,this.city);
-                        LOG.info("hardware code" +acc.getCode());
                         {
                             {
-                                LOG.info("Manufacturing Accessory cost" +hardwareRateMaster + " :" + hardwareRateMaster.getRateId());
                                 manufacturingHardwareCost += hardwareRateMaster.getSourcePrice();
                             }
                         }
                     }
                 }
                 HardwareCost+=modulePrice.getHardwareCost();
-                LOG.info("Hardware cost for module " +HardwareCost);
                 if(!(module.getMgCode().startsWith("MG-NS-H")))
                 {
                     LabourCost+=modulePrice.getLabourCost();
@@ -513,7 +449,6 @@ public class MarginDetailsWindow extends Window
                 {
                     PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acchwdetails.getCompcode(),this.priceDate,this.city);
                     {
-                        LOG.debug("Get Hardware details in margin : " + acchwdetails);
                         {
                             double quantity = 0.0;
                             if (acchwdetails.getQuantityFlag() == null || acchwdetails.getQuantityFlag().equals("") || acchwdetails.getQuantityFlag().equals("F") )
@@ -526,23 +461,19 @@ public class MarginDetailsWindow extends Window
                             }
 
                             manufacturingHardwareCost += hardwareRateMaster.getSourcePrice() * quantity;
-                            LOG.debug("Manufacturing hardware cost : "  + hardwareRateMaster.getSourcePrice()  +" :" + hardwareRateMaster.getRateId()+ "qty " +quantity);
                         }
                     }
                 }
             }
         }
         totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost+handleAndKnonCost+hingeCost+lConnectorPrice;
-        LOG.debug("TSP :" + totalSalesPrice);
-        LOG.debug("TSP :" + totalSalesPrice + ":" + SWoodWorkCost + ":Hardware cost" + HardwareCost + ":" + LabourCost + ":" + handleAndKnonCost + ":" + hingeCost );
+        LOG.debug("TSP :" + totalSalesPrice + "Standard WoodWorkCost: " + SWoodWorkCost + "Non Standard WoodWorkCost: " +NSWoodWorkCost+  ":Hardware cost: " + HardwareCost + "Labour Cost : " + LabourCost + "Accessory Cost: " +AccessoryCost + "Handle & Knob Cost: " + handleAndKnonCost + "Hinge Cost: " + hingeCost+ "LConnector Price: " +lConnectorPrice);
         totalSalesPriceWOAcc =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+hikeCost+handleAndKnonCost+hingeCost+lConnectorPrice;
 
         //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
         totalSalesPriceWOtax = (totalSalesPrice) *rateForProductWOTax;
-
         //stdModuleManufacturingCost =SWoodWorkCost/2.46;
         stdModuleManufacturingCost =SWoodWorkCost/rateForStdManfCost;
-        LOG.debug("Std Manufacturing panel Cost : " + stdModuleManufacturingCost);
         //nonStdModuleManufacturingCost =NSWoodWorkCost/1.288;
         nonStdModuleManufacturingCost =NSWoodWorkCost/rateForNStdManfCost;
         //manufacturingLabourCost =(LabourCost)/1.288;
@@ -552,9 +483,7 @@ public class MarginDetailsWindow extends Window
         FinalmanufacturingAccoryCost = manufacturingAccessoryCost + manufacturingAccessoryCostForZgeneric;
 
         manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + FinalmanufacturingAccoryCost + manufacturingHandleAndKnobCost + manufacturingHingeCost;
-        LOG.debug("Total Manufacturing cost : " + manufacturingTotalSalesPrice);
-
-        LOG.info("std manu cost " +stdModuleManufacturingCost+ "non std man cost " + nonStdModuleManufacturingCost+ "labour cost " +manufacturingLabourCost+ "Hardware cost " +manufacturingHardwareCost+ "acc cost " +FinalmanufacturingAccoryCost+ "manuf H&K cost " +manufacturingHandleAndKnobCost + " :" + "Total hinge cost :" + manufacturingHingeCost);
+        LOG.debug("Total Manufacturing Cost : "+manufacturingTotalSalesPrice+ "Std Manufacture Cost : " +stdModuleManufacturingCost+ "Non Std man Cost " + nonStdModuleManufacturingCost+ "Manufacturing Labour Cost " +manufacturingLabourCost+ "Manufacturing Hardware Cost " +manufacturingHardwareCost+ "Manufacturing Accessory Cost " +FinalmanufacturingAccoryCost+ "Manufacturing H&K Cost " +manufacturingHandleAndKnobCost + " :" + "Manufacturing Hinge Cost :" + manufacturingHingeCost);
 
         List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (AddonProduct addonProduct:addonProducts)
@@ -586,8 +515,6 @@ public class MarginDetailsWindow extends Window
             //PriceMaster addonMasters=proposalDataProvider.getAddonRate(addonProduct.getCode(),moduleForPrice.getPriceDate(),moduleForPrice.getCity());
             {
                 addonDealerPrice+=Double.valueOf(addonMasterRate.getSourcePrice())*addonProduct.getQuantity();
-                //addonsTotalWOtax+=Double.valueOf(addonMaster.getDealerPrice());
-                //addonsProfit+=addonsTotalWOtax-Double.valueOf(addonMaster.getDealerPrice());*/
             }
         }
         addonsProfit=addonsTotalWOtax-addonDealerPrice;
@@ -602,15 +529,11 @@ public class MarginDetailsWindow extends Window
             obj1=calculateSalesPriceWithDiscount(obj1, TspToBeConsidered);
             obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
             obj3=obj2;
-            //refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
         }
         else {
-            //refreshDiscountForOldProposals(totalWoAccessories, totalAmount, costOfAccessories, addonsTotal);
             obj1=calculateSalesPriceWithDiscount(obj1, TspToBeConsidered);
-            //obj2=calculateSalesPriceWithDiscount(obj2,(TspToBeConsidered-AccessoryCost)-proposalVersion.getDiscountAmount());
             obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
             obj3=obj2;
-
         }
 
         manufacturingProfit = totalSalesPriceWOtax - manufacturingTotalSalesPrice;
@@ -618,8 +541,6 @@ public class MarginDetailsWindow extends Window
 
         totalAmount = addonsTotal + productsTotal;
         costOfAccessories = productsTotal - totalWoAccessories;
-
-        LOG.info("total handle cost " +handleAndKnonCost+ "manufa " +manufacturingHandleAndKnobCost);
     }
 
 
@@ -716,17 +637,19 @@ public class MarginDetailsWindow extends Window
         margin.setTspWt(Tspwt);
         margin.setMprofit(MProfit);
         margin.setMArginCompute(marginCompute);
+        margin.setManufactureCost(manufacturingTotalSalesPrice);
 
         margin.setAddonPrice(AddonTotal);
         margin.setAddonPriceWTtax(AddonTotalWOtax);
         margin.setAddonProfit(addonsProfit);
         margin.setAddonMargin(addonsMargin);
+        margin.setAddonManufacturingCost(addonDealerPrice);
 
         margin.setProductaddonTsp(total);
         margin.setProductaddontspwt(totalwt);
         margin.setProductaddonProfit(profit);
         margin.setProductaddonMargin(finalmargin);
-
+        margin.setProductaddonManufactingCost(manufacturingTotalSalesPrice+addonDealerPrice);
         return margin;
     }
 
@@ -786,6 +709,11 @@ public class MarginDetailsWindow extends Window
         verticalLayout.addComponent(label2);
         verticalLayout.setComponentAlignment(label2,Alignment.MIDDLE_CENTER);
 
+        Label label21=new Label("Manufacturing Cost");
+        label21.addStyleName("margin-label-style");
+        verticalLayout.addComponent(label21);
+        verticalLayout.setComponentAlignment(label21,Alignment.MIDDLE_CENTER);
+
         Label label3=new Label("Profit");
         label3.addStyleName("margin-label-style");
         verticalLayout.addComponent(label3);
@@ -833,6 +761,13 @@ public class MarginDetailsWindow extends Window
         verticalLayout.addComponent(actualSalesPriceWOtax);
         verticalLayout.setComponentAlignment(actualSalesPriceWOtax,Alignment.MIDDLE_CENTER);
 
+        actualCost = new Label();
+        actualCost.addStyleName("margin-label-style2");
+        actualCost.setValue(String.valueOf(round(obj1.getProductaddonManufactingCost(),2)).toString());
+        actualCost.setReadOnly(true);
+        verticalLayout.addComponent(actualCost);
+        verticalLayout.setComponentAlignment(actualCost,Alignment.MIDDLE_CENTER);
+
         actualProfit = new Label();
         actualProfit.addStyleName("margin-label-style2");
         actualProfit.setValue(String.valueOf(round(obj1.getProductaddonProfit(),2)).toString());
@@ -846,34 +781,6 @@ public class MarginDetailsWindow extends Window
         actualSalesMargin.setReadOnly(true);
         verticalLayout.addComponent(actualSalesMargin);
         verticalLayout.setComponentAlignment(actualSalesMargin,Alignment.MIDDLE_CENTER);
-
-        /*actualAddonPrice=new Label();
-        actualAddonPrice.addStyleName("margin-label-style2");
-        actualAddonPrice.setValue(String.valueOf(round(obj1.getAddonPrice(),2)).toString());
-        actualAddonPrice.setReadOnly(true);
-        verticalLayout.addComponent(actualAddonPrice);
-        verticalLayout.setComponentAlignment(actualAddonPrice,Alignment.MIDDLE_CENTER);
-
-        actuaAddonPriceWTtax=new Label();
-        actuaAddonPriceWTtax.addStyleName("margin-label-style2");
-        actuaAddonPriceWTtax.setValue(String.valueOf(round(obj1.getAddonPriceWTtax(),2)).toString());
-        actuaAddonPriceWTtax.setReadOnly(true);
-        verticalLayout.addComponent(actuaAddonPriceWTtax);
-        verticalLayout.setComponentAlignment(actuaAddonPriceWTtax,Alignment.MIDDLE_CENTER);
-
-        actualAddonProfit=new Label();
-        actualAddonProfit.addStyleName("margin-label-style2");
-        actualAddonProfit.setValue(String.valueOf(round(obj1.getAddonProfit(),2)).toString());
-        actualAddonProfit.setReadOnly(true);
-        verticalLayout.addComponent(actualAddonProfit);
-        verticalLayout.setComponentAlignment(actualAddonProfit,Alignment.MIDDLE_CENTER);
-
-        actualAddonMargin=new Label();
-        actualAddonMargin.addStyleName("margin-label-style2");
-        actualAddonMargin.setValue(String.valueOf(round(obj1.getAddonMargin(),2)).toString());
-        actualAddonMargin.setReadOnly(true);
-        verticalLayout.addComponent(actualAddonMargin);
-        verticalLayout.setComponentAlignment(actualAddonMargin,Alignment.MIDDLE_CENTER);*/
 
         return verticalLayout;
     }
@@ -901,11 +808,7 @@ public class MarginDetailsWindow extends Window
         discountedSalesPrice = new Label();
         discountedSalesPrice.addStyleName("margin-label-style2");
         discountedSalesPrice.setReadOnly(true);
-        //LOG.info("final value" +String.valueOf(round(obj2.getTsp(),2)).toString());
-        //LOG.info(obj2.getTsp());
-        //String.valueOf(round(ProductTotal,2)).toString();
-
-            discountedSalesPrice.setValue(String.valueOf(round(obj2.getProductaddonTsp(), 2)).toString());
+        discountedSalesPrice.setValue(String.valueOf(round(obj2.getProductaddonTsp(), 2)).toString());
 
         verticalLayout.addComponent(discountedSalesPrice);
         verticalLayout.setComponentAlignment(discountedSalesPrice,Alignment.MIDDLE_CENTER);
@@ -916,6 +819,13 @@ public class MarginDetailsWindow extends Window
         discountedSalesPriceWOtax.setReadOnly(true);
         verticalLayout.addComponent(discountedSalesPriceWOtax);
         verticalLayout.setComponentAlignment(discountedSalesPriceWOtax,Alignment.MIDDLE_CENTER);
+
+        discountedManufacturingCost = new Label();
+        discountedManufacturingCost.addStyleName("margin-label-style2");
+        discountedManufacturingCost.setValue(String.valueOf(round(obj2.getProductaddonManufactingCost(),2)).toString());
+        discountedManufacturingCost.setReadOnly(true);
+        verticalLayout.addComponent(discountedManufacturingCost);
+        verticalLayout.setComponentAlignment(discountedManufacturingCost,Alignment.MIDDLE_CENTER);
 
         discountedProfit = new Label();
         discountedProfit.addStyleName("margin-label-style2");
@@ -930,30 +840,6 @@ public class MarginDetailsWindow extends Window
         discountedSalesMargin.setReadOnly(true);
         verticalLayout.addComponent(discountedSalesMargin);
         verticalLayout.setComponentAlignment(discountedSalesMargin,Alignment.MIDDLE_CENTER);
-
-        /*discountedaddonPrice=new Label();
-        discountedaddonPrice.addStyleName("margin-label-style2");
-        discountedaddonPrice.setValue(String.valueOf(round(obj2.getAddonPrice(),2)).toString() );
-        verticalLayout.addComponent(discountedaddonPrice);
-        verticalLayout.setComponentAlignment(discountedaddonPrice,Alignment.MIDDLE_CENTER);
-
-        discountedaddonpriceWOtax=new Label();
-        discountedaddonpriceWOtax.addStyleName("margin-label-style2");
-        discountedaddonpriceWOtax.setValue(String.valueOf(round(obj2.getAddonPriceWTtax(),2)).toString() );
-        verticalLayout.addComponent(discountedaddonpriceWOtax);
-        verticalLayout.setComponentAlignment(discountedaddonpriceWOtax,Alignment.MIDDLE_CENTER);
-
-        discountedaddonProfit=new Label();
-        discountedaddonProfit.addStyleName("margin-label-style2");
-        discountedaddonProfit.setValue(String.valueOf(round(obj2.getAddonProfit(),2)).toString() );
-        verticalLayout.addComponent(discountedaddonProfit);
-        verticalLayout.setComponentAlignment(discountedaddonProfit,Alignment.MIDDLE_CENTER);
-
-        discountedaddonMargin=new Label();
-        discountedaddonMargin.addStyleName("margin-label-style2");
-        discountedaddonMargin.setValue(String.valueOf(round(obj2.getAddonMargin(),2)).toString() );
-        verticalLayout.addComponent(discountedaddonMargin);
-        verticalLayout.setComponentAlignment(discountedaddonMargin,Alignment.MIDDLE_CENTER);*/
 
         return verticalLayout;
     }
@@ -983,7 +869,6 @@ public class MarginDetailsWindow extends Window
         manualInputSalesPrice = new Label();
         manualInputSalesPrice.addStyleName("margin-label-style2");
         manualInputSalesPrice.setValue(String.valueOf(round(obj3.getProductaddonTsp(),2)).toString());
-        //manualInputSalesPrice.addValueChangeListener(this::calculateSalesPrice);
         verticalLayout.addComponent(manualInputSalesPrice);
         verticalLayout.setComponentAlignment(manualInputSalesPrice,Alignment.MIDDLE_CENTER);
 
@@ -992,6 +877,12 @@ public class MarginDetailsWindow extends Window
         manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getProductaddontspwt(),2)).toString());
         verticalLayout.addComponent(manualInputSalesPriceWOtax);
         verticalLayout.setComponentAlignment(manualInputSalesPriceWOtax,Alignment.MIDDLE_CENTER);
+
+        manualInputCost = new Label();
+        manualInputCost.addStyleName("margin-label-style2");
+        manualInputCost.setValue(String.valueOf(round(obj3.getProductaddonManufactingCost(),2)).toString());
+        verticalLayout.addComponent( manualInputCost);
+        verticalLayout.setComponentAlignment( manualInputCost,Alignment.MIDDLE_CENTER);
 
         manualInputProfitPercentage = new Label();
         manualInputProfitPercentage.addStyleName("margin-label-style2");
@@ -1022,27 +913,13 @@ public class MarginDetailsWindow extends Window
                 obj1=calculateSalesPriceWithDiscount(obj1,totalSalesPrice);
                 obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
                 obj3=obj2;
-
-                /*obj1=calculateSalesPriceWithDiscount(obj1,ProductTotal-addonsTotal);
-                obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
-                obj3=obj2;*/
-                //refreshDiscountForNewProposals(totalAmount,addonsTotal,productsTotal);
             }
             else {
-                //refreshDiscountForOldProposals(totalWoAccessories, totalAmount, costOfAccessories, addonsTotal);
-                /*obj1=calculateSalesPriceWithDiscount(obj1,ProductTotal-addonsTotal);
-                obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPriceWOAcc-proposalVersion.getDiscountAmount());
-                obj3=obj2;*/
                 obj1=calculateSalesPriceWithDiscount(obj1,totalSalesPrice);
                 obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
                 obj3=obj2;
 
             }
-
-            /*obj1=calculateSalesPriceWithDiscount(obj1,totalSalesPrice);
-            obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
-            obj3=obj2;*/
-
             checkstatus="P";
             amt.setValue("0.0");
             per.setValue("0.0");
@@ -1050,10 +927,7 @@ public class MarginDetailsWindow extends Window
             actualSalesPriceWOtax.setValue(String.valueOf(round(obj1.getTspWt(),2)).toString());
             actualProfit.setValue(String.valueOf(round(obj1.getMprofit(),2)).toString());
             actualSalesMargin.setValue(String.valueOf(round(obj1.getMArginCompute(),2)).toString()+ "%");
-            /*actualAddonPrice.setValue(String.valueOf(round(obj1.getAddonPrice(),2)).toString());
-            actuaAddonPriceWTtax.setValue(String.valueOf(round(obj1.getAddonPriceWTtax(),2)).toString());
-            actualAddonProfit.setValue(String.valueOf(round(obj1.getAddonProfit(),2)).toString());
-            actualAddonMargin.setValue(String.valueOf(round(obj1.getAddonMargin(),2)).toString());*/
+            actualCost.setValue(String.valueOf(round(obj1.getManufactureCost(),2)).toString());
 
             profitPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
             profitPercentageAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
@@ -1061,6 +935,7 @@ public class MarginDetailsWindow extends Window
             discountedSalesPriceWOtax.setValue(String.valueOf(round(obj2.getTspWt(),2)).toString());
             discountedProfit.setValue(String.valueOf(round(obj2.getMprofit(),2)).toString());
             discountedSalesMargin.setValue(String.valueOf(round(obj2.getMArginCompute(),2)).toString()+ "%");
+            discountedManufacturingCost.setValue(String.valueOf(round(obj2.getManufactureCost(),2)));
 
             manualInputDiscountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
             manualInputDiscountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
@@ -1068,6 +943,7 @@ public class MarginDetailsWindow extends Window
             manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getTspWt(),2)).toString());
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getMprofit(),2)).toString());
             manualInputMargin.setValue(String.valueOf(round(obj3.getMArginCompute(),2)).toString() + "%");
+            manualInputCost.setValue(String.valueOf(round(obj3.getManufactureCost(),2)).toString());
         }
         else if(checkProduct.getValue()=="Addon")
         {
@@ -1086,10 +962,7 @@ public class MarginDetailsWindow extends Window
             actualSalesPriceWOtax.setValue(String.valueOf(round(obj1.getAddonPriceWTtax(),2)).toString());
             actualProfit.setValue(String.valueOf(round(obj1.getAddonProfit(),2)).toString());
             actualSalesMargin.setValue(String.valueOf(round(obj1.getAddonMargin(),2)).toString()+ "%");
-            /*actualAddonPrice.setValue(String.valueOf(round(obj1.getAddonPrice(),2)).toString());
-            actuaAddonPriceWTtax.setValue(String.valueOf(round(obj1.getAddonPriceWTtax(),2)).toString());
-            actualAddonProfit.setValue(String.valueOf(round(obj1.getAddonProfit(),2)).toString());
-            actualAddonMargin.setValue(String.valueOf(round(obj1.getAddonMargin(),2)).toString());*/
+            actualCost.setValue(String.valueOf(round(obj1.getAddonManufacturingCost(),2)).toString());
 
             profitPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
             profitPercentageAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
@@ -1097,6 +970,7 @@ public class MarginDetailsWindow extends Window
             discountedSalesPriceWOtax.setValue(String.valueOf(round(obj2.getAddonPriceWTtax(),2)).toString());
             discountedProfit.setValue(String.valueOf(round(obj2.getAddonProfit(),2)).toString());
             discountedSalesMargin.setValue(String.valueOf(round(obj2.getAddonMargin(),2)).toString()+ "%");
+            discountedManufacturingCost.setValue(String.valueOf(round(obj2.getAddonManufacturingCost(),2)));
 
             manualInputDiscountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
             manualInputDiscountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
@@ -1104,6 +978,7 @@ public class MarginDetailsWindow extends Window
             manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getAddonPriceWTtax(),2)).toString());
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getAddonProfit(),2)).toString());
             manualInputMargin.setValue(String.valueOf(round(obj3.getAddonMargin(),2)).toString() + "%");
+            manualInputCost.setValue(String.valueOf(round(obj3.getAddonManufacturingCost(),2)).toString());
         }
         else if(checkProduct.getValue()=="Product & Addon")
         {
@@ -1124,11 +999,6 @@ public class MarginDetailsWindow extends Window
 
             }
 
-            /*obj1=calculateSalesPriceWithDiscount(obj1,ProductTotal-addonsTotal);
-            obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
-            LOG.info("product and addon value in radio button listeiner" +(totalSalesPrice-proposalVersion.getDiscountAmount()));
-            obj3=obj2;*/
-
             checkstatus="PA";
             amt.setValue("0.0");
             per.setValue("0.0");
@@ -1137,10 +1007,7 @@ public class MarginDetailsWindow extends Window
             actualSalesPriceWOtax.setValue(String.valueOf(round(obj1.getProductaddontspwt(),2)).toString());
             actualProfit.setValue(String.valueOf(round(obj1.getProductaddonProfit(),2)).toString());
             actualSalesMargin.setValue(String.valueOf(round(obj1.getProductaddonMargin(),2)).toString()+ "%");
-            /*actualAddonPrice.setValue(String.valueOf(round(obj1.getAddonPrice(),2)).toString());
-            actuaAddonPriceWTtax.setValue(String.valueOf(round(obj1.getAddonPriceWTtax(),2)).toString());
-            actualAddonProfit.setValue(String.valueOf(round(obj1.getAddonProfit(),2)).toString());
-            actualAddonMargin.setValue(String.valueOf(round(obj1.getAddonMargin(),2)).toString());*/
+            actualCost.setValue(String.valueOf(round(obj1.getProductaddonManufactingCost(),2)).toString());
 
             profitPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
             profitPercentageAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
@@ -1148,6 +1015,7 @@ public class MarginDetailsWindow extends Window
             discountedSalesPriceWOtax.setValue(String.valueOf(round(obj2.getProductaddontspwt(),2)).toString());
             discountedProfit.setValue(String.valueOf(round(obj2.getProductaddonProfit(),2)).toString());
             discountedSalesMargin.setValue(String.valueOf(round(obj2.getProductaddonMargin(),2)).toString()+ "%");
+            discountedManufacturingCost.setValue(String.valueOf(round(obj2.getProductaddonManufactingCost(),2)));
 
             manualInputDiscountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
             manualInputDiscountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
@@ -1155,6 +1023,7 @@ public class MarginDetailsWindow extends Window
             manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getProductaddontspwt(),2)).toString());
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getProductaddonProfit(),2)).toString());
             manualInputMargin.setValue(String.valueOf(round(obj3.getProductaddonMargin(),2)).toString() + "%");
+            manualInputCost.setValue(String.valueOf(round(obj3.getProductaddonManufactingCost(),2)).toString());
         }
     }
     public class margin
@@ -1163,16 +1032,19 @@ public class MarginDetailsWindow extends Window
         Double TspWt;
         Double Mprofit;
         Double MArginCompute;
+        Double ManufactureCost;
 
         Double AddonPrice;
         Double AddonPriceWTtax;
         Double AddonProfit;
         Double AddonMargin;
+        Double AddonManufacturingCost;
 
         Double productaddonTsp;
         Double productaddontspwt;
         Double productaddonProfit;
         Double productaddonMargin;
+        Double productaddonManufactingCost;
 
         public Double getProductaddonTsp() {
             return productaddonTsp;
@@ -1269,6 +1141,30 @@ public class MarginDetailsWindow extends Window
         public void setMArginCompute(Double MArginCompute) {
             this.MArginCompute = MArginCompute;
         }
+
+        public Double getAddonManufacturingCost() {
+            return AddonManufacturingCost;
+        }
+
+        public void setAddonManufacturingCost(Double addonManufacturingCost) {
+            AddonManufacturingCost = addonManufacturingCost;
+        }
+
+        public Double getManufactureCost() {
+            return ManufactureCost;
+        }
+
+        public void setManufactureCost(Double manufactureCost) {
+            ManufactureCost = manufactureCost;
+        }
+
+        public Double getProductaddonManufactingCost() {
+            return productaddonManufactingCost;
+        }
+
+        public void setProductaddonManufactingCost(Double productaddonManufactingCost) {
+            this.productaddonManufactingCost = productaddonManufactingCost;
+        }
     }
 
     private double round(double value, int places)
@@ -1338,62 +1234,42 @@ public class MarginDetailsWindow extends Window
             if (date.after(currentDate))
             {
                 obj3=new margin();
-                //obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
                 obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
             }
             else
             {
                 obj3=new margin();
-                //obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
                 obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
 
             }
-            /*obj3=new margin();
-            //obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
-            obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPriceWOAcc-discountAmount);*/
-
-
-           // obj3=calculateSalesPriceWithDiscount(obj3,productTotal-discountAmount,addonsTotal,addonsTotalWOtax,addonsProfit);
             manualInputSalesPrice.setValue(String.valueOf(round(obj3.getTsp(), 2)));
             manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getTspWt(), 2)));
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getMprofit(), 2)));
             manualInputMargin.setValue(String.valueOf(round(obj3.getMArginCompute(), 2)) + "%");
+            manualInputCost.setValue(String.valueOf(round(obj3.getManufactureCost(),2)));
         }
         else if(checkProduct.getValue()=="Addon")
         {
             if("DP".equals(status))
             {
-                /*LOG.info("Enter discount Percentage" + manualInputDiscountPercentage.getValue());
-                discountPercentage =Double.valueOf(manualInputDiscountPercentage.getValue());
-                discountAmount =AddonTotal* discountPercentage /100.0;
-                manualInputDiscountAmount.setValue(String.valueOf(round(discountAmount,2)));
-                LOG.info("Final discount Amount" + discountAmount);*/
                 manualInputDiscountAmount.setValue("0.0");
             }
             else if("DA".equals(status))
             {
-                /*discountAmount =Double.valueOf(manualInputDiscountAmount.getValue());
-                discountPercentage =(discountAmount /AddonTotal)*100;
-                manualInputDiscountPercentage.setValue(String.valueOf(round(discountPercentage,2)));
-                LOG.info("Final discount Percentage" + discountPercentage);*/
                 manualInputDiscountPercentage.setValue("0.0");
             }
-
-
             obj3=new margin();
-            //obj3=calculateSalesPriceWithDiscount(obj3,addonsTotal);
             obj3=calculateSalesPriceWithDiscount(obj3,addonsTotal);
-            //obj3=calculateSalesPriceWithDiscount(obj3,productTotal-discountAmount,addonsTotal,addonsTotalWOtax,addonsProfit);
             manualInputSalesPrice.setValue(String.valueOf(round(obj3.getAddonPrice(), 2)));
             manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getAddonPriceWTtax(), 2)));
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getAddonProfit(), 2)));
             manualInputMargin.setValue(String.valueOf(round(obj3.getAddonMargin(), 2)) + "%");
+            manualInputCost.setValue(String.valueOf(round(obj3.getAddonManufacturingCost(),2)));
         }
         else if(checkProduct.getValue()=="Product & Addon")
         {
             if("DP".equals(status))
             {
-                LOG.info("Enter discount Percentage" + manualInputDiscountPercentage.getValue());
                 discountPercentage = Double.valueOf(manualInputDiscountPercentage.getValue());
                 if (date.after(currentDate)) {
                     discountAmount =totalSalesPrice* discountPercentage /100.0;
@@ -1404,7 +1280,6 @@ public class MarginDetailsWindow extends Window
                 }
 
                 manualInputDiscountAmount.setValue(String.valueOf(round(discountAmount,2)));
-                LOG.info("Final discount Amount" + discountAmount);
             }
             else if("DA".equals(status))
             {
@@ -1417,35 +1292,22 @@ public class MarginDetailsWindow extends Window
                     discountPercentage = (discountAmount / totalSalesPriceWOAcc) * 100;
                 }
                 manualInputDiscountPercentage.setValue(String.valueOf(round(discountPercentage,2)));
-                LOG.info("Final discount Percentage" + discountPercentage);
             }
             if (date.after(currentDate))
             {
                 obj3=new margin();
-                //obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
                 obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
             }
             else {
                 obj3=new margin();
-                //obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
                 obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
 
             }
-
-            //obj2=calculateSalesPriceWithDiscount(obj2,totalSalesPrice-proposalVersion.getDiscountAmount());
-            /*obj3=new margin();
-            //obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPrice-discountAmount);
-            obj3=calculateSalesPriceWithDiscount(obj3,totalSalesPriceWOAcc-discountAmount);*/
-            LOG.info("addon and product" +(totalSalesPrice-discountAmount));
-            //obj3=calculateSalesPriceWithDiscount(obj3,productTotal-discountAmount,addonsTotal,addonsTotalWOtax,addonsProfit);
-
-            LOG.info("");
-
             manualInputSalesPrice.setValue(String.valueOf(round(obj3.getProductaddonTsp(),2)).toString());
             manualInputSalesPriceWOtax.setValue(String.valueOf(round(obj3.getProductaddontspwt(),2)).toString());
             manualInputProfitPercentage.setValue(String.valueOf(round(obj3.getProductaddonProfit(),2)).toString());
             manualInputMargin.setValue(String.valueOf(round(obj3.getProductaddonMargin(),2)).toString() + "%");
-
+            manualInputCost.setValue(String.valueOf(round(obj3.getProductaddonManufactingCost(),2)).toString());
         }
     }
 }
