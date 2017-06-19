@@ -1153,12 +1153,15 @@ public class CustomizedProductDetailsWindow extends Window {
             public void buttonClick(Button.ClickEvent clickEvent) {
 
                     if (!commitValues()) return;
-                LOG.info("handle selection value " +handleSelection.getValue());
-                if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+                if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
                 {
-                    NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return;
+                    if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+                    {
+                        NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
                 }
+
                     Module module = new Module();
                     product.setType(TYPES.CUSTOMIZED.name());
                     if (product.getSource() == null) {
@@ -1590,12 +1593,17 @@ public class CustomizedProductDetailsWindow extends Window {
 
 
             @Override
-            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
-                if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent)
+            {
+                if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
                 {
-                    NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return;
+                    if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+                    {
+                        NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
                 }
+
                 if (!binder.isValid()) {
                     NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -1677,18 +1685,22 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setWallCarcassCode((String) this.wallCarcassSelection.getValue());
         product.setBaseCarcassCode((String) this.baseCarcassSelection.getValue());
         product.setTitle(itemTitleField.getValue());
-        product.setHandleType(handleType.getValue().toString());
-        product.setHandleFinish(handle.getValue().toString());
-        product.setHandleTypeSelection(handleSelection.getValue().toString());
-        product.setKnobType(knobType.getValue().toString());
-        product.setKnobFinish(knob.getValue().toString());
-        product.setHandleThickness(thicknessfield.getValue().toString());
-        product.setGlass(glassSelection.getValue().toString());
-        product.setHinge(hingesSelection.getValue().toString());
-        product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
-        product.setModules(this.product.getModules());
-        product.setHandleCode(this.product.getHandleCode());
-        product.setKnobCode(this.product.getKnobCode());
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            product.setHandleType(handleType.getValue().toString());
+            product.setHandleFinish(handle.getValue().toString());
+            product.setHandleTypeSelection(handleSelection.getValue().toString());
+            product.setKnobType(knobType.getValue().toString());
+            product.setKnobFinish(knob.getValue().toString());
+            product.setHandleThickness(thicknessfield.getValue().toString());
+            product.setGlass(glassSelection.getValue().toString());
+            product.setHinge(hingesSelection.getValue().toString());
+            product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
+            product.setModules(this.product.getModules());
+            product.setHandleCode(this.product.getHandleCode());
+            product.setKnobCode(this.product.getKnobCode());
+
+        }
         return product;
     }
 
@@ -1874,43 +1886,46 @@ public class CustomizedProductDetailsWindow extends Window {
                 }
                 LOG.debug("cwa :" + product.getCostWoAccessories());
 
-                List<Module> modules = this.product.getModules();
-                for (Module module : modules)
+                if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
                 {
-                    if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
-                    {
-                        NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        return;
+                    List<Module> modules = this.product.getModules();
+                    for (Module module : modules) {
+                        if (handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0")) {
+                            NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            return;
+                        }
+
+                        if (("Normal").equals(product.getHandleTypeSelection())) {
+                            if (("Yes").equals(module.getAccessoryPackDefault())) {
+                                if (module.getAccessoryPacks().size() == 0) {
+                                    NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                    return;
+                                }
+                            }
+                            if (("Yes").equals(module.getHandlePresent())) {
+                                if (module.getHandleQuantity() == 0) {
+                                    NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                    return;
+                                }
+                            }
+                            if (("Yes").equals(module.getKnobPresent())) {
+                                if (module.getKnobQuantity() == 0) {
+                                    NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                    return;
+                                }
+                            }
+                            if (("Yes").equals(module.getHandlePresent())) {
+                                if (module.getHandleThickness() == null) {
+                                    NotificationUtil.showNotification("Please select appropriate handle size for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                    return;
+                                }
+                            }
+                        }
+
+                    }
                     }
 
-                    if(("Normal").equals(product.getHandleTypeSelection())) {
-                        if (("Yes").equals(module.getAccessoryPackDefault())) {
-                            if (module.getAccessoryPacks().size() == 0) {
-                                NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                                return;
-                            }
-                        }
-                        if (("Yes").equals(module.getHandlePresent())) {
-                            if (module.getHandleQuantity() == 0) {
-                                NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                                return;
-                            }
-                        }
-                        if (("Yes").equals(module.getKnobPresent())) {
-                            if (module.getKnobQuantity() == 0) {
-                                NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                                return;
-                            }
-                        }
-                        if (("Yes").equals(module.getHandlePresent())) {
-                            if (module.getHandleThickness() == null) {
-                                NotificationUtil.showNotification("Please select appropriate handle size for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                                return;
-                            }
-                        }
-                    }
 
-                }
 
                 List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
                 proposal.setProducts(getAllVersionProducts);
@@ -2332,10 +2347,13 @@ public class CustomizedProductDetailsWindow extends Window {
 
         LOG.debug("Handle Type Selection ");
 
-        if (handleSelection.getValue().toString().equals("Gola Profile"))
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
-            amount += lConnectorPrice;
-            this.product.setlConnectorPrice(lConnectorPrice);
+            if (handleSelection.getValue().toString().equals("Gola Profile"))
+            {
+                amount += lConnectorPrice;
+                this.product.setlConnectorPrice(lConnectorPrice);
+            }
         }
 
         totalAmount.setReadOnly(false);

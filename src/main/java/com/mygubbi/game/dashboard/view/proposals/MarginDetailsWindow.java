@@ -100,6 +100,7 @@ public class MarginDetailsWindow extends Window
     Double manufacturingAccessoryCost =0.0;
     Double manufacturingHandleAndKnobCost =0.0;
     Double manufacturingHingeCost =0.0;
+    Double manufacturingHikeCost =0.0;
     Double FinalmanufacturingAccoryCost=0.0;
     Double manufacturingAccessoryCostForZgeneric=0.0;
     Double manufacturingTotalSalesPrice =0.0;
@@ -199,6 +200,7 @@ public class MarginDetailsWindow extends Window
         verticalLayout.addComponent(horizontalLayout3);
         verticalLayout.setComponentAlignment(horizontalLayout3,Alignment.TOP_CENTER);
         horizontalLayout2.setHeightUndefined();
+
 
         HorizontalLayout horizontalLayout4 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
@@ -307,11 +309,13 @@ public class MarginDetailsWindow extends Window
             {
                 PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails("STDMC:Wardrobe",this.priceDate,this.city);
                 rateForStdManfCost=productWOtaxpriceMaster.getSourcePrice();
+                LOG.info("rateForStdManfCost for wardrobe " +rateForStdManfCost);
             }
             else
             {
                 PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
                 rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
+                LOG.info("rateForStdManfCost other than wardrobe " +rateForStdManfCost);
             }
             LOG.info("rate for standard manufacture cost" +rateForStdManfCost);
             PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
@@ -482,7 +486,8 @@ public class MarginDetailsWindow extends Window
         //manufacturingAccessoryCost =AccessoryCost/1.546;
         FinalmanufacturingAccoryCost = manufacturingAccessoryCost + manufacturingAccessoryCostForZgeneric;
 
-        manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + FinalmanufacturingAccoryCost + manufacturingHandleAndKnobCost + manufacturingHingeCost;
+        manufacturingHikeCost=0.6*hikeCost;
+        manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + FinalmanufacturingAccoryCost + manufacturingHandleAndKnobCost + manufacturingHingeCost +manufacturingHikeCost;
         LOG.debug("Total Manufacturing Cost : "+manufacturingTotalSalesPrice+ "Std Manufacture Cost : " +stdModuleManufacturingCost+ "Non Std man Cost " + nonStdModuleManufacturingCost+ "Manufacturing Labour Cost " +manufacturingLabourCost+ "Manufacturing Hardware Cost " +manufacturingHardwareCost+ "Manufacturing Accessory Cost " +FinalmanufacturingAccoryCost+ "Manufacturing H&K Cost " +manufacturingHandleAndKnobCost + " :" + "Manufacturing Hinge Cost :" + manufacturingHingeCost);
 
         List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());

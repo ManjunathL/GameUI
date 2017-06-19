@@ -1912,6 +1912,14 @@ public class ProductAndAddons extends Window
                         return product.getProductCategory();
                     } else {
                         List<LookupItem> lookupItems = proposalDataProvider.getLookupItems(ProposalDataProvider.CATEGORY_LOOKUP);
+                        LOG.info("product.getProductCategoryCode()" +product.getProductCategoryCode());
+                        if(product.getProductCategoryCode().equals("K"))
+                        {
+                            product.setProductCategoryCode("Kitchen");
+                        }else if(product.getProductCategoryCode().equals("W"))
+                        {
+                            product.setProductCategoryCode("Wardrobe");
+                        }
                         return lookupItems.stream().filter(lookupItem -> lookupItem.getCode().equals(product.getProductCategoryCode())).findFirst().get().getTitle();
                     }
                 } else {

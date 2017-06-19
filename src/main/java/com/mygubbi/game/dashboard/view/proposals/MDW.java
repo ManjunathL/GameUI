@@ -139,6 +139,15 @@ public class MDW extends Window {
         initModule();
         this.binder.setItemDataSource(this.module);
 
+        if(this.module.getProductCategory().equals("K"))
+        {
+            this.module.setProductCategory("Kitchen");
+        }
+        if(this.module.getProductCategory().equals("W"))
+        {
+            this.module.setProductCategory("Wardrobe");
+        }
+
         setModal(true);
         setSizeFull();
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
