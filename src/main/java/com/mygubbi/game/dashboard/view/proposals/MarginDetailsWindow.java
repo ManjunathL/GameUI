@@ -297,10 +297,14 @@ public class MarginDetailsWindow extends Window
         products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for(Product product:products)
         {
-            if(product.getHandleTypeSelection().equals("Gola Profile"))
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
-                lConnectorPrice+=product.getlConnectorPrice();
+                if(product.getHandleTypeSelection().equals("Gola Profile"))
+                {
+                    lConnectorPrice+=product.getlConnectorPrice();
+                }
             }
+
         }
 
         for(Product product:products)
@@ -332,9 +336,12 @@ public class MarginDetailsWindow extends Window
             rateForLconnectorPrice=lConnectorRate.getSourcePrice();
             LOG.info("rateForLconnectorPrice " +rateForLconnectorPrice);
             Amount+=product.getAmount();
-            if(product.getHandleTypeSelection().equals("Gola Profile"))
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
-                lConnectorSourcePrice = product.getNoOfLengths() * rateForLconnectorPrice;
+                if(product.getHandleTypeSelection().equals("Gola Profile"))
+                {
+                    lConnectorSourcePrice = product.getNoOfLengths() * rateForLconnectorPrice;
+                }
             }
             manufacturingHandleAndKnobCost+=lConnectorSourcePrice;
             LOG.info("lConnectorSourcePrice" +lConnectorSourcePrice);
