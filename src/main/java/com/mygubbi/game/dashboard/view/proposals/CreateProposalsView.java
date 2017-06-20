@@ -707,6 +707,11 @@ public class CreateProposalsView extends Panel implements View {
             this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
 
+            checkQuoteNoNew();
+            this.proposalHeader.setQuoteNoNew(QuoteNumNew);
+            boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
+            LOG.debug("This proposal header 2" + this.proposalHeader);
+
             try {
 
                 List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
@@ -717,11 +722,6 @@ public class CreateProposalsView extends Panel implements View {
             } catch (Exception e) {
                 LOG.info(e);
             }
-
-            checkQuoteNoNew();
-            this.proposalHeader.setQuoteNoNew(QuoteNumNew);
-            boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
-            LOG.debug("This proposal header 2" + this.proposalHeader);
 
             proposalDataProvider.updatePriceForNewProposal(this.proposalHeader);
 
@@ -766,6 +766,9 @@ public class CreateProposalsView extends Panel implements View {
             this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
 
+            checkQuoteNoNew();
+            this.proposalHeader.setQuoteNoNew(QuoteNumNew);
+
             try {
 
                 List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
@@ -777,8 +780,6 @@ public class CreateProposalsView extends Panel implements View {
                 LOG.info(e);
             }
 
-            checkQuoteNoNew();
-            this.proposalHeader.setQuoteNoNew(QuoteNumNew);
             boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
 
 
@@ -1322,6 +1323,7 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void cityChanged(Property.ValueChangeEvent valueChangeEvent) {
+        LOG.info("City changed ");
         String city = (String) projectCityField.getValue();
         switch (city) {
             case "Bangalore":
@@ -1343,6 +1345,7 @@ public class CreateProposalsView extends Panel implements View {
 
         int value = 0;
         List<ProposalCity> count = proposalDataProvider.getMonthCount(month, cityCode);
+        LOG.info("Count size " +count.size());
         value = count.size();
 
         String valueStr;
@@ -1352,15 +1355,14 @@ public class CreateProposalsView extends Panel implements View {
         String s = cityCode + "-" + date + "-" + valueStr;
         for(ProposalCity proposalCity : count)
         {
-            if (Objects.equals(proposalCity.getQuoteNo(), s)){
+            LOG.info("inside for loop");
+            //if (Objects.equals(proposalCity.getQuoteNo(), s)){
                 valueStr = String.format("%04d", value + 2);
                 s = cityCode + "-" + date + "-" + valueStr;
-
-            }
+                LOG.info("$$$" +s);
+            //}
         }
         QuoteNumNew = s;
-
-
         //proposalHeader.setQuoteNoNew(QuoteNumNew);
         //         quotenew.setValue(QuoteNumNew);
     }
