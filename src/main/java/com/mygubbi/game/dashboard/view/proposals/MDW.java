@@ -662,17 +662,6 @@ public class MDW extends Window {
 
         LOG.debug("MG module - " + mgModule.toString());
 
-        module.setMgCode(mgModule.getCode());
-        module.setHeight(mgModule.getHeight());
-        module.setDepth(mgModule.getDepth());
-        module.setWidth(mgModule.getWidth());
-        module.clearAcessorryPacks();
-        this.removeAddons();
-        //this.removeHandleAndKnobQuantity();
-        this.emptyAccessoryImages();
-        module.setModuleType(mgModule.getModuleType());
-        module.setModuleCategory(mgModule.getModuleCategory());
-        module.setAccessoryPackDefault(mgModule.getAccessoryPackDefault());
         if (module.getModuleType().equals("S")) {
             module.setImagePath(mgModule.getImagePath());
             module.setDescription(mgModule.getDescription());
@@ -690,6 +679,18 @@ public class MDW extends Window {
             module.setRemarks("");
         }
         moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
+
+        module.setMgCode(mgModule.getCode());
+        module.setHeight(mgModule.getHeight());
+        module.setDepth(mgModule.getDepth());
+        module.setWidth(mgModule.getWidth());
+        module.clearAcessorryPacks();
+        this.removeAddons();
+        //this.removeHandleAndKnobQuantity();
+        this.emptyAccessoryImages();
+        module.setModuleType(mgModule.getModuleType());
+        module.setModuleCategory(mgModule.getModuleCategory());
+        module.setAccessoryPackDefault(mgModule.getAccessoryPackDefault());
 
         this.height.setReadOnly(false);
         this.width.setReadOnly(false);
