@@ -1362,6 +1362,7 @@ public class CustomizedProductDetailsWindow extends Window {
             String quoteFilePath = getUploadBasePath() + "/" + filename;
             product.setQuoteFilePath(quoteFilePath);
             product.setSource("KDMax");
+            product.setProductCategory(product.getProductCategoryCode());
             Product productResult = proposalDataProvider.loadAndUpdateProduct(product);
             LOG.debug("Product Result :" + productResult.toString());
             product.setId(productResult.getId());
