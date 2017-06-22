@@ -492,9 +492,9 @@ public class CreateProposalsView extends Panel implements View {
                         module.setKnobFinish(product.getKnobFinish());
                         module.setHingeType(product.getHinge());
                         module.setGlassType(product.getGlass());
+                        module.setHandleThickness(product.getHandleThickness());
                         module.setHandleTypeSelection(product.getHandleTypeSelection());
-
-                        if (module.getHandleTypeSelection() == "Profile Handle") {
+                        if (!(product.getHandleTypeSelection().equals("Normal"))) {
                             module.setHandleQuantity(0);
                             module.setKnobQuantity(0);
                         } else {
