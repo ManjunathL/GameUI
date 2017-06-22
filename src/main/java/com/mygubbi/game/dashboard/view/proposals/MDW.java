@@ -662,7 +662,7 @@ public class MDW extends Window {
 
         LOG.debug("MG module - " + mgModule.toString());
 
-        if (module.getModuleType().equals("S")) {
+        /*if (module.getModuleType().equals("S")) {
             module.setImagePath(mgModule.getImagePath());
             module.setDescription(mgModule.getDescription());
             module.setRemarks(mgModule.getDescription());
@@ -677,7 +677,7 @@ public class MDW extends Window {
         {
             module.setDescription("");
             module.setRemarks("");
-        }
+        }*/
         moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
 
         module.setMgCode(mgModule.getCode());
