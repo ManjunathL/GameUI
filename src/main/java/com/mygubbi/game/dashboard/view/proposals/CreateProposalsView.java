@@ -225,6 +225,8 @@ public class CreateProposalsView extends Panel implements View {
         PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,this.proposalHeader.getPcity());
         rateForDiscount=discountpriceMaster.getSourcePrice();
         LOG.info("Rate for discount" +rateForDiscount);
+        maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
+        proposalHeader.setMaxDiscountPercentage(rateForDiscount);
     }
 
     private void cityLockedForSave() {
