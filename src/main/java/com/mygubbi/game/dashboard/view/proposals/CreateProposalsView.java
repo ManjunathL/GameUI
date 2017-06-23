@@ -531,7 +531,19 @@ public class CreateProposalsView extends Panel implements View {
                                     module.setKnobPresent(m.getKnobMandatory());
                                 }
                             }
+                            List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                            LOG.info("size of hinge" + hingeMaps1.size());
+                            module.setHingePack(hingeMaps1);
+                            for (MGModule m : handlePresent) {
+                                if (m.getHingeMandatory().equals("Yes")) {
+                                    module.setHingePresent(m.getHingeMandatory());
+                                    List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                                    module.setHingePack(hingeMaps);
+                                }
+                            }
                         }
+
+
 
                     }
                     proposalDataProvider.updateProduct(product);
