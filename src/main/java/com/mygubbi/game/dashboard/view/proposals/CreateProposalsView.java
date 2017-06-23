@@ -1369,12 +1369,10 @@ public class CreateProposalsView extends Panel implements View {
         String s = cityCode + "-" + date + "-" + valueStr;
         for(ProposalCity proposalCity : count)
         {
-            LOG.info("inside for loop");
-            //if (Objects.equals(proposalCity.getQuoteNo(), s)){
+            if (Objects.equals(proposalCity.getQuoteNo(), s)){
                 valueStr = String.format("%04d", value + 2);
                 s = cityCode + "-" + date + "-" + valueStr;
-                LOG.info("$$$" +s);
-            //}
+            }
         }
         QuoteNumNew = s;
         //proposalHeader.setQuoteNoNew(QuoteNumNew);
