@@ -1586,6 +1586,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 copyModule.setHandleTypeSelection(m.getHandleTypeSelection());
                 copyModule.setHingePack(m.getHingePack());
                 copyModule.setGlassType(m.getGlassType());
+                copyModule.setHandleOverrideFlag(m.getHandleOverrideFlag());
 
                 DashboardEventBus.post(new ProposalEvent.ModuleUpdated(copyModule,false,false,product.getModules().size(),CustomizedProductDetailsWindow.this));
                 DashboardEventBus.unregister(this);
