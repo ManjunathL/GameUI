@@ -662,22 +662,53 @@ public class MDW extends Window {
 
         LOG.debug("MG module - " + mgModule.toString());
 
-        /*if (module.getModuleType().equals("S")) {
+        LOG.debug("Module Type :" + mgModule.getModuleType());
+
+        /*switch (module.getModuleType()) {
+            case "S":
+                LOG.debug("Inside S" + mgModule.toString());
+                module.setImagePath(mgModule.getImagePath());
+                module.setDescription(mgModule.getDescription());
+                module.setRemarks(mgModule.getDescription());
+                break;
+            case "N":
+                LOG.debug("Inside N" + mgModule.toString());
+                module.setImagePath("image.jpg");
+                module.setDescription("");
+                module.setRemarks("");
+                // module.setHeight(0);
+                // module.setDepth(0);
+                // module.setWidth(0);
+                break;
+            case "hike":
+                LOG.debug("Inside Hike" + mgModule.toString());
+                module.setDescription("");
+                module.setRemarks("");
+                break;
+        }*/
+
+        if (module.getModuleCategory().startsWith("S"))
+        {
+            LOG.debug("Inside S :" + mgModule.toString());
+
             module.setImagePath(mgModule.getImagePath());
             module.setDescription(mgModule.getDescription());
             module.setRemarks(mgModule.getDescription());
-        } else if (module.getModuleType().equals("N")) {
+        }
+        else if (module.getModuleCategory().startsWith("N"))
+        {
+            LOG.debug("Inside N :" + mgModule.toString());
+
             module.setImagePath("image.jpg");
             module.setDescription("");
             module.setRemarks("");
-            module.setHeight(0);
-            module.setDepth(0);
-            module.setWidth(0);
-        } else if(module.getModuleType().equals("hike"))
+        }
+        else
         {
             module.setDescription("");
             module.setRemarks("");
-        }*/
+        }
+
         moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
 
         module.setMgCode(mgModule.getCode());
