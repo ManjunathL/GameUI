@@ -89,7 +89,7 @@ public class CRMsearchWindow extends Window
             if (!selectionEvent.getAdded().isEmpty()) {
                 Object selected = ((Grid.SingleSelectionModel) crmgrid.getSelectionModel()).getSelectedRow();
                 String Id = (String) crmgrid.getContainerDataSource().getItem(selected).getItemProperty(Profile.CRM_ID).getValue();
-                LOG.info("Id value of user_profile " +Id);
+                //LOG.info("Id value of user_profile " +Id);
 
                 List<UserProfile> profileInformation=proposalDataProvider.getUserProfileDetailsonCRMId(Id);
                 for(UserProfile profile:profileInformation)
@@ -145,12 +145,12 @@ public class CRMsearchWindow extends Window
                             proposalHeader.setPackageFlag("No");
                         }
                         boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
-                        LOG.info("proposal create value in crm search window " +success);
-                        LOG.info("proposal header in crm window after save in crm search window" +proposalHeader);
+                       /* LOG.info("proposal create value in crm search window " +success);
+                        LOG.info("proposal header in crm window after save in crm search window" +proposalHeader);*/
                     }
                 }
                 UI.getCurrent().getNavigator().navigateTo("New Quotation/" + proposalHeader.getId());
-                LOG.info("navigated");
+               // LOG.info("navigated");
             }
         });
 
@@ -174,12 +174,12 @@ public class CRMsearchWindow extends Window
 
         //UserProfile userProfile=new UserProfile();
         List<UserProfile> userProfiles=proposalDataProvider.getUserProfileDetails("SAL-1705-221656");
-        LOG.info("$$$" +userProfiles.toString());
+       // LOG.info("$$$" +userProfiles.toString());
 
         for(UserProfile u:userProfiles)
         {
             //profiles=u.getProfile();
-            LOG.info("profile " +u.getProfile());
+            //LOG.info("profile " +u.getProfile());
             for(Profile profile:u.getProfile())
             {
                 Profile p=new Profile();
@@ -199,15 +199,15 @@ public class CRMsearchWindow extends Window
                 p.setSalesExecMobile(profile.getSalesExecMobile());
                 for(CompleteProfile cp : profile.getCompleteProfile())
                 {
-                    LOG.info("complete profile" +profile.getCompleteProfile());
+                    //LOG.info("complete profile" +profile.getCompleteProfile());
                     p.setAddress(cp.getAddress());
                     p.setPropertyAddressCity(cp.getPropertyAddressCity());
                     p.setProjectName(cp.getProjectName());
                 }
                 profiles.add(p);
-                LOG.info("created profile " +p);
+                //LOG.info("created profile " +p);
             }
-            LOG.info("profile " +profiles.toString());
+           // LOG.info("profile " +profiles.toString());
         }
         userprofilecontainer.addAll(profiles);
         return verticalLayout;

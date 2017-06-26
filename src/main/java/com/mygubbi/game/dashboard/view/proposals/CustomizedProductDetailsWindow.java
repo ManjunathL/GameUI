@@ -150,7 +150,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private BeanContainer<String, HandleMaster> handlethicknessBeanContainer;
 
     public CustomizedProductDetailsWindow(Proposal proposal, Product product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
-        LOG.info("Productaszasasc" +product);
+        //LOG.info("Productaszasasc" +product);
         this.proposal = proposal;
         this.product = product;
         this.proposalVersion = proposalVersion;
@@ -167,7 +167,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(this.product);
-        LOG.info("product" +product);
+        //LOG.info("product" +product);
         setModal(true);
         setSizeFull();
         setResizable(false);
@@ -333,17 +333,17 @@ public class CustomizedProductDetailsWindow extends Window {
             formLayoutLeft.addComponent(noOfLengths);
 
             knobtitlelist=proposalDataProvider.getHandleTitle("knob");
-            LOG.info("knob value " +knobtitlelist.size());
+           // LOG.info("knob value " +knobtitlelist.size());
             this.knobType=getknobTypefilledComboBox("Knob Type",knobtitlelist,null);
             knobType.setRequired(true);
             binder.bind(knobType,KNOB_TYPE);
             knobType.addValueChangeListener(this::knobtypechanged);
-            LOG.info("knob type " +knobType.getValue().toString());
+            //LOG.info("knob type " +knobType.getValue().toString());
             formLayoutLeft.addComponent(this.knobType);
 
-            LOG.info("knob value " +knobType.getValue().toString());
+            //LOG.info("knob value " +knobType.getValue().toString());
             knobfinishlist=proposalDataProvider.getHandleFinish(knobType.getValue().toString(),"knob");
-            LOG.info("knob finish list" +knobfinishlist.size());
+            //LOG.info("knob finish list" +knobfinishlist.size());
             this.knob=getKnobFinishedComboBox("Knob Finish",knobfinishlist,null);
             knob.setRequired(true);
             binder.bind(knob,KNOB_Finish);
@@ -606,11 +606,11 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             else if(component == handleSelection)
             {
-                LOG.info("handle Selection");
+               // LOG.info("handle Selection");
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).getValue();
                 if(!(handleSelection.getValue().equals("Normal")))
                 {
-                    LOG.info("inside profile handle");
+                 //   LOG.info("inside profile handle");
                     NotificationUtil.showNotification("Current handle prices have been removed and replaced with profile handles",NotificationUtil.STYLE_BAR_WARNING_SMALL);
                     moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
                     if(!module.getModuleCategory().contains("Loft"))
@@ -626,7 +626,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         module.setHandleQuantity(0);
                     } else {
                         for (AccessoryDetails a : accDetailsforHandle) {
-                            LOG.info("handle quantity " + a);
+                   //         LOG.info("handle quantity " + a);
                             module.setHandleQuantity(Integer.valueOf(a.getQty()));
                             LOG.debug("Module Handle QTY : " + module.getHandleQuantity());
                         }
@@ -718,14 +718,14 @@ public class CustomizedProductDetailsWindow extends Window {
                 this.product.setHandleThickness(thicknessfield.getValue().toString());
 
                 moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(thicknessfield.getValue());
-                LOG.info("handle_thickness " +thicknessfield.getValue());
+               // LOG.info("handle_thickness " +thicknessfield.getValue());
             }
             else if ((component==noOfLengths))
             {
                 product.setNoOfLengths(Double.parseDouble(String.valueOf(valueChangeEvent.getProperty().getValue())));
                 if(!(handleSelection.getValue().equals("Normal")))
                 {
-                    LOG.info("inside profile handle");
+                 //   LOG.info("inside profile handle");
                     NotificationUtil.showNotification("Current handle prices have been removed and replaced with profile handles",NotificationUtil.STYLE_BAR_WARNING_SMALL);
                     moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
                     if(!module.getModuleCategory().contains("Loft"))
@@ -741,9 +741,9 @@ public class CustomizedProductDetailsWindow extends Window {
                         module.setHandleQuantity(0);
                     } else {
                         for (AccessoryDetails a : accDetailsforHandle) {
-                            LOG.info("handle quantity " + a);
+                           // LOG.info("handle quantity " + a);
                             module.setHandleQuantity(Integer.valueOf(a.getQty()));
-                            LOG.debug("Module Handle QTY : " + module.getHandleQuantity());
+                            //LOG.debug("Module Handle QTY : " + module.getHandleQuantity());
                         }
                     }
 
@@ -753,7 +753,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     } else {
                         for (AccessoryDetails a : accDetailsforKnob) {
                             module.setKnobQuantity(Integer.valueOf(a.getQty()));
-                            LOG.debug("Module KNob QTY : " + module.getKnobQuantity());
+                            //LOG.debug("Module KNob QTY : " + module.getKnobQuantity());
 
                         }
                     }
@@ -772,14 +772,18 @@ public class CustomizedProductDetailsWindow extends Window {
                 this.product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
             }*/
 
-            LOG.debug("Product Json outside component:" + product);
+            //LOG.debug("Product Json outside component:" + product);
 
-
-            if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
-                NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                return;
+                if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+                {
+                    NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
             }
+
+
            /* if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
                 updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
             }*/
@@ -835,9 +839,9 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void updateHandleAndKnobforModule(Module module, int oldHingeQty, int oldKnobQty)
     {
-        LOG.info("handleSelection.getValue() " + !(handleSelection.getValue().equals("Normal")));
+       // LOG.info("handleSelection.getValue() " + !(handleSelection.getValue().equals("Normal")));
         List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
-        LOG.info("accDetailsforHandle.size() == 0 " +(accDetailsforHandle.size() == 0));
+        //LOG.info("accDetailsforHandle.size() == 0 " +(accDetailsforHandle.size() == 0));
         if(!(handleSelection.getValue().equals("Normal")) || accDetailsforHandle.size() == 0)
         {
             module.setHandleQuantity(0);
@@ -1004,7 +1008,7 @@ public class CustomizedProductDetailsWindow extends Window {
             handleType.setRequired(true);
             binder.bind(handleType,HANDLE_TYPE);
             handleType.addValueChangeListener(this::handletypechanged);
-            LOG.info("handle value " +handleType.getValue().toString());
+           // LOG.info("handle value " +handleType.getValue().toString());
             formLayoutRight.addComponent(this.handleType);
 
             handlefinishlist=proposalDataProvider.getHandleFinish(handleType.getValue().toString(),"Handle");
@@ -1234,7 +1238,7 @@ public class CustomizedProductDetailsWindow extends Window {
             if (StringUtils.isEmpty(product.getHandleImage())) {
                 handlethickness = proposalDataProvider.getHandleImages("Handle", handleType.getValue().toString(), handle.getValue().toString());
                 for (HandleMaster h : handlethickness) {
-                    LOG.info("handle master data for image " + h);
+                   // LOG.info("handle master data for image " + h);
                     product.setHandleImage(h.getImagePath());
                     handleImage.setSource(new ExternalResource(h.getImagePath()));
                 }
@@ -1250,7 +1254,7 @@ public class CustomizedProductDetailsWindow extends Window {
             if (StringUtils.isEmpty(product.getKnobImage())) {
                 Knobthickness = proposalDataProvider.getHandleImages("knob", knobType.getValue().toString(), knob.getValue().toString());
                 for (HandleMaster h : Knobthickness) {
-                    LOG.info("knob master data for image " + h);
+                    //LOG.info("knob master data for image " + h);
                     product.setKnobImage(h.getImagePath());
                     knobImage.setSource(new ExternalResource(h.getImagePath()));
                 }
@@ -1316,12 +1320,12 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void shutterDesignchanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        LOG.info("shutter design changed " +valueChangeEvent);
+       // LOG.info("shutter design changed " +valueChangeEvent);
         List<Finish> finishes=proposalDataProvider.getShutterImages(valueChangeEvent.getProperty().getValue().toString());
         for(Finish f:finishes)
         {
             product.setShutterDesignImage(f.getImagePath());
-            LOG.info("shutter image in design change " +f.getImagePath());
+            //LOG.info("shutter image in design change " +f.getImagePath());
             shutterImage.setSource(new ExternalResource(f.getImagePath()));
             //shutterImage.setSource(new ExternalResource("https://res.cloudinary.com/mygubbi/image/upload/v1494849877/handle/HANDLE01.jpg"));
         }
@@ -1329,7 +1333,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private Component getQuoteUploadControl() {
         this.quoteUploadCtrl = new Upload("Import Quotation Sheet", (filename, mimeType) -> {
-            LOG.debug("Received upload - " + filename);
+            //LOG.debug("Received upload - " + filename);
 
             if (!commitValues()) return null;
 
@@ -1518,7 +1522,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 }
 
                 Module m = (Module) rendererClickEvent.getItemId();
-                LOG.info("modules:"+ m);
+               // LOG.info("modules:"+ m);
                 List<Module> copy = product.getModules();
                 int length = (copy.size()) + 1;
                 Module copyModule = new Module();
@@ -1879,7 +1883,7 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.addClickListener(event -> {
             try {
                 try {
-                    LOG.info("on save "+ product.getShutterDesignImage());
+                    //LOG.info("on save "+ product.getShutterDesignImage());
                     product.setCloseButtonFlag("No");
                     binder.commit();
                 } catch (FieldGroup.CommitException e) {
@@ -1937,7 +1941,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     size++;
                     product.setSeq(size);
                 }
-                LOG.info("product in save btn" +product);
+                //LOG.info("product in save btn" +product);
                 boolean success = proposalDataProvider.updateProduct(product);
 
                 if (success) {
@@ -2002,7 +2006,7 @@ public class CustomizedProductDetailsWindow extends Window {
         });
         closeBtn.focus();
 
-        LOG.info("product.getCloseButtonFlag() " +product.getCloseButtonFlag());
+       // LOG.info("product.getCloseButtonFlag() " +product.getCloseButtonFlag());
         if (!(Objects.equals(product.getType(), TYPES.PRODUCT_LIBRARY.name()) && product.getCloseButtonFlag()=="Yes")) {
             right.addComponent(closeBtn);
             right.setComponentAlignment(closeBtn, Alignment.MIDDLE_RIGHT);
@@ -2017,7 +2021,7 @@ public class CustomizedProductDetailsWindow extends Window {
             right.addComponent(addToproductLibraryBtn);
             right.setComponentAlignment(addToproductLibraryBtn, Alignment.MIDDLE_RIGHT);
             addToproductLibraryBtn.addClickListener(clickEvent -> {
-                LOG.info("product in customized product " +product);
+               // LOG.info("product in customized product " +product);
                 close();
                 ProductLibraryInfo.open(product,proposal);
             });
@@ -2236,7 +2240,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private ComboBox getHanldeFinishfilledComboBox(String caption,List<HandleMaster> list,Property.ValueChangeListener listener)
     {
-        LOG.info("List in filled combo " +list.size());
+       // LOG.info("List in filled combo " +list.size());
         handlefinishBeanContainer = new BeanContainer<>(HandleMaster.class);
         handlefinishBeanContainer.setBeanIdProperty(HandleMaster.FINISH);
         handlefinishBeanContainer.addAll(list);
@@ -2253,7 +2257,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private ComboBox getKnobFinishedComboBox(String caption,List<HandleMaster> list,Property.ValueChangeListener listener )
     {
-        LOG.info("List in filled combo " +list.size());
+        //LOG.info("List in filled combo " +list.size());
         knobfinishBeanContainer = new BeanContainer<>(HandleMaster.class);
         knobfinishBeanContainer.setBeanIdProperty(HandleMaster.FINISH);
         knobfinishBeanContainer.addAll(list);
@@ -2310,7 +2314,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox getShutterDesignCombo()
     {
         List<Finish> finishes=proposalDataProvider.getShutterCodes(shutterFinishSelection.getValue().toString());
-        LOG.info("Finish size " +finishes.toString());
+       // LOG.info("Finish size " +finishes.toString());
         final BeanContainer<String, Finish> container = new BeanContainer<>(Finish.class);
         container.setBeanIdProperty(Finish.SHUTTER_CODE);//value changed
         container.addAll(finishes);
@@ -2378,7 +2382,7 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 modules.remove(module);
             }
-            LOG.info("modseq"+module.getModuleSequence());
+           // LOG.info("modseq"+module.getModuleSequence());
 
             modules.add(module);
             moduleContainer.removeAllItems();
@@ -2462,7 +2466,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private void handleState() {
 
             ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getInternalStatus());
-            LOG.debug("Proposal Stage :" + proposalStage);
+            //LOG.debug("Proposal Stage :" + proposalStage);
             switch (proposalStage) {
                 case Draft:
                     break;
@@ -2528,7 +2532,7 @@ public class CustomizedProductDetailsWindow extends Window {
         {
             this.product.setHandleCode(h.getCode());
         }
-        LOG.info("handle code in handle type changed " +product.getHandleCode());
+       // LOG.info("handle code in handle type changed " +product.getHandleCode());
         Object next=this.handle.getItemIds().iterator().next();
         handle.setValue(next);
 
@@ -2541,7 +2545,7 @@ public class CustomizedProductDetailsWindow extends Window {
         for (Module module : modules) {
             int oldhandleThickness = 0;
             int oldKnobThickness = 0;
-            LOG.info("module.getHandleThickness() " +module.getHandleThickness());
+           // LOG.info("module.getHandleThickness() " +module.getHandleThickness());
             if (!(module.getHandleThickness() == null))
             {
                 oldhandleThickness = Integer.parseInt(module.getHandleThickness());
@@ -2558,7 +2562,7 @@ public class CustomizedProductDetailsWindow extends Window {
     }
     private void knobtypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        LOG.info("knob type changed" +valueChangeEvent.getProperty().getValue().toString());
+       // LOG.info("knob type changed" +valueChangeEvent.getProperty().getValue().toString());
         //String prevCode=product.getKnobFinish();
         String prevCode=knob.getValue().toString();
         String title=valueChangeEvent.getProperty().getValue().toString();
@@ -2576,7 +2580,7 @@ public class CustomizedProductDetailsWindow extends Window {
         for (Module module : modules) {
             int oldhandleThickness = 0;
             int oldKnobThickness = 0;
-            LOG.info("module.getHandleThickness() " +module.getHandleThickness());
+         //   LOG.info("module.getHandleThickness() " +module.getHandleThickness());
             if (!(module.getHandleThickness() == null))
             {
                 oldhandleThickness = Integer.parseInt(module.getHandleThickness());
@@ -2616,10 +2620,10 @@ public class CustomizedProductDetailsWindow extends Window {
     {
         String title=handle.getValue().toString();
         handlethickness=proposalDataProvider.getHandleImages("Handle",handleType.getValue().toString(),title);
-        LOG.info("size " +handlethickness.size());
+        //LOG.info("size " +handlethickness.size());
         for(HandleMaster h: handlethickness)
         {
-            LOG.info("handle image " +h);
+           // LOG.info("handle image " +h);
             product.setHandleImage(h.getImagePath());
             handleImage.setSource(new ExternalResource(h.getImagePath()));
         }
@@ -2637,7 +2641,7 @@ public class CustomizedProductDetailsWindow extends Window {
     {
         this.product.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
         List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
-        LOG.info("handle size" +handleMasters.size());
+        //LOG.info("handle size" +handleMasters.size());
         for(HandleMaster h:handleMasters)
         {
             this.product.setHandleCode(h.getCode());
@@ -2652,7 +2656,7 @@ public class CustomizedProductDetailsWindow extends Window {
         Knobthickness=proposalDataProvider.getHandleImages("knob",knobType.getValue().toString(),title);
         for(HandleMaster h: Knobthickness)
         {
-            LOG.info("knob image " +h);
+            //LOG.info("knob image " +h);
             product.setKnobImage(h.getImagePath());
             knobImage.setSource(new ExternalResource(h.getImagePath()));
         }

@@ -143,7 +143,7 @@ public class AllProductsDetailsWindow extends Window
 
         List<Product> products=proposalDataProvider.getAllProducts("K");
 
-        LOG.info("product " +products.size());
+        //LOG.info("product " +products.size());
         if (!products.isEmpty()) {
             productsContainer.addAll(products);
             //productsGrid.sort(Product.SEQ, SortDirection.ASCENDING);

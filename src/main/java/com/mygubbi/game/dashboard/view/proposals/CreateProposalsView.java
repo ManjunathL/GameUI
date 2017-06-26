@@ -209,7 +209,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private void setMaxDiscountPercentange() {
         List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
-        LOG.info("discount percentage details" +discountratecode);
+       // LOG.info("discount percentage details" +discountratecode);
         for (RateCard discountcode : discountratecode) {
             LOG.debug("Discount code : " + discountcode.getCode());
             codeForDiscount=discountcode.getCode();
@@ -221,10 +221,10 @@ public class CreateProposalsView extends Panel implements View {
         else {
             this.priceDate = this.proposalHeader.getPriceDate();
         }
-        LOG.info("Price date value" +priceDate);
+       // LOG.info("Price date value" +priceDate);
         PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,this.proposalHeader.getPcity());
         rateForDiscount=discountpriceMaster.getSourcePrice();
-        LOG.info("Rate for discount" +rateForDiscount);
+        //LOG.info("Rate for discount" +rateForDiscount);
         maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
         proposalHeader.setMaxDiscountPercentage(rateForDiscount);
     }
@@ -505,7 +505,7 @@ public class CreateProposalsView extends Panel implements View {
                                 module.setHandleQuantity(0);
                             } else {
                                 for (AccessoryDetails a : accDetailsforHandle) {
-                                    LOG.info("handle quantity " + a);
+                                   // LOG.info("handle quantity " + a);
                                     module.setHandleQuantity(Integer.valueOf(a.getQty()));
                                 }
                             }
@@ -518,10 +518,10 @@ public class CreateProposalsView extends Panel implements View {
                                     module.setKnobQuantity(Integer.valueOf(a.getQty()));
                                 }
                             }
-                            LOG.info("mg code"  +module.getMgCode());
+                            //LOG.info("mg code"  +module.getMgCode());
                             List<MGModule> handlePresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
                             for (MGModule m : handlePresent) {
-                                LOG.info("module mand " + m.toString());
+                              //  LOG.info("module mand " + m.toString());
                                 if (m.getHandleMandatory().equals("Yes")) {
                                     module.setHandlePresent(m.getHandleMandatory());
                                 } else {
@@ -534,7 +534,7 @@ public class CreateProposalsView extends Panel implements View {
                                 }
                             }
                             List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
-                            LOG.info("size of hinge" + hingeMaps1.size());
+                            //LOG.info("size of hinge" + hingeMaps1.size());
                             module.setHingePack(hingeMaps1);
                             for (MGModule m : handlePresent) {
                                 if (m.getHingeMandatory().equals("Yes")) {
@@ -544,9 +544,6 @@ public class CreateProposalsView extends Panel implements View {
                                 }
                             }
                         }
-
-
-
                     }
                     proposalDataProvider.updateProduct(product);
                 }
@@ -724,7 +721,7 @@ public class CreateProposalsView extends Panel implements View {
             checkQuoteNoNew();
             this.proposalHeader.setQuoteNoNew(QuoteNumNew);
             boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
-            LOG.debug("This proposal header 2" + this.proposalHeader);
+           // LOG.debug("This proposal header 2" + this.proposalHeader);
 
             try {
 
@@ -763,8 +760,8 @@ public class CreateProposalsView extends Panel implements View {
         }
         else {
 
-            LOG.debug("Inside else save");
-            LOG.debug("This proposal header 1" + this.proposalHeader);
+            /*LOG.debug("Inside else save");
+            LOG.debug("This proposal header 1" + this.proposalHeader);*/
 
             if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
                 this.proposalHeader.setTitle(NEW_TITLE);
@@ -797,8 +794,8 @@ public class CreateProposalsView extends Panel implements View {
             boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
 
 
-            LOG.debug("Inside else save");
-            LOG.debug("This proposal header 2" + this.proposalHeader);
+            /*LOG.debug("Inside else save");
+            LOG.debug("This proposal header 2" + this.proposalHeader);*/
 
             setMaxDiscountPercentange();
             if(proposalHeader.getMaxDiscountPercentage()==0 ) {
@@ -1337,7 +1334,7 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void cityChanged(Property.ValueChangeEvent valueChangeEvent) {
-        LOG.info("City changed ");
+        //LOG.info("City changed ");
         String city = (String) projectCityField.getValue();
         switch (city) {
             case "Bangalore":
@@ -1359,7 +1356,7 @@ public class CreateProposalsView extends Panel implements View {
 
         int value = 0;
         List<ProposalCity> count = proposalDataProvider.getMonthCount(month, cityCode);
-        LOG.info("Count size " +count.size());
+        //LOG.info("Count size " +count.size());
         value = count.size();
 
         String valueStr;

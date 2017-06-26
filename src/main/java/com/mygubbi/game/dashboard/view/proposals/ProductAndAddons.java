@@ -109,7 +109,7 @@ public class ProductAndAddons extends Window
         ProductAndAddons w = new ProductAndAddons(proposalHeader,proposal,vid,proposalVersion);
         UI.getCurrent().addWindow(w);
         w.focus();
-        LOG.info("header  " +proposalHeader);
+        //LOG.info("header  " +proposalHeader);
 
     }
 
@@ -135,8 +135,8 @@ public class ProductAndAddons extends Window
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
         this.productAndAddonSelection.setFromVersion(this.proposalVersion.getVersion());
-        LOG.info("On open DA in constructor :" + this.proposalVersion.getDiscountAmount());
-        LOG.info("On open DP in constructor :" + this.proposalVersion.getDiscountPercentage());
+        //LOG.info("On open DA in constructor :" + this.proposalVersion.getDiscountAmount());
+        //LOG.info("On open DP in constructor :" + this.proposalVersion.getDiscountPercentage());
         DashboardEventBus.register(this);
         setModal(true);
         setSizeFull();
@@ -180,7 +180,7 @@ public class ProductAndAddons extends Window
         Component componentactionbutton=buildActionButtons();
         verticalLayout.addComponent(componentactionbutton);
 
-        LOG.info("Proposal Header :" + proposalHeader.toString());
+        //LOG.info("Proposal Header :" + proposalHeader.toString());
 
         //updateTotal();
         calculateTotal();
@@ -535,12 +535,12 @@ public class ProductAndAddons extends Window
 
     private void onFocusToDiscountPercentage(FieldEvents.FocusEvent event)
     {
-        LOG.info("DP focused");
+        //LOG.info("DP focused");
         status="DP";
     }
     private void onFocusToDiscountAmount(FieldEvents.FocusEvent event)
     {
-        LOG.info("DA focused");
+        //LOG.info("DA focused");
         status="DA";
     }
     private void updateTotal()
@@ -599,7 +599,7 @@ public class ProductAndAddons extends Window
             ProdutsMargin=0.0;
         }
 
-        LOG.info(" productsTotal" +productsTotal+ "ProductsTotalWoTax"  +ProductsTotalWoTax+ "Margin" +ProdutsMargin+ "profit" +ProductsProfit + "ProductsManufactureAmount" +ProductsManufactureAmount);
+       // LOG.info(" productsTotal" +productsTotal+ "ProductsTotalWoTax"  +ProductsTotalWoTax+ "Margin" +ProdutsMargin+ "profit" +ProductsProfit + "ProductsManufactureAmount" +ProductsManufactureAmount);
         proposalVersion.setProfit(ProductsProfit);
         proposalVersion.setMargin(ProdutsMargin);
         proposalVersion.setAmountWotax(ProductsTotalWoTax);
@@ -637,7 +637,7 @@ public class ProductAndAddons extends Window
         {
             addonsMargin=0.0;
         }
-        LOG.info("Addons Total" +addonsTotal+ "AddonsTotalWoTax"  +addonsTotalWOTax+ "profit" +addonsProfit + "AddonsManufactureAmount" +addonsManufactureAmount + "Addons Margin" +addonsMargin);
+        //LOG.info("Addons Total" +addonsTotal+ "AddonsTotalWoTax"  +addonsTotalWOTax+ "profit" +addonsProfit + "AddonsManufactureAmount" +addonsManufactureAmount + "Addons Margin" +addonsMargin);
 
         //Double total=productsTotal+addonsTotal;
         Double totalWT=ProductsTotalWoTax+addonsTotalWOTax;
@@ -651,7 +651,7 @@ public class ProductAndAddons extends Window
         /*if(Double.isNaN(fin))
         Double finalmargin=(profit/totalWT)*100;*/
 
-        LOG.info("TotalWoTax"  +totalWT+ "profit" +profit + "ManufactureAmount" +totalmanufactureamount +"Margin" +finalmargin);
+        //LOG.info("TotalWoTax"  +totalWT+ "profit" +profit + "ManufactureAmount" +totalmanufactureamount +"Margin" +finalmargin);
 
         proposalVersion.setProfit(round(profit,2));
         proposalVersion.setMargin(round(finalmargin,2));
@@ -1024,7 +1024,7 @@ public class ProductAndAddons extends Window
                 copyProduct.setlConnectorPrice(p.getlConnectorPrice());
                 copyProduct.setHandleThickness(p.getHandleThickness());
                 copyProduct.setNoOfLengths(p.getNoOfLengths());
-                LOG.info("COPIED@"+ copyProduct);
+               // LOG.info("COPIED@"+ copyProduct);
                 copyProduct.setAddons(p.getAddons());
 
                 proposalDataProvider.updateProduct(copyProduct);
@@ -1059,7 +1059,7 @@ public class ProductAndAddons extends Window
                         List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
                         product.setFileAttachmentList(productAttachments);
                     }
-                    LOG.info("product details " +product);
+                 //   LOG.info("product details " +product);
                     CustomizedProductDetailsWindow.open(proposal, product, proposalVersion,proposalHeader);
                 } else {
                     CatalogueProduct catalogueProduct = new CatalogueProduct();
@@ -1363,7 +1363,7 @@ public class ProductAndAddons extends Window
 
         StreamResource.StreamSource source = () -> {
             if (!proposal.getProducts().isEmpty()) {
-                LOG.info("header value" + proposalVersion.getDiscountAmount() + "discount amount" + discountAmount.getValue());
+              //  LOG.info("header value" + proposalVersion.getDiscountAmount() + "discount amount" + discountAmount.getValue());
                 String replace = discountAmount.getValue().replace(",", "");
                 double discountamount = Double.valueOf(replace);
                 return getInputStreamPdf();
@@ -1440,7 +1440,7 @@ public class ProductAndAddons extends Window
                 }
                 binder.commit();
 
-                LOG.info("value in submit" + totalWithoutDiscount.getValue());
+              //  LOG.info("value in submit" + totalWithoutDiscount.getValue());
                 if (remarksTextArea == null || remarksTextArea.isEmpty()) {
                     NotificationUtil.showNotification("Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -1912,7 +1912,7 @@ public class ProductAndAddons extends Window
                         return product.getProductCategory();
                     } else {
                         List<LookupItem> lookupItems = proposalDataProvider.getLookupItems(ProposalDataProvider.CATEGORY_LOOKUP);
-                        LOG.info("product.getProductCategoryCode()" +product.getProductCategoryCode());
+                       // LOG.info("product.getProductCategoryCode()" +product.getProductCategoryCode());
                         if(product.getProductCategoryCode().equals("K"))
                         {
                             product.setProductCategoryCode("Kitchen");
@@ -1976,7 +1976,7 @@ public class ProductAndAddons extends Window
     @Subscribe
     public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
         AddonProduct eventAddonProduct = event.getAddonProduct();
-        LOG.info("Product :"  + eventAddonProduct.toString());
+       // LOG.info("Product :"  + eventAddonProduct.toString());
         persistAddon(eventAddonProduct);
         List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalHeader.getId(),proposalVersion.getVersion());
         addonsContainer.removeAllItems();

@@ -313,15 +313,15 @@ public class MarginDetailsWindow extends Window
             {
                 PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails("STDMC:Wardrobe",this.priceDate,this.city);
                 rateForStdManfCost=productWOtaxpriceMaster.getSourcePrice();
-                LOG.info("rateForStdManfCost for wardrobe " +rateForStdManfCost);
+               // LOG.info("rateForStdManfCost for wardrobe " +rateForStdManfCost);
             }
             else
             {
                 PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
                 rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
-                LOG.info("rateForStdManfCost other than wardrobe " +rateForStdManfCost);
+                //LOG.info("rateForStdManfCost other than wardrobe " +rateForStdManfCost);
             }
-            LOG.info("rate for standard manufacture cost" +rateForStdManfCost);
+            //LOG.info("rate for standard manufacture cost" +rateForStdManfCost);
             PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
             rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
             PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
@@ -334,7 +334,7 @@ public class MarginDetailsWindow extends Window
             rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
             PriceMaster lConnectorRate=proposalDataProvider.getHardwareRateDetails("H074",this.priceDate,this.city);
             rateForLconnectorPrice=lConnectorRate.getSourcePrice();
-            LOG.info("rateForLconnectorPrice " +rateForLconnectorPrice);
+           // LOG.info("rateForLconnectorPrice " +rateForLconnectorPrice);
             Amount+=product.getAmount();
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
@@ -403,7 +403,7 @@ public class MarginDetailsWindow extends Window
                 CarcassCost+=modulePrice.getCarcassCost();
                 AccessoryCost += modulePrice.getAccessoryCost();//msp
                 handleAndKnonCost +=modulePrice.getHandleAndKnobCost();
-                LOG.info(lConnectorSourcePrice);
+               // LOG.info(lConnectorSourcePrice);
                 manufacturingHandleAndKnobCost+=modulePrice.getHandleAndKnobSourceCost();
                 hingeCost+=modulePrice.getHingeCost();
 
@@ -1189,12 +1189,12 @@ public class MarginDetailsWindow extends Window
 
     private void onFocusToDiscountPercentage(FieldEvents.FocusEvent event)
     {
-        LOG.info("DP focused");
+       // LOG.info("DP focused");
         status="DP";
     }
     private void onFocusToDiscountAmount(FieldEvents.FocusEvent event)
     {
-        LOG.info("DA focused");
+       // LOG.info("DA focused");
         status="DA";
     }
     private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -1218,7 +1218,7 @@ public class MarginDetailsWindow extends Window
 
             if("DP".equals(status))
             {
-                LOG.info("Enter discount Percentage" + manualInputDiscountPercentage.getValue());
+                //LOG.info("Enter discount Percentage" + manualInputDiscountPercentage.getValue());
                 discountPercentage =Double.valueOf(manualInputDiscountPercentage.getValue());
                 if (date.after(currentDate)) {
                     discountAmount = totalSalesPrice * discountPercentage / 100.0;

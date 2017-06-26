@@ -78,7 +78,7 @@ public class ProductLibraryInfo extends Window
     {
         this.proposal=proposal;
         this.product=product;
-        LOG.info("Product " +product);
+        //LOG.info("Product " +product);
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("60%");
@@ -135,11 +135,11 @@ public class ProductLibraryInfo extends Window
         ((TextField) sizeField).setNullRepresentation("");
         formLayoutLeft.addComponent(sizeField);
 
-        List<ProductLibraryMaster> productLibraryMasters=proposalDataProvider.getProductsubcategory(product.getProductCategoryCode());
+        /*List<ProductLibraryMaster> productLibraryMasters=proposalDataProvider.getProductsubcategory(product.getProductCategoryCode());
         for(ProductLibraryMaster productLibraryMaster:productLibraryMasters)
         {
             LOG.info("category " +productLibraryMaster);
-        }
+        }*/
         subcategoryField=getSubcategoryCombo();
         binder.bind(subcategoryField,ProductLibrary.SUB_CATEGORY);
         subcategoryField.setRequired(true);
@@ -259,8 +259,8 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setlConnectorPrice(product.getlConnectorPrice());
                 productLibrary.setNoOfLengths(product.getNoOfLengths());
                 boolean success = proposalDataProvider.InsertProductLibrary(productLibrary);
-                LOG.info("field vale " +productLocationField.getValue() + " " +productLibrary.getProductLocation());
-                LOG.info("success in " + success);
+               // LOG.info("field vale " +productLocationField.getValue() + " " +productLibrary.getProductLocation());
+                //LOG.info("success in " + success);
                 close();
             }
             else
@@ -275,10 +275,10 @@ public class ProductLibraryInfo extends Window
     private ComboBox getSubcategoryCombo()
     {
         List<ProductLibraryMaster> productLibraryMasters=proposalDataProvider.getProductsubcategory(product.getProductCategoryCode());
-        for(ProductLibraryMaster productLibraryMaster:productLibraryMasters)
+        /*for(ProductLibraryMaster productLibraryMaster:productLibraryMasters)
         {
             LOG.info("category " +productLibraryMaster);
-        }
+        }*/
 
         final BeanContainer<String, ProductLibraryMaster> container = new BeanContainer<>(ProductLibraryMaster.class);
         container.setBeanIdProperty(ProductLibraryMaster.SUB_CATEGORY);
@@ -295,7 +295,6 @@ public class ProductLibraryInfo extends Window
     private ComboBox getCollectionCombo()
     {
         List<LookupItem> collectionList =proposalDataProvider.getLookupItems(proposalDataProvider.COLLECTION_LOOKUP);
-        LOG.info("111111"+collectionList.size());
         final BeanContainer<String, LookupItem> container = new BeanContainer<>(LookupItem.class);
         container.setBeanIdProperty(LookupItem.TITLE);
         container.addAll(collectionList);
@@ -358,7 +357,7 @@ public class ProductLibraryInfo extends Window
             cloudinaryImageUrl.setImageurl(uploadedQuoteFile.getAbsolutePath());
             CloudinaryImageUrl p=proposalDataProvider.addToCloudinary(cloudinaryImageUrl);
             NotificationUtil.showNotification("Image Uploaded successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-            LOG.info("succes value " +p);
+           // LOG.info("succes value " +p);
             productLibrary.setImageurl(p.getImageurl());
         });
         return quoteUploadCtrl;

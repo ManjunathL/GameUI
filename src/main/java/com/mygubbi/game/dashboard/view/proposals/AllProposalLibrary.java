@@ -160,7 +160,7 @@ public class AllProposalLibrary extends Window
             if (!selectionEvent.getAdded().isEmpty()) {
                 Object selected = ((Grid.SingleSelectionModel) addonsGrid.getSelectionModel()).getSelectedRow();
                 Id = (String) addonsGrid.getContainerDataSource().getItem(selected).getItemProperty(ProductLibrary.ID).getValue().toString();
-                    LOG.info("grid selected value" +Id);
+                    //LOG.info("grid selected value" +Id);
             }
         });
 
@@ -321,7 +321,7 @@ public class AllProposalLibrary extends Window
         {
             Product product=new Product();
             product.setType(Product.TYPES.PRODUCT_LIBRARY.name());
-            LOG.info("product type name " +Product.TYPES.PRODUCT_LIBRARY.name());
+           // LOG.info("product type name " +Product.TYPES.PRODUCT_LIBRARY.name());
             //product.setSeq(length);
             product.setProposalId(proposalHeader.getId());
             product.setFromVersion(proposalVersion.getVersion());
@@ -403,11 +403,11 @@ public class AllProposalLibrary extends Window
             product.setModules(p.getModules());
             product.setSource(p.getSource());
             product.setAddons(p.getAddons());
-            LOG.debug("NEW PRoduct crearted from product library"+ product);
+            //LOG.debug("NEW PRoduct crearted from product library"+ product);
             proposalDataProvider.updateProduct(product);
 //            Product updatedProduct = proposalDataProvider.updateProductWithRefreshedPrice(product);
             close();
-            LOG.info("windows ***" +UI.getCurrent().getWindows());
+           // LOG.info("windows ***" +UI.getCurrent().getWindows());
             CustomizedProductDetailsWindow.open(proposal,product,proposalVersion,proposalHeader);
         }
     }

@@ -488,7 +488,7 @@ public class AddonDetailsWindow extends Window {
     private ComboBox getProductCodeCombo() {
 
         List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.category.getValue(), (String) this.productType.getValue(),(String) this.productSubtype.getValue(), (String) this.brand.getValue());
-        LOG.info("list size" +list.size());
+        //LOG.info("list size" +list.size());
         productCodeBeanContainer = new BeanContainer<>(AddonProductItem.class);
         productCodeBeanContainer.setBeanIdProperty(AddonProductItem.PRODUCT);
         productCodeBeanContainer.addAll(list);
@@ -619,14 +619,14 @@ public class AddonDetailsWindow extends Window {
                     for (RateCard addonWOcode : Addonwotaxlist ) {
                         codeForAddonWOTax=addonWOcode.getCode();
                     }
-                    LOG.info("parameters" +codeForAddonWOTax+ " " +this.priceDate+ " " +this.city);
+                    //LOG.info("parameters" +codeForAddonWOTax+ " " +this.priceDate+ " " +this.city);
                     PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
                     rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
-                    LOG.info("Addon wo tax" +addonwotaxpriceMaster);
+                    //LOG.info("Addon wo tax" +addonwotaxpriceMaster);
                     PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
                     rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
 
-                    LOG.info("rate for addon" +rateForAddonWOTax);
+                    //LOG.info("rate for addon" +rateForAddonWOTax);
                     addonsTotalWOtax+=addonProduct.getAmount()*rateForAddonWOTax;
                     if(addonProduct.getCode().equals("NA"))
                     {
@@ -676,8 +676,8 @@ public class AddonDetailsWindow extends Window {
 
     public static void open(AddonProduct addon, String title, boolean isProposalAddon, ProposalVersion proposalVersion, ProposalHeader proposalHeader)
     {
-        LOG.info("proposal Version in Addon DetailsWindow " +proposalVersion);
-        LOG.info("proposal details in Addon Details window " +proposalHeader);
+        //LOG.info("proposal Version in Addon DetailsWindow " +proposalVersion);
+        //LOG.info("proposal details in Addon Details window " +proposalHeader);
         Window w = new AddonDetailsWindow(addon, title, isProposalAddon,proposalVersion, proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();

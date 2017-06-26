@@ -16,21 +16,22 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -539,7 +540,7 @@ public class MDW extends Window {
                 String code = (String) valueChangeEvent.getProperty().getValue();
                 String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
                 module.setModuleCategory(title);
-                LOG.debug("After combo box updated:" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
+               // LOG.debug("After combo box updated:" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
 
                 mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
                 if (this.moduleSelection != null) {
@@ -549,7 +550,7 @@ public class MDW extends Window {
                 }
                 if(module.getModuleCategory().equals("S - Hinged Wardrobe 2100") ||module.getModuleCategory().equals("S - Hinged Wardrobe 2400") || module.getModuleCategory().equals("S - Sliding Wardrobe 2100") ||module.getModuleCategory().equals("S - Sliding Wardrobe 2400") )
                 {
-                    LOG.info("handle thickness changed ");
+                    //LOG.info("handle thickness changed ");
                     module.setHandleThickness(defaultValueForWardrobe);
                     thicknessfield.setValue(defaultValueForWardrobe);
                 }
@@ -660,7 +661,7 @@ public class MDW extends Window {
         MGModule mgModule = ((BeanContainer<String, MGModule>) this.moduleSelection.getContainerDataSource()).getItem(code).getBean();
         //((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code);
 
-        LOG.debug("MG module - " + mgModule.toString());
+       // LOG.debug("MG module - " + mgModule.toString());
 
         /*if (module.getModuleType().equals("S")) {
             module.setImagePath(mgModule.getImagePath());
@@ -720,12 +721,12 @@ public class MDW extends Window {
         module.setUnitType(mgModule.getUnitType());
 
         this.allowDimensionChangesForModule();
-        LOG.debug("Module b4 price calc :" + module.toString());
+       // LOG.debug("Module b4 price calc :" + module.toString());
         this.dontCalculatePriceNow = false;
 
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
-            LOG.info("product handletype selection " +product.getHandleTypeSelection());
-            LOG.info("product.getHandleTypeSelection().equals(\"Normal\")" +!product.getHandleTypeSelection().equals("Normal"));
+            //LOG.info("product handletype selection " +product.getHandleTypeSelection());
+            //LOG.info("product.getHandleTypeSelection().equals(\"Normal\")" +!product.getHandleTypeSelection().equals("Normal"));
             if(!(product.getHandleTypeSelection().equals("Normal")))
             {
                 handlequantity.setValue("0");
@@ -742,7 +743,7 @@ public class MDW extends Window {
                     thicknessfield.setRequired(false);
                 } else {
                     for (AccessoryDetails a : accDetailsforHandle) {
-                        LOG.info("handle quantity " + a);
+                        //LOG.info("handle quantity " + a);
                         module.setHandleQuantity(Integer.valueOf(a.getQty()));
                         handlequantity.setValue(a.getQty());
                     }
@@ -763,10 +764,10 @@ public class MDW extends Window {
 
 
 
-                LOG.info("mg code"  +module.getMgCode());
+                //LOG.info("mg code"  +module.getMgCode());
                 List<MGModule> handlePresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
                 for (MGModule m : handlePresent) {
-                    LOG.info("module mand " + m.toString());
+                    //LOG.info("module mand " + m.toString());
                     if (m.getHandleMandatory().equals("Yes")) {
                         module.setHandlePresent(m.getHandleMandatory());
                         hPresent = m.getHandleMandatory();
@@ -788,7 +789,7 @@ public class MDW extends Window {
                 //hinges
 //              List<MGModule> hingesPresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
                 List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
-                LOG.info("size of hinge" + hingeMaps1.size());
+                //LOG.info("size of hinge" + hingeMaps1.size());
                 module.setHingePack(hingeMaps1);
                 for (MGModule m : handlePresent) {
                     if (m.getHingeMandatory().equals("Yes")) {
@@ -1129,7 +1130,7 @@ public class MDW extends Window {
 
     private void addImageToAccessoryPanel(String imagePath, String title) {
         File sourceFile = new File(basePath + imagePath);
-        LOG.info("image path : " + sourceFile);
+       // LOG.info("image path : " + sourceFile);
         if (sourceFile.exists()) {
             VerticalLayout verticalLayout=new VerticalLayout();
             Image img = new Image("", new FileResource(sourceFile));
@@ -1165,7 +1166,7 @@ public class MDW extends Window {
 
         ModulePrice modulePrice = this.recalculatePriceForModule();
 
-        LOG.info("module price in Module Details Window " +modulePrice);
+       // LOG.info("module price in Module Details Window " +modulePrice);
         if (modulePrice != null)
         {
             totalAmount.setReadOnly(false);
@@ -1256,7 +1257,7 @@ public class MDW extends Window {
             return null;
         }
 
-        LOG.info("Asking for module price - " + this.module.toString());
+       // LOG.info("Asking for module price - " + this.module.toString());
         try
         {
             return proposalDataProvider.getModulePrice(moduleForPrice);
@@ -1556,8 +1557,8 @@ public class MDW extends Window {
             module.setAccessoryPacks(getModuleAccessoryPacks());
 
             List<ModuleAccessoryPack> accessoryPacks=getModuleAccessoryPacks();
-            LOG.info("Accessory pack" +accessoryPacks);
-            LOG.info("acc pack size" +accessoryPacks.size());
+           // LOG.info("Accessory pack" +accessoryPacks);
+            //LOG.info("acc pack size" +accessoryPacks.size());
             if(accessoryPacks.size()!=0)
             {
                 module.setAccessoryflag("Y");
@@ -1603,14 +1604,14 @@ public class MDW extends Window {
                 module.setAccessoryCost(this.accessoryCost);
                 module.setLabourCost(this.labourCost);
             }
-            LOG.debug("this.calculatedArea:" + this.calculatedArea + " | this.calculatedAmountWOAccessories:" + this.calculatedAmountWOAccessories + " | WoodworkCost: " +this.woodworkCost+ " | HardwareCost: " +this.hardwareCost+ " | carcasscost " +this.carcassCost + " | Accessory Cost: " +this.accessoryCost+ " | Labour Cost: " +this.accessoryCost);
+           // LOG.debug("this.calculatedArea:" + this.calculatedArea + " | this.calculatedAmountWOAccessories:" + this.calculatedAmountWOAccessories + " | WoodworkCost: " +this.woodworkCost+ " | HardwareCost: " +this.hardwareCost+ " | carcasscost " +this.carcassCost + " | Accessory Cost: " +this.accessoryCost+ " | Labour Cost: " +this.accessoryCost);
             if (module.getAmount() == 0)
             {
                 NotificationUtil.showNotification("Module Price cannot be zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
 
-            LOG.debug("Module being updated:" + this.module.toString());
+            //LOG.debug("Module being updated:" + this.module.toString());
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
             close();
             ProposalEvent.ModuleUpdated event1 = new ProposalEvent.ModuleUpdated(module, loadNext, loadPrevious, moduleIndex, this);
@@ -1787,7 +1788,7 @@ public class MDW extends Window {
 
     private ComboBox gethandlethickness()
     {
-        LOG.debug("Handle Thickness test : " + module.getHandleType() + ":" + module.getHandleFinish());
+       // LOG.debug("Handle Thickness test : " + module.getHandleType() + ":" + module.getHandleFinish());
         List<HandleMaster> handlethickness=proposalDataProvider.getHandleThickness(module.getHandleType(),module.getHandleFinish(),"Handle");
         final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
         container.setBeanIdProperty(HandleMaster.THICKNESS);
@@ -1818,7 +1819,7 @@ public class MDW extends Window {
             module.setHandleCode(h.getCode());
         }
 
-        LOG.info("handle code " +module.getHandleCode() + "knob code " +module.getKnobCode());
+       // LOG.info("handle code " +module.getHandleCode() + "knob code " +module.getKnobCode());
         List<HandleMaster> handleMasters1=proposalDataProvider.getHandleArray(module.getHandleCode());
         module.setHandlePack(handleMasters1);
 
@@ -1832,7 +1833,7 @@ public class MDW extends Window {
 
     private void handlequantitychanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        LOG.info("handle quantity changed");
+        //LOG.info("handle quantity changed");
         String s = valueChangeEvent.getProperty().getValue().toString();
         Integer integer = Integer.parseInt(s);
         if(!(product.getHandleTypeSelection().equals("Normal")))
@@ -1868,7 +1869,7 @@ public class MDW extends Window {
             module.setKnobQuantity(integer);
         }
 
-        LOG.info("knob quantity  " +valueChangeEvent);
+       // LOG.info("knob quantity  " +valueChangeEvent);
         refreshPrice();
     }
     private void removeHandleAndKnobQuantity()
