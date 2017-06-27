@@ -819,13 +819,13 @@ public class MDW extends Window {
                 }
                 //hinges
 //              List<MGModule> hingesPresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
-                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), product.getHinge());
                 //LOG.info("size of hinge" + hingeMaps1.size());
                 module.setHingePack(hingeMaps1);
                 for (MGModule m : handlePresent) {
                     if (m.getHingeMandatory().equals("Yes")) {
                         module.setHingePresent(m.getHingeMandatory());
-                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), product.getHinge());
                         module.setHingePack(hingeMaps);
                     }
                 }
