@@ -225,7 +225,7 @@ public class CreateProposalsView extends Panel implements View {
         PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscount,this.priceDate,this.proposalHeader.getPcity());
         rateForDiscount=discountpriceMaster.getSourcePrice();
         //LOG.info("Rate for discount" +rateForDiscount);
-        maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
+       // maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
         proposalHeader.setMaxDiscountPercentage(rateForDiscount);
     }
 
@@ -734,9 +734,10 @@ public class CreateProposalsView extends Panel implements View {
                 LOG.info(e);
             }
 
-            proposalDataProvider.updatePriceForNewProposal(this.proposalHeader);
-
             setMaxDiscountPercentange();
+            this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
+            proposalDataProvider.updatePriceForNewProposal(this.proposalHeader);
+            proposalDataProvider.saveProposal(this.proposalHeader);
             if(proposalHeader.getMaxDiscountPercentage()==0 ) {
                 maxDiscountPercentage.setReadOnly(false);
                 maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
@@ -790,14 +791,15 @@ public class CreateProposalsView extends Panel implements View {
             } catch (Exception e) {
                 LOG.info(e);
             }
-
+            setMaxDiscountPercentange();
+            this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
             boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
 
 
             /*LOG.debug("Inside else save");
             LOG.debug("This proposal header 2" + this.proposalHeader);*/
 
-            setMaxDiscountPercentange();
+
             if(proposalHeader.getMaxDiscountPercentage()==0 ) {
                 maxDiscountPercentage.setReadOnly(false);
                 maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
