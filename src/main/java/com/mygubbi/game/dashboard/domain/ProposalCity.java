@@ -66,4 +66,16 @@ public class ProposalCity
     public void setCityLocked(String cityLocked) {
         this.cityLocked = cityLocked;
     }
+
+    @Override
+    public String toString() {
+        return "ProposalCity{" +
+                "id=" + id +
+                ", city='" + city + '\'' +
+                ", curmonth=" + curmonth +
+                ", proposalId='" + proposalId + '\'' +
+                ", quoteNo='" + quoteNo + '\'' +
+                ", cityLocked='" + cityLocked + '\'' +
+                '}';
+    }
 }

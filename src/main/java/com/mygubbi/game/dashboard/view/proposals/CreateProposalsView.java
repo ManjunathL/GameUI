@@ -727,7 +727,17 @@ public class CreateProposalsView extends Panel implements View {
 
                 List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
                 if (!(insertCity.size() >= 1)) {
-                    proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                    ProposalCity proposalCity = proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                    if (proposalCity == null)
+                    {
+                        this.getQuoteNum(true);
+                        ProposalCity proposalCity1 = proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                        if (proposalCity1 == null)
+                        {
+                            this.getQuoteNum(true);
+                            proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                        }
+                    }
                     LOG.info("success");
                 }
             } catch (Exception e) {
@@ -785,7 +795,19 @@ public class CreateProposalsView extends Panel implements View {
 
                 List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
                 if (!(insertCity.size() >= 1)) {
-                    proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                    ProposalCity proposalCity = proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                    LOG.debug("1st Proposal city :" + proposalCity.toString());
+                    if (proposalCity.getQuoteNo() == null)
+                    {
+                        LOG.debug("Inside 1st condition");
+                        this.getQuoteNum(true);
+                        ProposalCity proposalCity1 = proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                        if (proposalCity1.getQuoteNo() == null)
+                        {
+                            this.getQuoteNum(true);
+                            proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                        }
+                    }
                     LOG.info("success");
                 }
             } catch (Exception e) {
@@ -864,7 +886,17 @@ public class CreateProposalsView extends Panel implements View {
 
             List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
             if (!(insertCity.size() >= 1)) {
-                proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                ProposalCity proposalCity = proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                if (proposalCity == null)
+                {
+                    this.cityChanged(null);
+                    ProposalCity proposalCity1 = proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                    if (proposalCity1 == null)
+                    {
+                        this.cityChanged(null);
+                        proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
+                    }
+                }
                 LOG.info("success");
             }
         } catch (Exception e) {
@@ -1337,6 +1369,12 @@ public class CreateProposalsView extends Panel implements View {
 
     private void cityChanged(Property.ValueChangeEvent valueChangeEvent) {
         //LOG.info("City changed ");
+        getQuoteNum(false);
+        //proposalHeader.setQuoteNoNew(QuoteNumNew);
+        //         quotenew.setValue(QuoteNumNew);
+    }
+
+    private void getQuoteNum(boolean override) {
         String city = (String) projectCityField.getValue();
         switch (city) {
             case "Bangalore":
@@ -1361,9 +1399,13 @@ public class CreateProposalsView extends Panel implements View {
         //LOG.info("Count size " +count.size());
         value = count.size();
 
-        String valueStr;
-        valueStr = Integer.toString(value);
-        valueStr = String.format("%04d", value + 1);
+        if (override==true)
+        {
+            value = count.size()+1;
+        }
+        String valueStr = null;
+        valueStr = String.format("%04d", value + 2);
+
         String date = new SimpleDateFormat("yyyy-MM").format(new Date());
         String s = cityCode + "-" + date + "-" + valueStr;
         for(ProposalCity proposalCity : count)
@@ -1374,8 +1416,6 @@ public class CreateProposalsView extends Panel implements View {
             }
         }
         QuoteNumNew = s;
-        //proposalHeader.setQuoteNoNew(QuoteNumNew);
-        //         quotenew.setValue(QuoteNumNew);
     }
 
 
