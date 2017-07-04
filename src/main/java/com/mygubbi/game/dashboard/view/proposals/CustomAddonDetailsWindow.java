@@ -291,6 +291,8 @@ public class CustomAddonDetailsWindow extends Window {
                     addonProduct.setSourcePrice(round(addonDealerPrice));
                     addonProduct.setMargin(round(addonsMargin));
                     addonProduct.setProfit(round(addonsProfit));
+                    addonProduct.setProposalId(proposalVersion.getProposalId());
+
 
                         if (isProposalAddon) {
                             DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));

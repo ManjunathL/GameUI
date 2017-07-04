@@ -1990,9 +1990,9 @@ public class ProductAndAddons extends Window
 
     private void persistAddon(AddonProduct eventAddonProduct) {
         if (eventAddonProduct.getId() == 0) {
-            proposalDataProvider.addProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+            proposalDataProvider.addProposalAddon(eventAddonProduct.getProposalId(), eventAddonProduct);
         } else {
-            proposalDataProvider.updateProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+            proposalDataProvider.updateProposalAddon(eventAddonProduct.getProposalId(), eventAddonProduct);
         }
     }
 
