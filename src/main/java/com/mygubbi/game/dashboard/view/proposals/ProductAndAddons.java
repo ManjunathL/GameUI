@@ -1362,7 +1362,8 @@ public class ProductAndAddons extends Window
     private StreamResource createQuoteResourcePdf() {
 
         StreamResource.StreamSource source = () -> {
-            if (!proposal.getProducts().isEmpty()) {
+            return getInputStreamPdf();
+            /*if (!proposal.getProducts().isEmpty()) {
               //  LOG.info("header value" + proposalVersion.getDiscountAmount() + "discount amount" + discountAmount.getValue());
                 String replace = discountAmount.getValue().replace(",", "");
                 double discountamount = Double.valueOf(replace);
@@ -1370,7 +1371,7 @@ public class ProductAndAddons extends Window
 
             } else {
                 return null;
-            }
+            }*/
         };
         return new StreamResource(source, "Quotation.pdf");
     }
