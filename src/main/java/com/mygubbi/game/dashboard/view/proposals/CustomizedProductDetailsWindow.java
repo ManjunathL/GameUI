@@ -1380,16 +1380,19 @@ public class CustomizedProductDetailsWindow extends Window {
             modulesGrid.clearSortOrder();
             modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
-            for (Module module : product.getModules()) {
-                List<MGModule> hingesPresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
-                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), hingesSelection.getValue().toString());
-                module.getHandlePack().clear();
-                module.setHingePack(hingeMaps1);
-                for (MGModule m : hingesPresent) {
-                    if (m.getHingeMandatory().equals("Yes")) {
-                        module.setHingePresent(m.getHingeMandatory());
-                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), hingesSelection.getValue().toString());
-                        module.setHingePack(hingeMaps);
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+            {
+                for (Module module : product.getModules()) {
+                    List<MGModule> hingesPresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                    List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), hingesSelection.getValue().toString());
+                    module.getHandlePack().clear();
+                    module.setHingePack(hingeMaps1);
+                    for (MGModule m : hingesPresent) {
+                        if (m.getHingeMandatory().equals("Yes")) {
+                            module.setHingePresent(m.getHingeMandatory());
+                            List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), hingesSelection.getValue().toString());
+                            module.setHingePack(hingeMaps);
+                        }
                     }
                 }
             }
