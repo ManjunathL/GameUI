@@ -321,11 +321,25 @@ public class MarginDetailsWindow extends Window
                 rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
                 //LOG.info("rateForStdManfCost other than wardrobe " +rateForStdManfCost);
             }
+            if(Objects.equals(product.getProductCategoryCode(), "shoerack"))
+            {
+                PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails("NSTDMC:shoerack",this.priceDate,this.city);
+                rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
+            }
+            else if(Objects.equals(product.getProductCategoryCode(), "studytable"))
+            {
+                PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails("NSTDMC:studytable",this.priceDate,this.city);
+                rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
+            }
+            else
+            {
+                PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
+                rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
+            }
             //LOG.info("rate for standard manufacture cost" +rateForStdManfCost);
             PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
             rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
-            PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
-            rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
+
             PriceMaster labourcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForManfLabourCost,this.priceDate,this.city);
             rateForManfLabourCost=labourcostpriceMaster.getSourcePrice();
             PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
