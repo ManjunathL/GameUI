@@ -786,6 +786,16 @@ public class ProposalDataProvider {
         }
     }
 
+    public String getProposalSOWFile(ProductAndAddonSelection productAndAddonSelection) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
+            JSONObject obj = dataProviderMode.postResource("proposal/createsowsheet", productSelectionsJson);
+            return obj.getString("sowFile");
+        } catch (JSONException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getProposalQuoteFilePdf(ProductAndAddonSelection productAndAddonSelection) {
         try {
             String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);

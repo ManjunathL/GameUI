@@ -20,20 +20,24 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.*;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.gridutil.renderer.ViewButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditButtonValueRenderer;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -121,7 +125,6 @@ public class CreateProposalsView extends Panel implements View {
 
     private DashboardMenu dashboardMenu;
 
-
     private ProductAndAddonSelection productAndAddonSelection;
 
     private FileAttachmentComponent fileAttachmentComponent;
@@ -199,9 +202,12 @@ public class CreateProposalsView extends Panel implements View {
                     attachmentData -> proposalDataProvider.removeProposalDoc(attachmentData.getFileAttachment().getId()),
                     true
             );
-            tabs.addTab(fileAttachmentComponent, "Attachments");
+//            tabs.addTab(fileAttachmentComponent, "Attachments");
+            tabs.addTab(buildScopeOfwork(), "Scope of Services");
 
-            vLayout.addComponent(tabs);
+
+
+        vLayout.addComponent(tabs);
             setContent(vLayout);
             Responsive.makeResponsive(tabs);
             cityLockedForOldProposal();
@@ -572,6 +578,79 @@ public class CreateProposalsView extends Panel implements View {
         verticalLayout.addComponent(versionsGrid);
         verticalLayout.setSpacing(true);
         return verticalLayout;
+    }
+
+    private Component buildScopeOfwork()
+    {
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+        verticalLayout.setMargin(new MarginInfo(true, true, true, true));
+
+        verticalLayout.setSpacing(true);
+
+        Label label = new Label("Please click the below buttons in order to open the scope of services");
+        verticalLayout.addComponent(label);
+
+        verticalLayout.setSpacing(true);
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeFull();
+        horizontalLayout.setMargin(new MarginInfo(true, true, true, true));
+
+        Label version_1 = new Label("Version 1.0 :");
+        horizontalLayout.addComponent(version_1);
+
+        Button scope_of_work = new Button();
+        scope_of_work.setCaption("Scope of Work");
+        scope_of_work.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        scope_of_work.setCaptionAsHtml(true);
+        scope_of_work.setIcon(FontAwesome.BINOCULARS);
+
+        StreamResource quoteSOWresource = createSOWResource();
+        FileDownloader fileDownloaderSOW = new FileDownloader(quoteSOWresource);
+        fileDownloaderSOW.extend(scope_of_work);
+
+        horizontalLayout.addComponent(scope_of_work);
+
+        verticalLayout.addComponent(horizontalLayout);
+
+
+        return verticalLayout;
+    }
+
+    private StreamResource createSOWResource() {
+
+        StreamResource.StreamSource source = () ->
+        {
+            if (!(proposal.getProposalHeader().getQuoteNoNew() == null))
+            {
+
+                String quoteFile = proposalDataProvider.getProposalSOWFile(this.productAndAddonSelection);
+                InputStream input = null;
+                try {
+                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return input;
+            }
+            else
+            {
+                return null;
+            }
+        };
+        return new StreamResource(source, "SOW.xlsx");
+    }
+
+    private void checkProductsAndAddonsAvailable(Button.ClickEvent clickEvent) {
+
+        /*if (proposal.getProducts().isEmpty() && proposal.getAddons().isEmpty())
+        {
+            NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+        }*/
+           /* if (proposal.getAddons().isEmpty()) {
+                NotificationUtil.showNotification("No Addons found.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
+            }*/
     }
 
     private void refreshVersionsGrid(List<ProposalVersion> updatedProposalVersions) {
