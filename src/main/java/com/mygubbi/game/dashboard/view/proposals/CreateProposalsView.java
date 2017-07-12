@@ -203,7 +203,7 @@ public class CreateProposalsView extends Panel implements View {
                     true
             );
 //            tabs.addTab(fileAttachmentComponent, "Attachments");
-            tabs.addTab(buildScopeOfwork(), "Scope of Services");
+            //tabs.addTab(buildScopeOfwork(), "Scope of Services");
 
 
 

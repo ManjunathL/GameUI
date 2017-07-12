@@ -406,6 +406,7 @@ public class MarginDetailsWindow extends Window
                     if(!(module.getMgCode().startsWith("MG-NS-H")))
                     {
                         NSWoodWorkCost+=modulePrice.getCarcassCost()+modulePrice.getShutterCost();
+                        nonStdModuleManufacturingCost+=(modulePrice.getCarcassCost()+modulePrice.getShutterCost())/rateForNStdManfCost;
                     }
                 }
                 else
@@ -500,7 +501,7 @@ public class MarginDetailsWindow extends Window
         //stdModuleManufacturingCost =SWoodWorkCost/2.46;
         stdModuleManufacturingCost =SWoodWorkCost/rateForStdManfCost;
         //nonStdModuleManufacturingCost =NSWoodWorkCost/1.288;
-        nonStdModuleManufacturingCost =NSWoodWorkCost/rateForNStdManfCost;
+
         //manufacturingLabourCost =(LabourCost)/1.288;
         manufacturingLabourCost =(LabourCost)/rateForManfLabourCost;
         //manufacturingHardwareCost =HardwareCost/1.546;
