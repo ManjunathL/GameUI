@@ -72,6 +72,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String KNOB_CODE="knobCode";
     public static final String LCONNECTOR_PRICE="lConnectorPrice";
     public static final String NO_OF_LENGTHS="noOfLengths";
+    public static final String DESIGNER="designer";
 
 
     private int id;
@@ -91,6 +92,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     private String source;
     private String ProductDescription;
     private String subCategory;
+    private String designer;
     private String baseCarcass;
     private String baseCarcassCode;
     private String wallCarcass;
@@ -459,6 +461,14 @@ public class ProductLibrary implements FileAttachmentsHolder
         this.subCategory = subCategory;
     }
 
+    public String getDesigner() {
+        return designer;
+    }
+
+    public void setDesigner(String designer) {
+        this.designer = designer;
+    }
+
     public String getProductDescription() {
         return ProductDescription;
     }
@@ -711,6 +721,7 @@ public class ProductLibrary implements FileAttachmentsHolder
                 ", noOfLengths=" + noOfLengths +
                 ", modules=" + modules +
                 ", fileAttachmentList=" + fileAttachmentList +
+                ", designer=" + designer +
                 '}';
     }
 }
