@@ -52,6 +52,7 @@ public class ProposalDataProvider {
     private static final String MODULE_SELECTION_LOOKUP = "module";
     public static final String ACCESSORY_LOOKUP = "accessories";
     public static final String COLLECTION_LOOKUP = "collection";
+    public static final String SPACETYPE_LOOKUP = "spacetype";
 
 
     public ProposalDataProvider(DataProviderMode dataProviderMode) {
@@ -324,7 +325,6 @@ public class ProposalDataProvider {
     public ProposalHeader createProposal() {
 
         try {
-
             JSONObject jsonObject = dataProviderMode.postResource("proposal/create", "{\"createdBy\": \"" + getUserId() + "\"}");
             LOG.debug("Create Proposal OP :" + jsonObject.toString());
             return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
@@ -615,6 +615,7 @@ public class ProposalDataProvider {
         if (cachedItems != null) {
             return cachedItems;
         }
+        LOG.debug("Get lookup items :" + type);
 
         //DataProviderMode overridenMode = type.equals(SHUTTER_DESIGN_LOOKUP) ? new FileDataProviderMode() : dataProviderMode;
         JSONArray array = dataProviderMode.getResourceArray("codelookup", new HashMap<String, String>() {
@@ -786,12 +787,22 @@ public class ProposalDataProvider {
         }
     }
 
-    public String getProposalSOWFile(ProductAndAddonSelection productAndAddonSelection) {
+    public JSONObject getProposalSOWFile(ProductAndAddonSelection productAndAddonSelection) {
         try {
             String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
             JSONObject obj = dataProviderMode.postResource("proposal/createsowsheet", productSelectionsJson);
-            return obj.getString("sowFile");
-        } catch (JSONException | JsonProcessingException e) {
+            return obj;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public JSONObject getBOQFile(ProductAndAddonSelection productAndAddonSelection) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
+            JSONObject obj = dataProviderMode.postResource("proposal/createboqsheet", productSelectionsJson);
+            return obj;
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -803,6 +814,46 @@ public class ProposalDataProvider {
             return obj.getString("quoteFile");
         } catch (JSONException | JsonProcessingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public JSONObject saveSOWFile(Proposal_sow proposal_sow) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(proposal_sow);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/savesowfile", productSelectionsJson);
+            return jsonObject;
+        } catch (JsonProcessingException e) {
+            throw  new RuntimeException(e);
+        }
+    }
+
+    public JSONObject discardSOWFile(Proposal_sow proposal_sow) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(proposal_sow);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/discardboqfile", productSelectionsJson);
+            return jsonObject;
+        } catch (JsonProcessingException e) {
+            throw  new RuntimeException(e);
+        }
+    }
+
+    public JSONObject saveBoQFile(Proposal_sow proposal_sow) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(proposal_sow);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/saveboqfile", productSelectionsJson);
+            return jsonObject;
+        } catch (JsonProcessingException e) {
+            throw  new RuntimeException(e);
+        }
+    }
+
+    public JSONObject discardBoqFile(Proposal_sow proposal_sow) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(proposal_sow);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/discardboqfile", productSelectionsJson);
+            return jsonObject;
+        } catch (JsonProcessingException e) {
+            throw  new RuntimeException(e);
         }
     }
 
@@ -1874,7 +1925,7 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
-    public List<LookupItem> getHinges(String LookupType) {
+    public List<LookupItem> getCodeLookup(String LookupType) {
         try {
             JSONArray jsonArray = dataProviderMode.getResourceArray("module/selectfromcodemaster", new HashMap<String, String>() {
                 {
@@ -2089,7 +2140,7 @@ public class ProposalDataProvider {
             throw new RuntimeException(e);
         }
     }
-    public List<ModuleHingeMap> getHinges(String moduleCode,String type)
+    public List<ModuleHingeMap> getCodeLookup(String moduleCode, String type)
     {
         LOG.debug("hinges inside proposal data provider : " + moduleCode  +" :" + type);
         try {
@@ -2136,6 +2187,46 @@ public class ProposalDataProvider {
         } catch (Exception e) {
             e.printStackTrace();
             NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
+    public JSONObject updateSowLineItems(int proposalId, double proposalVersionToBeConsidered) {
+
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/createsowsheet", "{\"proposalId\": " + proposalId + "," + "\"version\" : "  + proposalVersionToBeConsidered  + "," + "\"userId\" :" + "\"" + getUserId() + "\"" +  "}");
+        return jsonObject;
+    }
+
+    public boolean createBoqLineItems(ProposalVersion proposalVersion) {
+        try {
+
+            String proposalJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/createboqlineitems", proposalJson);
+            return !jsonObject.has("error");
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Couldn't save proposal", e);
+        }
+    }
+
+    public boolean copyProposalSowLineItems(int proposalId, String version) {
+
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/copysowlineitems", "{\"proposalId\": " + proposalId + "," + "\"version\" : " + "" + version  + "," + "\"userId\" :" + "\"" + getUserId() + "\"" +  "}");
+        return !jsonObject.has("error");
+    }
+
+    public List<Proposal_sow> getProposalSowLineItems(int proposalId, String version) {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("sow/selectlineitemsv2", new HashMap<String, String>() {
+                {
+                    put("proposalId", String.valueOf(proposalId));
+                    put("version", version);
+                }
+            });
+            Proposal_sow[] items = this.mapper.readValue(jsonArray.toString(), Proposal_sow[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
             return new ArrayList<>();
         }
     }

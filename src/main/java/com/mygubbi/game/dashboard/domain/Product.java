@@ -21,6 +21,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String MANUAL_SEQ = "manualSeq";
     public static final String TITLE = "title";
     public static final String PRODUCT_CATEGORY = "productCategory";
+    public static final String SPACE_TYPE = "spaceType";
     public static final String PRODUCT_CATEGORY_CODE = "productCategoryCode";
     public static final String CATALOGUE_ID = "catalogueId";
     public static final String ROOM = "room";
@@ -79,6 +80,7 @@ public class Product implements FileAttachmentsHolder {
     private String productCategoryCode;
     private String room;
     private String roomCode;
+    private String spaceType;
     private String shutterDesign;
     private String shutterDesignCode;
     private String catalogueName;
@@ -605,6 +607,14 @@ public class Product implements FileAttachmentsHolder {
 
     public void setlConnectorPrice(double lConnectorPrice) {
         this.lConnectorPrice = lConnectorPrice;
+    }
+
+    public String getSpaceType() {
+        return spaceType;
+    }
+
+    public void setSpaceType(String spaceType) {
+        this.spaceType = spaceType;
     }
 
     @Override

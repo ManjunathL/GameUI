@@ -115,6 +115,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private List<LookupItem> hingesList;
     private List<LookupItem> glassList;
+    private List<LookupItem> spaceType;
     private List<LookupItem> handleselectionList;
     private List<HandleMaster> handletitlelist;
     private List<HandleMaster> knobtitlelist;
@@ -123,6 +124,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private List<HandleMaster> handlesizelist;
     private ComboBox hingesSelection;
     private ComboBox glassSelection;
+    private ComboBox spaceTypeSelection;
 
     private ComboBox handleType;
     private ComboBox handleTypefield;
@@ -255,6 +257,18 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutLeft.setSizeFull();
         formLayoutLeft.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 
+        this.spaceTypeSelection= getSimpleItemFilledCombo("Space Type",ProposalDataProvider.SPACETYPE_LOOKUP,null);
+        spaceTypeSelection.setRequired(true);
+        binder.bind(spaceTypeSelection,SPACE_TYPE);
+        spaceTypeSelection.addValueChangeListener(valueChangeEvent -> {
+                    String code = (String) valueChangeEvent.getProperty().getValue();
+            String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
+            product.setSpaceType(title);
+
+        });
+
+        formLayoutLeft.addComponent(this.spaceTypeSelection);
+
         roomText = (TextField) binder.buildAndBind("Room", ROOM_CODE);
         roomText.setRequired(true);
         roomText.setNullRepresentation("");
@@ -286,7 +300,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
-            hingesList=proposalDataProvider.getHinges("hinges");
+            hingesList=proposalDataProvider.getCodeLookup("hinges");
             this.hingesSelection=getHingesFilledComboBox("Hinges",hingesList,null);
             hingesSelection.setRequired(true);
             binder.bind(hingesSelection,HINGES_TYPE);
@@ -300,7 +314,7 @@ public class CustomizedProductDetailsWindow extends Window {
             this.hingesSelection.addValueChangeListener(this::hingeTypeChanged);
             formLayoutLeft.addComponent(this.hingesSelection);
 
-            glassList=proposalDataProvider.getHinges("glass");
+            glassList=proposalDataProvider.getCodeLookup("glass");
             this.glassSelection=getHingesFilledComboBox("Glass",glassList,null);
             glassSelection.setRequired(true);
             binder.bind(glassSelection,GLASS_TYPE);
@@ -314,7 +328,7 @@ public class CustomizedProductDetailsWindow extends Window {
             glassSelection.addValueChangeListener(this::refreshPrice);
             formLayoutLeft.addComponent(this.glassSelection);
 
-            handleselectionList=proposalDataProvider.getHinges("handleselection");
+            handleselectionList=proposalDataProvider.getCodeLookup("handleselection");
             this.handleSelection=getHandleSelectionFilledComboBox("Handle Selection",handleselectionList,null);
             handleSelection.setRequired(true);
             binder.bind(handleSelection,Product.HANDLETYPE_SELECTION);
@@ -1384,13 +1398,13 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 for (Module module : product.getModules()) {
                     List<MGModule> hingesPresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
-                    List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), hingesSelection.getValue().toString());
+                    List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getCodeLookup(module.getMgCode(), hingesSelection.getValue().toString());
                     module.getHandlePack().clear();
                     module.setHingePack(hingeMaps1);
                     for (MGModule m : hingesPresent) {
                         if (m.getHingeMandatory().equals("Yes")) {
                             module.setHingePresent(m.getHingeMandatory());
-                            List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), hingesSelection.getValue().toString());
+                            List<ModuleHingeMap> hingeMaps = proposalDataProvider.getCodeLookup(module.getMgCode(), hingesSelection.getValue().toString());
                             module.setHingePack(hingeMaps);
                         }
                     }
@@ -2619,13 +2633,13 @@ public class CustomizedProductDetailsWindow extends Window {
             for (Module module : product.getModules()) {
                 if (product.getModules() == null || hingeTypeValueChange == null) return;
                 List<MGModule> hingesPresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
-                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), hingeTypeValueChange);
+                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getCodeLookup(module.getMgCode(), hingeTypeValueChange);
                 module.getHandlePack().clear();
                 module.setHingePack(hingeMaps1);
                 for (MGModule m : hingesPresent) {
                     if (m.getHingeMandatory().equals("Yes")) {
                         module.setHingePresent(m.getHingeMandatory());
-                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), hingeTypeValueChange);
+                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getCodeLookup(module.getMgCode(), hingeTypeValueChange);
                         module.setHingePack(hingeMaps);
                     }
                 }

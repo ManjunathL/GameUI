@@ -20,6 +20,7 @@ public class AddonProduct implements Cloneable {
     public static final String QUANTITY = "quantity";
     public static final String RATE = "rate";
     public static final String UOM = "uom";
+    public static final String ADDON_SPACE_TYPE = "spaceType";
     public static final String ADDON_CATEGORY_CODE = "categoryCode";
     public static final String PRODUCT_TYPE_CODE = "productTypeCode";
     public static final String PRODUCT_SUBTYPE_CODE = "productSubtypeCode";
@@ -43,6 +44,7 @@ public class AddonProduct implements Cloneable {
     private String code;
     private String catalogueCode;
     private String title;
+    private String spaceType;
     private String categoryCode;
     private String category;
     private String product;
@@ -298,6 +300,14 @@ public class AddonProduct implements Cloneable {
 
     public void setSourcePrice(double sourcePrice) {
         this.sourcePrice = sourcePrice;
+    }
+
+    public String getSpaceType() {
+        return spaceType;
+    }
+
+    public void setSpaceType(String spaceType) {
+        this.spaceType = spaceType;
     }
 
     @Override
