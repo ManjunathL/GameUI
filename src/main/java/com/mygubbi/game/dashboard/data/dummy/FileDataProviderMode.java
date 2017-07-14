@@ -5,6 +5,7 @@ import com.mygubbi.game.dashboard.util.FileUtil;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
+import us.monoid.web.JSONResource;
 
 import java.util.Map;
 
@@ -42,6 +43,21 @@ public class FileDataProviderMode implements DataProviderMode {
     @Override
     public JSONObject postResourceWithUrl(String urlFrag, String json) {
         return getResource(formPath(urlFrag, null), null);
+    }
+
+    @Override
+    public JSONResource postResourceWithUrlForCrm(String url, String opportunity_name, String final_proposal_amount_c, String estimated_project_cost_c, String quotation_number_c) {
+        return null;
+    }
+
+    @Override
+    public JSONResource postResourceWithUrlForCrmOnPublish(String url, String opportunity_name, String estimated_project_cost_c, String quotation_number_c) {
+        return null;
+    }
+
+    @Override
+    public JSONResource postResourceWithFormData(String url, Map<String, String> keyValuePairs) {
+        return null;
     }
 
     @Override

@@ -9,11 +9,16 @@ public class ModuleComponent
     public static final String COMPTYPE="comptype";
     public static final String COMOCODE="compcode";
     public static final String QUANTITY="quantity";
+    public static final String QUANTITY_FLAG="quantityFlag";
+    public static final String QUANTITY_FORMULA="quantityFormula";
 
     private String modulecode;
     private String comptype;
     private String compcode;
     private double quantity;
+    private String quantityFlag;
+    private String quantityFormula;
+
 
     public String getCompcode() {
         return compcode;
@@ -47,13 +52,31 @@ public class ModuleComponent
         this.quantity = quantity;
     }
 
+    public String getQuantityFlag() {
+        return quantityFlag;
+    }
+
+    public void setQuantityFlag(String quantityFlag) {
+        this.quantityFlag = quantityFlag;
+    }
+
+    public String getQuantityFormula() {
+        return quantityFormula;
+    }
+
+    public void setQuantityFormula(String quantityFormula) {
+        this.quantityFormula = quantityFormula;
+    }
+
     @Override
     public String toString() {
         return "ModuleComponent{" +
-                "compcode='" + compcode + '\'' +
-                ", modulecode='" + modulecode + '\'' +
+                "modulecode='" + modulecode + '\'' +
                 ", comptype='" + comptype + '\'' +
-                ", quantity='" + quantity + '\'' +
+                ", compcode='" + compcode + '\'' +
+                ", quantity=" + quantity +
+                ", quantityFlag='" + quantityFlag + '\'' +
+                ", quantityFormula='" + quantityFormula + '\'' +
                 '}';
     }
 }

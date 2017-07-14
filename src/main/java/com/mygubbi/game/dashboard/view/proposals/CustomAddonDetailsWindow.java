@@ -250,7 +250,7 @@ public class CustomAddonDetailsWindow extends Window {
                     addonProduct.setTitle(this.title.getValue());
                     addonProduct.setProduct(this.title.getValue());
                     addonProduct.setCode("NA");
-                    LOG.debug("Addon product Class :" + addonProduct.toString());
+                    //LOG.debug("Addon product Class :" + addonProduct.toString());
                     if (this.priceDate == null)
                     {
                         this.priceDate = new Date(System.currentTimeMillis());
@@ -264,18 +264,18 @@ public class CustomAddonDetailsWindow extends Window {
                     for (RateCard addonsourceprice : Addonsourcepricelist ) {
                         codeForAddonSourcePrice=addonsourceprice.getCode();
                     }
-                    LOG.info("parameters" +codeForAddonWOTax+ " " +this.priceDate+ " " +this.city);
+                    //LOG.info("parameters" +codeForAddonWOTax+ " " +this.priceDate+ " " +this.city);
                     PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
                     rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
-                    LOG.info("Addon wo tax" +addonwotaxpriceMaster);
+                    //LOG.info("Addon wo tax" +addonwotaxpriceMaster);
                     PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
                     rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
 
-                    LOG.info("rate for addon" +rateForAddonWOTax);
+                    //LOG.info("rate for addon" +rateForAddonWOTax);
                     addonsTotalWOtax+=addonProduct.getAmount()*rateForAddonWOTax;
                     if(addonProduct.getCode().equals("NA"))
                     {
-                        LOG.info("source price for custom addom " +rateForAddonSourcePrice);
+                        //LOG.info("source price for custom addom " +rateForAddonSourcePrice);
                         double addonDiscountedPrice=0;
                         addonDiscountedPrice=rateForAddonSourcePrice*addonProduct.getAmount();
                         addonDealerPrice+=addonDiscountedPrice;
@@ -291,6 +291,8 @@ public class CustomAddonDetailsWindow extends Window {
                     addonProduct.setSourcePrice(round(addonDealerPrice));
                     addonProduct.setMargin(round(addonsMargin));
                     addonProduct.setProfit(round(addonsProfit));
+                    addonProduct.setProposalId(proposalVersion.getProposalId());
+
 
                         if (isProposalAddon) {
                             DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));

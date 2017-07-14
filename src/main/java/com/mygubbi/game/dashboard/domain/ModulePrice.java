@@ -13,6 +13,9 @@ public class ModulePrice {
     private double accessoryCost;
     private double hardwareCost;
     private double labourCost;
+    private double handleAndKnobCost;
+    private double handleAndKnobSourceCost;
+    private double hingeCost;
 
     public double getShutterCost() {
         return shutterCost;
@@ -78,17 +81,44 @@ public class ModulePrice {
         this.woodworkCost = woodworkCost;
     }
 
+    public double getHandleAndKnobCost() {
+        return handleAndKnobCost;
+    }
+
+    public void setHandleAndKnobCost(double handleAndKnobCost) {
+        this.handleAndKnobCost = handleAndKnobCost;
+    }
+
+    public double getHingeCost() {
+        return hingeCost;
+    }
+
+    public void setHingeCost(double hingeCost) {
+        this.hingeCost = hingeCost;
+    }
+
+    public double getHandleAndKnobSourceCost() {
+        return handleAndKnobSourceCost;
+    }
+
+    public void setHandleAndKnobSourceCost(double handleAndKnobSourceCost) {
+        this.handleAndKnobSourceCost = handleAndKnobSourceCost;
+    }
+
     @Override
     public String toString() {
-        return "PriceModule{" +
-                "totalCost='" + totalCost + '\'' +
-                ", woodworkCost='" + woodworkCost + '\'' +
-                ", hardwareCost='" + hardwareCost + '\'' +
-                ", module area=" +moduleArea +
-                ", shuttercost=" + shutterCost +
-                ", carcasscost=" + carcassCost +
-                ", accessory cost='" + accessoryCost + '\'' +
-                ", labour cost='" + labourCost + '\'' +
+        return "ModulePrice{" +
+                "accessoryCost=" + accessoryCost +
+                ", totalCost=" + totalCost +
+                ", woodworkCost=" + woodworkCost +
+                ", moduleArea=" + moduleArea +
+                ", shutterCost=" + shutterCost +
+                ", carcassCost=" + carcassCost +
+                ", hardwareCost=" + hardwareCost +
+                ", labourCost=" + labourCost +
+                ", handleAndKnobCost=" + handleAndKnobCost +
+                ", handleAndKnobSourceCost=" + handleAndKnobSourceCost +
+                ", hingeCost=" + hingeCost +
                 '}';
     }
 }

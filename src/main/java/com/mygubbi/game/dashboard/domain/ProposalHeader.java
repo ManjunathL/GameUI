@@ -50,6 +50,8 @@ public class ProposalHeader {
     public static final String UPDATED_BY = "updatedBy";
     public static final String PRICE_DATE = "priceDate";
     public static final String MAX_DISCOUNTPERCENTAGE="maxDiscountPercentage";
+    public static final String BEFORE_PRODUCTION_SPECIFICATION="beforeProductionSpecification";
+    public static final String PACKAGE_FLAG="packageFlag";
 
     private int id;
     private String quoteNoNew;
@@ -82,13 +84,15 @@ public class ProposalHeader {
     private String designPartnerPhone;
     private double amount;
     private String folderPath;
-    private Date createdOn;
+    private java.sql.Date createdOn;
     private String createdBy;
     private java.sql.Date updatedOn;
     private String updatedBy;
     private String editFlag = EDIT.R.name();
     private java.sql.Date priceDate;
     private double maxDiscountPercentage;
+    private String beforeProductionSpecification;
+    private String packageFlag;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -158,12 +162,12 @@ public class ProposalHeader {
         this.status = status;
     }
 
-    public Date getCreatedOn() {
+    public java.sql.Date getCreatedOn() {
 
         return createdOn;
     }
 
-    public void setCreatedOn(Date createdOn) {
+    public void setCreatedOn(java.sql.Date createdOn) {
         this.createdOn = createdOn;
     }
 
@@ -403,6 +407,22 @@ public class ProposalHeader {
         this.maxDiscountPercentage = maxDiscountPercentage;
     }
 
+    public String getBeforeProductionSpecification() {
+        return beforeProductionSpecification;
+    }
+
+    public void setBeforeProductionSpecification(String beforeProductionSpecification) {
+        this.beforeProductionSpecification = beforeProductionSpecification;
+    }
+
+    public String getPackageFlag() {
+        return packageFlag;
+    }
+
+    public void setPackageFlag(String packageFlag) {
+        this.packageFlag = packageFlag;
+    }
+
     @Override
     public String toString() {
         return "ProposalHeader{" +
@@ -444,6 +464,8 @@ public class ProposalHeader {
                 ", editFlag='" + editFlag + '\'' +
                 ", priceDate=" + priceDate +
                 ", maxDiscountPercentage=" + maxDiscountPercentage +
+                ", beforeProductionSpecification='" + beforeProductionSpecification + '\'' +
+                ", packageFlag='" + packageFlag + '\'' +
                 '}';
     }
 }

@@ -5,6 +5,7 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
@@ -15,42 +16,40 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinSession;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.xpath.operations.Mod;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.mygubbi.game.dashboard.domain.ProposalHeader.P_CITY;
-
 @SuppressWarnings("serial")
-public class ModuleDetailsWindow extends Window {
+public class MDW extends Window {
 
     private static final Logger LOG = LogManager.getLogger(ModuleDetailsWindow.class);
     private final Product product;
     private final String DEF_CODE_PREFIX = "def_";
     private static final String LABEL_WARNING = "warning";
     private final int moduleIndex;
+    String defaultValueForWardrobe="224";
 
     private Label accessoryHeading;
 
     private TextField importedModule;
-    private TextField moduleCategoryText;
     private TextField description;
     private TextField width;
     private TextField depth;
@@ -61,8 +60,6 @@ public class ModuleDetailsWindow extends Window {
     private ComboBox moduleSelection;
     private ComboBox carcassMaterialSelection;
     private ComboBox colorCombo;
-    private ComboBox exposedSidesCombo;
-    private ComboBox exposedBottomCombo;
 
     private ComboBox accessoryPack1;
     private ComboBox accessoryPack2;
@@ -99,24 +96,6 @@ public class ModuleDetailsWindow extends Window {
     private final Label defaultsOverridden;
     private TextField totalAmount;
 
-    private ComboBox handleType;
-    private ComboBox handleTypefield;
-    private ComboBox handle;
-    private ComboBox handlefield;
-    private ComboBox thickness;
-    private ComboBox thicknessfield;
-    private Image handleImage;
-    private ComboBox knobType;
-    private ComboBox knobTypefield;
-    private ComboBox knob;
-    private ComboBox knobfield;
-    private ComboBox knobthickness;
-    private ComboBox knobthicknessfield;
-    private Image knobImage;
-    private OptionGroup glassoptiongroup;
-    private OptionGroup hingesoptiongroup;
-    private OptionGroup lockoptiongroup;
-
     private Module module;
     private ProposalVersion proposalVersion;
     private ProposalHeader proposalHeader;
@@ -141,13 +120,17 @@ public class ModuleDetailsWindow extends Window {
     private double accessoryCost=-1;
     private double labourCost=-1;
 
-    private List<HandleMaster> handlefinish;
-    private List<HandleMaster> knobfinsh;
-    private List<HandleMaster> handlethickness;
-    private List<HandleMaster> Knobthickness;
+    private ComboBox thicknessfield;
+    private TextField handlequantity;
+    private TextField knobqquantity;
+    private ComboBox thickness;
+    private ComboBox knobthickness;
+    private TextField customText;
+    OptionGroup single;
+    private String hPresent;
+    private String knobPresent;
 
-    Boolean lockhandles=false;
-    private ModuleDetailsWindow(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
+    private MDW(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         this.dontCalculatePriceNow = true;
         this.product = product;
         this.module = module;
@@ -157,15 +140,18 @@ public class ModuleDetailsWindow extends Window {
         initModule();
         this.binder.setItemDataSource(this.module);
 
-        LOG.info("Module in constructor " +module);
+        if(this.module.getProductCategory().equals("K"))
+        {
+            this.module.setProductCategory("Kitchen");
+        }
+        if(this.module.getProductCategory().equals("W"))
+        {
+            this.module.setProductCategory("Wardrobe");
+        }
+
         setModal(true);
         setSizeFull();
-        setResizable(false);
-        setClosable(false);
-        //removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        //addStyleName("module-window");
-        /*setWidth("80%");
-        setHeight("90%");*/
+        removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setClosable(false);
         setCaption("Edit Module Configuration for " + product.getTitle());
 
@@ -183,7 +169,7 @@ public class ModuleDetailsWindow extends Window {
         horizontalLayoutupper.setWidth("100%");
         verticalLayout1.addComponent(horizontalLayoutupper);
         verticalLayout1.setSpacing(false);
-        horizontalLayoutupper.setMargin(new MarginInfo(false, false, false, false));
+        //horizontalLayoutupper.setMargin(new MarginInfo(false, false, false, false));
         Responsive.makeResponsive(this);
         horizontalLayoutupper.setHeight("90%");
 
@@ -191,13 +177,12 @@ public class ModuleDetailsWindow extends Window {
         horizontalLayout1.setWidth("100%");
         horizontalLayout1.setHeight("70%");
 
-        Component componentUpper1 = buildModuleLeft();
+        Component componentUpper1 = buildModuleComponent();
         componentUpper1.setWidth("100%");
         horizontalLayout1.addComponent(componentUpper1);
         horizontalLayout1.setSpacing(true);
 
-       //Component componentUpper2 = buildModuleOptionsComponent();
-        Component componentUpper2 = buildModuleMiddle();
+        Component componentUpper2 = buildModuleOptionsComponent();
         componentUpper2.setWidth("100%");
         horizontalLayout1.addComponent(componentUpper2);
         horizontalLayout1.setSpacing(true);
@@ -206,22 +191,26 @@ public class ModuleDetailsWindow extends Window {
         horizontalLayoutupper.setExpandRatio(horizontalLayout1, 0.85f);
 
         horizontalLayoutupper.setWidth("90%");
-        Component componentUpper3 = buildModuleRight();
+        Component componentUpper3 = buildModuleImageComponent();
         componentUpper3.setWidth("90%");
         horizontalLayoutupper.addComponent(componentUpper3);
-        horizontalLayoutupper.setExpandRatio(componentUpper3, 0.15f);
+        horizontalLayoutupper.setExpandRatio(componentUpper3, 0.10f);
+
+        HorizontalLayout hhorizontalLayout = new HorizontalLayout();
+        hhorizontalLayout.addStyleName("hlayoutsize");
+        hhorizontalLayout.setSizeFull();
+        hhorizontalLayout.addComponent(custombuild());
+        verticalLayout1.addComponent(hhorizontalLayout);
+
+        HorizontalLayout horizontalLayout9 = new HorizontalLayout();
+        horizontalLayout9.setSizeFull();
+        horizontalLayout9.addComponent(getDimensionsPanel());
+        horizontalLayout9.addComponent(getExposedPanelsLayout());
+        verticalLayout1.addComponent(horizontalLayout9);
 
         defaultsOverridden = new Label("Note that the defaults have been overridden.");
         defaultsOverridden.setStyleName(LABEL_WARNING);
         defaultsOverridden.setVisible(false);
-
-       /* HorizontalLayout horizontalLayout3 = new HorizontalLayout();
-        horizontalLayout3.setSizeFull();
-        horizontalLayout3.addComponent(buildproduct1());
-        horizontalLayout3.addComponent(buildproduct2());
-        horizontalLayout3.addComponent(buildproduct3());
-        horizontalLayout3.addComponent(buildproduct4());
-        verticalLayout1.addComponent(horizontalLayout3);*/
 
         accessoryHeading = new Label("Accessory Configuration");
         accessoryHeading.setStyleName("margin-exposedLeft-10");
@@ -270,7 +259,7 @@ public class ModuleDetailsWindow extends Window {
         this.allowDimensionChangesForModule();
         updateValues();
         handleState();
-
+        handlepackage();
         this.dontCalculatePriceNow = false;
 
         this.refreshPrice();
@@ -316,7 +305,7 @@ public class ModuleDetailsWindow extends Window {
         width.setReadOnly(true);
         depth.setReadOnly(true);
         carcassMaterialSelection.setReadOnly(true);
-        remarks.setReadOnly(true);
+        //remarks.setReadOnly(true);
         finishTypeSelection.setReadOnly(true);
         shutterFinishSelection.setReadOnly(true);
         colorCombo.setReadOnly(true);
@@ -339,6 +328,17 @@ public class ModuleDetailsWindow extends Window {
         addons31.setReadOnly(true);
         addons32.setReadOnly(true);
         addons33.setReadOnly(true);
+        applyButton.setVisible(false);
+        applyNextButton.setVisible(false);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            handlequantity.setReadOnly(true);
+            knobqquantity.setReadOnly(true);
+            customText.setReadOnly(true);
+            thicknessfield.setReadOnly(true);
+            single.setReadOnly(true);
+        }
+
     }
 
 
@@ -399,12 +399,6 @@ public class ModuleDetailsWindow extends Window {
 
     private void initModule()
     {
-
-        /*if (module.getExpBottom()!= null && module.getExpBottom().equals("Yes"))
-            module.setExposedBottom(true);
-        else module.setExposedBottom(false);*/
-
-
         if (module.getExpSides()!= null && module.getExpSides().equals("both"))
         {
             module.setExposedLeft(true);
@@ -439,6 +433,7 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void addListenerstoDimensionCheckBoxes() {
+
         this.height.addValueChangeListener(valueChangeEvent -> {
             String code = (String) valueChangeEvent.getProperty().getValue();
             this.height.setValue(code);
@@ -469,104 +464,18 @@ public class ModuleDetailsWindow extends Window {
     private Component buildModuleImageComponent() {
         Panel panel = new Panel();
         panel.setWidth("200px");
-        panel.setHeight("150px");
+        panel.setHeight("200px");
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
         verticalLayout.setMargin(new MarginInfo(false, true, true, true));
         verticalLayout.setSpacing(false);
-        //emptyModuleImage = new ThemeResource("img/empty-poster.png");
         moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
         moduleImage.setCaption(null);
         moduleImage.setSizeFull();
         moduleImage.setImmediate(true);
         verticalLayout.addComponent(moduleImage);
-
         panel.setContent(verticalLayout);
         return panel;
-    }
-    private Component buildModuleRight()
-    {
-        VerticalLayout verticalLayoutModule = new VerticalLayout();
-        verticalLayoutModule.setSizeFull();
-        FormLayout formLayout = new FormLayout();
-        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        formLayout.addComponent(buildModuleImageComponent());
-        formLayout.addComponent(buildAccessoryImagesComponent());
-
-        return formLayout;
-    }
-
-    private Component buildModuleMiddle() {
-        FormLayout formLayout = new FormLayout();
-        formLayout.addStyleName("no-exposedBottom-margin");
-        formLayout.setSizeFull();
-        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
-        this.accessoryPack1 = getAccessoryPackCombo("Acc Pack 1", accessoryPackList, null);
-        formLayout.addComponent(this.accessoryPack1);
-        accessoryPack1.setFilteringMode(FilteringMode.CONTAINS);
-        accessoryPack1.addValueChangeListener(this::accessoryPack1Changed);
-
-        this.addons11 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
-        formLayout.addComponent(this.addons11);
-        addons11.setFilteringMode(FilteringMode.CONTAINS);
-        addons11.addValueChangeListener(this::addImageAndrefreshPrice);
-
-        this.addons12 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
-        formLayout.addComponent(this.addons12);
-        addons12.setFilteringMode(FilteringMode.CONTAINS);
-        addons12.addValueChangeListener(this::addImageAndrefreshPrice);
-
-        this.addons13 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
-        formLayout.addComponent(this.addons13);
-        addons13.setFilteringMode(FilteringMode.CONTAINS);
-        addons13.addValueChangeListener(this::addImageAndrefreshPrice);
-
-        accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
-        this.accessoryPack2 = getAccessoryPackCombo("Acc Pack 2", accessoryPackList, null);
-        formLayout.addComponent(this.accessoryPack2);
-        accessoryPack2.setFilteringMode(FilteringMode.CONTAINS);
-        accessoryPack2.addValueChangeListener(this::accessoryPack2Changed);
-
-        this.addons21 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
-        formLayout.addComponent(this.addons21);
-        addons21.setFilteringMode(FilteringMode.CONTAINS);
-        addons21.addValueChangeListener(this::addImageAndrefreshPrice);
-
-        this.addons22 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
-        formLayout.addComponent(this.addons22);
-        addons22.setFilteringMode(FilteringMode.CONTAINS);
-        addons22.addValueChangeListener(this::addImageAndrefreshPrice);
-
-        this.addons23 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
-        formLayout.addComponent(this.addons23);
-        addons23.setFilteringMode(FilteringMode.CONTAINS);
-        addons23.addValueChangeListener(this::addImageAndrefreshPrice);
-
-        accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
-        this.accessoryPack3 = getAccessoryPackCombo("Acc Pack 3", accessoryPackList, null);
-        formLayout.addComponent(this.accessoryPack3);
-        accessoryPack3.setFilteringMode(FilteringMode.CONTAINS);
-        accessoryPack3.addValueChangeListener(this::accessoryPack3Changed);
-
-        this.addons31 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
-        formLayout.addComponent(this.addons31);
-        addons31.setFilteringMode(FilteringMode.CONTAINS);
-        addons31.addValueChangeListener(this::addImageAndrefreshPrice);
-
-        this.addons32 = getAccessoryAddonsCombo("Addons 2", new ArrayList<>(), null);
-        formLayout.addComponent(this.addons32);
-        addons32.setFilteringMode(FilteringMode.CONTAINS);
-        addons32.addValueChangeListener(this::addImageAndrefreshPrice);
-
-        this.addons33 = getAccessoryAddonsCombo("Addons 3", new ArrayList<>(), null);
-        formLayout.addComponent(this.addons33);
-        addons33.setFilteringMode(FilteringMode.CONTAINS);
-        addons33.addValueChangeListener(this::addImageAndrefreshPrice);
-
-        return formLayout;
     }
 
     private Component buildModuleOptionsComponent() {
@@ -609,110 +518,9 @@ public class ModuleDetailsWindow extends Window {
 
         return formLayout;
     }
-    private Component buildModuleLeft()
+
+    private Component buildModuleComponent()
     {
-        VerticalLayout verticalLayoutModule = new VerticalLayout();
-        verticalLayoutModule.setSizeFull();
-        FormLayout formLayout = new FormLayout();
-        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        if (Objects.equals("button", module.getModuleSource())) {
-            this.moduleCategory = getSimpleItemFilledCombo("Module Category", ProposalDataProvider.MODULE_CATEGORY_LOOKUP, null);
-            binder.bind(moduleCategory, Module.MODULE_CATEGORY);
-            moduleCategory.setFilteringMode(FilteringMode.CONTAINS);
-            moduleCategory.setNullSelectionAllowed(false);
-            formLayout.addComponent(this.moduleCategory);
-            moduleCategory.addValueChangeListener(valueChangeEvent -> {
-                String code = (String) valueChangeEvent.getProperty().getValue();
-                LOG.info("code value" +code);
-                String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
-                module.setModuleCategory(title);
-                LOG.debug("After combo box updated:" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
-
-                mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
-                if (this.moduleSelection != null) {
-                    this.moduleSelection.getContainerDataSource().removeAllItems();
-                    ((BeanContainer<String, MGModule>) this.moduleSelection.getContainerDataSource()).addAll(mgModules);
-                    moduleSelection.setValue(moduleSelection.getItemIds().iterator().next());
-                }
-            });
-
-            if (moduleCategory.size() > 0) {
-                String code = StringUtils.isNotEmpty(module.getModuleCategory()) ? module.getModuleCategory() : (String) moduleCategory.getItemIds().iterator().next();
-                moduleCategory.setValue(code);
-            }
-
-            LOG.debug("product category :" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
-
-            mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
-            moduleSelection = getModulesCombo("Module", mgModules, null);
-            binder.bind(moduleSelection, Module.MG_MODULE_CODE);
-            moduleSelection.setFilteringMode(FilteringMode.CONTAINS);
-            moduleSelection.setNullSelectionAllowed(false);
-            formLayout.addComponent(this.moduleSelection);
-            this.moduleSelection.addValueChangeListener(valueChangeEvent -> {
-                moduleSelectionChangedEvent(valueChangeEvent);
-            });
-        }
-        else {
-            this.importedModule = (TextField) binder.buildAndBind("Module", Module.MG_MODULE_CODE);
-            this.importedModule.setReadOnly(true);
-            formLayout.addComponent(importedModule);
-        }
-
-        this.carcassMaterialSelection = getSimpleItemFilledCombo("Carcass Material", ProposalDataProvider.CARCASS_LOOKUP, null, getCarcassCodeBasedOnType());
-        binder.bind(carcassMaterialSelection, Module.CARCASS_MATERIAL_CODE);
-        carcassMaterialSelection.setRequired(true);
-        carcassMaterialSelection.addValueChangeListener(this::refreshPrice);
-        formLayout.addComponent(this.carcassMaterialSelection);
-
-        this.finishTypeSelection = getSimpleItemFilledCombo("Finish Material", ProposalDataProvider.FINISH_TYPE_LOOKUP, null, product.getFinishTypeCode());
-        binder.bind(finishTypeSelection, Module.FINISH_TYPE_CODE);
-        formLayout.addComponent(this.finishTypeSelection);
-        this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
-
-        shutterFinishMasterList = proposalDataProvider.getFinishes(); //LookupItems(ProposalDataProvider.FINISH_LOOKUP);
-        List<Finish> filteredShutterFinish = filterShutterFinishByType();
-        this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
-        binder.bind(shutterFinishSelection, Module.SHUTTER_FINISH_CODE);
-        shutterFinishSelection.addValueChangeListener(this::finishChanged);//refreshPrice);
-        formLayout.addComponent(this.shutterFinishSelection);
-
-        List<Color> colors = filterColorsByType();
-        this.colorCombo = getColorsCombo("Color", colors);
-        binder.bind(colorCombo, Module.COLOR_CODE);
-        formLayout.addComponent(this.colorCombo);
-
-        this.remarks = new TextField();
-        this.remarks.setCaption("Remarks");
-        formLayout.addComponent(remarks);
-
-        this.description = (TextField) binder.buildAndBind("Description", Module.DESCRIPTION);
-        formLayout.addComponent(this.description);
-
-       /* formLayout.addComponent(getDimensionsPanel());
-        formLayout.addComponent(getExposedPanelsLayout());*/
-        totalAmount = new TextField("Total Amount");
-        binder.bind(totalAmount, Module.AMOUNT);
-        totalAmount.setReadOnly(true);
-        formLayout.addComponent(totalAmount);
-
-        verticalLayoutModule.addComponent(formLayout);
-        verticalLayoutModule.setExpandRatio(formLayout,0.35f);
-
-        HorizontalLayout horizontalLayoutDimensions = getDimensionsPanel();
-        verticalLayoutModule.addComponent(horizontalLayoutDimensions);
-        verticalLayoutModule.setExpandRatio(horizontalLayoutDimensions,0.325f);
-        verticalLayoutModule.setSpacing(true);
-
-        HorizontalLayout hLayoutExposedPanels = getExposedPanelsLayout();
-        verticalLayoutModule.addComponent(hLayoutExposedPanels);
-        verticalLayoutModule.setExpandRatio(hLayoutExposedPanels,0.325f);
-
-        return verticalLayoutModule;
-    }
-
-    private Component buildModuleComponent() {
         VerticalLayout verticalLayoutModule = new VerticalLayout();
         verticalLayoutModule.setSizeFull();
         FormLayout formLayout = new FormLayout();
@@ -720,8 +528,7 @@ public class ModuleDetailsWindow extends Window {
         formLayout.setHeight("30%");
         formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         formLayout.addStyleName("no-bottom-margin-normal");
-
-
+        formLayout.addStyleName("v-formlayout");
 
        if (Objects.equals("button", module.getModuleSource())) {
             this.moduleCategory = getSimpleItemFilledCombo("Module Category", ProposalDataProvider.MODULE_CATEGORY_LOOKUP, null);
@@ -733,13 +540,19 @@ public class ModuleDetailsWindow extends Window {
                 String code = (String) valueChangeEvent.getProperty().getValue();
                 String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
                 module.setModuleCategory(title);
-                LOG.debug("After combo box updated:" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
+               // LOG.debug("After combo box updated:" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
 
                 mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
                 if (this.moduleSelection != null) {
                     this.moduleSelection.getContainerDataSource().removeAllItems();
                     ((BeanContainer<String, MGModule>) this.moduleSelection.getContainerDataSource()).addAll(mgModules);
                     moduleSelection.setValue(moduleSelection.getItemIds().iterator().next());
+                }
+                if(module.getModuleCategory().equals("S - Hinged Wardrobe 2100") ||module.getModuleCategory().equals("S - Hinged Wardrobe 2400") || module.getModuleCategory().equals("S - Sliding Wardrobe 2100") ||module.getModuleCategory().equals("S - Sliding Wardrobe 2400") )
+                {
+                    //LOG.info("handle thickness changed ");
+                    module.setHandleThickness(defaultValueForWardrobe);
+                    thicknessfield.setValue(defaultValueForWardrobe);
                 }
             });
 
@@ -761,48 +574,85 @@ public class ModuleDetailsWindow extends Window {
                 moduleSelectionChangedEvent(valueChangeEvent);
             });
         }
-        else {
-
+       else
+       {
            this.importedModule = (TextField) binder.buildAndBind("Module", Module.MG_MODULE_CODE);
            this.importedModule.setReadOnly(true);
            formLayout.addComponent(importedModule);
+
        }
 
-        formLayout.addComponent(buildModuleOptionsComponent());
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            thicknessfield=gethandlethickness();
+            binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
+            thicknessfield.setRequired(false);
+            /*if(thicknessfield.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(module.getHandleThickness()) ? module.getHandleThickness() : (String) thicknessfield.getItemIds().iterator().next();
+                thicknessfield.setValue(code);
+            }*/
+            thicknessfield.addValueChangeListener(this::thicknessfieldchanged);
+            formLayout.addComponent(thicknessfield);
+
+            handlequantity=new TextField("Handle Quantity");
+            binder.bind(handlequantity,Module.HANDLE_QUANTITY);
+            handlequantity.setRequired(false);
+            handlequantity.addValueChangeListener(this::handlequantitychanged);
+            formLayout.addComponent(handlequantity);
+
+            knobqquantity=new TextField("Knob Quantity");
+            binder.bind(knobqquantity,Module.KNOB_QUANTITY);
+            knobqquantity.setRequired(false);
+            knobqquantity.addValueChangeListener(this::knobquantitychanged);
+            formLayout.addComponent(knobqquantity);
+        }
+
+        /*this.remarks = new TextField();
+        this.remarks.setCaption("Remarks");
+        formLayout.setWidth("100%");
+        formLayout.setHeight("50%");
+        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        binder.bind(this.remarks, Module.REMARKS);
+        formLayout.addComponent(remarks);*/
+
         verticalLayoutModule.addComponent(formLayout);
-        verticalLayoutModule.setExpandRatio(formLayout,0.35f);
-
-        HorizontalLayout horizontalLayoutDimensions = getDimensionsPanel();
-        verticalLayoutModule.addComponent(horizontalLayoutDimensions);
-        verticalLayoutModule.setExpandRatio(horizontalLayoutDimensions,0.325f);
-
-        verticalLayoutModule.setSpacing(true);
-
-        HorizontalLayout horizontalLayoutRemarks = getRemarksPanel();
-        verticalLayoutModule.addComponent(horizontalLayoutRemarks);
-        verticalLayoutModule.setExpandRatio(horizontalLayoutRemarks,0.325f);
-
-        HorizontalLayout hLayoutExposedPanels = getExposedPanelsLayout();
-        verticalLayoutModule.addComponent(hLayoutExposedPanels);
-        verticalLayoutModule.setExpandRatio(hLayoutExposedPanels,0.325f);
-
-        this.exposedSidesCombo = new ComboBox("Exposed Sides");
-        exposedSidesCombo.addItems("None", "Left", "Right", "Both");
-        //formLayout.addComponent(this.exposedSidesCombo);
-        exposedSidesCombo.setNullSelectionAllowed(false);
-        exposedSidesCombo.setValue(exposedSidesCombo.getItemIds().iterator().next());
-        exposedSidesCombo.addValueChangeListener(this::refreshPrice);
-
-        this.exposedBottomCombo = new ComboBox("Exposed Bottom");
-        exposedBottomCombo.addItems("No", "Yes");
-      // formLayout.addComponent(this.exposedBottomCombo);
-        exposedBottomCombo.setNullSelectionAllowed(false);
-        exposedBottomCombo.setValue(exposedBottomCombo.getItemIds().iterator().next());
-        exposedBottomCombo.addValueChangeListener(this::refreshPrice);
-
         return verticalLayoutModule;
     }
+    private Component custombuild()
+    {
+        HorizontalLayout vlayout=new HorizontalLayout();
 
+        single = new OptionGroup("");
+        single.addItems("General Remarks", "Custom Remarks");
+        binder.bind(single,Module.CUSTOM_CHECK);
+        if (module.getCustomCheck()== null)
+        {
+            single.select("General Remarks");
+            single.setImmediate(true);
+        }
+        single.addStyleName("checkboxstyle");
+        single.addValueChangeListener(this::customcheckchanged);
+        vlayout.addComponent(single);
+
+        this.customText=new TextField();
+        customText.addStyleName("text-area-size1");
+        //binder.bind(this.customText,Module.CUSTOM_TEXT);
+        binder.bind(this.customText, Module.REMARKS);
+        customText.setNullRepresentation(" ");
+//        this.customText.setEnabled(false);
+
+        vlayout.addComponent(customText);
+        return vlayout;
+    }
+    private void customcheckchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        module.setCustomCheck(valueChangeEvent.getProperty().getValue().toString());
+        if(valueChangeEvent.getProperty().getValue()=="Custom Remarks")
+        {
+            customText.setValue(" ");
+        }
+    }
     private void moduleSelectionChangedEvent(Property.ValueChangeEvent valueChangeEvent) {
 
         this.dontCalculatePriceNow = true;
@@ -811,7 +661,56 @@ public class ModuleDetailsWindow extends Window {
         MGModule mgModule = ((BeanContainer<String, MGModule>) this.moduleSelection.getContainerDataSource()).getItem(code).getBean();
         //((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code);
 
-        LOG.debug("MG module - " + mgModule.toString());
+       // LOG.debug("MG module - " + mgModule.toString());
+
+        LOG.debug("Module Type :" + mgModule.getModuleType());
+
+        /*switch (module.getModuleType()) {
+            case "S":
+                LOG.debug("Inside S" + mgModule.toString());
+                module.setImagePath(mgModule.getImagePath());
+                module.setDescription(mgModule.getDescription());
+                module.setRemarks(mgModule.getDescription());
+                break;
+            case "N":
+                LOG.debug("Inside N" + mgModule.toString());
+                module.setImagePath("image.jpg");
+                module.setDescription("");
+                module.setRemarks("");
+                // module.setHeight(0);
+                // module.setDepth(0);
+                // module.setWidth(0);
+                break;
+            case "hike":
+                LOG.debug("Inside Hike" + mgModule.toString());
+                module.setDescription("");
+                module.setRemarks("");
+                break;
+        }*/
+
+        if (module.getModuleCategory().startsWith("S"))
+        {
+            LOG.debug("Inside S :" + mgModule.toString());
+
+            module.setImagePath(mgModule.getImagePath());
+            module.setDescription(mgModule.getDescription());
+            module.setRemarks(mgModule.getDescription());
+        }
+        else if (module.getModuleCategory().startsWith("N"))
+        {
+            LOG.debug("Inside N :" + mgModule.toString());
+
+            module.setImagePath("image.jpg");
+            module.setDescription("");
+            module.setRemarks("");
+        }
+        else
+        {
+            module.setDescription("");
+            module.setRemarks("");
+        }
+
+        moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
 
         module.setMgCode(mgModule.getCode());
         module.setHeight(mgModule.getHeight());
@@ -819,18 +718,11 @@ public class ModuleDetailsWindow extends Window {
         module.setWidth(mgModule.getWidth());
         module.clearAcessorryPacks();
         this.removeAddons();
+        //this.removeHandleAndKnobQuantity();
         this.emptyAccessoryImages();
         module.setModuleType(mgModule.getModuleType());
         module.setModuleCategory(mgModule.getModuleCategory());
         module.setAccessoryPackDefault(mgModule.getAccessoryPackDefault());
-        if (module.getModuleType().equals("S")) {
-            module.setImagePath(mgModule.getImagePath());
-            module.setDescription(mgModule.getDescription());
-            module.setRemarks(mgModule.getDescription());
-        } else if (module.getModuleType().equals("N")) {
-            module.setImagePath("image.jpg");
-        }
-        moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
 
         this.height.setReadOnly(false);
         this.width.setReadOnly(false);
@@ -850,30 +742,109 @@ public class ModuleDetailsWindow extends Window {
             this.description.setValue(description);
         }
 
-        this.remarks.setReadOnly(false);
-        this.remarks.setValue(description);
+        /*this.remarks.setReadOnly(false);
+        this.remarks.setValue(description);*/
+
+        /*this.customText.setReadOnly(false);
+        this.customText.setValue(description);*/
 
         module.setImportStatus(Module.ImportStatusType.m.name());
         module.setUnitType(mgModule.getUnitType());
-        List<MGModule> value=proposalDataProvider.checksqftCalculation(mgModule.getCode());
-        LOG.info("Mg code to check handle present or not " +mgModule.getCode());
-        for(MGModule m:value)
-        {
-            LOG.info("handle present" +m.getHandleMandatory() +lockhandles);
-            if(m.getHandleMandatory().equals("Yes"))
-            {
-                LOG.info("inside if to set value");
-                lockhandles = true;
-            }
-            LOG.info("lock handle value after check" +lockhandles);
-        }
 
         this.allowDimensionChangesForModule();
-        LOG.debug("Module b4 price calc :" + module.toString());
+       // LOG.debug("Module b4 price calc :" + module.toString());
         this.dontCalculatePriceNow = false;
+
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            //LOG.info("product handletype selection " +product.getHandleTypeSelection());
+            //LOG.info("product.getHandleTypeSelection().equals(\"Normal\")" +!product.getHandleTypeSelection().equals("Normal"));
+            if(!(product.getHandleTypeSelection().equals("Normal")))
+            {
+                handlequantity.setValue("0");
+                knobqquantity.setValue("0");
+            }
+            else {
+                this.customText.setReadOnly(false);
+                this.customText.setValue(description);
+
+                List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
+                if (accDetailsforHandle.size() == 0) {
+                    handlequantity.setValue("0");
+                    handlequantity.setRequired(false);
+                    thicknessfield.setRequired(false);
+                } else {
+                    for (AccessoryDetails a : accDetailsforHandle) {
+                        //LOG.info("handle quantity " + a);
+                        module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                        handlequantity.setValue(a.getQty());
+                    }
+                }
+
+                List<AccessoryDetails> accDetailsforKnob = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "K");
+                if (accDetailsforKnob.size() == 0) {
+                    knobqquantity.setValue("0");
+                    knobqquantity.setRequired(false);
+                } else {
+                    for (AccessoryDetails a : accDetailsforKnob) {
+                        module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                        knobqquantity.setValue(a.getQty());
+                    }
+                }
+            }
+
+
+
+
+                //LOG.info("mg code"  +module.getMgCode());
+                List<MGModule> handlePresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                for (MGModule m : handlePresent) {
+                    //LOG.info("module mand " + m.toString());
+                    if (m.getHandleMandatory().equals("Yes")) {
+                        module.setHandlePresent(m.getHandleMandatory());
+                        hPresent = m.getHandleMandatory();
+                        handlequantity.setRequired(true);
+                        thicknessfield.setRequired(true);
+                    } else {
+                        module.setHandlePresent(m.getHandleMandatory());
+                        handlequantity.setRequired(false);
+                        thicknessfield.setRequired(false);
+                    }
+                    if (m.getKnobMandatory().equals("Yes")) {
+                        module.setKnobPresent(m.getKnobMandatory());
+                        knobPresent = m.getKnobMandatory();
+                        knobqquantity.setRequired(true);
+                    } else {
+                        module.setKnobPresent(m.getKnobMandatory());
+                    }
+                }
+                //hinges
+//              List<MGModule> hingesPresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), product.getHinge());
+                //LOG.info("size of hinge" + hingeMaps1.size());
+                module.setHingePack(hingeMaps1);
+                for (MGModule m : handlePresent) {
+                    if (m.getHingeMandatory().equals("Yes")) {
+                        module.setHingePresent(m.getHingeMandatory());
+                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), product.getHinge());
+                        module.setHingePack(hingeMaps);
+                    }
+                }
+
+
+            List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",module.getHandleType(),module.getHandleFinish(),thicknessfield.getValue().toString());
+            for(HandleMaster h:handleMasters)
+            {
+                module.setHandleCode(h.getCode());
+            }
+
+            List<HandleMaster> knobmaster=proposalDataProvider.getHandles("knob",module.getKnobType(),module.getKnobFinish(),"0");
+            for(HandleMaster h:knobmaster)
+            {
+                module.setKnobCode(h.getCode());
+            }
+        }
         refreshPrice();
         refreshAccPacks();
-        refreshHandle();
     }
 
     private void removeAddons() {
@@ -906,7 +877,8 @@ public class ModuleDetailsWindow extends Window {
         }
     }
 
-    private void refreshAccPacks(){
+    private void refreshAccPacks()
+    {
         accessoryPackList = proposalDataProvider.getAccessoryPacks(module.getMgCode());
         this.accessoryPack1.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, AccessoryPack>) this.accessoryPack1.getContainerDataSource()).addAll(accessoryPackList);
@@ -916,25 +888,6 @@ public class ModuleDetailsWindow extends Window {
 
         this.accessoryPack3.getContainerDataSource().removeAllItems();
         ((BeanContainer<String, AccessoryPack>) this.accessoryPack3.getContainerDataSource()).addAll(accessoryPackList);
-
-    }
-
-    private void refreshHandle()
-    {
-        this.handleType.getContainerDataSource().removeAllItems();
-        if(lockhandles==true)
-        {
-            LOG.info("value true");
-            List<HandleMaster> handle=proposalDataProvider.getHandleTitle("Handle");
-            for(HandleMaster handles:handle)
-            {
-                LOG.info("handle title" +handles);
-            }
-            final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
-            container.setBeanIdProperty(HandleMaster.TITLE);
-            container.addAll(handle);
-            handleType.setContainerDataSource(container);
-        }
 
     }
 
@@ -992,7 +945,6 @@ public class ModuleDetailsWindow extends Window {
     private HorizontalLayout getDimensionsPanel() {
         HorizontalLayout horizontalLayoutDimensions = new HorizontalLayout();
         horizontalLayoutDimensions.setSizeFull();
-        horizontalLayoutDimensions.setMargin(new MarginInfo(false,true,false,true));
         horizontalLayoutDimensions.setCaption("Dimensions");
         horizontalLayoutDimensions.setSpacing(false);
 
@@ -1031,26 +983,6 @@ public class ModuleDetailsWindow extends Window {
 
         return horizontalLayoutDimensions;
     }
-    private HorizontalLayout getRemarksPanel(){
-
-        HorizontalLayout horizontalLayoutRemarks = new HorizontalLayout();
-        horizontalLayoutRemarks.setSizeFull();
-        horizontalLayoutRemarks.setMargin(new MarginInfo(false,true,false,false));
-        horizontalLayoutRemarks.setSpacing(false);
-
-        FormLayout formLayoutRemarks = new FormLayout();
-        formLayoutRemarks.setSizeFull();
-        formLayoutRemarks.setMargin(new MarginInfo(false,false,false,false));
-        this.remarks = new TextField();
-        this.remarks.setCaption("Remarks");
-        formLayoutRemarks.setWidth("100%");
-        formLayoutRemarks.setHeight("50%");
-        formLayoutRemarks.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-        binder.bind(this.remarks, Module.REMARKS);
-        formLayoutRemarks.addComponent(remarks);
-        horizontalLayoutRemarks.addComponent(formLayoutRemarks);
-        return horizontalLayoutRemarks;
-    }
     private Component buildAccPack1Component() {
         FormLayout formLayout = new FormLayout();
         formLayout.addStyleName("no-exposedBottom-margin");
@@ -1082,7 +1014,6 @@ public class ModuleDetailsWindow extends Window {
     }
 
     private void accessoryPack1Changed(Property.ValueChangeEvent valueChangeEvent) {
-
         accessoryPackChanged(accessoryPack1, addons11, addons12, addons13);
         refreshPrice();
     }
@@ -1230,7 +1161,7 @@ public class ModuleDetailsWindow extends Window {
 
     private void addImageToAccessoryPanel(String imagePath, String title) {
         File sourceFile = new File(basePath + imagePath);
-        LOG.info("image path : " + sourceFile);
+       // LOG.info("image path : " + sourceFile);
         if (sourceFile.exists()) {
             VerticalLayout verticalLayout=new VerticalLayout();
             Image img = new Image("", new FileResource(sourceFile));
@@ -1266,7 +1197,7 @@ public class ModuleDetailsWindow extends Window {
 
         ModulePrice modulePrice = this.recalculatePriceForModule();
 
-        LOG.info("module price in Module Details Window " +modulePrice);
+       // LOG.info("module price in Module Details Window " +modulePrice);
         if (modulePrice != null)
         {
             totalAmount.setReadOnly(false);
@@ -1303,8 +1234,6 @@ public class ModuleDetailsWindow extends Window {
     private void showPricingErrors()
     {
         disableApply();
-        //Not
-        // ificationUtil.showNotification("Module pricing has errors!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
     }
 
     private void noPricingErrors()
@@ -1337,7 +1266,7 @@ public class ModuleDetailsWindow extends Window {
         this.module.setExposedBack(exposedBack.getValue());
         this.module.setExposedOpen(exposedOpen.getValue());
         moduleForPrice.setModule(module);
-
+        moduleForPrice.setProduct(product);
 
         Date priceDate = proposalHeader.getPriceDate();
         if (!("Draft").equals(proposalVersion.getStatus()))
@@ -1359,7 +1288,7 @@ public class ModuleDetailsWindow extends Window {
             return null;
         }
 
-        LOG.info("Asking for module price - " + this.module.toString());
+       // LOG.info("Asking for module price - " + this.module.toString());
         try
         {
             return proposalDataProvider.getModulePrice(moduleForPrice);
@@ -1373,7 +1302,6 @@ public class ModuleDetailsWindow extends Window {
     private int getIntegerValue(String value) {
         try {
             return java.text.NumberFormat.getInstance().parse(value).intValue();
-            //return Integer.parseInt(value);
         } catch (Exception e) {
             return 0;
         }
@@ -1382,7 +1310,14 @@ public class ModuleDetailsWindow extends Window {
     private List<ModuleAccessoryPack> getModuleAccessoryPacks() {
         List<ModuleAccessoryPack> accPacks = new ArrayList<>();
         ModuleAccessoryPack moduleAccessoryPack = this.getModuleAccessoryPack(this.accessoryPack1, this.addons11, this.addons12, this.addons13);
-        if (moduleAccessoryPack != null) accPacks.add(moduleAccessoryPack);
+        if (moduleAccessoryPack != null)
+        {
+            accPacks.add(moduleAccessoryPack);
+        }
+        else
+        {
+            accPacks.clear();
+        }
 
         moduleAccessoryPack = this.getModuleAccessoryPack(this.accessoryPack2, this.addons21, this.addons22, this.addons23);
         if (moduleAccessoryPack != null) accPacks.add(moduleAccessoryPack);
@@ -1394,15 +1329,12 @@ public class ModuleDetailsWindow extends Window {
 
     private ModuleAccessoryPack getModuleAccessoryPack(ComboBox accPackCombo, ComboBox addon1Combo, ComboBox addons2Combo, ComboBox addons3Combo) {
         String value = (String) accPackCombo.getValue();
-        LOG.info("Pack Value" +value);
 
         if (StringUtils.isEmpty(value)) {
             return null;
         }
         ModuleAccessoryPack accPack = new ModuleAccessoryPack();
         accPack.setCode(value);
-        LOG.info("caption" +accPackCombo.getItemCaptionPropertyId().toString());
-       //accPack.setPacktitle();
 
         List<String> addons = new ArrayList<>();
 
@@ -1437,6 +1369,8 @@ public class ModuleDetailsWindow extends Window {
         String mgCode = (String) moduleSelection.getValue();
 
         List<Module> list = proposalDataProvider.getModuleDetails((String) this.moduleSelection.getValue());
+
+
         refreshPrice();
     }
 
@@ -1539,11 +1473,13 @@ public class ModuleDetailsWindow extends Window {
         applyButton.setWidth("10%");
         applyButton.focus();
         applyButton.setVisible(true);
+
         applyNextButton = new Button("Apply & Load Next");
         applyNextButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         applyNextButton.addClickListener(getApplyListener(true,true));
         applyNextButton.focus();
         applyNextButton.setVisible(!isLastModule());
+
         loadPreviousButton = new Button("Previous");
         loadPreviousButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
         loadPreviousButton.addClickListener(getApplyListener(false,true));
@@ -1561,7 +1497,7 @@ public class ModuleDetailsWindow extends Window {
         return footer;
     }
 
-    private ClickListener   getApplyListener(boolean loadNext,boolean loadPrevious) {
+    private ClickListener  getApplyListener(boolean loadNext,boolean loadPrevious) {
         return event -> {
 
             if (module.getMgCode()== null)
@@ -1575,6 +1511,29 @@ public class ModuleDetailsWindow extends Window {
                     NotificationUtil.showNotification("Please select accessories", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
+            }
+            //LOG.info("thickness field value " +thicknessfield.getValue().toString());
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+            {
+                if(("Normal").equals(product.getHandleTypeSelection())) {
+                    if(Objects.equals(module.getHandleThickness(),null) && Objects.equals(module.getHandlePresent(), "Yes"))
+                    {
+
+                        NotificationUtil.showNotification("Please select handle size before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                    if(Integer.parseInt(handlequantity.getValue())== 0 && Objects.equals(module.getHandlePresent(), "Yes"))
+                    {
+                        NotificationUtil.showNotification("Please enter valid quantity", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                }
+                if(Objects.equals(module.getCustomCheck(),"Custom Remarks") && Objects.equals(customText.getValue(), "") )
+                {
+                    NotificationUtil.showNotification("Custom Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+
             }
 
             if(module.getDepth()== 0 || module.getHeight()==0 || module.getWidth() == 0)
@@ -1627,15 +1586,10 @@ public class ModuleDetailsWindow extends Window {
             module.setFinishTypeCode(removeDefaultPrefix(module.getFinishTypeCode()));
             module.setFinishCode(removeDefaultPrefix(module.getFinishCode()));
             module.setAccessoryPacks(getModuleAccessoryPacks());
-           /* module.setHandle(handle.getValue().toString());
-            module.setHandleType(handleType.getValue().toString());
-            module.setHandleThickness(thickness.getValue().toString());
-            module.setKnob(knob.getValue().toString());
-            module.setKnobType(knobType.getValue().toString());
-            module.setKnobThickness(knobthickness.getValue().toString());*/
+
             List<ModuleAccessoryPack> accessoryPacks=getModuleAccessoryPacks();
-            LOG.info("Accessory pack" +accessoryPacks);
-            LOG.info("acc pack size" +accessoryPacks.size());
+           // LOG.info("Accessory pack" +accessoryPacks);
+            //LOG.info("acc pack size" +accessoryPacks.size());
             if(accessoryPacks.size()!=0)
             {
                 module.setAccessoryflag("Y");
@@ -1681,19 +1635,16 @@ public class ModuleDetailsWindow extends Window {
                 module.setAccessoryCost(this.accessoryCost);
                 module.setLabourCost(this.labourCost);
             }
-
-            LOG.debug("this.calculatedArea:" + this.calculatedArea + " | this.calculatedAmountWOAccessories:" + this.calculatedAmountWOAccessories + " | WoodworkCost: " +this.woodworkCost+ " | HardwareCost: " +this.hardwareCost+ " | carcasscost " +this.carcassCost + " | Accessory Cost: " +this.accessoryCost+ " | Labour Cost: " +this.accessoryCost);
-
+           // LOG.debug("this.calculatedArea:" + this.calculatedArea + " | this.calculatedAmountWOAccessories:" + this.calculatedAmountWOAccessories + " | WoodworkCost: " +this.woodworkCost+ " | HardwareCost: " +this.hardwareCost+ " | carcasscost " +this.carcassCost + " | Accessory Cost: " +this.accessoryCost+ " | Labour Cost: " +this.accessoryCost);
             if (module.getAmount() == 0)
             {
                 NotificationUtil.showNotification("Module Price cannot be zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
 
-            LOG.debug("Module being updated:" + this.module.toString());
+            //LOG.debug("Module being updated:" + this.module.toString());
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
             close();
-            LOG.info("module save " +module);
             ProposalEvent.ModuleUpdated event1 = new ProposalEvent.ModuleUpdated(module, loadNext, loadPrevious, moduleIndex, this);
             DashboardEventBus.post(event1);
 /*
@@ -1740,10 +1691,11 @@ public class ModuleDetailsWindow extends Window {
 
     public static void open(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         Module clonedModule = module.clone();
-        Window w = new ModuleDetailsWindow(clonedModule, product, moduleIndex, proposalVersion, proposalHeader);
+        Window w = new MDW(clonedModule, product, moduleIndex, proposalVersion, proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
     }
+
 
     private ComboBox getFinishItemFilledCombo(String caption, List<Finish> list, Property.ValueChangeListener listener) {
 
@@ -1865,181 +1817,142 @@ public class ModuleDetailsWindow extends Window {
         return getSimpleItemFilledCombo(caption, list, listener);
     }
 
-    private Component buildproduct1()
+    private ComboBox gethandlethickness()
     {
-        FormLayout formLayout = new FormLayout();
-        formLayout.setSizeFull();
-        formLayout.addStyleName("no-exposedBottom-margin");
-        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        handleTypefield =getHandleType();
-        binder.bind(handleTypefield, Module.HANDLE_TYPE);
-        formLayout.addComponent(handleTypefield);
-
-        knobTypefield=getKnobType();
-        binder.bind(knobTypefield, Module.KNOB_TYPE);
-        formLayout.addComponent(knobTypefield);
-
-        return formLayout;
-    }
-    private Component buildproduct2()
-    {
-        FormLayout formLayout = new FormLayout();
-        formLayout.setSizeFull();
-        formLayout.addStyleName("no-exposedBottom-margin");
-        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        handlefield = gethandlefinish();
-        binder.bind(handlefield, Module.HANDLE_FINISH);
-        formLayout.addComponent(handlefield);
-
-        knobfield= getknobfinish();
-        binder.bind(knobfield, Module.KNOB_FINISH);
-        formLayout.addComponent(knobfield);
-
-        return formLayout;
-    }
-    private Component buildproduct3()
-    {
-        FormLayout formLayout = new FormLayout();
-        formLayout.setSizeFull();
-        formLayout.addStyleName("no-exposedBottom-margin");
-        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-        thicknessfield=gethandlethickness();
-        binder.bind(thicknessfield, Module.HANDLE_THICKNESS);
-        formLayout.addComponent(thicknessfield);
-
-        knobthicknessfield=getknobthickness();
-        binder.bind(knobthicknessfield, Module.KNOB_THICKNESS);
-        formLayout.addComponent(knobthicknessfield);
-
-        return formLayout;
-    }
-
-    private  Component buildproduct4()
-    {
-        FormLayout formLayout = new FormLayout();
-        formLayout.setSizeFull();
-        formLayout.addStyleName("no-exposedBottom-margin");
-        formLayout.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-
-
-        handleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
-        handleImage.setCaption(null);
-        handleImage.setHeight("50%");
-        handleImage.setSizeFull();
-        handleImage.setImmediate(true);
-        formLayout.addComponent(handleImage);
-
-        knobImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
-        knobImage.setCaption(null);
-        knobImage.setHeight("50%");
-        knobImage.setSizeFull();
-        knobImage.setImmediate(true);
-        formLayout.addComponent(knobImage);
-
-        return formLayout;
-    }
-
-    private ComboBox getHandleType()
-    {
-        handleType=new ComboBox("Handle Type");
-        handleType.setNullSelectionAllowed(false);
-        handleType.setItemCaptionPropertyId(HandleMaster.TITLE);
-        handleType.addValueChangeListener(this::handletypechanged);
-        return handleType;
-    }
-    private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
-    {
-        String title=valueChangeEvent.getProperty().getValue().toString();
-        LOG.info("value change in handle type " +valueChangeEvent.getProperty().getValue());
-        handlefinish=proposalDataProvider.getHandleFinish(title,"Handle");
-        final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
-        container.setBeanIdProperty(HandleMaster.FINISH);
-        container.addAll(handlefinish);
-        handle.setContainerDataSource(container);
-    }
-    private void knobtypechanged(Property.ValueChangeEvent valueChangeEvent)
-    {
-        String title=valueChangeEvent.getProperty().getValue().toString();
-        LOG.info("knob type changed" +valueChangeEvent.getProperty().getValue());
-        knobfinsh=proposalDataProvider.getHandleFinish(title,"knob");
-        final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
-        container.setBeanIdProperty(HandleMaster.FINISH);
-        container.addAll(knobfinsh);
-        knob.setContainerDataSource(container);
-    }
-    private void  handlefinishchanged(Property.ValueChangeEvent valueChangeEvent)
-    {
-        String title=valueChangeEvent.getProperty().getValue().toString();
-        LOG.info("handle finish change" +valueChangeEvent.getProperty().getValue() + "type " +handleType.getValue().toString());
-        handlethickness=proposalDataProvider.getHandleThickness(handleType.getValue().toString(),title,"Handle");
+       // LOG.debug("Handle Thickness test : " + module.getHandleType() + ":" + module.getHandleFinish());
+        List<HandleMaster> handlethickness=proposalDataProvider.getHandleThickness(module.getHandleType(),module.getHandleFinish(),"Handle");
         final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
         container.setBeanIdProperty(HandleMaster.THICKNESS);
         container.addAll(handlethickness);
-        thickness.setContainerDataSource(container);
-    }
-    private void knobfinishchanged(Property.ValueChangeEvent valueChangeEvent)
-    {
-        String title=valueChangeEvent.getProperty().getValue().toString();
-        LOG.info("handle finish change" +valueChangeEvent.getProperty().getValue());
-        Knobthickness=proposalDataProvider.getHandleThickness(knobType.getValue().toString(),title,"Knob");
-        final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
-        container.setBeanIdProperty(HandleMaster.THICKNESS);
-        container.addAll(Knobthickness);
-        knobthickness.setContainerDataSource(container);
-    }
 
-    private ComboBox gethandlefinish()
-    {
-        handle=new ComboBox("Handle Finish");
-        handle.setNullSelectionAllowed(false);
-        handle.setItemCaptionPropertyId(HandleMaster.FINISH);
-        handle.addValueChangeListener(this::handlefinishchanged);
-        return handle;
-    }
-    private ComboBox getknobfinish() {
-        knob = new ComboBox("Knob Finish");
-        knob.setNullSelectionAllowed(false);
-        knob.setItemCaptionPropertyId(HandleMaster.FINISH);
-        knob.addValueChangeListener(this::knobfinishchanged);
-        return knob;
-    }
-    private ComboBox gethandlethickness()
-    {
         thickness=new ComboBox("Handle Size");
         thickness.setNullSelectionAllowed(false);
+        thickness.setContainerDataSource(container);
         thickness.setItemCaptionPropertyId(HandleMaster.THICKNESS);
         return thickness;
     }
-    private ComboBox getknobthickness()
+    private void checkcustomcheck(Property.ValueChangeEvent valueChangeEvent)
     {
-        knobthickness=new ComboBox("Knob Thickness");
-        knobthickness.setNullSelectionAllowed(false);
-        knobthickness.setItemCaptionPropertyId(HandleMaster.THICKNESS);
-        return knobthickness;
-    }
-    private ComboBox getKnobType()
-    {
-        List<HandleMaster> handle=proposalDataProvider.getHandleTitle("knob");
-        for(HandleMaster handles:handle)
+        if(valueChangeEvent.getProperty().getValue().equals(true))
         {
-            LOG.info("handle title" +handles);
+            customText.setEnabled(true);
+        }else {
+            customText.setEnabled(false);
+        }
+    }
+    private void thicknessfieldchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        module.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
+        module.setHandleOverrideFlag("Yes");
+        List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",module.getHandleType(),module.getHandleFinish(),thicknessfield.getValue().toString());
+        for(HandleMaster h:handleMasters)
+        {
+            module.setHandleCode(h.getCode());
         }
 
-        final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
-        container.setBeanIdProperty(HandleMaster.TITLE);
-        container.addAll(handle);
+       // LOG.info("handle code " +module.getHandleCode() + "knob code " +module.getKnobCode());
+        List<HandleMaster> handleMasters1=proposalDataProvider.getHandleArray(module.getHandleCode());
+        module.setHandlePack(handleMasters1);
 
-        knobType=new ComboBox("Knob Type");
-        knobType.setNullSelectionAllowed(false);
-        knobType.setContainerDataSource(container);
-        knobType.setItemCaptionPropertyId(HandleMaster.TITLE);
-        knobType.addValueChangeListener(this::knobtypechanged);
-        return knobType;
+        if(module.getKnobCode()!=null)
+        {
+            List<HandleMaster> knobmaster1=proposalDataProvider.getHandleArray(module.getKnobCode());
+            module.setKnobPack(knobmaster1);
+        }
+        refreshPrice();
     }
 
+    private void handlequantitychanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        //LOG.info("handle quantity changed");
+        String s = valueChangeEvent.getProperty().getValue().toString();
+        Integer integer = Integer.parseInt(s);
+        if(!(product.getHandleTypeSelection().equals("Normal")))
+        {
+            this.handlequantity.setValue("0");
+            module.setHandleQuantity(0);
 
+        }else {
+            this.handlequantity.setValue(s);
+            module.setHandleQuantity(integer);
+        }
+
+        refreshPrice();
+    }
+    private void knobquantitychanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        List<HandleMaster> knobmaster=proposalDataProvider.getHandles("knob",module.getKnobType(),module.getKnobFinish(),"0");
+        for(HandleMaster h:knobmaster)
+        {
+            module.setKnobCode(h.getCode());
+        }
+
+        String s = valueChangeEvent.getProperty().getValue().toString();
+        Integer integer = Integer.parseInt(s);
+        if(!(product.getHandleTypeSelection().equals("Normal")))
+        {
+            this.knobqquantity.setValue("0");
+            module.setKnobQuantity(0);
+        }
+        else {
+
+            this.knobqquantity.setValue(s);
+            module.setKnobQuantity(integer);
+        }
+
+       // LOG.info("knob quantity  " +valueChangeEvent);
+        refreshPrice();
+    }
+    private void removeHandleAndKnobQuantity()
+    {
+        handlequantity.setValue("");
+        knobqquantity.setValue("");
+    }
+    private void handlepackage()
+    {
+        if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+        {
+            moduleCategory.setReadOnly(true);
+            moduleSelection.setReadOnly(true);
+            carcassMaterialSelection.setReadOnly(true);
+            finishTypeSelection.setReadOnly(true);
+            shutterFinishSelection.setReadOnly(true);
+
+            //remarks.setReadOnly(true);
+            customText.setReadOnly(true);
+            height.setReadOnly(true);
+            width.setReadOnly(true);
+            depth.setReadOnly(true);
+            description.setReadOnly(true);
+            exposedBack.setReadOnly(true);
+            exposedBottom.setReadOnly(true);
+            exposedOpen.setReadOnly(true);
+            exposedLeft.setReadOnly(true);
+            exposedRight.setReadOnly(true);
+            exposedTop.setReadOnly(true);
+            accessoryPack1.setReadOnly(true);
+            accessoryPack2.setReadOnly(true);
+            accessoryPack3.setReadOnly(true);
+            addons11.setReadOnly(true);
+            addons12.setReadOnly(true);
+            addons13.setReadOnly(true);
+            addons21.setReadOnly(true);
+            addons22.setReadOnly(true);
+            addons23.setReadOnly(true);
+            addons31.setReadOnly(true);
+            addons32.setReadOnly(true);
+            addons33.setReadOnly(true);
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+            {
+                single.setReadOnly(true);
+                handlequantity.setReadOnly(true);
+                knobqquantity.setReadOnly(true);
+                thicknessfield.setReadOnly(true);
+                thickness.setReadOnly(true);
+            }
+
+        }
+
+    }
 }
 

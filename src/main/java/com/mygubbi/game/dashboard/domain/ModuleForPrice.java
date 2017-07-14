@@ -19,6 +19,7 @@ public class ModuleForPrice implements Cloneable {
     private String city;
     private boolean priceToBeChanged;
     private Module module = new Module();
+    private Product product=new Product();
 
     public Date getPriceDate() {
         return priceDate;
@@ -50,5 +51,24 @@ public class ModuleForPrice implements Cloneable {
 
     public void setModule(Module module) {
         this.module = module;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    @Override
+    public String toString() {
+        return "ModuleForPrice{" +
+                "city='" + city + '\'' +
+                ", priceDate=" + priceDate +
+                ", priceToBeChanged=" + priceToBeChanged +
+                ", module=" + module +
+                ", product=" + product +
+                '}';
     }
 }

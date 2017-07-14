@@ -3,11 +3,11 @@ package com.mygubbi.game.dashboard.view.proposals;
 
 import com.google.common.eventbus.Subscribe;
 import com.mygubbi.game.dashboard.ServerManager;
+import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
-import com.mygubbi.game.dashboard.domain.JsonPojo.ShutterDesign;
 import com.mygubbi.game.dashboard.domain.Module.ImportStatusType;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
@@ -42,7 +42,6 @@ import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 import java.io.*;
 import java.sql.Date;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.Product.*;
 import static java.lang.StrictMath.round;
@@ -73,6 +72,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private Button addModules;
     private Button closeBtn;
+    private Button addToproductLibraryBtn;
     private Button saveBtn;
     private Proposal proposal;
 
@@ -109,10 +109,48 @@ public class CustomizedProductDetailsWindow extends Window {
     double rateForManfLabourCost;
     double rateForAddonWOTax;
     double rateForAddonSourcePrice;
+    double rateForLconnectorPrice;
     private java.sql.Date priceDate;
     private String city;
 
+    private List<LookupItem> hingesList;
+    private List<LookupItem> glassList;
+    private List<LookupItem> handleselectionList;
+    private List<HandleMaster> handletitlelist;
+    private List<HandleMaster> knobtitlelist;
+    private List<HandleMaster> handlefinishlist;
+    private List<HandleMaster> knobfinishlist;
+    private List<HandleMaster> handlesizelist;
+    private ComboBox hingesSelection;
+    private ComboBox glassSelection;
+
+    private ComboBox handleType;
+    private ComboBox handleTypefield;
+    private ComboBox handle;
+    private ComboBox handlefield;
+    private ComboBox thickness;
+    private ComboBox thicknessfield;
+    private Image handleImage;
+    private Image shutterImage;
+    private ComboBox knobType;
+    private ComboBox knobTypefield;
+    private ComboBox knob;
+    private ComboBox knobfield;
+    private ComboBox knobthickness;
+    private ComboBox knobthicknessfield;
+    private ComboBox handleSelection;
+    private Image knobImage;
+    private TextField noOfLengths;
+
+    private List<HandleMaster> handlethickness;
+    private List<HandleMaster> Knobthickness;
+    private String basePath = ConfigHolder.getInstance().getImageBasePath();
+    private BeanContainer<String, HandleMaster> handlefinishBeanContainer;
+    private BeanContainer<String, HandleMaster> knobfinishBeanContainer;
+    private BeanContainer<String, HandleMaster> handlethicknessBeanContainer;
+
     public CustomizedProductDetailsWindow(Proposal proposal, Product product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
+        //LOG.info("Productaszasasc" +product);
         this.proposal = proposal;
         this.product = product;
         this.proposalVersion = proposalVersion;
@@ -129,6 +167,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         DashboardEventBus.register(this);
         this.binder.setItemDataSource(this.product);
+        //LOG.info("product" +product);
         setModal(true);
         setSizeFull();
         setResizable(false);
@@ -137,13 +176,13 @@ public class CustomizedProductDetailsWindow extends Window {
 
         VerticalLayout vLayout = new VerticalLayout();
         vLayout.setSizeFull();
-        vLayout.addStyleName("v-vertical-customized-product-details");
+        vLayout.addStyleName("vLayoutScroll");
+
         vLayout.setMargin(new MarginInfo(true, true, true, true));
         setContent(vLayout);
         Responsive.makeResponsive(this);
-
         HorizontalLayout horizontalLayout0 = new HorizontalLayout();
-        horizontalLayout0.setSizeFull();
+
         horizontalLayout0.addComponent(buildAddItemBasicFormLeft());
         horizontalLayout0.setSpacing(true);
         horizontalLayout0.addComponent(buildAddItemBasicFormLayoutMiddle());
@@ -151,16 +190,18 @@ public class CustomizedProductDetailsWindow extends Window {
         horizontalLayout0.addComponent(buildAddItemBasicFormLayoutRight());
         vLayout.addComponent(horizontalLayout0);
         horizontalLayout0.setHeightUndefined();
-        vLayout.setExpandRatio(horizontalLayout0, 0.35f);
+        horizontalLayout0.setSizeFull();
+        //vLayout.setSpacing(true);
+        vLayout.setExpandRatio(horizontalLayout0, 0.60f);
 
         HorizontalLayout horizontalLayout1 = new HorizontalLayout();
         horizontalLayout1.setSizeFull();
         horizontalLayout1.setStyleName("product-details-grid-tabs");
 
         tabSheet = new TabSheet();
+        //tabSheet.addStyleName("tabsheetstyle");
         tabSheet.setSizeFull();
         tabSheet.addTab(buildModulesGrid(), "Modules");
-        /*tabSheet.addTab(buildAddonsForm(), "Addons");*/
 
         fileAttachmentComponent = new FileAttachmentComponent(product, proposal.getProposalHeader().getFolderPath(),
                 attachmentData -> proposalDataProvider.addProductDoc(product.getId(), product.getProposalId(), attachmentData.getFileAttachment()),
@@ -178,7 +219,7 @@ public class CustomizedProductDetailsWindow extends Window {
         horizontalLayout1.addComponent(tabSheet);
         horizontalLayout1.setHeightUndefined();
         vLayout.addComponent(horizontalLayout1);
-        vLayout.setExpandRatio(horizontalLayout1, 0.57f);
+        vLayout.setExpandRatio(horizontalLayout1, 0.40f);
 
         Component footerLayOut = buildFooter();
         vLayout.addComponent(footerLayOut);
@@ -187,6 +228,7 @@ public class CustomizedProductDetailsWindow extends Window {
         handleState();
         updatePsftCosts();
         updateTotalAmount();
+        handlepackage();
 
     }
 
@@ -225,6 +267,10 @@ public class CustomizedProductDetailsWindow extends Window {
             String code = (String) valueChangeEvent.getProperty().getValue();
             String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
             product.setProductCategory(title);
+            if(productSelection.getValue().equals("Wardrobe"))
+            {
+                handleSelection.setValue("Normal");
+            }
         });
         if (productSelection.size() > 0)
         {
@@ -238,35 +284,85 @@ public class CustomizedProductDetailsWindow extends Window {
         itemTitleField.setNullRepresentation("");
         formLayoutLeft.addComponent(itemTitleField);
 
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            hingesList=proposalDataProvider.getHinges("hinges");
+            this.hingesSelection=getHingesFilledComboBox("Hinges",hingesList,null);
+            hingesSelection.setRequired(true);
+            binder.bind(hingesSelection,HINGES_TYPE);
+            this.hingesSelection.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, LookupItem>) this.hingesSelection.getContainerDataSource()).addAll(hingesList);
+            if(hingesSelection.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getHinge()) ? product.getHinge() : (String) hingesSelection.getItemIds().iterator().next();
+                hingesSelection.setValue(code);
+            }
+            this.hingesSelection.addValueChangeListener(this::hingeTypeChanged);
+            formLayoutLeft.addComponent(this.hingesSelection);
 
-        this.shutterDesign = getShutterDesignCombo();
-        shutterDesign.setRequired(true);
-        binder.bind(shutterDesign, SHUTTER_DESIGN_CODE);
-        if (shutterDesign.size() > 0) {
-            String code = StringUtils.isNotEmpty(product.getShutterDesignCode()) ? product.getShutterDesignCode() : (String) shutterDesign.getItemIds().iterator().next();
-            shutterDesign.setValue(code);
+            glassList=proposalDataProvider.getHinges("glass");
+            this.glassSelection=getHingesFilledComboBox("Glass",glassList,null);
+            glassSelection.setRequired(true);
+            binder.bind(glassSelection,GLASS_TYPE);
+            this.glassSelection.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, LookupItem>) this.glassSelection.getContainerDataSource()).addAll(glassList);
+            if(glassSelection.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getGlass()) ? product.getGlass() : (String) glassSelection.getItemIds().iterator().next();
+                glassSelection.setValue(code);
+            }
+            glassSelection.addValueChangeListener(this::refreshPrice);
+            formLayoutLeft.addComponent(this.glassSelection);
+
+            handleselectionList=proposalDataProvider.getHinges("handleselection");
+            this.handleSelection=getHandleSelectionFilledComboBox("Handle Selection",handleselectionList,null);
+            handleSelection.setRequired(true);
+            binder.bind(handleSelection,Product.HANDLETYPE_SELECTION);
+            ((BeanContainer<String, LookupItem>) this.handleSelection.getContainerDataSource()).addAll(handleselectionList);
+            if(handleSelection.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getHandleTypeSelection()) ? product.getHandleTypeSelection() : (String) handleSelection.getItemIds().iterator().next();
+                handleSelection.setValue(code);
+            }
+            handleSelection.addValueChangeListener(this::handleselectionchanged);
+            formLayoutLeft.addComponent(this.handleSelection);
+
+            noOfLengths =new TextField("# of Lengths");
+            binder.bind(noOfLengths,Product.NO_OF_LENGTHS);
+            noOfLengths.addValueChangeListener(this::refreshPrice);
+            formLayoutLeft.addComponent(noOfLengths);
+
+            knobtitlelist=proposalDataProvider.getHandleTitle("knob");
+           // LOG.info("knob value " +knobtitlelist.size());
+            this.knobType=getknobTypefilledComboBox("Knob Type",knobtitlelist,null);
+            knobType.setRequired(true);
+            binder.bind(knobType,KNOB_TYPE);
+            knobType.addValueChangeListener(this::knobtypechanged);
+            //LOG.info("knob type " +knobType.getValue().toString());
+            formLayoutLeft.addComponent(this.knobType);
+
+            //LOG.info("knob value " +knobType.getValue().toString());
+            knobfinishlist=proposalDataProvider.getHandleFinish(knobType.getValue().toString(),"knob");
+            //LOG.info("knob finish list" +knobfinishlist.size());
+            this.knob=getKnobFinishedComboBox("Knob Finish",knobfinishlist,null);
+            knob.setRequired(true);
+            binder.bind(knob,KNOB_Finish);
+            this.knob.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, HandleMaster>) this.knob.getContainerDataSource()).addAll(knobfinishlist);
+            if(knob.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getKnobFinish()) ? product.getKnobFinish() : (String) knob.getItemIds().iterator().next();
+                knob.setValue(code);
+            }
+            this.knob.addValueChangeListener(this::knobfinishchanged);
+            formLayoutLeft.addComponent(this.knob);
         }
-        formLayoutLeft.addComponent(this.shutterDesign);
 
         areaInSft = new TextField("Area in sft : ");
         areaInSft.setValue("0");
         areaInSft.setImmediate(true);
         areaInSft.setReadOnly(true);
-        formLayoutLeft.setSpacing(true);
         formLayoutLeft.addComponent(areaInSft);
-
-        costWithoutAccessories = new TextField("Cost w/o Accessories : ");
-        costWithoutAccessories.setValue("0");
-        costWithoutAccessories.setImmediate(true);
-        costWithoutAccessories.setReadOnly(true);
-        formLayoutLeft.setSpacing(true);
-        formLayoutLeft.addComponent(costWithoutAccessories);
-
-       /* manualSeq = (TextField) binder.buildAndBind("Manual Sequence", MANUAL_SEQ);
-        manualSeq.setRequired(true);
-        manualSeq.setNullSettingAllowed(false);
-        manualSeq.addValueChangeListener(this :: checkForDuplicateSeq);
-        formLayoutLeft.addComponent(manualSeq);*/
 
         return formLayoutLeft;
     }
@@ -280,7 +376,6 @@ public class CustomizedProductDetailsWindow extends Window {
     }
     private boolean checkForDuplicatefunction()
     {
-        LOG.info("@@@");
         String manualSeqStr = manualSeq.getValue();
         int manualSeq = Integer.parseInt(manualSeqStr);
         List <Product> getManualSeq =  proposalDataProvider.getProposalProductManualSeq(proposalHeader.getId(),proposalVersion.getVersion());
@@ -290,14 +385,12 @@ public class CustomizedProductDetailsWindow extends Window {
                 NotificationUtil.showNotification("Product Sequence already exists!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return false;
             }
-
         }
         return true;
     }
     public void updatePsftCosts() {
 
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
-
 
         Double totalCostWOAccessories = 0.0;
         Double totalSalesPrice =0.0;
@@ -351,6 +444,7 @@ public class CustomizedProductDetailsWindow extends Window {
             codeForAddonSourcePrice=addonsourceprice.getCode();
         }
 
+
         PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
         rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
         PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
@@ -364,11 +458,21 @@ public class CustomizedProductDetailsWindow extends Window {
         PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
         rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
 
+
         for (Module module : modules)
         {
-            LOG.info("module " +module);
+
+
             totalCostWOAccessories += module.getAmountWOAccessories();
-            totalModuleArea += module.getArea();
+            List<MGModule> mgModules=proposalDataProvider.checksqftCalculation(module.getMgCode());
+            for(MGModule m:mgModules)
+            {
+                if(m.getSqftCalculation().equals("Yes"))
+                {
+                    totalModuleArea += module.getArea();
+                }
+            }
+
             if (module.getMgCode().startsWith("MG-NS"))
             {
                 if(!module.getMgCode().equals("MG-NS-H-001"))
@@ -443,6 +547,7 @@ public class CustomizedProductDetailsWindow extends Window {
             manufacturingProfit = totalSalesPriceWOtax - manufacturingTotalSalesPrice;
             marginCompute=(manufacturingProfit / totalSalesPriceWOtax)*100;
         }
+
         product.setCostWoAccessories(round(totalCostWOAccessories));
         product.setProfit(round(manufacturingProfit));
         product.setMargin(round(marginCompute));
@@ -455,20 +560,19 @@ public class CustomizedProductDetailsWindow extends Window {
             areaInSft.setReadOnly(false);
             areaInSft.setValue(round(totalModuleArea) + " sft");
             areaInSft.setReadOnly(true);
-            costWithoutAccessories.setReadOnly(false);
+            /*costWithoutAccessories.setReadOnly(false);
             costWithoutAccessories.setValue(round(totalCostWOAccessories) + "");
-            costWithoutAccessories.setReadOnly(true);
+            costWithoutAccessories.setReadOnly(true);*/
         }
     }
 
     private void refreshPrice(Property.ValueChangeEvent valueChangeEvent) {
         List<Module> modules = product.getModules();
-
-
-
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
         Component component = valueChangeEvent == null ? null : ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
+        LOG.debug("Get component :" + component);
+
         this.noPricingErrors();
 
         for (Module module : modules) {
@@ -500,7 +604,189 @@ public class CustomizedProductDetailsWindow extends Window {
                     moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH).setValue(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
                 }
             }
+            else if(component == handleSelection)
+            {
+               // LOG.info("handle Selection");
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).getValue();
+                if(!(handleSelection.getValue().equals("Normal")))
+                {
+                 //   LOG.info("inside profile handle");
+                    NotificationUtil.showNotification("Current handle prices have been removed and replaced with profile handles",NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                    moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
+                    if(!module.getModuleCategory().contains("Loft"))
+                    {
+                        moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+                        moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+                    }
 
+                }else
+                {
+                    List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
+                    if (accDetailsforHandle.size() == 0) {
+                        module.setHandleQuantity(0);
+                    } else {
+                        for (AccessoryDetails a : accDetailsforHandle) {
+                   //         LOG.info("handle quantity " + a);
+                            module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                            LOG.debug("Module Handle QTY : " + module.getHandleQuantity());
+                        }
+                    }
+
+                    List<AccessoryDetails> accDetailsforKnob = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "K");
+                    if (accDetailsforKnob.size() == 0) {
+                       module.setKnobQuantity(0);
+                    } else {
+                        for (AccessoryDetails a : accDetailsforKnob) {
+                            module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                            LOG.debug("Module KNob QTY : " + module.getKnobQuantity());
+
+                        }
+                    }
+
+                    List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+                    for(HandleMaster h:handleMasters)
+                    {
+                        this.product.setHandleCode(h.getCode());
+                    }
+
+                    List<HandleMaster> knobMasters=proposalDataProvider.getHandles("Knob",knobType.getValue().toString(),knob.getValue().toString(),"0");
+                    for(HandleMaster h:knobMasters)
+                    {
+                        module.setKnobCode(h.getCode());
+                        this.product.setKnobCode(h.getCode());
+                    }
+                }
+            }
+            else if(component==glassSelection)
+            {
+                moduleContainer.getItem(module).getItemProperty(Module.GLASS_TYPE).setValue(glassSelection.getValue());
+            }
+            else if(component==handleType)
+            {
+                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_TYPE).setValue(handleType.getValue());
+                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+                for(HandleMaster h:handleMasters)
+                {
+                    this.product.setHandleCode(h.getCode());
+                }
+                NotificationUtil.showNotification("Please review the size for each module since the previous handle size may not be available for the new handle chosen",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+
+            }
+            else if(component==knobType)
+            {
+                moduleContainer.getItem(module).getItemProperty(Module.KNOB_TYPE).setValue(knobType.getValue());
+                moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Knob",knobType.getValue().toString(),knob.getValue().toString(),"0");
+                for(HandleMaster h:handleMasters)
+                {
+                    module.setKnobCode(h.getCode());
+                    this.product.setKnobCode(h.getCode());
+                }
+                NotificationUtil.showNotification("Please review the quantity for each module since the knob quantity may not be available for the new knob chosen",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }
+            else if(component==knob)
+            {
+              moduleContainer.getItem(module).getItemProperty(Module.KNOB_FINISH).setValue(knob.getValue());
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Knob",knobType.getValue().toString(),knob.getValue().toString(),"0");
+                for(HandleMaster h:handleMasters)
+                {
+                    module.setKnobCode(h.getCode());
+                    this.product.setKnobCode(h.getCode());
+                }
+            }
+            else if(component==handle)
+            {
+               moduleContainer.getItem(module).getItemProperty(Module.HANDLE_FINISH).setValue(handle.getValue());
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+                for(HandleMaster h:handleMasters)
+                {
+                    this.product.setHandleCode(h.getCode());
+                }
+            }
+            else if(component==thicknessfield)
+            {
+                LOG.debug("Product Json :" + product);
+
+                module.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
+                List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+                for(HandleMaster h:handleMasters)
+                {
+                    module.setHandleCode(h.getCode());
+                    this.product.setHandleCode(h.getCode());
+                }
+                this.product.setHandleThickness(thicknessfield.getValue().toString());
+
+                moduleContainer.getItem(module).getItemProperty(Module.HANDLE_THICKNESS).setValue(thicknessfield.getValue());
+               // LOG.info("handle_thickness " +thicknessfield.getValue());
+            }
+            else if ((component==noOfLengths))
+            {
+                product.setNoOfLengths(Double.parseDouble(String.valueOf(valueChangeEvent.getProperty().getValue())));
+                if(!(handleSelection.getValue().equals("Normal")))
+                {
+                 //   LOG.info("inside profile handle");
+                    NotificationUtil.showNotification("Current handle prices have been removed and replaced with profile handles",NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                    moduleContainer.getItem(module).getItemProperty(Module.HNADLE_SELECTION_TYPE).setValue(handleSelection.getValue());
+                    if(!module.getModuleCategory().contains("Loft"))
+                    {
+                        moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+                        moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+                    }
+
+                }else
+                {
+                    List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
+                    if (accDetailsforHandle.size() == 0) {
+                        module.setHandleQuantity(0);
+                    } else {
+                        for (AccessoryDetails a : accDetailsforHandle) {
+                           // LOG.info("handle quantity " + a);
+                            module.setHandleQuantity(Integer.valueOf(a.getQty()));
+                            //LOG.debug("Module Handle QTY : " + module.getHandleQuantity());
+                        }
+                    }
+
+                    List<AccessoryDetails> accDetailsforKnob = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "K");
+                    if (accDetailsforKnob.size() == 0) {
+                        module.setKnobQuantity(0);
+                    } else {
+                        for (AccessoryDetails a : accDetailsforKnob) {
+                            module.setKnobQuantity(Integer.valueOf(a.getQty()));
+                            //LOG.debug("Module KNob QTY : " + module.getKnobQuantity());
+
+                        }
+                    }
+                }
+            }
+            /*else if(component==noOfLengths)
+            {
+                if(!module.getModuleCategory().contains("Loft"))
+                {
+                    LOG.info("inside category");
+                    moduleContainer.getItem(module).getItemProperty(Module.HANDLE_QUANTITY).setValue(0);
+                    moduleContainer.getItem(module).getItemProperty(Module.KNOB_QUANTITY).setValue(0);
+                    LOG.info("this.modulehandlequantity" +module.getHandleQuantity());
+                    LOG.info("this.modulehandlequantity" +module.getKnobQuantity());
+                }
+                this.product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
+            }*/
+
+            //LOG.debug("Product Json outside component:" + product);
+
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+            {
+                if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+                {
+                    NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+            }
+
+
+           /* if(!("Gola Profile").equals(product.getHandleTypeSelection())) {
+                updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
+            }*/
             if (StringUtils.isNotEmpty(module.getMgCode()))
             {
                 String unitType = module.getUnitType();
@@ -528,6 +814,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         moduleForPrice.setCity(proposalHeader.getPcity());
 
                         moduleForPrice.setModule(module);
+                        moduleForPrice.setProduct(product);
                         ModulePrice modulePrice = proposalDataProvider.getModulePrice(moduleForPrice);
 
                         amount = round(modulePrice.getTotalCost());
@@ -549,6 +836,95 @@ public class CustomizedProductDetailsWindow extends Window {
         updateTotalAmount();
         updatePsftCosts();
     }
+
+    private void updateHandleAndKnobforModule(Module module, int oldHingeQty, int oldKnobQty)
+    {
+       // LOG.info("handleSelection.getValue() " + !(handleSelection.getValue().equals("Normal")));
+        List<AccessoryDetails> accDetailsforHandle = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "HL");
+        //LOG.info("accDetailsforHandle.size() == 0 " +(accDetailsforHandle.size() == 0));
+        if(!(handleSelection.getValue().equals("Normal")) || accDetailsforHandle.size() == 0)
+        {
+            module.setHandleQuantity(0);
+        }
+        else {
+            for (AccessoryDetails a : accDetailsforHandle) {
+                module.setHandleQuantity(Integer.valueOf(a.getQty()));
+            }
+        }
+
+        List<AccessoryDetails> accDetailsforKnob = proposalDataProvider.getAccessoryhandleDetails(module.getMgCode(), "K");
+        if (!(handleSelection.getValue().equals("Normal")) || accDetailsforKnob.size() == 0) {
+            module.setKnobQuantity(0);
+        } else {
+            for (AccessoryDetails a : accDetailsforKnob) {
+                module.setKnobQuantity(Integer.valueOf(a.getQty()));
+            }
+        }
+
+        Object handleTypeValue = handleType.getValue();
+        Object handleFinishValue = handle.getValue();
+        Object knobTypeValue = knobType.getValue();
+        Object knobFinishValue = knob.getValue();
+        List<HandleMaster> handlethickness=proposalDataProvider.getHandleThickness(String.valueOf(handleTypeValue), String.valueOf(handleFinishValue),"Handle");
+        for (HandleMaster handleMaster : handlethickness)
+        {
+            if (Integer.parseInt(handleMaster.getThickness()) == oldHingeQty)
+            {
+                module.setHandleThickness(String.valueOf(oldHingeQty));
+                product.setHandleThickness(String.valueOf(oldHingeQty));
+            }
+            else
+            {
+                int i = Integer.parseInt(handlethickness.get(0).getThickness());
+                int handleDistance = Math.abs(i - oldHingeQty);
+                int handleIdx = 0;
+                for(int c = 1; c < handlethickness.size(); c++){
+                    int cdistance = Math.abs(Integer.parseInt(handlethickness.get(c).getThickness()) - oldHingeQty);
+                    if(cdistance < handleDistance){
+                        handleIdx = c;
+                        handleDistance = cdistance;
+                    }
+                }
+                module.setHandleThickness(handlethickness.get(handleIdx).getThickness());
+                product.setHandleThickness(handlethickness.get(handleIdx).getThickness());
+                thicknessfield.setValue(product.getHandleThickness());
+            }
+        }
+
+      /*  LOG.debug("Handle changed code : " + module.getHandleType() + " :" + module.getHandleThickness() +  " : " + module.getHandleFinish() );
+        LOG.debug("Handle changed code : " + module.getKnobType() + " :" + "0" +  " : " + module.getKnobFinish() );*/
+
+
+        List<HandleMaster> knobThickness=proposalDataProvider.getHandleThickness(String.valueOf(knobTypeValue), String.valueOf(knobFinishValue),"Knob");
+        for (HandleMaster handleMaster : knobThickness)
+        {
+            if (Integer.parseInt(handleMaster.getThickness()) == oldKnobQty)
+            {
+                module.setKnobThickness(String.valueOf(oldHingeQty));
+            }
+            else
+            {
+                int knobDistance = Math.abs(Integer.parseInt(knobThickness.get(0).getThickness()) - oldHingeQty);
+                int knobIdx = 0;
+                for(int c = 1; c < knobThickness.size(); c++){
+                    int cdistance = Math.abs(Integer.parseInt(knobThickness.get(c).getThickness()) - oldHingeQty);
+                    if(cdistance < knobDistance){
+                        knobIdx = c;
+                        knobDistance = cdistance;
+                    }
+                }
+                module.setKnobThickness(handlethickness.get(knobIdx).getThickness());
+            }
+        }
+
+        List<HandleMaster> handleMasterDetails = proposalDataProvider.getHandles("Handle",String.valueOf(handleTypeValue),String.valueOf(handleFinishValue),module.getHandleThickness());
+        if (!(handleMasterDetails.size() == 0)) module.setHandleCode(handleMasterDetails.get(0).getCode());
+
+        List<HandleMaster> knobMasterDetails = proposalDataProvider.getHandles("Knob",String.valueOf(knobTypeValue),String.valueOf(knobFinishValue),"0");
+        if (!(knobMasterDetails.size() == 0))  module.setKnobCode(knobMasterDetails.get(0).getCode());
+
+    }
+
 
     private void showPricingErrors()
     {
@@ -610,9 +986,73 @@ public class CustomizedProductDetailsWindow extends Window {
             String code = StringUtils.isNotEmpty(product.getFinishCode()) ? product.getFinishCode() : (String) shutterFinishSelection.getItemIds().iterator().next();
             shutterFinishSelection.setValue(code);
         }
-        shutterFinishSelection.addValueChangeListener(this::refreshPrice);
+        shutterFinishSelection.addValueChangeListener(this::shutterfinishchanged);
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
+        this.shutterDesign = getShutterDesignCombo();
+        shutterDesign.setRequired(true);
+        binder.bind(shutterDesign, SHUTTER_DESIGN_CODE);
+        if (shutterDesign.size() > 0) {
+            String code = StringUtils.isNotEmpty(product.getShutterDesignCode()) ? product.getShutterDesignCode() : (String) shutterDesign.getItemIds().iterator().next();
+            shutterDesign.setValue(code);
+        }
+        shutterDesign.addValueChangeListener(this::shutterDesignchanged);
+        formLayoutRight.addComponent(this.shutterDesign);
+
+
+
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            handletitlelist=proposalDataProvider.getHandleTitle("Handle");
+            this.handleType=getHanldeTypefilledComboBox("Handle Type",handletitlelist,null);
+            handleType.setRequired(true);
+            binder.bind(handleType,HANDLE_TYPE);
+            handleType.addValueChangeListener(this::handletypechanged);
+           // LOG.info("handle value " +handleType.getValue().toString());
+            formLayoutRight.addComponent(this.handleType);
+
+            handlefinishlist=proposalDataProvider.getHandleFinish(handleType.getValue().toString(),"Handle");
+            this.handle=getHanldeFinishfilledComboBox("Handle Finish",handlefinishlist,null);
+            handle.setRequired(true);
+            binder.bind(handle,HANDLE_FINISH);
+            this.handle.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, HandleMaster>) this.handle.getContainerDataSource()).addAll(handlefinishlist);
+            if(handle.size()>0)
+            {
+                String code = StringUtils.isNotEmpty(product.getHandleFinish()) ? product.getHandleFinish() : (String) handle.getItemIds().iterator().next();
+                handle.setValue(code);
+            }
+            handle.addValueChangeListener(this::handlefinishchanged);
+            formLayoutRight.addComponent(this.handle);
+
+            handlesizelist=proposalDataProvider.getHandleThickness(handleType.getValue().toString(),handle.getValue().toString(),"Handle");
+            this.thicknessfield=gethandlethickness("Handle Size",handlesizelist,null);
+            thicknessfield.setRequired(true);
+            binder.bind(thicknessfield, HANDLE_THICKNESS);
+            this.thicknessfield.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, HandleMaster>) this.thicknessfield.getContainerDataSource()).addAll(handlesizelist);
+            if(thicknessfield.size()>0)
+            {
+                String code=StringUtils.isNotEmpty(product.getHandleThickness())? product.getHandleThickness() : (String) thicknessfield.getItemIds().iterator().next();
+                thicknessfield.setValue(code);
+            }
+            thicknessfield.addValueChangeListener(this::handledlethcknesschanged);
+
+            List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+            for(HandleMaster h:handleMasters)
+            {
+                this.product.setHandleCode(h.getCode());
+            }
+
+            List<HandleMaster> knobMasters=proposalDataProvider.getHandles("knob",knobType.getValue().toString(),knob.getValue().toString(),"0");
+            for(HandleMaster h:knobMasters)
+            {
+                this.product.setKnobCode(h.getCode());
+            }
+
+            formLayoutRight.addComponent(thicknessfield);
+
+        }
         totalAmount = new TextField("<h2>Total Amount:</h2>");
         totalAmount.setValue("0");
         totalAmount.setImmediate(true);
@@ -620,11 +1060,29 @@ public class CustomizedProductDetailsWindow extends Window {
         binder.bind(totalAmount, AMOUNT);
         totalAmount.setReadOnly(true);
         totalAmount.setCaptionAsHtml(true);
-
-        formLayoutRight.setSpacing(true);
         formLayoutRight.addComponent(totalAmount);
 
+        formLayoutRight.setSpacing(true);
         return formLayoutRight;
+    }
+
+    private ComboBox gethandlethickness(String caption,List<HandleMaster> list,Property.ValueChangeListener listener)
+    {
+        handlethicknessBeanContainer = new BeanContainer<>(HandleMaster.class);
+        handlethicknessBeanContainer.setBeanIdProperty(HandleMaster.THICKNESS);
+        handlethicknessBeanContainer.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(handlethicknessBeanContainer);
+        select.setItemCaptionPropertyId(HandleMaster.THICKNESS);
+
+        if(StringUtils.isNotEmpty(product.getHandleThickness()))
+        {
+            select.setValue(product.getHandleThickness());
+        }
+        return select;
     }
 
     private VerticalLayout buildAddItemBasicFormLayoutRight() {
@@ -637,7 +1095,8 @@ public class CustomizedProductDetailsWindow extends Window {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeFull();
 
-        if ((("admin").equals(role) || ("planning").equals(role)) && proposalVersion.getVersion().startsWith("2."))
+        //if ((("admin").equals(role) || ("planning").equals(role)) && proposalVersion.getVersion().startsWith("2."))
+            if ((("admin").equals(role) || ("planning").equals(role)) || ("designer").equals(role))
         {
             Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             soExtractButton.setCaptionAsHtml(true);
@@ -691,7 +1150,7 @@ public class CustomizedProductDetailsWindow extends Window {
         verticalLayout.addComponent(horizontalLayout);
         verticalLayout.addComponent(getQuoteUploadControl());
 
-        verticalLayout.setSpacing(true);
+        //verticalLayout.setSpacing(true);
 
         this.addModules = new Button("Add Modules");
         addModules.addClickListener(new Button.ClickListener() {
@@ -699,6 +1158,15 @@ public class CustomizedProductDetailsWindow extends Window {
             public void buttonClick(Button.ClickEvent clickEvent) {
 
                     if (!commitValues()) return;
+                if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                {
+                    if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+                    {
+                        NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                }
+
                     Module module = new Module();
                     product.setType(TYPES.CUSTOMIZED.name());
                     if (product.getSource() == null) {
@@ -723,16 +1191,98 @@ public class CustomizedProductDetailsWindow extends Window {
                     module.setCarcassCodeBasedOnUnitType(product);
                     module.setFinishTypeCode(product.getFinishTypeCode());
                     module.setFinishCode(product.getFinishCode());
-                    ModuleDetailsWindow.open(module, product, 0, proposalVersion, proposalHeader);
+                    if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                    {
+                        module.setHandleType(product.getHandleType());
+                        module.setHandleFinish(product.getHandleFinish());
+                        module.setKnobType(product.getKnobType());
+                        module.setKnobFinish(product.getKnobFinish());
+                        module.setHingeType(product.getHinge());
+                        module.setGlassType(product.getGlass());
+                       //module.setHandleTypeSelection(product.getHandleTypeSelection());
+                        module.setHandleThickness(product.getHandleThickness());
+                    }
+                    MDW.open(module, product, 0, proposalVersion, proposalHeader);
                 }
-
-
         });
 
         verticalLayout.addComponent(addModules);
+        verticalLayout.setSpacing(true);
+        FormLayout formLayout=new FormLayout();
+        formLayout.setSizeFull();
+        formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
+        String basePath = ConfigHolder.getInstance().getImageBasePath();
 
-//        formLayoutRight.addComponent(horizontalLayout);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            shutterImage=new Image();
+            if (StringUtils.isEmpty(product.getShutterDesignImage())) {
+                List<Finish> finishes=proposalDataProvider.getShutterCodes(shutterFinishSelection.getValue().toString());
+                for(Finish f:finishes)
+                {
+                    product.setShutterDesignImage(f.getImagePath());
+                    shutterImage.setSource(new ExternalResource(product.getShutterDesignImage()));
+                    //shutterImage.setSource(new ExternalResource("https://res.cloudinary.com/mygubbi/image/upload/v1494849877/handle/HANDLE01.jpg"));
+                }
+            }
+            else
+            {
+                shutterImage.setSource(new ExternalResource(product.getShutterDesignImage()));
+                //shutterImage.setSource(new ExternalResource("https://res.cloudinary.com/mygubbi/image/upload/v1494849877/handle/HANDLE01.jpg"));
+            }
+            shutterImage.setCaption("Shutter");
+            shutterImage.setHeight("69px");
+            shutterImage.setWidth("80px");
+            shutterImage.setImmediate(true);
+            verticalLayout.addComponent(shutterImage);
 
+            handleImage = new Image();
+            if (StringUtils.isEmpty(product.getHandleImage())) {
+                handlethickness = proposalDataProvider.getHandleImages("Handle", handleType.getValue().toString(), handle.getValue().toString());
+                for (HandleMaster h : handlethickness) {
+                   // LOG.info("handle master data for image " + h);
+                    product.setHandleImage(h.getImagePath());
+                    handleImage.setSource(new ExternalResource(h.getImagePath()));
+                }
+            } else {
+                handleImage.setSource(new ExternalResource(product.getHandleImage()));
+            }
+            handleImage.setCaption("Handle");
+            handleImage.setHeight("65px");
+            handleImage.setWidth("200px");
+            handleImage.setImmediate(true);
+
+            knobImage = new Image();
+            if (StringUtils.isEmpty(product.getKnobImage())) {
+                Knobthickness = proposalDataProvider.getHandleImages("knob", knobType.getValue().toString(), knob.getValue().toString());
+                for (HandleMaster h : Knobthickness) {
+                    //LOG.info("knob master data for image " + h);
+                    product.setKnobImage(h.getImagePath());
+                    knobImage.setSource(new ExternalResource(h.getImagePath()));
+                }
+            } else {
+                knobImage.setSource(new ExternalResource(product.getKnobImage()));
+            }
+            knobImage.setHeight("65px");
+            knobImage.setWidth("100px");
+            knobImage.setCaption("Knob");
+            knobImage.setImmediate(true);
+            //knobImage.setStyleName("knobimagestyle");
+            //verticalLayout.addComponent(knobImage);
+
+            HorizontalLayout horizontalLayout1=new HorizontalLayout();
+            horizontalLayout1.addComponent(handleImage);
+            horizontalLayout1.addComponent(knobImage);
+            horizontalLayout1.setSpacing(true);
+            verticalLayout.addComponent(horizontalLayout1);
+        }
+        /*costWithoutAccessories = new TextField("Cost w/o Accessories : ");
+        costWithoutAccessories.setValue("0");
+        costWithoutAccessories.setImmediate(true);
+        costWithoutAccessories.setReadOnly(true);
+        formLayout.setSpacing(true);
+        formLayout.addComponent(costWithoutAccessories);*/
+
+        verticalLayout.addComponent(formLayout);
         return verticalLayout;
     }
 
@@ -756,20 +1306,35 @@ public class CustomizedProductDetailsWindow extends Window {
         if (filteredShutterFinish.size() > 0)
             shutterFinishSelection.setValue(shutterFinishSelection.getItemIds().iterator().next());
 
-        List<Module> modules = product.getModules();
+        refreshPrice(valueChangeEvent);
+    }
+    private void shutterfinishchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        List<Finish> finishes=proposalDataProvider.getShutterCodes(shutterFinishSelection.getValue().toString());
+        this.shutterDesign.getContainerDataSource().removeAllItems();
+        ((BeanContainer<String, Finish>) this.shutterDesign.getContainerDataSource()).addAll(finishes);
 
-        for (Module module : modules) {
-            String text = (String) moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).getValue();
-            if (text.contains(Module.DEFAULT)) {
-                moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE_CODE).setValue(finishTypeSelection.getValue());
-                moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).setValue(getDefaultText(getSelectedItemText(finishTypeSelection)));
-            }
+        if (finishes.size() > 0)
+            shutterDesign.setValue(shutterDesign.getItemIds().iterator().next());
+        refreshPrice(valueChangeEvent);
+    }
+
+    private void shutterDesignchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+       // LOG.info("shutter design changed " +valueChangeEvent);
+        List<Finish> finishes=proposalDataProvider.getShutterImages(valueChangeEvent.getProperty().getValue().toString());
+        for(Finish f:finishes)
+        {
+            product.setShutterDesignImage(f.getImagePath());
+            //LOG.info("shutter image in design change " +f.getImagePath());
+            shutterImage.setSource(new ExternalResource(f.getImagePath()));
+            //shutterImage.setSource(new ExternalResource("https://res.cloudinary.com/mygubbi/image/upload/v1494849877/handle/HANDLE01.jpg"));
         }
     }
 
     private Component getQuoteUploadControl() {
         this.quoteUploadCtrl = new Upload("Import Quotation Sheet", (filename, mimeType) -> {
-            LOG.debug("Received upload - " + filename);
+            //LOG.debug("Received upload - " + filename);
 
             if (!commitValues()) return null;
 
@@ -802,7 +1367,9 @@ public class CustomizedProductDetailsWindow extends Window {
             String quoteFilePath = getUploadBasePath() + "/" + filename;
             product.setQuoteFilePath(quoteFilePath);
             product.setSource("KDMax");
+            product.setProductCategory(product.getProductCategoryCode());
             Product productResult = proposalDataProvider.loadAndUpdateProduct(product);
+            LOG.debug("Product Result :" + productResult.toString());
             product.setId(productResult.getId());
             product.setModules(productResult.getModules());
             product.setType(TYPES.CUSTOMIZED.name());
@@ -813,6 +1380,22 @@ public class CustomizedProductDetailsWindow extends Window {
             modulesGrid.clearSortOrder();
             modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(true);
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+            {
+                for (Module module : product.getModules()) {
+                    List<MGModule> hingesPresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                    List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), hingesSelection.getValue().toString());
+                    module.getHandlePack().clear();
+                    module.setHingePack(hingeMaps1);
+                    for (MGModule m : hingesPresent) {
+                        if (m.getHingeMandatory().equals("Yes")) {
+                            module.setHingePresent(m.getHingeMandatory());
+                            List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), hingesSelection.getValue().toString());
+                            module.setHingePack(hingeMaps);
+                        }
+                    }
+                }
+            }
             refreshPrice(null);
 
             if (product.hasImportErrorStatus()) {
@@ -869,7 +1452,6 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private void disableSave() {
-        //saveBtn.setEnabled(false);
     }
 
     public void checkAndEnableSave()
@@ -939,7 +1521,6 @@ public class CustomizedProductDetailsWindow extends Window {
 
             @Override
             public void onView(ClickableRenderer.RendererClickEvent rendererClickEvent) {
-               //addStyleName("copy-button");
                 if (!binder.isValid()) {
                     NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -951,8 +1532,14 @@ public class CustomizedProductDetailsWindow extends Window {
                     return;
                 }
 
+                if(("Yes").equals(proposalHeader.getPackageFlag()))
+                {
+                    Notification.show("Cannot copy modules");
+                    return;
+                }
+
                 Module m = (Module) rendererClickEvent.getItemId();
-                LOG.info("modules:"+ m);
+               // LOG.info("modules:"+ m);
                 List<Module> copy = product.getModules();
                 int length = (copy.size()) + 1;
                 Module copyModule = new Module();
@@ -1002,24 +1589,43 @@ public class CustomizedProductDetailsWindow extends Window {
                 copyModule.setAccessoryCost(m.getAccessoryCost());
                 copyModule.setLabourCost(m.getLabourCost());
                 copyModule.setAccessoryflag(m.getAccessoryflag());
+                copyModule.setHandleType(m.getHandleType());
+                copyModule.setHandleFinish(m.getHandleFinish());
+                copyModule.setHandlePresent(m.getHandlePresent());
+                copyModule.setHandleQuantity(m.getHandleQuantity());
+                copyModule.setHandleCode(m.getHandleCode());
+                copyModule.setHandlePack(m.getHandlePack());
+                copyModule.setHandleThickness(m.getHandleThickness());
+                copyModule.setKnobQuantity(m.getKnobQuantity());
+                copyModule.setKnobType(m.getKnobType());
+                copyModule.setKnobPresent(m.getKnobPresent());
+                copyModule.setKnobPack(m.getKnobPack());
+                copyModule.setKnobCode(m.getKnobCode());
+                copyModule.setKnobQuantity(m.getKnobQuantity());
+                copyModule.setKnobFinish(m.getKnobFinish());
+                copyModule.setKnobPresent(m.getKnobPresent());
+                copyModule.setHandleTypeSelection(m.getHandleTypeSelection());
+                copyModule.setHingePack(m.getHingePack());
+                copyModule.setGlassType(m.getGlassType());
+                copyModule.setHandleOverrideFlag(m.getHandleOverrideFlag());
 
                 DashboardEventBus.post(new ProposalEvent.ModuleUpdated(copyModule,false,false,product.getModules().size(),CustomizedProductDetailsWindow.this));
                 DashboardEventBus.unregister(this);
-
-                /*copy.add(copyModule);
-
-                moduleContainer.addAll(copy);
-                modulesGrid.setContainerDataSource(createGeneratedModulePropertyContainer());*/
-
                 modulesGrid.sort(Module.MODULE_SEQUENCE,SortDirection.ASCENDING);
-           /*     updateTotalAmount();
-                updatePsftCosts();
-                checkAndEnableSave();*/
             }
 
 
             @Override
-            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent) {
+            public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent)
+            {
+                if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                {
+                    if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
+                    {
+                        NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                }
 
                 if (!binder.isValid()) {
                     NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -1030,7 +1636,8 @@ public class CustomizedProductDetailsWindow extends Window {
                 if (!module.getImportStatus().equals(ImportStatusType.n.name())) {
                     //if (!unmappableModulePresent) {
                     int index = modulesGrid.getContainerDataSource().indexOfId(module);
-                    ModuleDetailsWindow.open(module, createProductFromUI(), index + 1,proposalVersion,proposalHeader);
+                    //ModuleDetailsWindow.open(module, createProductFromUI(), index + 1,proposalVersion,proposalHeader);
+                    MDW.open(module, createProductFromUI(), index + 1,proposalVersion,proposalHeader);
                 } else {
                     NotificationUtil.showNotification("Cannot proceed as this module is not setup.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
@@ -1101,7 +1708,22 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setWallCarcassCode((String) this.wallCarcassSelection.getValue());
         product.setBaseCarcassCode((String) this.baseCarcassSelection.getValue());
         product.setTitle(itemTitleField.getValue());
-        product.setModules(this.product.getModules());
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            product.setHandleType(handleType.getValue().toString());
+            product.setHandleFinish(handle.getValue().toString());
+            product.setHandleTypeSelection(handleSelection.getValue().toString());
+            product.setKnobType(knobType.getValue().toString());
+            product.setKnobFinish(knob.getValue().toString());
+            product.setHandleThickness(thicknessfield.getValue().toString());
+            product.setGlass(glassSelection.getValue().toString());
+            product.setHinge(hingesSelection.getValue().toString());
+            product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
+            product.setModules(this.product.getModules());
+            product.setHandleCode(this.product.getHandleCode());
+            product.setKnobCode(this.product.getKnobCode());
+
+        }
         return product;
     }
 
@@ -1257,7 +1879,9 @@ public class CustomizedProductDetailsWindow extends Window {
         HorizontalLayout footer = new HorizontalLayout();
         footer.setSizeFull();
         footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-        footer.setWidth(100.0f, Unit.PERCENTAGE);
+        //footer.addStyleName("footerstyle");
+        HorizontalLayout right = new HorizontalLayout();
+        right.setSpacing(true);
 
         String caption = null;
         boolean modulesInitiallyMapped = this.modulesCopy.stream().allMatch(module -> StringUtils.isNotEmpty(module.getMgCode()));
@@ -1271,8 +1895,109 @@ public class CustomizedProductDetailsWindow extends Window {
             caption = CANCEL;
         }
 
+        saveBtn = new Button("Save");
+        saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        saveBtn.addClickListener(event -> {
+            try {
+                try {
+                    //LOG.info("on save "+ product.getShutterDesignImage());
+                    product.setCloseButtonFlag("No");
+                    binder.commit();
+                } catch (FieldGroup.CommitException e) {
+                    NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+                LOG.debug("cwa :" + product.getCostWoAccessories());
+
+                if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                {
+                    List<Module> modules = this.product.getModules();
+                    for (Module module : modules) {
+                        if (handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0")) {
+                            NotificationUtil.showNotification("No of Lengths should not be Zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            return;
+                        }
+
+                        if (("Normal").equals(product.getHandleTypeSelection())) {
+                            if (("Yes").equals(module.getAccessoryPackDefault())) {
+                                if (module.getAccessoryPacks().size() == 0) {
+                                    NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                    return;
+                                }
+                            }
+                            if (("Yes").equals(module.getHandlePresent())) {
+                                if (module.getHandleQuantity() == 0) {
+                                    NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                    return;
+                                }
+                            }
+                            if (("Yes").equals(module.getKnobPresent())) {
+                                if (module.getKnobQuantity() == 0) {
+                                    NotificationUtil.showNotification("Please select appropriate quantity for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                    return;
+                                }
+                            }
+                            if (("Yes").equals(module.getHandlePresent())) {
+                                if (module.getHandleThickness() == null) {
+                                    NotificationUtil.showNotification("Please select appropriate handle size for appropriate modules", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                    return;
+                                }
+                            }
+                        }
+
+                    }
+                    }
+
+
+
+                List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
+                proposal.setProducts(getAllVersionProducts);
+
+                if (product.getSeq() == 0) {
+                    int size = getAllVersionProducts.size();
+                    size++;
+                    product.setSeq(size);
+                }
+                //LOG.info("product in save btn" +product);
+                boolean success = proposalDataProvider.updateProduct(product);
+
+                if (success) {
+                    double amountWoDiscount = 0;
+                    double amountWoAccessories = 0;
+                    double discountPercentage = this.proposalVersion.getDiscountPercentage();
+                    List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(), this.proposalVersion.getVersion());
+                    for (Product product : versionProducts) {
+                        LOG.debug("Product module :" + product.getAmount());
+                        amountWoDiscount += product.getAmount();
+                        amountWoAccessories += product.getCostWoAccessories();
+                    }
+                    this.proposalVersion.setAmount(amountWoDiscount);
+                    double discountAmount = amountWoAccessories * (discountPercentage / 100);
+                    this.proposalVersion.setDiscountAmount(discountAmount);
+                    this.proposalVersion.setFinalAmount(amountWoDiscount - discountAmount);
+
+                    proposalDataProvider.updateVersion(this.proposalVersion);
+                    NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
+                    DashboardEventBus.unregister(this);
+                    close();
+                } else {
+                    NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                }
+            } catch(Exception e){
+                Notification.show("Error while saving Item details",
+                        Type.ERROR_MESSAGE);
+            }
+
+        });
+        saveBtn.focus();
+        saveBtn.setVisible(true);
+        updatePsftCosts();
+        right.addComponent(saveBtn);
+        right.setComponentAlignment(saveBtn, Alignment.MIDDLE_RIGHT);
 
         closeBtn = new Button(caption);
+        closeBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
         closeBtn.addClickListener((Button.ClickListener) clickEvent -> {
 
                 ConfirmDialog.show(UI.getCurrent(), "",
@@ -1297,133 +2022,30 @@ public class CustomizedProductDetailsWindow extends Window {
 
         });
         closeBtn.focus();
-        footer.addComponent(closeBtn);
-        footer.setSpacing(true);
 
-        saveBtn = new Button("Save");
-        saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        saveBtn.addClickListener(event -> {
-            try {
-               /* if ("0".equals(manualSeq.getValue())) {
-                    NotificationUtil.showNotification("Product Sequence cannot be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return;
-                } else {*/
+       // LOG.info("product.getCloseButtonFlag() " +product.getCloseButtonFlag());
+        if (!(Objects.equals(product.getType(), TYPES.PRODUCT_LIBRARY.name()) && product.getCloseButtonFlag()=="Yes")) {
+            right.addComponent(closeBtn);
+            right.setComponentAlignment(closeBtn, Alignment.MIDDLE_RIGHT);
+        }
 
-                    try {
-                        binder.commit();
-                    } catch (FieldGroup.CommitException e) {
-                        NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        return;
-                    }
-                    LOG.debug("cwa :" + product.getCostWoAccessories());
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
-                    List<Module> modules = this.product.getModules();
-                    for (Module module : modules)
-                    {
-                        if (("Yes").equals(module.getAccessoryPackDefault()))
-                        {
-                            if (module.getAccessoryPacks().size() == 0)
-                            {
-                                NotificationUtil.showNotification("Ensure accessory packs are chosen for appropriate modules",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                                return;
-                            }
-                        }
-                    }
-
-                    List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
-                    proposal.setProducts(getAllVersionProducts);
-
-                    if (product.getSeq() == 0) {
-                        int size = getAllVersionProducts.size();
-                        size++;
-                        product.setSeq(size);
-                    }
-
-                    boolean success = proposalDataProvider.updateProduct(product);
-
-                    if (success) {
-                        double amountWoDiscount = 0;
-                        double amountWoAccessories = 0;
-                        double discountPercentage = this.proposalVersion.getDiscountPercentage();
-                        List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(), this.proposalVersion.getVersion());
-                        for (Product product : versionProducts) {
-                            LOG.debug("Product module :" + product.getAmount());
-
-                            amountWoDiscount += product.getAmount();
-                            amountWoAccessories += product.getCostWoAccessories();
-                        }
-                        this.proposalVersion.setAmount(amountWoDiscount);
-                        double discountAmount = amountWoAccessories * (discountPercentage / 100);
-                        this.proposalVersion.setDiscountAmount(discountAmount);
-                        this.proposalVersion.setFinalAmount(amountWoDiscount - discountAmount);
-
-                        LOG.debug("Proposal Version inside module :" + this.proposalVersion.toString());
-                        proposalDataProvider.updateVersion(this.proposalVersion);
-                        NotificationUtil.showNotification("Product details saved successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                        DashboardEventBus.post(new ProposalEvent.ProductCreatedOrUpdatedEvent(product));
-                        DashboardEventBus.unregister(this);
-                        close();
-                    } else {
-                        NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    }
-                } catch(Exception e){
-                    Notification.show("Error while saving Item details",
-                            Type.ERROR_MESSAGE);
-                }
-
-        });
-        saveBtn.focus();
-        saveBtn.setVisible(true);
-        updatePsftCosts();
-        footer.addComponent(saveBtn);
-        footer.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
-
-
-/*
-        if (("admin").equals(role) && versionNew.startsWith("2."))
+        if (("admin").equals(role))
         {
-            Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            soExtractButton.setCaptionAsHtml(true);
-            soExtractButton.setIcon(FontAwesome.DOWNLOAD);
-            soExtractButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-            soExtractButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-            soExtractButton.addStyleName(ValoTheme.BUTTON_SMALL);
-            soExtractButton.setWidth("120px");
+            addToproductLibraryBtn=new Button("Add To Product Library");
+            addToproductLibraryBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
+            right.addComponent(addToproductLibraryBtn);
+            right.setComponentAlignment(addToproductLibraryBtn, Alignment.MIDDLE_RIGHT);
+            addToproductLibraryBtn.addClickListener(clickEvent -> {
+               // LOG.info("product in customized product " +product);
+                close();
+                ProductLibraryInfo.open(product,proposal);
+            });
+        }
 
-            FileDownloader soExtractDownloader = this.getSOExtractFileDownloader();
-            soExtractDownloader.extend(soExtractButton);
-            footer.addComponent(soExtractButton);
-            footer.setComponentAlignment(soExtractButton, Alignment.TOP_RIGHT);
-
-            Button jobcardButton = new Button("Job Card&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            jobcardButton.setCaptionAsHtml(true);
-            jobcardButton.setIcon(FontAwesome.DOWNLOAD);
-            jobcardButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-            jobcardButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-            jobcardButton.addStyleName(ValoTheme.BUTTON_SMALL);
-            jobcardButton.setWidth("100px");
-
-            StreamResource jobcardResource = createJobcardResource();
-            FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
-            jobcardDownloader.extend(jobcardButton);
-            footer.addComponent(jobcardButton);
-            footer.setComponentAlignment(jobcardButton, Alignment.TOP_RIGHT);
-
-            Button marginButton = new Button("Margin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            marginButton.setCaptionAsHtml(true);
-            marginButton.setIcon(FontAwesome.DOWNLOAD);
-            marginButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-            marginButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-            marginButton.addStyleName(ValoTheme.BUTTON_SMALL);
-            soExtractButton.setWidth("100px");
-
-
-            StreamResource marginSheetResource = createMarginSheetResource();
-            FileDownloader marginSheetDownloader = new FileDownloader(marginSheetResource);
-            marginSheetDownloader.extend(marginButton);
-            footer.addComponent(marginButton);
-            footer.setComponentAlignment(marginButton, Alignment.TOP_RIGHT);
-        }*/
+        footer.addComponent(right);
+        footer.setComponentAlignment(right, Alignment.MIDDLE_CENTER);
         return footer;
     }
 
@@ -1540,9 +2162,6 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     public static void closeWindow() {
-/*
-        DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
-*/
         closeWindow();
     }
 
@@ -1560,6 +2179,113 @@ public class CustomizedProductDetailsWindow extends Window {
         select.setItemCaptionPropertyId(Finish.TITLE);
         if (listener != null) select.addValueChangeListener(listener);
         if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
+    }
+
+    private ComboBox getHingesFilledComboBox(String caption,List<LookupItem> list,Property.ValueChangeListener listener)
+    {
+        final BeanContainer<String, LookupItem> container = new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty(LookupItem.TITLE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(LookupItem.TITLE);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
+    }
+    private ComboBox getHandleSelectionFilledComboBox(String caption,List<LookupItem> list,Property.ValueChangeListener listener)
+    {
+        final BeanContainer<String, LookupItem> container = new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty(LookupItem.TITLE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(LookupItem.TITLE);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
+    }
+    private ComboBox getHanldeTypefilledComboBox(String caption,List<HandleMaster> list,Property.ValueChangeListener listener)
+    {
+        final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
+        container.setBeanIdProperty(HandleMaster.TITLE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(HandleMaster.TITLE);
+        if (StringUtils.isNotEmpty(product.getHandleType())) {
+            select.setValue(product.getHandleType());
+        } else {
+            Object next = select.getItemIds().iterator().next();
+            select.setValue(next);
+            product.setHandleType(next.toString());
+        }
+        return select;
+
+    }
+
+    private ComboBox getknobTypefilledComboBox(String caption,List<HandleMaster> list,Property.ValueChangeListener listener)
+    {
+        final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
+        container.setBeanIdProperty(HandleMaster.TITLE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(HandleMaster.TITLE);
+        if (StringUtils.isNotEmpty(product.getKnobType())) {
+            select.setValue(product.getKnobType());
+        } else {
+            Object next = select.getItemIds().iterator().next();
+            select.setValue(next);
+            product.setKnobType(next.toString());
+        }
+        return select;
+    }
+
+    private ComboBox getHanldeFinishfilledComboBox(String caption,List<HandleMaster> list,Property.ValueChangeListener listener)
+    {
+       // LOG.info("List in filled combo " +list.size());
+        handlefinishBeanContainer = new BeanContainer<>(HandleMaster.class);
+        handlefinishBeanContainer.setBeanIdProperty(HandleMaster.FINISH);
+        handlefinishBeanContainer.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(handlefinishBeanContainer);
+        select.setItemCaptionPropertyId(HandleMaster.FINISH);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (handlefinishBeanContainer.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
+    }
+
+    private ComboBox getKnobFinishedComboBox(String caption,List<HandleMaster> list,Property.ValueChangeListener listener )
+    {
+        //LOG.info("List in filled combo " +list.size());
+        knobfinishBeanContainer = new BeanContainer<>(HandleMaster.class);
+        knobfinishBeanContainer.setBeanIdProperty(HandleMaster.FINISH);
+        knobfinishBeanContainer.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(knobfinishBeanContainer);
+        select.setItemCaptionPropertyId(HandleMaster.FINISH);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (knobfinishBeanContainer.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
     }
 
@@ -1585,7 +2311,7 @@ public class CustomizedProductDetailsWindow extends Window {
         return getSimpleItemFilledCombo(caption, list, listener);
     }
 
-    private ComboBox getShutterDesignCombo() {
+    /*private ComboBox getShutterDesignCombo() {
         List<ShutterDesign> list = proposalDataProvider.getLookupItems(ProposalDataProvider.SHUTTER_DESIGN_LOOKUP)
                 .stream().map(ShutterDesign::new).collect(Collectors.toList());
         final BeanContainer<String, ShutterDesign> container = new BeanContainer<>(ShutterDesign.class);
@@ -1601,27 +2327,61 @@ public class CustomizedProductDetailsWindow extends Window {
         select.setItemCaptionPropertyId(ShutterDesign.TITLE);
         if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
+    }*/
+    private ComboBox getShutterDesignCombo()
+    {
+        List<Finish> finishes=proposalDataProvider.getShutterCodes(shutterFinishSelection.getValue().toString());
+       // LOG.info("Finish size " +finishes.toString());
+        final BeanContainer<String, Finish> container = new BeanContainer<>(Finish.class);
+        container.setBeanIdProperty(Finish.SHUTTER_CODE);//value changed
+        container.addAll(finishes);
+        ComboBox select = new ComboBox("Shutter Design");
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        //select.setStyleName("designs-combo");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(Finish.SHUTTER_CODE);
+        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
+
     }
 
     private void updateTotalAmount() {
         double amount = 0;
-
-
+        double lConnectorPrice = 0;
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
+
+        PriceMaster lConnectorRate=proposalDataProvider.getHardwareRateDetails("H074",this.priceDate,this.city);
+        rateForLconnectorPrice=lConnectorRate.getPrice();
+
+        int drawerModuleCount = 0;
         for (Module module : modules) {
             amount += module.getAmount();
 
         }
+
 
         List<AddonProduct> addons = (List<AddonProduct>) binder.getItemDataSource().getItemProperty("addons").getValue();
         for (AddonProduct addon : addons) {
             amount += addon.getAmount();
         }
 
+        lConnectorPrice = product.getNoOfLengths() * rateForLconnectorPrice;
+
+        LOG.debug("Handle Type Selection ");
+
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            if (handleSelection.getValue().toString().equals("Gola Profile"))
+            {
+                amount += lConnectorPrice;
+                this.product.setlConnectorPrice(lConnectorPrice);
+            }
+        }
+
         totalAmount.setReadOnly(false);
         totalAmount.setValue(amount + "");
         totalAmount.setReadOnly(true);
-
     }
 
     @Subscribe
@@ -1639,7 +2399,7 @@ public class CustomizedProductDetailsWindow extends Window {
             {
                 modules.remove(module);
             }
-            LOG.info("modseq"+module.getModuleSequence());
+           // LOG.info("modseq"+module.getModuleSequence());
 
             modules.add(module);
             moduleContainer.removeAllItems();
@@ -1689,14 +2449,17 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void loadNextModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex);
-        ModuleDetailsWindow.open(module, createProductFromUI(),  currentModuleIndex + 1,proposalVersion,proposalHeader);
+        //ModuleDetailsWindow.open(module, createProductFromUI(),  currentModuleIndex + 1,proposalVersion,proposalHeader);
+        MDW.open(module, createProductFromUI(),  currentModuleIndex + 1,proposalVersion,proposalHeader);
     }
 
     private void loadPreviousModule(int currentModuleIndex) {
         Module module = (Module) modulesGrid.getContainerDataSource().getIdByIndex(currentModuleIndex-2);
         int newModuleIndex = currentModuleIndex - 1;
-        ModuleDetailsWindow.open(module, createProductFromUI(), newModuleIndex,proposalVersion,proposalHeader);
+        //ModuleDetailsWindow.open(module, createProductFromUI(), newModuleIndex,proposalVersion,proposalHeader);
+        MDW.open(module, createProductFromUI(), newModuleIndex,proposalVersion,proposalHeader);
     }
+
 
     @Subscribe
     public void addonUpdated(final ProposalEvent.AddonUpdated event) {
@@ -1712,7 +2475,6 @@ public class CustomizedProductDetailsWindow extends Window {
 
     public static void open(Proposal proposal, Product product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         CustomizedProductDetailsWindow w = new CustomizedProductDetailsWindow(proposal, product, proposalVersion, proposalHeader);
-
         UI.getCurrent().addWindow(w);
         w.focus();
 
@@ -1721,7 +2483,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private void handleState() {
 
             ProposalVersion.ProposalStage proposalStage = ProposalVersion.ProposalStage.valueOf(proposalVersion.getInternalStatus());
-            LOG.debug("Proposal Stage :" + proposalStage);
+            //LOG.debug("Proposal Stage :" + proposalStage);
             switch (proposalStage) {
                 case Draft:
                     break;
@@ -1762,8 +2524,206 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.setEnabled(false);
         fileAttachmentComponent.setReadOnly(true);
         addModules.setEnabled(false);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            handleType.setReadOnly(true);
+            handle.setReadOnly(true);
+            knobType.setReadOnly(true);
+            knob.setReadOnly(true);
+            hingesSelection.setReadOnly(true);
+            glassSelection.setReadOnly(true);
+            handleSelection.setReadOnly(true);
+            noOfLengths.setReadOnly(true);
+            thicknessfield.setReadOnly(true);
+        }
+    }
+    private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        String prevCode = handle.getValue().toString();
+        String title=valueChangeEvent.getProperty().getValue().toString();
+        handlefinishlist=proposalDataProvider.getHandleFinish(title,"Handle");
+        this.handlefinishBeanContainer.removeAllItems();
+        this.handlefinishBeanContainer.addAll(handlefinishlist);
+
+        List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+        for(HandleMaster h:handleMasters)
+        {
+            this.product.setHandleCode(h.getCode());
+        }
+       // LOG.info("handle code in handle type changed " +product.getHandleCode());
+        Object next=this.handle.getItemIds().iterator().next();
+        handle.setValue(next);
+
+        if (next.equals(prevCode))
+        {
+            this.handlefinishchanged(null);
+        }
+
+        List<Module> modules = product.getModules();
+        for (Module module : modules) {
+            int oldhandleThickness = 0;
+            int oldKnobThickness = 0;
+           // LOG.info("module.getHandleThickness() " +module.getHandleThickness());
+            if (!(module.getHandleThickness() == null))
+            {
+                oldhandleThickness = Integer.parseInt(module.getHandleThickness());
+            }
+
+            if (!(module.getKnobThickness() == null))
+            {
+                oldKnobThickness = Integer.parseInt(module.getKnobThickness());
+            }
+            updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
+        }
+
+        refreshPrice(valueChangeEvent);
+    }
+    private void knobtypechanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+       // LOG.info("knob type changed" +valueChangeEvent.getProperty().getValue().toString());
+        //String prevCode=product.getKnobFinish();
+        String prevCode=knob.getValue().toString();
+        String title=valueChangeEvent.getProperty().getValue().toString();
+        knobfinishlist=proposalDataProvider.getHandleFinish(title,"knob");
+        this.knobfinishBeanContainer.removeAllItems();
+        this.knobfinishBeanContainer.addAll(knobfinishlist);
+        Object next=this.knob.getItemIds().iterator().next();
+        knob.setValue(next);
+
+        if (next.equals(prevCode)) {
+            this.knobfinishchanged(null);
+        }
+
+        List<Module> modules = product.getModules();
+        for (Module module : modules) {
+            int oldhandleThickness = 0;
+            int oldKnobThickness = 0;
+         //   LOG.info("module.getHandleThickness() " +module.getHandleThickness());
+            if (!(module.getHandleThickness() == null))
+            {
+                oldhandleThickness = Integer.parseInt(module.getHandleThickness());
+            }
+
+            if (!(module.getKnobThickness() == null))
+            {
+                oldKnobThickness = Integer.parseInt(module.getKnobThickness());
+            }
+            updateHandleAndKnobforModule(module, oldhandleThickness, oldKnobThickness);
+        }
+
+        refreshPrice(valueChangeEvent);
     }
 
+    private void hingeTypeChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        String hingeTypeValueChange = (String) valueChangeEvent.getProperty().getValue();
+            for (Module module : product.getModules()) {
+                if (product.getModules() == null || hingeTypeValueChange == null) return;
+                List<MGModule> hingesPresent = proposalDataProvider.retrieveModuleDetails(module.getMgCode());
+                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), hingeTypeValueChange);
+                module.getHandlePack().clear();
+                module.setHingePack(hingeMaps1);
+                for (MGModule m : hingesPresent) {
+                    if (m.getHingeMandatory().equals("Yes")) {
+                        module.setHingePresent(m.getHingeMandatory());
+                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), hingeTypeValueChange);
+                        module.setHingePack(hingeMaps);
+                    }
+                }
+            }
+            refreshPrice(null);
 
+    }
+    private void  handlefinishchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        String title=handle.getValue().toString();
+        handlethickness=proposalDataProvider.getHandleImages("Handle",handleType.getValue().toString(),title);
+        //LOG.info("size " +handlethickness.size());
+        for(HandleMaster h: handlethickness)
+        {
+           // LOG.info("handle image " +h);
+            product.setHandleImage(h.getImagePath());
+            handleImage.setSource(new ExternalResource(h.getImagePath()));
+        }
 
+        handlesizelist=proposalDataProvider.getHandleThickness(handleType.getValue().toString(),handle.getValue().toString(),"Handle");
+        this.handlethicknessBeanContainer.removeAllItems();
+        this.handlethicknessBeanContainer.addAll(handlesizelist);
+
+        /*Object next=this.thicknessfield.getItemIds().iterator().next();
+        thicknessfield.setValue(next);*/
+
+        refreshPrice(valueChangeEvent);
+    }
+    private void handledlethcknesschanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        this.product.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
+        List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
+        //LOG.info("handle size" +handleMasters.size());
+        for(HandleMaster h:handleMasters)
+        {
+            this.product.setHandleCode(h.getCode());
+        }
+        refreshPrice(valueChangeEvent);
+    }
+
+    private void knobfinishchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        //String title=valueChangeEvent.getProperty().getValue().toString();
+        String title=knob.getValue().toString();
+        Knobthickness=proposalDataProvider.getHandleImages("knob",knobType.getValue().toString(),title);
+        for(HandleMaster h: Knobthickness)
+        {
+            //LOG.info("knob image " +h);
+            product.setKnobImage(h.getImagePath());
+            knobImage.setSource(new ExternalResource(h.getImagePath()));
+        }
+        refreshPrice(valueChangeEvent);
+    }
+    private void handlepackage()
+    {
+        if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+        {
+            itemTitleField.setReadOnly(true);
+            productSelection.setReadOnly(true);
+            roomText.setReadOnly(true);
+            shutterDesign.setReadOnly(true);
+            baseCarcassSelection.setReadOnly(true);
+            wallCarcassSelection.setReadOnly(true);
+            finishTypeSelection.setReadOnly(true);
+            shutterFinishSelection.setReadOnly(true);
+            quoteUploadCtrl.setEnabled(false);
+            closeBtn.setCaption(CLOSE);
+            fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
+            fileAttachmentComponent.setReadOnly(true);
+            addModules.setEnabled(false);
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+                handleType.setReadOnly(true);
+                handle.setReadOnly(true);
+                knobType.setReadOnly(true);
+                knob.setReadOnly(true);
+                hingesSelection.setReadOnly(true);
+                glassSelection.setReadOnly(true);
+                handleSelection.setReadOnly(true);
+                noOfLengths.setReadOnly(true);
+                thicknessfield.setReadOnly(true);
+            }
+        }
+    }
+    private void handleselectionchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        if(!handleSelection.getValue().equals("Gola Profile"))
+        {
+            noOfLengths.setValue(String.valueOf(0));
+            product.setNoOfLengths(Double.valueOf(noOfLengths.getValue()));
+        }
+        if(!handleSelection.getValue().equals("Normal"))
+        {
+            if(productSelection.getValue().equals("Wardrobe")) {
+                NotificationUtil.showNotification("Select Only Normal handle for kitchen", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                handleSelection.setValue("Normal");
+            }
+        }
+        product.setHandleTypeSelection(valueChangeEvent.getProperty().getValue().toString());
+        refreshPrice(valueChangeEvent);
+    }
 }

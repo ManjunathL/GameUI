@@ -1,5 +1,8 @@
 package com.mygubbi.game.dashboard.domain;
 
+import com.mygubbi.game.dashboard.view.FileAttachmentsHolder;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,7 +10,7 @@ import java.util.List;
 /**
  * Created by user on 10-Apr-17.
  */
-public class ProductLibrary
+public class ProductLibrary implements FileAttachmentsHolder
 {
     public enum TYPES {CUSTOMIZED, CATALOGUE;};
 
@@ -15,8 +18,6 @@ public class ProductLibrary
     public static final String FROM_VERSION = "fromVersion";
     public static final String ID = "id";
     public static final String SEQ = "seq";
-
-
     public static final String MANUAL_SEQ = "manualSeq";
     public static final String TITLE = "title";
     public static final String PRODUCT_CATEGORY = "productCategory";
@@ -49,6 +50,29 @@ public class ProductLibrary
     public static final String SOURCE = "source";
     public static final String SUB_CATEGORY="subCategory";
     public static final String PRODUCT_DESCRIPTION="ProductDescription";
+    public static final String IMAGE_PATH="imageurl";
+    public static final String PRODUCT_TITLE="productTitle";
+    public static final String COLLECTION="collection";
+    public static final String HINGES_TYPE="hinge";
+    public static final String GLASS_TYPE="glass";
+    public static final String HANDLE_TYPE="handleType";
+    public static final String HANDLE_THICKNESS="handleThickness";
+    public static final String KNOB_TYPE="knobType";
+    public static final String KNOB_THICKNESS="knobThickness";
+    public static final String HANDLE_FINISH="handleFinish";
+    public static final String KNOB_Finish="knobFinish";
+    public static final String HANDLE_IMAGE="handleImage";
+    public static final String KNOB_IMAGE="knobImage";
+    public static final String SIZE="size";
+    public static final String PRODUCT_LOCATION = "productLocation";
+    public static final String CLOSE_BUTTON_FLAG = "closebuttonFlag";
+    public static final String HANDLE_TYPE_SELECTION = "handleTypeSelection";
+    public static final String SHUTTER_IMAGE_URL = "shutterImageUrl";
+    public static final String HANDLE_CODE="handleCode";
+    public static final String KNOB_CODE="knobCode";
+    public static final String LCONNECTOR_PRICE="lConnectorPrice";
+    public static final String NO_OF_LENGTHS="noOfLengths";
+    public static final String DESIGNER="designer";
 
 
     private int id;
@@ -68,6 +92,7 @@ public class ProductLibrary
     private String source;
     private String ProductDescription;
     private String subCategory;
+    private String designer;
     private String baseCarcass;
     private String baseCarcassCode;
     private String wallCarcass;
@@ -90,6 +115,30 @@ public class ProductLibrary
     private double margin;
     private double amountWoTax;
     private double manufactureAmount;
+    private String imageurl;
+    private String productTitle;
+    private String collection;
+    private String hinge;
+    private String glass;
+    private String handleType;
+    private String handleFinish;
+    private String handleThickness;
+    private String knobType;
+    private String knobFinish;
+    private int knobThickness;
+    private String handleImage;
+    private String knobImage;
+    private String size;
+    private String productLocation;
+    private String closebuttonFlag;
+    private String handleTypeSelection;
+    private String shutterImageUrl;
+    private String handleCode;
+    private String knobCode;
+    private double lConnectorPrice;
+    private double noOfLengths;
+
+
     private List<Module> modules = new ArrayList<>();
 
     public double getCostWoAccessories() {
@@ -412,6 +461,14 @@ public class ProductLibrary
         this.subCategory = subCategory;
     }
 
+    public String getDesigner() {
+        return designer;
+    }
+
+    public void setDesigner(String designer) {
+        this.designer = designer;
+    }
+
     public String getProductDescription() {
         return ProductDescription;
     }
@@ -420,4 +477,251 @@ public class ProductLibrary
         ProductDescription = productDescription;
     }
 
+    public String getImageurl() {
+        return imageurl;
+    }
+
+    public void setImageurl(String imageurl) {
+        this.imageurl = imageurl;
+    }
+
+    public String getProductTitle() {
+        return productTitle;
+    }
+
+    public void setProductTitle(String productTitle) {
+        this.productTitle = productTitle;
+    }
+
+    public String getCollection() {
+        return collection;
+    }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
+    }
+
+    public String getGlass() {
+        return glass;
+    }
+
+    public void setGlass(String glass) {
+        this.glass = glass;
+    }
+
+    public String getHandleFinish() {
+        return handleFinish;
+    }
+
+    public void setHandleFinish(String handleFinish) {
+        this.handleFinish = handleFinish;
+    }
+
+    public String  getHandleThickness() {
+        return handleThickness;
+    }
+
+    public void setHandleThickness(String handleThickness) {
+        this.handleThickness = handleThickness;
+    }
+
+    public String getHandleType() {
+        return handleType;
+    }
+
+    public void setHandleType(String handleType) {
+        this.handleType = handleType;
+    }
+
+    public String getHinge() {
+        return hinge;
+    }
+
+    public void setHinge(String hinge) {
+        this.hinge = hinge;
+    }
+
+    public String getKnobFinish() {
+        return knobFinish;
+    }
+
+    public void setKnobFinish(String knobFinish) {
+        this.knobFinish = knobFinish;
+    }
+
+    public int getKnobThickness() {
+        return knobThickness;
+    }
+
+    public void setKnobThickness(int knobThickness) {
+        this.knobThickness = knobThickness;
+    }
+
+    public String getKnobType() {
+        return knobType;
+    }
+
+    public void setKnobType(String knobType) {
+        this.knobType = knobType;
+    }
+
+    public String getHandleImage() {
+        return handleImage;
+    }
+
+    public void setHandleImage(String handleImage) {
+        this.handleImage = handleImage;
+    }
+
+    public String getKnobImage() {
+        return knobImage;
+    }
+
+    public void setKnobImage(String knobImage) {
+        this.knobImage = knobImage;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public String getProductLocation() {  return productLocation; }
+
+    public void setProductLocation(String productLocation) {  this.productLocation = productLocation; }
+
+    public String getClosebuttonFlag() {
+        return closebuttonFlag;
+    }
+
+    public void setClosebuttonFlag(String closebuttonFlag) {
+        this.closebuttonFlag = closebuttonFlag;
+    }
+
+    public String getHandleTypeSelection() {
+        return handleTypeSelection;
+    }
+
+    public void setHandleTypeSelection(String handleTypeSelection) {
+        this.handleTypeSelection = handleTypeSelection;
+    }
+
+    public String getShutterImageUrl() {
+        return shutterImageUrl;
+    }
+
+    public void setShutterImageUrl(String shutterImageUrl) {
+        this.shutterImageUrl = shutterImageUrl;
+    }
+
+    @Override
+    public List<FileAttachment> getFileAttachmentList() {
+        return null;
+    }
+
+    public String getHandleCode() {
+        return handleCode;
+    }
+
+    public void setHandleCode(String handleCode) {
+        this.handleCode = handleCode;
+    }
+
+    public String getKnobCode() {
+        return knobCode;
+    }
+
+    public void setKnobCode(String knobCode) {
+        this.knobCode = knobCode;
+    }
+
+    public double getlConnectorPrice() {
+        return lConnectorPrice;
+    }
+
+    public void setlConnectorPrice(double lConnectorPrice) {
+        this.lConnectorPrice = lConnectorPrice;
+    }
+
+    public double getNoOfLengths() {
+        return noOfLengths;
+    }
+
+    public void setNoOfLengths(double noOfLengths) {
+        this.noOfLengths = noOfLengths;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductLibrary{" +
+                "addons=" + addons +
+                ", id=" + id +
+                ", proposalId=" + proposalId +
+                ", fromVersion='" + fromVersion + '\'' +
+                ", title='" + title + '\'' +
+                ", seq=" + seq +
+                ", manualSeq=" + manualSeq +
+                ", productCategory='" + productCategory + '\'' +
+                ", productCategoryCode='" + productCategoryCode + '\'' +
+                ", room='" + room + '\'' +
+                ", roomCode='" + roomCode + '\'' +
+                ", shutterDesign='" + shutterDesign + '\'' +
+                ", shutterDesignCode='" + shutterDesignCode + '\'' +
+                ", catalogueName='" + catalogueName + '\'' +
+                ", catalogueId='" + catalogueId + '\'' +
+                ", source='" + source + '\'' +
+                ", ProductDescription='" + ProductDescription + '\'' +
+                ", subCategory='" + subCategory + '\'' +
+                ", baseCarcass='" + baseCarcass + '\'' +
+                ", baseCarcassCode='" + baseCarcassCode + '\'' +
+                ", wallCarcass='" + wallCarcass + '\'' +
+                ", wallCarcassCode='" + wallCarcassCode + '\'' +
+                ", finishType='" + finishType + '\'' +
+                ", finishTypeCode='" + finishTypeCode + '\'' +
+                ", finish='" + finish + '\'' +
+                ", finishCode='" + finishCode + '\'' +
+                ", dimension='" + dimension + '\'' +
+                ", amount=" + amount +
+                ", quantity=" + quantity +
+                ", type='" + type + '\'' +
+                ", quoteFilePath='" + quoteFilePath + '\'' +
+                ", createdOn=" + createdOn +
+                ", createdBy='" + createdBy + '\'' +
+                ", updatedOn=" + updatedOn +
+                ", costWoAccessories=" + costWoAccessories +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", profit=" + profit +
+                ", margin=" + margin +
+                ", amountWoTax=" + amountWoTax +
+                ", manufactureAmount=" + manufactureAmount +
+                ", imageurl='" + imageurl + '\'' +
+                ", productTitle='" + productTitle + '\'' +
+                ", collection='" + collection + '\'' +
+                ", hinge='" + hinge + '\'' +
+                ", glass='" + glass + '\'' +
+                ", handleType='" + handleType + '\'' +
+                ", handleFinish='" + handleFinish + '\'' +
+                ", handleThickness='" + handleThickness + '\'' +
+                ", knobType='" + knobType + '\'' +
+                ", knobFinish='" + knobFinish + '\'' +
+                ", knobThickness=" + knobThickness +
+                ", handleImage='" + handleImage + '\'' +
+                ", knobImage='" + knobImage + '\'' +
+                ", size='" + size + '\'' +
+                ", productLocation='" + productLocation + '\'' +
+                ", closebuttonFlag='" + closebuttonFlag + '\'' +
+                ", handleTypeSelection='" + handleTypeSelection + '\'' +
+                ", shutterImageUrl='" + shutterImageUrl + '\'' +
+                ", handleCode='" + handleCode + '\'' +
+                ", knobCode='" + knobCode + '\'' +
+                ", lConnectorPrice=" + lConnectorPrice +
+                ", noOfLengths=" + noOfLengths +
+                ", modules=" + modules +
+                ", fileAttachmentList=" + fileAttachmentList +
+                ", designer=" + designer +
+                '}';
+    }
 }

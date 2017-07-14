@@ -8,9 +8,7 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.dummy.FileDataProviderMode;
 import com.mygubbi.game.dashboard.domain.*;
-import com.mygubbi.game.dashboard.domain.JsonPojo.AccessoryDetails;
-import com.mygubbi.game.dashboard.domain.JsonPojo.AddonMaster;
-import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
+import com.mygubbi.game.dashboard.domain.JsonPojo.*;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.VaadinSession;
@@ -19,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
+import us.monoid.web.JSONResource;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,10 +37,7 @@ public class ProposalDataProvider {
 
     private final DataProviderMode dataProviderMode;
     private final ObjectMapper mapper;
-
     private static final Logger LOG = LogManager.getLogger(ProposalDataProvider.class);
-
-
     public static final String CATEGORY_LOOKUP = "category";
     public static final String ATTACHMENT_TYPE_LOOKUP = "attachmenttype";
     public static final String SHUTTER_DESIGN_LOOKUP = "shutterdesign";
@@ -55,6 +51,7 @@ public class ProposalDataProvider {
     public static final String MODULE_CATEGORY_LOOKUP = "modulecategory";
     private static final String MODULE_SELECTION_LOOKUP = "module";
     public static final String ACCESSORY_LOOKUP = "accessories";
+    public static final String COLLECTION_LOOKUP = "collection";
 
 
     public ProposalDataProvider(DataProviderMode dataProviderMode) {
@@ -275,7 +272,7 @@ public class ProposalDataProvider {
         }
     }
 
-    public List <Product> getProposalProductManualSeq(int proposalId, String proposalVersion) {
+    public List<Product> getProposalProductManualSeq(int proposalId, String proposalVersion) {
 
         JSONArray jsonArray = dataProviderMode.getResourceArray("product/manualSeq", new HashMap<String, String>() {
             {
@@ -292,8 +289,6 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
-
-
 
 
     public List<FileAttachment> getProposalProductDocuments(int productId) {
@@ -403,12 +398,12 @@ public class ProposalDataProvider {
     }
 
     public boolean versionDesignSignOff(String version, int proposalId, String fromVersion, String toVersion) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/designsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion +  "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/designsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "}");
         return !jsonObject.has("error");
     }
 
     public boolean versionProductionSignOff(String version, int proposalId, String fromVersion, String toVersion) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/productionsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion +  "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/productionsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "}");
         LOG.debug("JSON OBJECT :" + jsonObject.toString());
         return !jsonObject.has("error");
     }
@@ -627,6 +622,7 @@ public class ProposalDataProvider {
                 put("lookupType", type);
             }
         });
+
         try {
             LookupItem[] items = this.mapper.readValue(array.toString(), LookupItem[].class);
             List<LookupItem> lookupItems = new ArrayList<>(Arrays.asList(items));
@@ -740,7 +736,18 @@ public class ProposalDataProvider {
         } catch (IOException e) {
             throw new RuntimeException("Couldn't map modules", e);
         }
+    }
 
+    public ProposalVersion createNewProductFromOldQuotation(ProposalVersion proposalVersion) {
+        try {
+            String productJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/createnewbeforeproductionspecification", productJson);
+
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
     }
 
     public ProposalVersion createNewAddonFromOldProposal(ProposalVersion proposalVersion) {
@@ -779,6 +786,16 @@ public class ProposalDataProvider {
         }
     }
 
+    public String getProposalSOWFile(ProductAndAddonSelection productAndAddonSelection) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
+            JSONObject obj = dataProviderMode.postResource("proposal/createsowsheet", productSelectionsJson);
+            return obj.getString("sowFile");
+        } catch (JSONException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getProposalQuoteFilePdf(ProductAndAddonSelection productAndAddonSelection) {
         try {
             String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
@@ -788,6 +805,17 @@ public class ProposalDataProvider {
             throw new RuntimeException(e);
         }
     }
+
+   /* public String getProdSpecFile(ProductAndAddonSelection productAndAddonSelection) {
+        try {
+            String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
+            JSONObject obj = dataProviderMode.postResource("proposal/downloadprodspecfile", productSelectionsJson);
+            return obj.getString("prodSpecFile");
+        } catch (JSONException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }*/
 
     public String getJobCardFile(ProductAndAddonSelection productAndAddonSelection) {
         try {
@@ -822,7 +850,6 @@ public class ProposalDataProvider {
 
     }
 
-
     public boolean updateProduct(Product product) {
         try {
             product.setUpdatedBy(getUserId());
@@ -835,6 +862,24 @@ public class ProposalDataProvider {
                 return true;
             } else {
                 return false;
+            }
+        } catch (IOException | JSONException e) {
+            throw new RuntimeException("Couldn't update product", e);
+        }
+    }
+
+    public Product updateProductWithRefreshedPrice(Product product) {
+        try {
+            product.setUpdatedBy(getUserId());
+            String productJson = this.mapper.writeValueAsString(product);
+            LOG.debug("Product json:" + productJson);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "product/updaterefreshedprice", productJson);
+            if (!jsonObject.has("error")) {
+                product.setId(jsonObject.getInt("id"));
+                return this.mapper.readValue(jsonObject.toString(), Product.class);
+            } else {
+                return null;
             }
         } catch (IOException | JSONException e) {
             throw new RuntimeException("Couldn't update product", e);
@@ -921,7 +966,7 @@ public class ProposalDataProvider {
         }
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new FileDataProviderMode());
         ProposalHeader proposal = proposalDataProvider.createProposal();
 
@@ -931,7 +976,7 @@ public class ProposalDataProvider {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
 
     public ModulePrice getModulePrice(ModuleForPrice moduleForPrice) {
@@ -1206,7 +1251,7 @@ public class ProposalDataProvider {
         });
         try {
             JSONObject jsonObject = jsonArray.getJSONObject(0);
-            LOG.info(jsonObject);
+            //LOG.info(jsonObject);
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
 
         } catch (Exception e) {
@@ -1541,13 +1586,28 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<ProductLibrary> getProductsLibrary(String proposalId,String seq,String fromVersion)
-    {
+    public List<ProductLibrary> getProductsLibrary(String productTitle,String collection) {
+        try{
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/searchproductlibrary", new HashMap<String, String>() {
             {
-                put("proposalId", proposalId);
-                put("seq",seq);
-                put("fromVersion",fromVersion);
+                put("productTitle", URLEncoder.encode(productTitle,"UTF-8"));
+                put("collection", URLEncoder.encode(collection,"UTF-8"));
+            }
+        });
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<ProductLibrary> getAllProductsLibrary()
+    {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectproductlibrary", new HashMap<String, String>() {
+            {
+
             }
         });
         try
@@ -1560,5 +1620,523 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
-}
 
+    public ProposalVersion AddToProposalProduct(ProductLibrary proposalVersion) {
+        try {
+            String productJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "proposal/addtoproductlibrary", productJson);
+
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't map modules", e);
+        }
+    }
+
+    public List<ProductLibrary> getProductsLibraryBasedonId(String id)
+    {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectlibrarybasedonid", new HashMap<String, String>() {
+            {
+                put("id",id);
+            }
+        });
+        try
+        {
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<ProductLibraryMaster> getProductsubcategory(String category)
+    {
+        try
+        {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectcategorybasedonproduct", new HashMap<String, String>() {
+                {
+
+                    put("category",URLEncoder.encode(category,"UTF-8"));
+                }
+            });
+            ProductLibraryMaster[] items = this.mapper.readValue(jsonArray.toString(), ProductLibraryMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<ProductLibrary> getproductlibraryimage(String image)
+    {
+        //LOG.info("image parameter" +image);
+        JSONArray jsonArray = dataProviderMode.getResourceArray("cloudinaryfileupload/image", new HashMap<String, String>() {
+            {
+                put("imagepath",image);
+            }
+        });
+        try
+        {
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public CloudinaryImageUrl addToCloudinary(CloudinaryImageUrl cloudinaryImageUrl)
+    {
+        try {
+
+            String faJson = this.mapper.writeValueAsString(cloudinaryImageUrl);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "cloudinaryfileupload/", faJson);
+            if (!jsonObject.has("error")) {
+                return this.mapper.readValue(jsonObject.toString(), CloudinaryImageUrl.class);
+
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't add proposal doc", e);
+        }
+    }
+
+    public boolean updateCrmPrice(SendToCRM sendToCRM)
+    {
+        try {
+           /* String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
+            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
+            //LOG.info("basecrmurl " +baseCrmUrl);
+            String final_amount = String.valueOf(sendToCRM.getFinal_proposal_amount_c());
+            String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
+            LOG.debug("Json Object : "+ final_amount  + " he he " + estimated_project_cost);
+
+        /*
+                    JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
+        */
+            JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrm(baseCrmUrl, sendToCRM.getOpportunity_name(),final_amount,estimated_project_cost,sendToCRM.getQuotation_number_c());
+//            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateCrmPriceOnPublish(SendToCRMOnPublish sendToCRM)
+    {
+        try {
+            /*String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
+            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
+           // LOG.info("basecrmurl " +baseCrmUrl);
+            String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
+        /*
+                    JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
+        */
+            //LOG.info("sendToCRM.getOpportunity_name()" +sendToCRM.getOpportunity_name()+ "estimated_project_cost" +estimated_project_cost+ "sendToCRM.getQuotation_number_c()" +sendToCRM.getQuotation_number_c());
+            JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrmOnPublish(baseCrmUrl, sendToCRM.getOpportunity_name(),estimated_project_cost,sendToCRM.getQuotation_number_c());
+            LOG.debug("Json Object : "+ jsonObject.toString());
+//            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new RestDataProviderMode());
+        SendToCRM sendToCRM = new SendToCRM();
+        sendToCRM.setEstimated_project_cost_c(8000);
+        sendToCRM.setFinal_proposal_amount_c(8000);
+        sendToCRM.setOpportunity_name("SAL-1701-000951");
+        sendToCRM.setQuotation_number_c("BLR-111-111");
+        boolean jsonObject = proposalDataProvider.updateCrmPrice(sendToCRM);
+        System.out.println(jsonObject);
+    }
+
+    public List<UserProfile> getUserProfileDetails(String crmID) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectuserprofiledata", new HashMap<String, String>() {
+            {
+                /*put("crmId", crmID);*/
+            }
+        });
+        try {
+            return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<UserProfile>>() {
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    /*public UserProfile getUserProfileDetails(String crmID) {
+        JSONObject jsonArray = dataProviderMode.getResource("proposal/selectuserprofiledata", new HashMap<String, String>() {
+            {
+                put("crmId", crmID);
+
+            }
+        });
+        try {
+            return this.mapper.readValue(jsonArray.toString(), UserProfile.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }*/
+
+    public List<UserProfile> getUserProfileDetailsonCRMId(String crmID) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/userprofiledatabasedoncrmid", new HashMap<String, String>() {
+            {
+                put("crmId", crmID);
+            }
+        });
+        try {
+            return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<UserProfile>>() {
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+
+    }
+
+    public List<HandleMaster> getHandleTitle(String type)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthandletitle", new HashMap<String, String>() {
+                {
+                        //put("mgCode",URLEncoder.encode(mgcode, "UTF-8"));
+                        put("type",URLEncoder.encode(type, "UTF-8"));
+
+                }
+            });
+            HandleMaster[] items = this.mapper.readValue(jsonArray.toString(), HandleMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public List<MGModule> retrieveModuleDetails(String mgcode)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/checkhandlepresent", new HashMap<String, String>() {
+                {
+                    put("code",URLEncoder.encode(mgcode, "UTF-8"));
+                }
+            });
+            MGModule[] items = this.mapper.readValue(jsonArray.toString(), MGModule[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<HandleMaster> getHandleFinish(String Title,String type) {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthandlefinish", new HashMap<String, String>() {
+                {
+                    put("title", URLEncoder.encode(Title, "UTF-8") + "");
+                    put("type", type + "");
+                }
+            });
+            HandleMaster[] items = this.mapper.readValue(jsonArray.toString(), HandleMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<HandleMaster> getHandleThickness(String Title,String finish,String type) {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthandleThickness", new HashMap<String, String>() {
+                {
+                    put("finish", URLEncoder.encode(finish, "UTF-8"));
+                    put("title", URLEncoder.encode(Title, "UTF-8"));
+                    put("type", URLEncoder.encode(type, "UTF-8"));
+                }
+            });
+            HandleMaster[] items = this.mapper.readValue(jsonArray.toString(), HandleMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public List<LookupItem> getHinges(String LookupType) {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/selectfromcodemaster", new HashMap<String, String>() {
+                {
+                    put("lookupType", URLEncoder.encode(LookupType, "UTF-8"));
+                }
+            });
+            LookupItem[] items = this.mapper.readValue(jsonArray.toString(), LookupItem[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public List<ProductLibraryMaster> getProductcategory() {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectcategory", new HashMap<String, String>() {
+                {
+
+                }
+            });
+            ProductLibraryMaster[] items = this.mapper.readValue(jsonArray.toString(), ProductLibraryMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public List<ProductLibrary> getProducttitle(String productCategoryCode,String subCategory)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectproductname", new HashMap<String, String>() {
+                {
+                    put("productCategoryCode",URLEncoder.encode(productCategoryCode, "UTF-8"));
+                    put("subCategory",URLEncoder.encode(subCategory, "UTF-8"));
+                }
+            });
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<ProductLibrary> getProductLibrary(String productCategoryCode,String subCategory,String title)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectproductfromlibrary", new HashMap<String, String>() {
+                {
+                    put("productCategoryCode",URLEncoder.encode(productCategoryCode, "UTF-8"));
+                    put("subCategory",URLEncoder.encode(subCategory, "UTF-8"));
+                    put("productTitle",URLEncoder.encode(title, "UTF-8"));
+                }
+            });
+            ProductLibrary[] items = this.mapper.readValue(jsonArray.toString(), ProductLibrary[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<MGModule> checksqftCalculation(String mgcode)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/sqftcalculation", new HashMap<String, String>() {
+                {
+                    put("code",URLEncoder.encode(mgcode, "UTF-8"));
+                }
+            });
+            MGModule[] items = this.mapper.readValue(jsonArray.toString(), MGModule[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<HandleMaster> getHandles(String type,String Title,String finish,String thickness)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthandleCode", new HashMap<String, String>() {
+                {
+                    put("type", URLEncoder.encode(type, "UTF-8"));
+                    put("title", URLEncoder.encode(Title, "UTF-8"));
+                    put("finish", URLEncoder.encode(finish, "UTF-8"));
+                    put("thickness", URLEncoder.encode(thickness, "UTF-8"));
+                }
+            });
+            HandleMaster[] items = this.mapper.readValue(jsonArray.toString(), HandleMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public List<HandleMaster> getHandleArray(String code)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/handledata", new HashMap<String, String>() {
+                {
+                    put("code", URLEncoder.encode(code, "UTF-8"));
+                }
+            });
+            HandleMaster[] items = this.mapper.readValue(jsonArray.toString(), HandleMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<AccessoryDetails> getAccessoryhandleDetails(String apcode,String type)
+    {
+        JSONArray array = dataProviderMode.getResourceArray("module/accessoryhandledata", new HashMap<String, String>() {
+            {
+                put("apcode", apcode);
+                put("type", type);
+            }
+        });
+        try {
+            AccessoryDetails[] items = this.mapper.readValue(array.toString(), AccessoryDetails[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+    public List<HandleMaster> getHandleImages(String type,String Title,String finish)
+    {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthandleimage", new HashMap<String, String>() {
+                {
+                    put("type", URLEncoder.encode(type, "UTF-8"));
+                    put("title", URLEncoder.encode(Title, "UTF-8"));
+                    put("finish", URLEncoder.encode(finish, "UTF-8"));
+                }
+            });
+            HandleMaster[] items = this.mapper.readValue(jsonArray.toString(), HandleMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Finish> getShutterCodes(String title) {
+        JSONArray array = dataProviderMode.getResourceArray("module/shuttercodeforcombo", new HashMap<String, String>() {
+            {
+                put("finishCode",title);
+            }
+        });
+        try {
+            Finish[] items = this.mapper.readValue(array.toString(), Finish[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
+    public PriceMaster getHandleAndKnobRateDetails(String rateId, Date priceDate, String city)
+    {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/handleknobdetails", new HashMap<String, String>(){
+            {
+                put("rateId", rateId + "");
+                put("priceDate", priceDate + "");
+                put("city",city + "");
+            }
+        });
+        try
+        {
+            return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
+
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public HandleMaster getHandleorKnobDetails(String title, String finish, String thickness)
+    {
+        try{
+        JSONObject jsonObject = dataProviderMode.getResource("handle/handleorknobdetails", new HashMap<String, String>(){
+            {
+                put("title",URLEncoder.encode(title, "UTF-8"));
+                put("finish", URLEncoder.encode(finish, "UTF-8"));
+                put("thickness", URLEncoder.encode(thickness, "UTF-8"));
+            }
+        });
+
+            return this.mapper.readValue(jsonObject.toString(), HandleMaster.class);
+
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<User> getUsersByEmail(String Email) {
+        JSONArray array = dataProviderMode.getResourceArray("user/listbyemail", new HashMap<String, String>() {
+            {
+                put("email", Email);
+            }
+        });
+        try {
+            User[] items = this.mapper.readValue(array.toString(), User[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+    public List<ModuleHingeMap> getHinges(String moduleCode,String type)
+    {
+        LOG.debug("hinges inside proposal data provider : " + moduleCode  +" :" + type);
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthingedata", new HashMap<String, String>() {
+                {
+                    put("moduleCode", URLEncoder.encode(moduleCode, "UTF-8"));
+                    put("type", URLEncoder.encode(type, "UTF-8"));
+                }
+            });
+            ModuleHingeMap[] items = this.mapper.readValue(jsonArray.toString(), ModuleHingeMap[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public PriceMaster getHingeRateDetails(String rateId, Date priceDate, String city)
+    {
+        JSONObject jsonObject = dataProviderMode.getResource("proposal/hingedetails", new HashMap<String, String>(){
+            {
+                put("rateId", rateId + "");
+                put("priceDate", priceDate + "");
+                put("city",city + "");
+            }
+        });
+        try
+        {
+            return this.mapper.readValue(jsonObject.toString(), PriceMaster.class);
+
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
+    public List<Finish> getShutterImages(String title) {
+        JSONArray array = dataProviderMode.getResourceArray("module/selectshutterimage", new HashMap<String, String>() {
+            {
+                put("shutterCode",title);
+            }
+        });
+        try {
+            Finish[] items = this.mapper.readValue(array.toString(), Finish[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+}

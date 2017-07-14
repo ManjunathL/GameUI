@@ -22,7 +22,7 @@ public class AddonMaster
     public static final String MRP="mrp";
     public static final String DEALER_PRICE="dealerPrice";
     public static final String UOM="uom";
-    public static final String IMAGEPATH="imagePath";
+    public static final String IMAGE_PATH="imagePath";
 
     private String id;
     private String code;
@@ -39,7 +39,8 @@ public class AddonMaster
     private String mrp;
     private String dealerPrice;
     private String uom;
-    private ExternalResource imagePath;
+    //private ExternalResource imagePath;
+    private String imagePath;
 
     /*public AddonMaster(ExternalResource imagePath,String catalogueCode,String productTypeCode)
     {
@@ -195,11 +196,19 @@ public class AddonMaster
         this.imagePath = imagePath;
     }*/
 
-    public ExternalResource getImagePath() {
+   /* public ExternalResource getImagePath() {
         return imagePath;
     }
 
     public void setImagePath(ExternalResource imagePath) {
+        this.imagePath = imagePath;
+    }*/
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
 

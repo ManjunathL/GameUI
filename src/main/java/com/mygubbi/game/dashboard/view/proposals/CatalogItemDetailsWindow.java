@@ -213,7 +213,6 @@ public class CatalogItemDetailsWindow extends Window {
                             .getItem(this.subCategoryCombo.getValue()).getBean().getName());
                     product.setFromVersion(proposalVersion.getVersion());
                     List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(),proposalVersion.getVersion());
-
                     proposal.setProducts(getAllVersionProducts);
 
                     if (product.getSeq() == 0)
@@ -275,7 +274,7 @@ public class CatalogItemDetailsWindow extends Window {
         this.descriptionField.setValue(catalogueProduct.getDesc());
         this.descriptionField.setReadOnly(true);
         String imageBasePath = ConfigHolder.getInstance().getCatalogueImageBasePath();
-        LOG.debug("image base path :" + imageBasePath);
+        //LOG.debug("image base path :" + imageBasePath);
         this.productImage.setSource(new ExternalResource(imageBasePath + catalogueProduct.getImages().get(0)));
         Object prevMaterial = this.materialCombo.getValue();
         this.materialCombo.getContainerDataSource().removeAllItems();

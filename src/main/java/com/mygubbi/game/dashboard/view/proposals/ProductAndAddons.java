@@ -63,6 +63,7 @@ public class ProductAndAddons extends Window
     private ProductAndAddonSelection productAndAddonSelection;
     private Button addKitchenOrWardrobeButton;
     private Button addFromCatalogueButton;
+    private Button addFromProductLibrary;
     private FileAttachmentComponent fileAttachmentComponent;
     private TextField discountPercentage;
     private TextField discountAmount;
@@ -108,7 +109,7 @@ public class ProductAndAddons extends Window
         ProductAndAddons w = new ProductAndAddons(proposalHeader,proposal,vid,proposalVersion);
         UI.getCurrent().addWindow(w);
         w.focus();
-        LOG.info("header  " +proposalHeader);
+        //LOG.info("header  " +proposalHeader);
 
     }
 
@@ -134,8 +135,8 @@ public class ProductAndAddons extends Window
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
         this.productAndAddonSelection.setFromVersion(this.proposalVersion.getVersion());
-        LOG.info("On open DA in constructor :" + this.proposalVersion.getDiscountAmount());
-        LOG.info("On open DP in constructor :" + this.proposalVersion.getDiscountPercentage());
+        //LOG.info("On open DA in constructor :" + this.proposalVersion.getDiscountAmount());
+        //LOG.info("On open DP in constructor :" + this.proposalVersion.getDiscountPercentage());
         DashboardEventBus.register(this);
         setModal(true);
         setSizeFull();
@@ -179,11 +180,12 @@ public class ProductAndAddons extends Window
         Component componentactionbutton=buildActionButtons();
         verticalLayout.addComponent(componentactionbutton);
 
-        LOG.info("Proposal Header :" + proposalHeader.toString());
+        //LOG.info("Proposal Header :" + proposalHeader.toString());
 
         //updateTotal();
         calculateTotal();
         handleState();
+        handlepackage();
     }
 
 
@@ -284,7 +286,7 @@ public class ProductAndAddons extends Window
                     clickEvent -> {
                         //MarginComputationWindow.open(proposalVersion);
                         saveVersionAmounts();
-                        MarginDetailsWindow.open(proposalVersion,this.proposalHeader);
+                        MarginDetailsWindow.open(proposalVersion,this.proposalHeader, this.products);
 
                     }
             );
@@ -533,12 +535,12 @@ public class ProductAndAddons extends Window
 
     private void onFocusToDiscountPercentage(FieldEvents.FocusEvent event)
     {
-        LOG.info("DP focused");
+        //LOG.info("DP focused");
         status="DP";
     }
     private void onFocusToDiscountAmount(FieldEvents.FocusEvent event)
     {
-        LOG.info("DA focused");
+        //LOG.info("DA focused");
         status="DA";
     }
     private void updateTotal()
@@ -597,7 +599,7 @@ public class ProductAndAddons extends Window
             ProdutsMargin=0.0;
         }
 
-        LOG.info(" productsTotal" +productsTotal+ "ProductsTotalWoTax"  +ProductsTotalWoTax+ "Margin" +ProdutsMargin+ "profit" +ProductsProfit + "ProductsManufactureAmount" +ProductsManufactureAmount);
+       // LOG.info(" productsTotal" +productsTotal+ "ProductsTotalWoTax"  +ProductsTotalWoTax+ "Margin" +ProdutsMargin+ "profit" +ProductsProfit + "ProductsManufactureAmount" +ProductsManufactureAmount);
         proposalVersion.setProfit(ProductsProfit);
         proposalVersion.setMargin(ProdutsMargin);
         proposalVersion.setAmountWotax(ProductsTotalWoTax);
@@ -635,7 +637,7 @@ public class ProductAndAddons extends Window
         {
             addonsMargin=0.0;
         }
-        LOG.info("Addons Total" +addonsTotal+ "AddonsTotalWoTax"  +addonsTotalWOTax+ "profit" +addonsProfit + "AddonsManufactureAmount" +addonsManufactureAmount + "Addons Margin" +addonsMargin);
+        //LOG.info("Addons Total" +addonsTotal+ "AddonsTotalWoTax"  +addonsTotalWOTax+ "profit" +addonsProfit + "AddonsManufactureAmount" +addonsManufactureAmount + "Addons Margin" +addonsMargin);
 
         //Double total=productsTotal+addonsTotal;
         Double totalWT=ProductsTotalWoTax+addonsTotalWOTax;
@@ -649,7 +651,7 @@ public class ProductAndAddons extends Window
         /*if(Double.isNaN(fin))
         Double finalmargin=(profit/totalWT)*100;*/
 
-        LOG.info("TotalWoTax"  +totalWT+ "profit" +profit + "ManufactureAmount" +totalmanufactureamount +"Margin" +finalmargin);
+        //LOG.info("TotalWoTax"  +totalWT+ "profit" +profit + "ManufactureAmount" +totalmanufactureamount +"Margin" +finalmargin);
 
         proposalVersion.setProfit(round(profit,2));
         proposalVersion.setMargin(round(finalmargin,2));
@@ -693,7 +695,17 @@ public class ProductAndAddons extends Window
                     discountPercent = 0.0;
                 }
                 discountAmount = productsTotal * (discountPercent / 100.0);
-                this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+                {
+                    this.discountAmount.setReadOnly(false);
+                    this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                    this.discountAmount.setReadOnly(true);
+                }
+                else
+                {
+                    this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                }
+
                 disAmount=discountAmount.intValue();
             }
             else
@@ -737,6 +749,7 @@ public class ProductAndAddons extends Window
 
     private void refreshDiscountForOldProposals(Double totalWoAccessories, Double totalAmount, Double costOfAccessories, Double addonsTotal)
     {
+        LOG.debug("for old proposal");
         Double discountPercent=0.0,discountAmount=0.0;
         //rateForDiscount=rateForDiscount*100;
         rateForDiscount=proposalHeader.getMaxDiscountPercentage();
@@ -749,10 +762,17 @@ public class ProductAndAddons extends Window
                 }
 
                 discountAmount = totalWoAccessories * (discountPercent / 100) ;
-                //double res = discountAmount - discountAmount % 100;
-                this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+                {
+                    this.discountAmount.setReadOnly(false);
+                    this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                    this.discountAmount.setReadOnly(true);
+                }
+                else
+                {
+                    this.discountAmount.setValue(String.valueOf(discountAmount.intValue())+ " ");
+                }
                 disAmount=discountAmount.intValue();
-                //this.discountAmount.setValue(String.valueOf(round(discountAmount, 2)));
             }
             else
             {
@@ -858,7 +878,6 @@ public class ProductAndAddons extends Window
         addKitchenOrWardrobeButton.addStyleName(ValoTheme.BUTTON_SMALL);
         hLayoutInner.addComponent(addKitchenOrWardrobeButton);
         hLayoutInner.setComponentAlignment(addKitchenOrWardrobeButton,Alignment.TOP_RIGHT);
-
         hLayoutInner.setSpacing(true);
 
         addFromCatalogueButton = new Button("From Catalogue");
@@ -866,6 +885,15 @@ public class ProductAndAddons extends Window
         addFromCatalogueButton.addStyleName(ValoTheme.BUTTON_SMALL);
         hLayoutInner.addComponent(addFromCatalogueButton);
         hLayoutInner.setComponentAlignment(addFromCatalogueButton,Alignment.TOP_RIGHT);
+
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            addFromProductLibrary = new Button("From Product Library");
+            addFromProductLibrary.setIcon(FontAwesome.PLUS_CIRCLE);
+            addFromProductLibrary.addStyleName(ValoTheme.BUTTON_SMALL);
+            hLayoutInner.addComponent(addFromProductLibrary);
+            hLayoutInner.setComponentAlignment(addFromProductLibrary,Alignment.TOP_RIGHT);
+        }
 
         horizontalLayout.addComponent(hLayoutInner);
         horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
@@ -889,6 +917,18 @@ public class ProductAndAddons extends Window
                     CatalogItemDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
                 }
         );
+
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+        {
+            addFromProductLibrary.addClickListener(
+                    clickEvent -> {
+                        //AllProductsDetailsWindow.open();
+                        //Dummy.open(proposal,proposalVersion,proposalHeader);
+                        AllProposalLibrary.open(proposal,proposalVersion,proposalHeader);
+                    }
+            );
+        }
+
 
         productContainer = new BeanItemContainer<>(Product.class);
 
@@ -917,6 +957,12 @@ public class ProductAndAddons extends Window
                 if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()) || ("DSO").equals(proposalVersion.getInternalStatus()) || ("PSO").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot copy on Published, Confirmed and Locked versions");
+                    return;
+                }
+
+                if(("Yes").equals(proposalHeader.getPackageFlag()))
+                {
+                    Notification.show("Cannot copy Products");
                     return;
                 }
                 Product p = (Product) rendererClickEvent.getItemId();
@@ -963,8 +1009,22 @@ public class ProductAndAddons extends Window
                 copyProduct.setAmountWoTax(p.getAmountWoTax());
                 copyProduct.setModules(modulesFromOldProduct);
                 copyProduct.setSource(p.getSource());
-                LOG.info("COPIED@"+ copyProduct);
-
+                copyProduct.setHinge(p.getHinge());
+                copyProduct.setGlass(p.getGlass());
+                copyProduct.setKnobType(p.getKnobType());
+                copyProduct.setKnobFinish(p.getKnobFinish());
+                copyProduct.setKnobImage(p.getKnobImage());
+                copyProduct.setHandleType(p.getHandleType());
+                copyProduct.setHandleFinish(p.getHandleFinish());
+                copyProduct.setHandleImage(p.getHandleImage());
+                copyProduct.setHandleTypeSelection(p.getHandleTypeSelection());
+                copyProduct.setShutterDesignImage(p.getShutterDesignImage());
+                copyProduct.setHandleCode(p.getHandleCode());
+                copyProduct.setKnobCode(p.getKnobCode());
+                copyProduct.setlConnectorPrice(p.getlConnectorPrice());
+                copyProduct.setHandleThickness(p.getHandleThickness());
+                copyProduct.setNoOfLengths(p.getNoOfLengths());
+               // LOG.info("COPIED@"+ copyProduct);
                 copyProduct.setAddons(p.getAddons());
 
                 proposalDataProvider.updateProduct(copyProduct);
@@ -987,9 +1047,10 @@ public class ProductAndAddons extends Window
 
                 Product product = (Product) rendererClickEvent.getItemId();
 
-                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name())) {
+                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name()) || product.getType().equals(Product.TYPES.PRODUCT_LIBRARY.name())) {
                     if (product.getModules().isEmpty()) {
                         Product productDetails = proposalDataProvider.getProposalProductDetails(product.getId(),product.getFromVersion());
+
                         product.setModules(productDetails.getModules());
                         product.setAddons(productDetails.getAddons());
                     }
@@ -998,6 +1059,7 @@ public class ProductAndAddons extends Window
                         List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
                         product.setFileAttachmentList(productAttachments);
                     }
+                 //   LOG.info("product details " +product);
                     CustomizedProductDetailsWindow.open(proposal, product, proposalVersion,proposalHeader);
                 } else {
                     CatalogueProduct catalogueProduct = new CatalogueProduct();
@@ -1275,27 +1337,13 @@ public class ProductAndAddons extends Window
     }
     private void checkProductsAndAddonsAvailable(Button.ClickEvent clickEvent) {
 
-            if (proposal.getProducts().isEmpty() )
+            if (proposal.getProducts().isEmpty() && proposal.getAddons().isEmpty())
             {
                 NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
             }
-           /* else
-            {
-                LOG.info("else part");
-                List<Product> product=proposal.getProducts();
-                for(Product product1:product)
-                {
-                    LOG.info("product" +product1);
-                    if(product1.getManualSeq()==0)
-                    {
-                        NotificationUtil.showNotification("Manual sequence cannot be zero", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-                        return false;
-                    }
-                }
-            }*/
-            if (proposal.getAddons().isEmpty()) {
+           /* if (proposal.getAddons().isEmpty()) {
                 NotificationUtil.showNotification("No Addons found.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-            }
+            }*/
     }
     private StringToDoubleConverter getAmountConverter() {
         return new StringToDoubleConverter() {
@@ -1314,15 +1362,16 @@ public class ProductAndAddons extends Window
     private StreamResource createQuoteResourcePdf() {
 
         StreamResource.StreamSource source = () -> {
-            if (!proposal.getProducts().isEmpty()) {
-                LOG.info("header value" + proposalVersion.getDiscountAmount() + "discount amount" + discountAmount.getValue());
+            return getInputStreamPdf();
+            /*if (!proposal.getProducts().isEmpty()) {
+              //  LOG.info("header value" + proposalVersion.getDiscountAmount() + "discount amount" + discountAmount.getValue());
                 String replace = discountAmount.getValue().replace(",", "");
                 double discountamount = Double.valueOf(replace);
                 return getInputStreamPdf();
 
             } else {
                 return null;
-            }
+            }*/
         };
         return new StreamResource(source, "Quotation.pdf");
     }
@@ -1385,9 +1434,14 @@ public class ProductAndAddons extends Window
     private void submit(Button.ClickEvent clickEvent) {
         if(proposalHeader.getMaxDiscountPercentage()>=Double.valueOf(discountPercentage.getValue())) {
             try {
+                if(proposalVersion.getAmount()== 0)
+                {
+                    NotificationUtil.showNotification("Total amount is zero,Cannot publish", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
                 binder.commit();
 
-                LOG.info("value in submit" + totalWithoutDiscount.getValue());
+              //  LOG.info("value in submit" + totalWithoutDiscount.getValue());
                 if (remarksTextArea == null || remarksTextArea.isEmpty()) {
                     NotificationUtil.showNotification("Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -1421,6 +1475,12 @@ public class ProductAndAddons extends Window
                             addKitchenOrWardrobeButton.setVisible(false);
                             addFromCatalogueButton.setVisible(false);
                             addonAddButton.setVisible(false);
+                            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                            {
+                                addFromProductLibrary.setVisible(false);
+                            }
+
+                            customAddonAddButton.setVisible(false);
                         /*versionStatus.setValue("Published");*/
                             NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                             handleState();
@@ -1435,6 +1495,12 @@ public class ProductAndAddons extends Window
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
             proposalDataProvider.updateVersion(proposalVersion);
+
+            if (!(proposalVersion.getVersion().startsWith("2.")))
+            {
+                SendToCRMOnPublish sendToCRM = updatePriceInCRMOnPublish();
+                proposalDataProvider.updateCrmPriceOnPublish(sendToCRM);
+            }
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             DashboardEventBus.unregister(this);
             close();
@@ -1444,6 +1510,26 @@ public class ProductAndAddons extends Window
             discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()).replace(",",""));
             discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
         }
+    }
+
+    private SendToCRMOnPublish updatePriceInCRMOnPublish() {
+        SendToCRMOnPublish sendToCRM = new SendToCRMOnPublish();
+        sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
+        sendToCRM.setEstimated_project_cost_c(proposalVersion.getFinalAmount());
+        sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
+        LOG.debug("Send to CRM : " + sendToCRM.toString());
+        return sendToCRM;
+    }
+
+    private SendToCRM updatePriceInCRMOnConfirm() {
+        SendToCRM sendToCRM = new SendToCRM();
+        sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
+        sendToCRM.setFinal_proposal_amount_c(proposalVersion.getFinalAmount());
+        sendToCRM.setEstimated_project_cost_c(proposalVersion.getFinalAmount());
+        sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
+        LOG.debug("Send to CRM : " + sendToCRM.toString());
+
+        return sendToCRM;
     }
 
     private void confirm(Button.ClickEvent clickEvent) {
@@ -1487,7 +1573,6 @@ public class ProductAndAddons extends Window
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("1.0");
                         proposalHeader.setStatus(proposalVersion.getStatus());
-                        proposalHeader.setPriceDate(new java.sql.Date(System.currentTimeMillis()));
                         proposalDataProvider.saveProposalOnConfirm(proposalHeader);
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
@@ -1495,6 +1580,8 @@ public class ProductAndAddons extends Window
                         proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                         proposalHeader.setVersion(proposalVersion.getVersion());
+                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
+                        proposalDataProvider.updateCrmPrice(sendToCRM);
                         proposalDataProvider.saveProposal(proposalHeader);
                     } else if (versionNew.startsWith("1.")) {
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
@@ -1510,6 +1597,8 @@ public class ProductAndAddons extends Window
                         proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                         proposalHeader.setVersion(proposalVersion.getVersion());
+                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
+                        proposalDataProvider.updateCrmPrice(sendToCRM);
                         proposalDataProvider.saveProposal(proposalHeader);
 
 
@@ -1694,6 +1783,11 @@ public class ProductAndAddons extends Window
                 case Draft:
                     submitButton.setVisible(true);
                     addKitchenOrWardrobeButton.setEnabled(true);
+                    if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                    {
+                        addFromProductLibrary.setEnabled(true);
+                    }
+
                     addFromCatalogueButton.setEnabled(true);
                     designSignOffButton.setVisible(false);
                     productionSignOffButton.setVisible(false);
@@ -1741,6 +1835,11 @@ public class ProductAndAddons extends Window
                     submitButton.setVisible(false);
                     confirmButton.setVisible(false);
                     addKitchenOrWardrobeButton.setVisible(false);
+                    if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+                    {
+                        addFromProductLibrary.setVisible(false);
+                    }
+
                     addFromCatalogueButton.setVisible(false);
                     addonAddButton.setVisible(false);
                     customAddonAddButton.setVisible(false);
@@ -1809,11 +1908,19 @@ public class ProductAndAddons extends Window
             public String getValue(Item item, Object o, Object o1) {
                 Product product = (Product) ((BeanItem) item).getBean();
 
-                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name())) {
+                if (product.getType().equals(Product.TYPES.CUSTOMIZED.name()) || product.getType().equals(Product.TYPES.PRODUCT_LIBRARY.name() )) {
                     if (StringUtils.isNotEmpty(product.getProductCategory())) {
                         return product.getProductCategory();
                     } else {
                         List<LookupItem> lookupItems = proposalDataProvider.getLookupItems(ProposalDataProvider.CATEGORY_LOOKUP);
+                       // LOG.info("product.getProductCategoryCode()" +product.getProductCategoryCode());
+                        if(product.getProductCategoryCode().equals("K"))
+                        {
+                            product.setProductCategoryCode("Kitchen");
+                        }else if(product.getProductCategoryCode().equals("W"))
+                        {
+                            product.setProductCategoryCode("Wardrobe");
+                        }
                         return lookupItems.stream().filter(lookupItem -> lookupItem.getCode().equals(product.getProductCategoryCode())).findFirst().get().getTitle();
                     }
                 } else {
@@ -1835,6 +1942,9 @@ public class ProductAndAddons extends Window
         addFromCatalogueButton.setEnabled(false);
         addonAddButton.setEnabled(false);
         customAddonAddButton.setEnabled(false);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            addFromProductLibrary.setEnabled(false);
+        }
     }
 
     @Subscribe
@@ -1867,7 +1977,7 @@ public class ProductAndAddons extends Window
     @Subscribe
     public void addonUpdated(final ProposalEvent.ProposalAddonUpdated event) {
         AddonProduct eventAddonProduct = event.getAddonProduct();
-        LOG.info("Product :"  + eventAddonProduct.toString());
+       // LOG.info("Product :"  + eventAddonProduct.toString());
         persistAddon(eventAddonProduct);
         List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalHeader.getId(),proposalVersion.getVersion());
         addonsContainer.removeAllItems();
@@ -1881,10 +1991,22 @@ public class ProductAndAddons extends Window
 
     private void persistAddon(AddonProduct eventAddonProduct) {
         if (eventAddonProduct.getId() == 0) {
-            proposalDataProvider.addProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+            proposalDataProvider.addProposalAddon(eventAddonProduct.getProposalId(), eventAddonProduct);
         } else {
-            proposalDataProvider.updateProposalAddon(proposal.getProposalHeader().getId(), eventAddonProduct);
+            proposalDataProvider.updateProposalAddon(eventAddonProduct.getProposalId(), eventAddonProduct);
         }
     }
 
+    private void handlepackage()
+    {
+        if(Objects.equals(proposalHeader.getPackageFlag(), "Yes"))
+        {
+            addKitchenOrWardrobeButton.setEnabled(false);
+            addFromProductLibrary.setEnabled(false);
+            addFromCatalogueButton.setEnabled(false);
+            discountAmount.setReadOnly(true);
+            discountPercentage.setReadOnly(true);
+        }
+    }
 }
+

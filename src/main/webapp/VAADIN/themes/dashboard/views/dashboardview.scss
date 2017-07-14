@@ -361,6 +361,12 @@
   display:block;
   }
 
+   .text-area-size1{
+    width: 213%;
+    height:100%;
+    display:block;
+    }
+
     .optiongroupstyle{
         display: inline-block !important;
     }
@@ -591,13 +597,64 @@
 }
 
 .v-lst-event .v-grid-header .v-grid-row .v-grid-cell {
+
     height: 40px ! important;
 }
 .v-lst-event .v-grid-body .v-grid-row .v-grid-cell {
     height: 140px ! important;
-    background: white ! important;
+    background: white;
 }
+.v-lst-event .v-grid-row.v-grid-row-has-data.v-grid-header.v-grid-row-selected.v-grid-row-focused .v-grid-cell {
+    height: 140px ! important;
+    background: #197de1;
+    color: white;
+}
+
 .v-lst-event .v-grid-body .v-grid-row .v-grid-cell .gwt-Image {
     width: 250px !important;
     height: 120px ! important;
+}
+
+.v-grid-row-selected .img-anc { color: #fff; }
+
+.panel-image
+{
+    margin-left: 200px;
+}
+.txt-width
+{
+      width: 22.333%;
+}
+.vlayoutstyle
+{
+    margin-left:20px !important;
+}
+.checkboxstyle
+{
+    color:red !important;
+    margin-top: -37px !important;
+}
+
+.v-formlayout [class*="margin-bottom"] > tbody > [class*="lastrow"] > td {
+    padding-bottom: 5px !important;
+}
+.hlayoutsize{
+    margin-top: -39px;
+}
+.crmstyle
+{
+      position: absolute;
+      right: 106px;
+      z-index: 999;
+}
+
+.knobimagestyle{
+      margin-left: 40px;
+}
+.tabsheetstyle{
+margin-top: 4%;
+}
+.footerstyle
+{
+margin-top: 5%;
 }
