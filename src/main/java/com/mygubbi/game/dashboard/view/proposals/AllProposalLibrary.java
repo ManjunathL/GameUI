@@ -155,7 +155,7 @@ public class AllProposalLibrary extends Window
         addonsGrid.setHeightByRows(11);
         addonsGrid.setHeightMode(HeightMode.ROW);
         addonsGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.SIZE,ProductLibrary.AMOUNT,ProductLibrary.IMAGE_PATH,ProductLibrary.PRODUCT_LOCATION);
+        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.SIZE,ProductLibrary.FINISH_TYPE_CODE,ProductLibrary.AMOUNT,ProductLibrary.DESIGNER,ProductLibrary.IMAGE_PATH,ProductLibrary.PRODUCT_LOCATION);
         addonsGrid.addSelectionListener( selectionEvent -> {
             if (!selectionEvent.getAdded().isEmpty()) {
                 Object selected = ((Grid.SingleSelectionModel) addonsGrid.getSelectionModel()).getSelectedRow();
@@ -169,10 +169,12 @@ public class AllProposalLibrary extends Window
         filter.setTextFilter(ProductLibrary.COLLECTION,true,false);
         filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,false);
         filter.setTextFilter(ProductLibrary.SIZE,true,false);
+        filter.setTextFilter(ProductLibrary.DESIGNER,true,false);
         filter.setTextFilter(ProductLibrary.SUB_CATEGORY,true,false);
         filter.setTextFilter(ProductLibrary.PRODUCT_TITLE,true,false);
         filter.setTextFilter(ProductLibrary.PRODUCT_CATEGORY_CODE,true,false);
         filter.setTextFilter(ProductLibrary.AMOUNT,true,false);
+        filter.setTextFilter(ProductLibrary.FINISH_TYPE_CODE,true,false);
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
@@ -181,7 +183,9 @@ public class AllProposalLibrary extends Window
         columns.get(idx++).setHeaderCaption("Subcategory");
         columns.get(idx++).setHeaderCaption("Name");
         columns.get(idx++).setHeaderCaption("Size");
+        columns.get(idx++).setHeaderCaption("Finish");
         columns.get(idx++).setHeaderCaption("Price");
+        columns.get(idx++).setHeaderCaption("Designer");
         columns.get(idx++).setHeaderCaption("Image").setRenderer(new HtmlRenderer(), new Converter<String, String>()
         {
             @Override

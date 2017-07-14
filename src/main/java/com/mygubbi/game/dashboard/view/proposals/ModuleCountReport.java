@@ -70,7 +70,7 @@ public class ModuleCountReport {
             Statement stmt = con.createStatement();
 
             String sDate1="2017-04-19 00:00:00";
-            ProposalHeader proposalHeader = proposalDataProvider.getProposalHeader(519);
+            ProposalHeader proposalHeader = proposalDataProvider.getProposalHeader(4893);
             String city=proposalHeader.getPcity();
             Date priceDate=proposalHeader.getPriceDate();
             System.out.println("PriceDate " +priceDate);
@@ -108,7 +108,7 @@ public class ModuleCountReport {
                     codeForAddonSourcePrice=addonsourceprice.getCode();
                 }
 
-                products = proposalDataProvider.getVersionProducts(519,"1.8");
+                products = proposalDataProvider.getVersionProducts(4893,"0.1");
                 System.out.println("Products Size " +products.size());
                 for(Product product:products)
                 {

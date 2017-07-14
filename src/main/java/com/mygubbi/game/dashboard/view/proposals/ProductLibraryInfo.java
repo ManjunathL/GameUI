@@ -46,10 +46,12 @@ public class ProductLibraryInfo extends Window
     Product product;
     Proposal proposal;
     ProductLibrary productLibrary=new ProductLibrary();
+    private ProposalHeader proposalHeader;
 
     //TextField subcategory;
     ComboBox subcategory;
     ComboBox collection;
+    ComboBox designerName;
     private ComboBox subcategoryField;
     private Field<?> productTitleField;
     private Field<?> productdescriptionField;
@@ -60,6 +62,7 @@ public class ProductLibraryInfo extends Window
     private TextField length;
     private TextField height;
     private Field<?> productLocationField;
+    private ComboBox designerField;
 
     TextField productdescription;
     TextField productTitle;
@@ -161,6 +164,11 @@ public class ProductLibraryInfo extends Window
         ((TextField) productLocationField).setNullRepresentation("");
         formLayoutLeft.addComponent(productLocationField);
 
+        designerField=getDesignerCombo();
+        binder.bind(designerField,ProductLibrary.DESIGNER);
+        designerField.setRequired(true);
+        formLayoutLeft.addComponent(designerField);
+
         return formLayoutLeft;
     }
 
@@ -236,7 +244,7 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setUpdatedBy(product.getUpdatedBy());
                 productLibrary.setWallCarcass(product.getWallCarcass());
                 productLibrary.setWallCarcassCode(product.getWallCarcassCode());
-                //productLibrary.setSubCategory(subcategory.getValue());
+                productLibrary.setDesigner(designerName.getValue().toString());
                 productLibrary.setSubCategory(subcategory.getValue().toString());
                 productLibrary.setProductDescription(productdescriptionField.getValue().toString());
                 productLibrary.setProductTitle(productTitleField.getValue().toString());
@@ -292,6 +300,24 @@ public class ProductLibraryInfo extends Window
 
         return subcategory;
     }
+
+    private ComboBox getDesignerCombo() {
+        List<User> list = proposalDataProvider.getDesignerUsers();
+        LOG.info("list^^^"+list.size());
+        final BeanContainer<String, User> container =
+                new BeanContainer<>(User.class);
+        container.setBeanIdProperty(User.NAME);
+        container.addAll(list);
+
+        designerName = new ComboBox("Designer");
+        designerName.setWidth("300px");
+        designerName.setNullSelectionAllowed(false);
+        designerName.setContainerDataSource(container);
+        designerName.setItemCaptionPropertyId(User.NAME);
+
+        return designerName;
+    }
+
     private ComboBox getCollectionCombo()
     {
         List<LookupItem> collectionList =proposalDataProvider.getLookupItems(proposalDataProvider.COLLECTION_LOOKUP);
