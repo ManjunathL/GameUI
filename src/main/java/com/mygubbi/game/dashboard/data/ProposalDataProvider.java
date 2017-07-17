@@ -809,6 +809,7 @@ public class ProposalDataProvider {
 
     public String getProposalQuoteFilePdf(ProductAndAddonSelection productAndAddonSelection) {
         try {
+            productAndAddonSelection.setUserId(getUserId());
             String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
             JSONObject obj = dataProviderMode.postResource("proposal/downloadquotePdf", productSelectionsJson);
             return obj.getString("quoteFile");

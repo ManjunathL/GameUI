@@ -13,6 +13,11 @@ public class ProductAndAddonSelection {
     private double discountAmount;
     private double discountPercentage;
     private String fromVersion;
+    private String userId;
+
+    public String getUserId() {return userId;}
+
+    public void setUserId(String userId) {this.userId = userId;}
 
     public String getFromVersion() {
         return fromVersion;
@@ -70,6 +75,7 @@ public class ProductAndAddonSelection {
                 ", addonIds=" + addonIds +
                 ", discountAmount=" + discountAmount +
                 ", discountPercentage=" + discountPercentage +
+                ", userId ="+getUserId()+
                 '}';
     }
 }
