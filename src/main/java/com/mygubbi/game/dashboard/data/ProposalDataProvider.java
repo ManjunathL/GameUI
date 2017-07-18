@@ -2192,9 +2192,9 @@ public class ProposalDataProvider {
         }
     }
 
-    public JSONObject updateSowLineItems(int proposalId, double proposalVersionToBeConsidered) {
+    public JSONObject updateSowLineItems(int proposalId, double proposalVersionToBeConsidered, String readOnlyFlag) {
 
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/createsowsheet", "{\"proposalId\": " + proposalId + "," + "\"version\" : "  + proposalVersionToBeConsidered  + "," + "\"userId\" :" + "\"" + getUserId() + "\"" +  "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/createsowsheet", "{\"proposalId\": " + proposalId + "," + "\"version\" : "  + proposalVersionToBeConsidered  + "," + "\"userId\" :" + "\"" + getUserId() + "\"" +  ","  + "\"readOnlyFlag\" : "+ "\"" + readOnlyFlag  + "\"" + "}");
         return jsonObject;
     }
 
@@ -2216,19 +2216,36 @@ public class ProposalDataProvider {
         return !jsonObject.has("error");
     }
 
-    public List<Proposal_sow> getProposalSowLineItems(int proposalId, String version) {
+    public Proposal_sow getProposalSowLineItems(int proposalId, String version) {
         try {
-            JSONArray jsonArray = dataProviderMode.getResourceArray("sow/selectlineitemsv2", new HashMap<String, String>() {
+            JSONObject jsonObject = dataProviderMode.getResource("sow/selectlineitemsv2", new HashMap<String, String>() {
                 {
                     put("proposalId", String.valueOf(proposalId));
                     put("version", version);
                 }
             });
-            Proposal_sow[] items = this.mapper.readValue(jsonArray.toString(), Proposal_sow[].class);
+            return this.mapper.readValue(jsonObject.toString(), Proposal_sow.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Sow_addon_map> getAddonCodeBasedSpaces(String L1S01Code) {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("sow/selectlineitemsv2", new HashMap<String, String>() {
+                {
+                    put("L1S01Code", L1S01Code);
+                }
+            });
+            Sow_addon_map[] items = this.mapper.readValue(jsonArray.toString(), Sow_addon_map[].class);
             return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
+
+
 }
