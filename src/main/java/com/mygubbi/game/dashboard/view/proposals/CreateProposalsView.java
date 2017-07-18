@@ -633,37 +633,7 @@ public class CreateProposalsView extends Panel implements View {
         scope_of_work_1.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-
-
-                List<ProposalVersion> proposalVersions = proposal.getVersions();
-
-                double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
-                List<String> versions = new ArrayList<String>();
-
-                for (ProposalVersion proposalVersion : proposalVersions)
-                {
-                    if (proposalVersion.getVersion().equals("1.0") || proposalVersion.getVersion().startsWith("0."))                    {
-                        versions.add(proposalVersion.getVersion());
-                    }
-                }
-                if (versions.contains("1.0"))
-                {
-                    versionToBeConsidered = 1.0;
-                }
-                else
-                {
-                    for (String version : versions) {
-                        if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
-                            versionToBeConsidered = Double.parseDouble(version);
-                    }
-                }
-                LOG.debug("Version to be considered : " + versionToBeConsidered);
-                productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
-
-                JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered);
-                LOG.debug("Quote file :" + quoteFile);
-                SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
-
+                createSOWandOpenSOWPopup();
 
             }
         });
@@ -703,24 +673,68 @@ public class CreateProposalsView extends Panel implements View {
                             versionToBeConsidered = Double.parseDouble(version);
                     }
                 }
-                List<Proposal_sow> proposal_sowsV2 = proposalDataProvider.getProposalSowLineItems(proposalHeader.getId(),"2.0");
-                if (proposal_sowsV2.size() == 0)
+                Proposal_sow proposal_sowsV2 = proposalDataProvider.getProposalSowLineItems(proposalHeader.getId(),"2.0");
+                if (proposal_sowsV2 == null)
                 {
                     proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(),"1.0");
 
                 }
                 productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
-                JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered);
+                JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,"no");
 
                 SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
 
             }
         });
-        horizontalLayout.addComponent(scope_of_work_2);
+
+        List<ProposalVersion> versions = proposal.getVersions();
+        for (ProposalVersion proposalVersion : versions)
+        {
+            if (proposalVersion.getVersion().contains("1."))
+            {
+                horizontalLayout.addComponent(scope_of_work_2);
+            }
+        }
 
         verticalLayout.addComponent(horizontalLayout);
 
         return verticalLayout;
+    }
+
+    private void createSOWandOpenSOWPopup() {
+        List<ProposalVersion> proposalVersions = proposal.getVersions();
+        String readOnlyFlag = "no";
+
+        double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
+        List<String> versions = new ArrayList<String>();
+
+        for (ProposalVersion proposalVersion : proposalVersions)
+        {
+            if (proposalVersion.getVersion().equals("1.0") || proposalVersion.getVersion().startsWith("0.")){
+                versions.add(proposalVersion.getVersion());
+            }
+            if (proposalVersion.getVersion().contains("2."))
+            {
+                readOnlyFlag = "yes";
+            }
+        }
+        if (versions.contains("1.0"))
+        {
+            versionToBeConsidered = 1.0;
+        }
+        else
+        {
+            for (String version : versions) {
+                if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
+                    versionToBeConsidered = Double.parseDouble(version);
+            }
+        }
+        LOG.debug("Version to be considered : " + versionToBeConsidered);
+        productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+
+        JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readOnlyFlag);
+        LOG.debug("Quote file :" + quoteFile);
+        SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
     }
 
     private Component buildBoq() {
@@ -1772,5 +1786,17 @@ public class CreateProposalsView extends Panel implements View {
     {
         proposalHeader.setPackageFlag(valueChangeEvent.getProperty().getValue().toString());
     }
+
+   /* private boolean validateAddonsAgainstSOW(int proposalId, String version)
+    {
+        List<AddonProduct> addonProducts = proposalDataProvider.getVersionAddons(proposalId,version);
+
+        List<Proposal_sow> proposal_sows = proposalDataProvider.getProposalSowLineItems(proposalId,version);
+
+        List<Sow_addon_map> addonsBasedOnSpaces  = proposalDataProvider.getAddonCodeBasedSpaces(L1SCode);
+
+
+
+    }*/
 }
 

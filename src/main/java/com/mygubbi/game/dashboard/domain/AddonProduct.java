@@ -21,6 +21,7 @@ public class AddonProduct implements Cloneable {
     public static final String RATE = "rate";
     public static final String UOM = "uom";
     public static final String ADDON_SPACE_TYPE = "spaceType";
+    public static final String ADDON_ROOM = "roomcode";
     public static final String ADDON_CATEGORY_CODE = "categoryCode";
     public static final String PRODUCT_TYPE_CODE = "productTypeCode";
     public static final String PRODUCT_SUBTYPE_CODE = "productSubtypeCode";
@@ -36,6 +37,8 @@ public class AddonProduct implements Cloneable {
     public static final String MARGIN="margin";
     public static final String SOURCE_PRICE="sourcePrice";
     public static final String AMOUNT_WO_TAX="amountWOTax";
+    public static final String SPACE_TYPE="spaceType";
+    public static final String ROOM_CODE="roomcode";
 
     private int seq;
     private int id;
@@ -44,7 +47,6 @@ public class AddonProduct implements Cloneable {
     private String code;
     private String catalogueCode;
     private String title;
-    private String spaceType;
     private String categoryCode;
     private String category;
     private String product;
@@ -65,6 +67,8 @@ public class AddonProduct implements Cloneable {
     private double margin;
     private double sourcePrice;
     private double amountWOTax;
+    private String spaceType;
+    private String roomcode;
 
     private boolean add = false;
 
@@ -308,6 +312,14 @@ public class AddonProduct implements Cloneable {
 
     public void setSpaceType(String spaceType) {
         this.spaceType = spaceType;
+    }
+
+    public String getRoomcode() {
+        return roomcode;
+    }
+
+    public void setRoomcode(String roomcode) {
+        this.roomcode = roomcode;
     }
 
     @Override

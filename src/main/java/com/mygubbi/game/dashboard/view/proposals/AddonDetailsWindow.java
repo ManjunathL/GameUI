@@ -5,6 +5,7 @@ import com.mygubbi.game.dashboard.config.ConfigHolder;
 import com.mygubbi.game.dashboard.data.AddonBrand;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
@@ -29,6 +30,8 @@ import java.io.File;
 import java.sql.Date;
 import java.util.List;
 
+import static com.mygubbi.game.dashboard.domain.Product.ROOM_CODE;
+import static com.mygubbi.game.dashboard.domain.Product.SPACE_TYPE;
 import static java.lang.StrictMath.round;
 
 /**
@@ -42,11 +45,13 @@ public class AddonDetailsWindow extends Window {
     private final AddonProduct addonProduct;
     private final BeanFieldGroup<AddonProduct> binder = new BeanFieldGroup<>(AddonProduct.class);
     private ComboBox category;
+    private ComboBox spaceType;
     private ComboBox productType;
     private ProposalHeader proposalHeader;
     private ComboBox productSubtype;
     private ComboBox brand;
     private ComboBox product;
+    private TextField roomText;
     private TextArea title;
     private TextField uom;
     private TextField rate;
@@ -172,6 +177,25 @@ public class AddonDetailsWindow extends Window {
         horizontalLayout.addComponent(formLayoutLeft);
         horizontalLayout.setExpandRatio(formLayoutLeft,0.4f);
 
+        this.spaceType = getSimpleItemFilledCombo("Space Type",ProposalDataProvider.SPACETYPE_LOOKUP,null);
+        this.spaceType.setWidth("100%");
+        spaceType.setRequired(true);
+        binder.bind(spaceType,AddonProduct.ADDON_SPACE_TYPE);
+        spaceType.addValueChangeListener(valueChangeEvent -> {
+            String code = (String) valueChangeEvent.getProperty().getValue();
+            String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
+            addonProduct.setSpaceType(title);
+
+        });
+        formLayoutLeft.addComponent(this.spaceType);
+
+
+
+        this.roomText = new TextField("Room");
+        this.roomText.setRequired(true);
+        roomText.setNullRepresentation("");
+        binder.bind(this.roomText, AddonProduct.ADDON_ROOM);
+        formLayoutLeft.addComponent(roomText);
 
         this.category = getCategoryCombo();
         this.category.setRequired(true);
@@ -661,7 +685,7 @@ public class AddonDetailsWindow extends Window {
         });
         applyButton.focus();
         applyButton.setVisible(true);
-        applyButton.setEnabled(this.binder.isValid());
+        /*applyButton.setEnabled(this.binder.isValid());*/
 
         footer.addComponent(applyButton);
         footer.setComponentAlignment(cancelBtn, Alignment.TOP_RIGHT);
@@ -673,6 +697,28 @@ public class AddonDetailsWindow extends Window {
         if (this.binder.isValid()) {
             this.applyButton.setEnabled(true);
         }
+    }
+
+    private ComboBox getSimpleItemFilledCombo(String caption, String dataType, Property.ValueChangeListener listener) {
+        List<LookupItem> list = proposalDataProvider.getLookupItems(dataType);
+        return getSimpleItemFilledCombo(caption, list, listener);
+    }
+
+    private ComboBox getSimpleItemFilledCombo(String caption, List<LookupItem> list, Property.ValueChangeListener listener) {
+
+        final BeanContainer<String, LookupItem> container =
+                new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty("code");
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId("title");
+        if (listener != null) select.addValueChangeListener(listener);
+        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
     }
 
     public static void open(AddonProduct addon, String title, boolean isProposalAddon, ProposalVersion proposalVersion, ProposalHeader proposalHeader)

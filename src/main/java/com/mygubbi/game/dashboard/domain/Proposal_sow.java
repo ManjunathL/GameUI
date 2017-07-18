@@ -1,5 +1,7 @@
 package com.mygubbi.game.dashboard.domain;
 
+import us.monoid.json.JSONObject;
+
 /**
  * Created by User on 10-07-2017.
  */
@@ -8,6 +10,7 @@ public class Proposal_sow {
     public int proposalId;
     public String id;
     public String version;
+
 
 
     public int getProposalId() {
