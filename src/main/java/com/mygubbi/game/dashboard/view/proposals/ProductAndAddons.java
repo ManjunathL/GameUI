@@ -1454,47 +1454,11 @@ public class ProductAndAddons extends Window
                     return;
                 }
 
-                proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
-                proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
                 proposalHeader.setStatus(proposalVersion.getStatus());
                 proposalHeader.setVersion(versionNum.getValue());
-                boolean success = proposalDataProvider.saveProposal(proposalHeader);
-                if (success) {
-                    boolean mapped = true;
-                    for (Product product : proposal.getProducts()) {
-                        Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId(), product.getFromVersion());
-                        mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (!populatedProduct.getModules().isEmpty());
-                        if (!mapped) {
-                            break;
-                        }
-                    }
+                response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId());
 
-                    if (!mapped) {
-                        NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    } else {
-                        //saveProposalVersion();
-                        response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId());
-                        if (success) {
-                            saveButton.setVisible(false);
-                            addKitchenOrWardrobeButton.setVisible(false);
-                            addFromCatalogueButton.setVisible(false);
-                            addonAddButton.setVisible(false);
-                            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
-                            {
-                                addFromProductLibrary.setVisible(false);
-                            }
 
-                            customAddonAddButton.setVisible(false);
-                        /*versionStatus.setValue("Published");*/
-                            NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                            handleState();
-                        } else {
-                            NotificationUtil.showNotification("Couldn't Publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        }
-                    }
-                } else {
-                    NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                }
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
@@ -1721,6 +1685,8 @@ public class ProductAndAddons extends Window
 
             proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+            close();
         }
         catch (Exception e)
         {
@@ -2027,24 +1993,14 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification(response.getString("comments"),NotificationUtil.STYLE_BAR_WARNING_SMALL);
-
-
-                ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to ignore and publish the version",
-                        "Yes", "Open SOW sheet", dialog -> {
-                            if (dialog.isConfirmed()) {
-                               saveProposalVersion();
-                                proposalDataProvider.publishVersionOverride(version,proposalId);
-                                DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-                                NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                                DashboardEventBus.unregister(this);
-                                close();
-                            }
-                            else
-                            {
-                                createSOWandOpenSOWPopup();
-                            }
-                        });
+                response.put("discountAmount", discountAmount.getValue());
+                response.put("grandTotal", Double.parseDouble(grandTotal.getValue()));
+                response.put("discountTotal", Double.parseDouble(discountTotal.getValue()));
+                response.put("discountPercentage", Double.parseDouble(discountPercentage.getValue()));
+                response.put("remarksTextArea", remarksTextArea.getValue());
+                response.put("ttitle", this.ttitle.getValue());
+                response.put("versionNum", String.valueOf(versionNum));
+                VersionPublishOrDiscardPopUpWindow.open(response,proposalId,version, this.proposal, proposalVersion,productAndAddonSelection );
 
             }
         } catch (JSONException e) {
@@ -2053,42 +2009,5 @@ public class ProductAndAddons extends Window
 
     }
 
-    private void createSOWandOpenSOWPopup() {
-        List<ProposalVersion> proposalVersions = proposal.getVersions();
-        String readOnlyFlag = "no";
-
-        double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
-        List<String> versions = new ArrayList<String>();
-
-        for (ProposalVersion proposalVersion : proposalVersions)
-        {
-            if (proposalVersion.getVersion().equals("1.0") || proposalVersion.getVersion().startsWith("0.")){
-                versions.add(proposalVersion.getVersion());
-            }
-            if (proposalVersion.getVersion().contains("2."))
-            {
-                readOnlyFlag = "yes";
-            }
-        }
-        if (versions.contains("1.0"))
-        {
-            versionToBeConsidered = 1.0;
-        }
-        else
-        {
-            for (String version : versions) {
-                if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
-                    versionToBeConsidered = Double.parseDouble(version);
-            }
-        }
-        LOG.debug("Version to be considered : " + versionToBeConsidered);
-        productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
-
-        NotificationUtil.showNotification("Generating the Scope of services sheet v1.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-
-        JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readOnlyFlag);
-        LOG.debug("Quote file :" + quoteFile);
-        SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
-    }
 }
 

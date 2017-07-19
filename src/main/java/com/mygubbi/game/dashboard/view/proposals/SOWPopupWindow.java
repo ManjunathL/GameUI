@@ -4,6 +4,7 @@ package com.mygubbi.game.dashboard.view.proposals;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.BrowserWindowOpener;
@@ -44,6 +45,7 @@ public class SOWPopupWindow extends Window {
         setClosable(false);
 
         setContent(buildMainWindow());
+        DashboardEventBus.register(this);
 
     }
 
@@ -102,7 +104,7 @@ public class SOWPopupWindow extends Window {
             public void buttonClick(Button.ClickEvent clickEvent) {
 
                 Proposal_sow proposal_sow = new Proposal_sow();
-                proposal_sow.setProposalId(proposalHeader.getId());
+                proposal_sow.setProposalId(productAndAddonSelection.getProposalId());
                 proposal_sow.setId(id);
                 try {
                     proposal_sow.setVersion(quoteFile.getString("version"));
@@ -113,6 +115,7 @@ public class SOWPopupWindow extends Window {
                 if (!(saved == null))
                 {
                     NotificationUtil.showNotification("Saved Successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    DashboardEventBus.unregister(this);
                     close();
                 }
                 else {
@@ -128,9 +131,7 @@ public class SOWPopupWindow extends Window {
         discard_sheet.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                Proposal_sow proposal_sow = new Proposal_sow();
-                proposal_sow.setProposalId(proposalHeader.getId());
-                proposal_sow.setId(id);
+                DashboardEventBus.unregister(this);
                 close();
 
             }

@@ -719,7 +719,7 @@ public class CreateProposalsView extends Panel implements View {
             if (proposalVersion.getVersion().equals("1.0") || proposalVersion.getVersion().startsWith("0.")){
                 versions.add(proposalVersion.getVersion());
             }
-            if (proposalVersion.getVersion().contains("2."))
+            if (Double.parseDouble(proposalVersion.getVersion()) >= 1.0)
             {
                 readOnlyFlag = "yes";
             }
