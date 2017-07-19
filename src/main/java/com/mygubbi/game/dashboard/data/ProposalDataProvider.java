@@ -387,9 +387,14 @@ public class ProposalDataProvider {
         }
     }
 
-    public boolean publishVersion(String version, int proposalId) {
+    public JSONObject publishVersion(String version, int proposalId) {
         JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publish", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "}");
-        return !jsonObject.has("error");
+        return jsonObject;
+    }
+
+    public JSONObject publishVersionOverride(String version, int proposalId) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publishoverride", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "}");
+        return jsonObject;
     }
 
     public boolean confirmVersion(String version, int proposalId, String fromVersion, String toVersion) {

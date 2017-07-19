@@ -1434,6 +1434,8 @@ public class ProductAndAddons extends Window
 
 
     private void submit(Button.ClickEvent clickEvent) {
+
+        JSONObject response = null;
         if(proposalHeader.getMaxDiscountPercentage()>=Double.valueOf(discountPercentage.getValue())) {
             try {
                 if(proposalVersion.getAmount()== 0)
@@ -1470,8 +1472,8 @@ public class ProductAndAddons extends Window
                     if (!mapped) {
                         NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     } else {
-                        saveProposalVersion();
-                        success = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId());
+                        //saveProposalVersion();
+                        response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId());
                         if (success) {
                             saveButton.setVisible(false);
                             addKitchenOrWardrobeButton.setVisible(false);
@@ -1496,16 +1498,20 @@ public class ProductAndAddons extends Window
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
-            proposalDataProvider.updateVersion(proposalVersion);
+//            proposalDataProvider.updateVersion(proposalVersion);
 
             if (!(proposalVersion.getVersion().startsWith("2.")))
             {
                 SendToCRMOnPublish sendToCRM = updatePriceInCRMOnPublish();
                 proposalDataProvider.updateCrmPriceOnPublish(sendToCRM);
             }
-            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-            DashboardEventBus.unregister(this);
-            close();
+
+            publishVersionMessage(response,proposalVersion.getProposalId(),proposalVersion.getVersion());
+
+
+//            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+            //DashboardEventBus.unregister(this);
+            //close();
         }
         else {
             NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -1715,8 +1721,6 @@ public class ProductAndAddons extends Window
 
             proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-            close();
         }
         catch (Exception e)
         {
@@ -2014,7 +2018,7 @@ public class ProductAndAddons extends Window
     private void publishVersionMessage(JSONObject response, int proposalId,String version)
     {
         try {
-            if (response.getString("status").equals("success"))
+            if (response.getString("status").equalsIgnoreCase("success"))
             {
                 NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
@@ -2023,14 +2027,14 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                NotificationUtil.showNotification("",NotificationUtil.STYLE_BAR_WARNING_SMALL);
+                NotificationUtil.showNotification(response.getString("comments"),NotificationUtil.STYLE_BAR_WARNING_SMALL);
 
 
                 ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to ignore and publish the version",
                         "Yes", "Open SOW sheet", dialog -> {
                             if (dialog.isConfirmed()) {
                                saveProposalVersion();
-                                proposalDataProvider.publishVersion(version,proposalId);
+                                proposalDataProvider.publishVersionOverride(version,proposalId);
                                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
                                 NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                                 DashboardEventBus.unregister(this);
