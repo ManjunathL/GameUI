@@ -609,10 +609,10 @@ public class CreateProposalsView extends Panel implements View {
 
         verticalLayout.setSpacing(true);
 
-        Label label = new Label("Please click the below buttons in order to open the scope of services");
+        Label label = new Label("Please click the below button in order to open the scope of services");
         verticalLayout.addComponent(label);
 
-        Label label2 = new Label("On clicking of Open Scope of services button, you will be redirected to a new page");
+        Label label2 = new Label("On clicking of Open Scope of services button, you will be redirected to a new window");
         verticalLayout.addComponent(label2);
 
         verticalLayout.setSpacing(true);
@@ -652,6 +652,7 @@ public class CreateProposalsView extends Panel implements View {
             public void buttonClick(Button.ClickEvent clickEvent) {
 
                 List<ProposalVersion> proposalVersions = proposal.getVersions();
+                String readonlyFlag = "no" ;
 
                 double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
                 List<String> versions = new ArrayList<String>();
@@ -672,15 +673,20 @@ public class CreateProposalsView extends Panel implements View {
                         if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
                             versionToBeConsidered = Double.parseDouble(version);
                     }
-                }
-                Proposal_sow proposal_sowsV2 = proposalDataProvider.getProposalSowLineItems(proposalHeader.getId(),"2.0");
+
+                    if (versionToBeConsidered > 2.0)
+                    {
+                        readonlyFlag = "yes";
+                    }
+                }               Proposal_sow proposal_sowsV2 = proposalDataProvider.getProposalSowLineItems(proposalHeader.getId(),"2.0");
                 if (proposal_sowsV2 == null)
                 {
                     proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(),"1.0");
 
                 }
+                NotificationUtil.showNotification("Generating the Scope of services sheet v2.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                 productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
-                JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,"no");
+                JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readonlyFlag);
 
                 SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
 
@@ -731,6 +737,8 @@ public class CreateProposalsView extends Panel implements View {
         }
         LOG.debug("Version to be considered : " + versionToBeConsidered);
         productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+
+        NotificationUtil.showNotification("Generating the Scope of services sheet v1.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
 
         JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readOnlyFlag);
         LOG.debug("Quote file :" + quoteFile);

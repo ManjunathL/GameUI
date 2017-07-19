@@ -38,6 +38,8 @@ import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
+import us.monoid.json.JSONException;
+import us.monoid.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -2007,6 +2009,82 @@ public class ProductAndAddons extends Window
             discountAmount.setReadOnly(true);
             discountPercentage.setReadOnly(true);
         }
+    }
+
+    private void publishVersionMessage(JSONObject response, int proposalId,String version)
+    {
+        try {
+            if (response.getString("status").equals("success"))
+            {
+                NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+                DashboardEventBus.unregister(this);
+                close();
+            }
+            else
+            {
+                NotificationUtil.showNotification("",NotificationUtil.STYLE_BAR_WARNING_SMALL);
+
+
+                ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to ignore and publish the version",
+                        "Yes", "Open SOW sheet", dialog -> {
+                            if (dialog.isConfirmed()) {
+                               saveProposalVersion();
+                                proposalDataProvider.publishVersion(version,proposalId);
+                                DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+                                NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                                DashboardEventBus.unregister(this);
+                                close();
+                            }
+                            else
+                            {
+                                createSOWandOpenSOWPopup();
+                            }
+                        });
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void createSOWandOpenSOWPopup() {
+        List<ProposalVersion> proposalVersions = proposal.getVersions();
+        String readOnlyFlag = "no";
+
+        double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
+        List<String> versions = new ArrayList<String>();
+
+        for (ProposalVersion proposalVersion : proposalVersions)
+        {
+            if (proposalVersion.getVersion().equals("1.0") || proposalVersion.getVersion().startsWith("0.")){
+                versions.add(proposalVersion.getVersion());
+            }
+            if (proposalVersion.getVersion().contains("2."))
+            {
+                readOnlyFlag = "yes";
+            }
+        }
+        if (versions.contains("1.0"))
+        {
+            versionToBeConsidered = 1.0;
+        }
+        else
+        {
+            for (String version : versions) {
+                if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
+                    versionToBeConsidered = Double.parseDouble(version);
+            }
+        }
+        LOG.debug("Version to be considered : " + versionToBeConsidered);
+        productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+
+        NotificationUtil.showNotification("Generating the Scope of services sheet v1.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+
+        JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readOnlyFlag);
+        LOG.debug("Quote file :" + quoteFile);
+        SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
     }
 }
 

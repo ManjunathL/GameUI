@@ -55,7 +55,7 @@ public class SOWPopupWindow extends Window {
         verticalLayout1.setSpacing(true);
 
         Label label_message = new Label();
-        label_message.setCaption("Click on the link to open the file.");
+        label_message.setCaption("Click on the Open Sheet button to edit the Scope Of Services.");
         label_message.addStyleName(ValoTheme.LABEL_BOLD);
         label_message.addStyleName(ValoTheme.LABEL_H2);
         verticalLayout1.addComponent(label_message);
@@ -112,7 +112,7 @@ public class SOWPopupWindow extends Window {
                 JSONObject saved = proposalDataProvider.saveSOWFile(proposal_sow);
                 if (!(saved == null))
                 {
-                    NotificationUtil.showNotification("File Saved Successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    NotificationUtil.showNotification("Saved Successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                     close();
                 }
                 else {
