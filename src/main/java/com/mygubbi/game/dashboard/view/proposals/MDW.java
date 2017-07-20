@@ -23,15 +23,11 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.themes.Runo;
 import com.vaadin.ui.themes.ValoTheme;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -819,13 +815,13 @@ public class MDW extends Window {
                 }
                 //hinges
 //              List<MGModule> hingesPresent=proposalDataProvider.retrieveModuleDetails(module.getMgCode());
-                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), product.getHinge());
+                List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getCodeLookup(module.getMgCode(), product.getHinge());
                 //LOG.info("size of hinge" + hingeMaps1.size());
                 module.setHingePack(hingeMaps1);
                 for (MGModule m : handlePresent) {
                     if (m.getHingeMandatory().equals("Yes")) {
                         module.setHingePresent(m.getHingeMandatory());
-                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), product.getHinge());
+                        List<ModuleHingeMap> hingeMaps = proposalDataProvider.getCodeLookup(module.getMgCode(), product.getHinge());
                         module.setHingePack(hingeMaps);
                     }
                 }

@@ -33,6 +33,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.gridutil.renderer.ViewButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditButtonValueRenderer;
+import us.monoid.json.JSONException;
+import us.monoid.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -42,6 +44,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -203,7 +206,25 @@ public class CreateProposalsView extends Panel implements View {
                     true
             );
 //            tabs.addTab(fileAttachmentComponent, "Attachments");
-            //tabs.addTab(buildScopeOfwork(), "Scope of Services");
+            tabs.addTab(buildScopeOfwork(), "Scope of Services");
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
+        boolean DSO_flag = false;
+
+
+                List<ProposalVersion> proposalVersions = proposal.getVersions();
+        for (ProposalVersion proposalVersion : proposalVersions )
+        {
+            if (proposalVersion.getVersion().equals("2.0"))
+            {
+                DSO_flag = true;
+            }
+        }
+
+        if (role.equals("planning") || role.equals("admin") && DSO_flag)
+        {
+            tabs.addTab(buildBoq(), "BOQ");
+        }
 
 
 
@@ -539,13 +560,13 @@ public class CreateProposalsView extends Panel implements View {
                                     module.setKnobPresent(m.getKnobMandatory());
                                 }
                             }
-                            List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                            List<ModuleHingeMap> hingeMaps1 = proposalDataProvider.getCodeLookup(module.getMgCode(), module.getHingeType());
                             //LOG.info("size of hinge" + hingeMaps1.size());
                             module.setHingePack(hingeMaps1);
                             for (MGModule m : handlePresent) {
                                 if (m.getHingeMandatory().equals("Yes")) {
                                     module.setHingePresent(m.getHingeMandatory());
-                                    List<ModuleHingeMap> hingeMaps = proposalDataProvider.getHinges(module.getMgCode(), module.getHingeType());
+                                    List<ModuleHingeMap> hingeMaps = proposalDataProvider.getCodeLookup(module.getMgCode(), module.getHingeType());
                                     module.setHingePack(hingeMaps);
                                 }
                             }
@@ -588,6 +609,149 @@ public class CreateProposalsView extends Panel implements View {
 
         verticalLayout.setSpacing(true);
 
+        Label label = new Label("Please click the below button in order to open the scope of services");
+        verticalLayout.addComponent(label);
+
+        Label label2 = new Label("On clicking of Open Scope of services button, you will be redirected to a new window");
+        verticalLayout.addComponent(label2);
+
+        verticalLayout.setSpacing(true);
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeFull();
+        horizontalLayout.setMargin(new MarginInfo(true, true, true, true));
+
+        Button scope_of_work_1 = new Button();
+        scope_of_work_1.setCaption("Scope of Services V1");
+        scope_of_work_1.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        scope_of_work_1.setCaptionAsHtml(true);
+        scope_of_work_1.setIcon(FontAwesome.BINOCULARS);
+        productAndAddonSelection.setFromVersion("0.0");
+
+
+
+        scope_of_work_1.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                createSOWandOpenSOWPopup();
+
+            }
+        });
+
+
+        horizontalLayout.addComponent(scope_of_work_1);
+
+        Button scope_of_work_2 = new Button();
+        scope_of_work_2.setCaption("Scope of Services V2");
+        scope_of_work_2.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        scope_of_work_2.setCaptionAsHtml(true);
+        scope_of_work_2.setIcon(FontAwesome.BINOCULARS);
+
+        scope_of_work_2.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+                List<ProposalVersion> proposalVersions = proposal.getVersions();
+                String readonlyFlag = "no" ;
+
+                double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
+                List<String> versions = new ArrayList<String>();
+
+                for (ProposalVersion proposalVersion : proposalVersions)
+                {
+                    if (proposalVersion.getVersion().equals("2.0") || proposalVersion.getVersion().startsWith("1."))                    {
+                        versions.add(proposalVersion.getVersion());
+                    }
+                }
+                if (versions.contains("2.0"))
+                {
+                    versionToBeConsidered = 2.0;
+                }
+                else
+                {
+                    for (String version : versions) {
+                        if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
+                            versionToBeConsidered = Double.parseDouble(version);
+                    }
+
+                    if (versionToBeConsidered > 2.0)
+                    {
+                        readonlyFlag = "yes";
+                    }
+                }               Proposal_sow proposal_sowsV2 = proposalDataProvider.getProposalSowLineItems(proposalHeader.getId(),"2.0");
+                if (proposal_sowsV2 == null)
+                {
+                    proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(),"1.0");
+
+                }
+                NotificationUtil.showNotification("Generating the Scope of services sheet v2.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+                JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readonlyFlag);
+
+                SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
+
+            }
+        });
+
+        List<ProposalVersion> versions = proposal.getVersions();
+        for (ProposalVersion proposalVersion : versions)
+        {
+            if (proposalVersion.getVersion().contains("1."))
+            {
+                horizontalLayout.addComponent(scope_of_work_2);
+            }
+        }
+
+        verticalLayout.addComponent(horizontalLayout);
+
+        return verticalLayout;
+    }
+
+    private void createSOWandOpenSOWPopup() {
+        List<ProposalVersion> proposalVersions = proposal.getVersions();
+        String readOnlyFlag = "no";
+
+        double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
+        List<String> versions = new ArrayList<String>();
+
+        for (ProposalVersion proposalVersion : proposalVersions)
+        {
+            if (proposalVersion.getVersion().equals("1.0") || proposalVersion.getVersion().startsWith("0.")){
+                versions.add(proposalVersion.getVersion());
+            }
+            if (Double.parseDouble(proposalVersion.getVersion()) >= 1.0)
+            {
+                readOnlyFlag = "yes";
+            }
+        }
+        if (versions.contains("1.0"))
+        {
+            versionToBeConsidered = 1.0;
+        }
+        else
+        {
+            for (String version : versions) {
+                if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
+                    versionToBeConsidered = Double.parseDouble(version);
+            }
+        }
+        LOG.debug("Version to be considered : " + versionToBeConsidered);
+        productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+
+        NotificationUtil.showNotification("Generating the Scope of services sheet v1.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+
+        JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readOnlyFlag);
+        LOG.debug("Quote file :" + quoteFile);
+        SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
+    }
+
+    private Component buildBoq() {
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+        verticalLayout.setMargin(new MarginInfo(true, true, true, true));
+
+        verticalLayout.setSpacing(true);
+
         Label label = new Label("Please click the below buttons in order to open the scope of services");
         verticalLayout.addComponent(label);
 
@@ -597,61 +761,31 @@ public class CreateProposalsView extends Panel implements View {
         horizontalLayout.setSizeFull();
         horizontalLayout.setMargin(new MarginInfo(true, true, true, true));
 
-        Label version_1 = new Label("Version 1.0 :");
-        horizontalLayout.addComponent(version_1);
+        Button boq = new Button();
+        boq.setCaption("BOQ");
+        boq.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        boq.setCaptionAsHtml(true);
 
-        Button scope_of_work = new Button();
-        scope_of_work.setCaption("Scope of Work");
-        scope_of_work.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        scope_of_work.setCaptionAsHtml(true);
-        scope_of_work.setIcon(FontAwesome.BINOCULARS);
 
-        StreamResource quoteSOWresource = createSOWResource();
-        FileDownloader fileDownloaderSOW = new FileDownloader(quoteSOWresource);
-        fileDownloaderSOW.extend(scope_of_work);
-
-        horizontalLayout.addComponent(scope_of_work);
-
-        verticalLayout.addComponent(horizontalLayout);
+        boq.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                List<ProposalVersion> proposalVersions = proposal.getVersions();
+                ProposalVersion proposalVersionToBeConsidered = null;
+                for (ProposalVersion proposalVersion : proposalVersions) {
+                    if (proposalVersion.getVersion().equals("2.0"))
+                    {
+                        proposalVersionToBeConsidered = proposalVersion;
+                    }
+                }
+                BoqPopupWindow.open(proposalHeader,productAndAddonSelection);
+            }
+        });
 
 
         return verticalLayout;
     }
 
-    private StreamResource createSOWResource() {
-
-        StreamResource.StreamSource source = () ->
-        {
-            if (!(proposal.getProposalHeader().getQuoteNoNew() == null))
-            {
-
-                String quoteFile = proposalDataProvider.getProposalSOWFile(this.productAndAddonSelection);
-                InputStream input = null;
-                try {
-                    input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return input;
-            }
-            else
-            {
-                return null;
-            }
-        };
-        return new StreamResource(source, "SOW.xlsx");
-    }
-
-    private void checkProductsAndAddonsAvailable(Button.ClickEvent clickEvent) {
-
-        /*if (proposal.getProducts().isEmpty() && proposal.getAddons().isEmpty())
-        {
-            NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-        }*/
-           /* if (proposal.getAddons().isEmpty()) {
-                NotificationUtil.showNotification("No Addons found.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
-            }*/
-    }
 
     private void refreshVersionsGrid(List<ProposalVersion> updatedProposalVersions) {
         versionContainer.addAll(updatedProposalVersions);
@@ -1660,5 +1794,17 @@ public class CreateProposalsView extends Panel implements View {
     {
         proposalHeader.setPackageFlag(valueChangeEvent.getProperty().getValue().toString());
     }
+
+   /* private boolean validateAddonsAgainstSOW(int proposalId, String version)
+    {
+        List<AddonProduct> addonProducts = proposalDataProvider.getVersionAddons(proposalId,version);
+
+        List<Proposal_sow> proposal_sows = proposalDataProvider.getProposalSowLineItems(proposalId,version);
+
+        List<Sow_addon_map> addonsBasedOnSpaces  = proposalDataProvider.getAddonCodeBasedSpaces(L1SCode);
+
+
+
+    }*/
 }
 

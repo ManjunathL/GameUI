@@ -38,6 +38,8 @@ import org.apache.logging.log4j.Logger;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
+import us.monoid.json.JSONException;
+import us.monoid.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -1432,6 +1434,8 @@ public class ProductAndAddons extends Window
 
 
     private void submit(Button.ClickEvent clickEvent) {
+
+        JSONObject response = null;
         if(proposalHeader.getMaxDiscountPercentage()>=Double.valueOf(discountPercentage.getValue())) {
             try {
                 if(proposalVersion.getAmount()== 0)
@@ -1450,60 +1454,28 @@ public class ProductAndAddons extends Window
                     return;
                 }
 
-                proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
-                proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
                 proposalHeader.setStatus(proposalVersion.getStatus());
                 proposalHeader.setVersion(versionNum.getValue());
-                boolean success = proposalDataProvider.saveProposal(proposalHeader);
-                if (success) {
-                    boolean mapped = true;
-                    for (Product product : proposal.getProducts()) {
-                        Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId(), product.getFromVersion());
-                        mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (!populatedProduct.getModules().isEmpty());
-                        if (!mapped) {
-                            break;
-                        }
-                    }
+                response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId());
 
-                    if (!mapped) {
-                        NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    } else {
-                        saveProposalVersion();
-                        success = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId());
-                        if (success) {
-                            saveButton.setVisible(false);
-                            addKitchenOrWardrobeButton.setVisible(false);
-                            addFromCatalogueButton.setVisible(false);
-                            addonAddButton.setVisible(false);
-                            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
-                            {
-                                addFromProductLibrary.setVisible(false);
-                            }
 
-                            customAddonAddButton.setVisible(false);
-                        /*versionStatus.setValue("Published");*/
-                            NotificationUtil.showNotification("Published successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                            handleState();
-                        } else {
-                            NotificationUtil.showNotification("Couldn't Publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        }
-                    }
-                } else {
-                    NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                }
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
-            proposalDataProvider.updateVersion(proposalVersion);
+//            proposalDataProvider.updateVersion(proposalVersion);
 
             if (!(proposalVersion.getVersion().startsWith("2.")))
             {
                 SendToCRMOnPublish sendToCRM = updatePriceInCRMOnPublish();
                 proposalDataProvider.updateCrmPriceOnPublish(sendToCRM);
             }
-            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-            DashboardEventBus.unregister(this);
-            close();
+
+            publishVersionMessage(response,proposalVersion.getProposalId(),proposalVersion.getVersion());
+
+
+//            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+            //DashboardEventBus.unregister(this);
+            //close();
         }
         else {
             NotificationUtil.showNotification("Discount should not exceed " +rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2063,5 +2035,34 @@ public class ProductAndAddons extends Window
             discountPercentage.setReadOnly(true);
         }
     }
+
+    private void publishVersionMessage(JSONObject response, int proposalId,String version)
+    {
+        try {
+            if (response.getString("status").equalsIgnoreCase("success"))
+            {
+                NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+                DashboardEventBus.unregister(this);
+                close();
+            }
+            else
+            {
+                response.put("discountAmount", discountAmount.getValue());
+                response.put("grandTotal", Double.parseDouble(grandTotal.getValue()));
+                response.put("discountTotal", Double.parseDouble(discountTotal.getValue()));
+                response.put("discountPercentage", Double.parseDouble(discountPercentage.getValue()));
+                response.put("remarksTextArea", remarksTextArea.getValue());
+                response.put("ttitle", this.ttitle.getValue());
+                response.put("versionNum", String.valueOf(versionNum));
+                VersionPublishOrDiscardPopUpWindow.open(response,proposalId,version, this.proposal, proposalVersion,productAndAddonSelection );
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }
 

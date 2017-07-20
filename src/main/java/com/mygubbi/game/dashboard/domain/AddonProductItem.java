@@ -5,11 +5,13 @@ package com.mygubbi.game.dashboard.domain;
  */
 public class  AddonProductItem {
     public static final String CATALOGUE_CODE = "catalogueCode";
+    public static final String ROOM = "room";
     public static final String PRODUCT = "product";
     public static final String TITLE = "title";
     public static final String RATE = "rate";
     public static final String CODE = "code";
     private String catalogueCode;
+    private String room;
     private String product;
     private String title;
     private String code;
