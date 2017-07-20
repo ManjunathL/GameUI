@@ -1260,8 +1260,8 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<ProposalVersion> getLatestVersionTemproary(int proposalId, String version) {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/getlatestTemproary", new HashMap<String, String>() {
+    public List<ProposalVersion> getLatestVersionDetails(int proposalId, String version) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/getversiondetails", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId + "");
                 put("version", version + "");
@@ -1711,7 +1711,7 @@ public class ProposalDataProvider {
     {
         try {
            /* String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
-            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
+            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "http://52.66.107.178/mygubbi_crm/rest_update_opp.php");
             //LOG.info("basecrmurl " +baseCrmUrl);
             String final_amount = String.valueOf(sendToCRM.getFinal_proposal_amount_c());
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
@@ -1733,7 +1733,7 @@ public class ProposalDataProvider {
     {
         try {
             /*String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
-            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
+            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "http://52.66.107.178/mygubbi_crm/rest_update_opp.php");
            // LOG.info("basecrmurl " +baseCrmUrl);
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
         /*
@@ -2138,5 +2138,14 @@ public class ProposalDataProvider {
             NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return new ArrayList<>();
         }
+    }
+
+    public List<ProposalHeader> getProposalHeadersByCrmIds(String crmId) {
+        JSONArray proposalHeaders = dataProviderMode.getResourceArray("proposal/duplicatecrm", new HashMap<String, String>() {
+            {
+                put("crmId", crmId);
+            }
+        });
+        return getProposalHeaders(proposalHeaders);
     }
 }

@@ -1513,21 +1513,71 @@ public class ProductAndAddons extends Window
     }
 
     private SendToCRMOnPublish updatePriceInCRMOnPublish() {
+        Double amount=0.0;
+        String quoteNumberCRM="";
         SendToCRMOnPublish sendToCRM = new SendToCRMOnPublish();
         sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
-        sendToCRM.setEstimated_project_cost_c(proposalVersion.getFinalAmount());
-        sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
-        LOG.debug("Send to CRM : " + sendToCRM.toString());
+        List<ProposalHeader> proposalHeaders=proposalDataProvider.getProposalHeadersByCrmIds(proposalHeader.getCrmId());
+        for(ProposalHeader p:proposalHeaders)
+        {
+            LOG.info("p" +p);
+            LOG.info("on publish p.getstatus() " +p.getStatus()+"id"+p.getId() );
+
+                LOG.info("inside if" );
+                List<ProposalVersion> pv=proposalDataProvider.getLatestVersionDetails(p.getId(),p.getVersion());
+
+                for(ProposalVersion version:pv)
+                {
+                    if(p.getStatus().equals("Published"))
+                    {
+                        LOG.info("pv"+ version.getVersion()+"pv quote"+ version.getProposalId());
+                        amount+=version.getFinalAmount();
+                        LOG.info("amount " +amount);
+                        quoteNumberCRM+=p.getQuoteNoNew();
+                    }
+
+            }
+            LOG.info("psize***"+proposalHeaders.size());
+        }
+        sendToCRM.setEstimated_project_cost_c(amount);
+        sendToCRM.setQuotation_number_c(quoteNumberCRM);
+        LOG.debug("Send to CRM on publish### : " + sendToCRM.toString());
         return sendToCRM;
     }
 
     private SendToCRM updatePriceInCRMOnConfirm() {
+        Double amount=0.0;
+        String quoteNumberCRM="";
         SendToCRM sendToCRM = new SendToCRM();
         sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
-        sendToCRM.setFinal_proposal_amount_c(proposalVersion.getFinalAmount());
-        sendToCRM.setEstimated_project_cost_c(proposalVersion.getFinalAmount());
-        sendToCRM.setQuotation_number_c(proposalHeader.getQuoteNoNew());
-        LOG.debug("Send to CRM : " + sendToCRM.toString());
+
+        List<ProposalHeader> proposalHeaders=proposalDataProvider.getProposalHeadersByCrmIds(proposalHeader.getCrmId());
+        for(ProposalHeader p:proposalHeaders) {
+            if ((p.getStatus().equals("DSO")) || (p.getStatus().equals("Confirmed"))){
+                LOG.info("p" + p);
+                LOG.info("status " + p.getStatus() + "id" + p.getId() +p.getVersion());
+                // if(p.getStatus().equals("DSO")|| p.getStatus().equals("Confirmed"))
+
+                LOG.info("inside if");
+                List<ProposalVersion> pv = proposalDataProvider.getLatestVersionDetails(p.getId(), p.getVersion());
+                LOG.info("size of pv"+pv.size());
+
+                for (ProposalVersion version : pv) {
+                    LOG.info("pv" + version.getVersion() + "pv quote" + version.getProposalId());
+                    amount += version.getFinalAmount();
+                    LOG.info("confirmed amount " + amount);
+                }
+
+                quoteNumberCRM += p.getQuoteNoNew();
+
+
+                LOG.info("psize***" + proposalHeaders.size());
+            }
+        }
+        sendToCRM.setFinal_proposal_amount_c(amount);
+        sendToCRM.setEstimated_project_cost_c(amount);
+        sendToCRM.setQuotation_number_c(quoteNumberCRM);
+        LOG.debug("Send to CRM on confirm### : " + sendToCRM.toString());
 
         return sendToCRM;
     }
@@ -1552,7 +1602,7 @@ public class ProductAndAddons extends Window
             proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
             proposalHeader.setStatus(proposalVersion.getStatus());
-
+            proposalHeader.setVersion(proposalVersion.getVersion());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success) {
                 boolean mapped = true;
@@ -1573,6 +1623,7 @@ public class ProductAndAddons extends Window
                         proposalVersion.setToVersion(proposalVersion.getVersion());
                         proposalVersion.setVersion("1.0");
                         proposalHeader.setStatus(proposalVersion.getStatus());
+                        proposalHeader.setVersion(proposalVersion.getVersion());
                         proposalDataProvider.saveProposalOnConfirm(proposalHeader);
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
@@ -1590,6 +1641,7 @@ public class ProductAndAddons extends Window
                         proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
                         proposalHeader.setStatus(proposalVersion.getStatus());
+                        proposalHeader.setVersion(proposalVersion.getVersion());
                         boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                         proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
                         success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
@@ -1612,6 +1664,9 @@ public class ProductAndAddons extends Window
                         success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
                         proposalDataProvider.updateVersion(proposalVersion);
                         proposalHeader.setVersion(proposalVersion.getVersion());
+                        if(versionNew.equals("2.0")){
+                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
+                        proposalDataProvider.updateCrmPrice(sendToCRM);}
                         proposalDataProvider.saveProposal(proposalHeader);
                     }
 
