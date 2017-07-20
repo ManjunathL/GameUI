@@ -78,14 +78,16 @@ public class SOWPopupWindow extends Window {
         open_sheet.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
+                BrowserWindowOpener opener = null;
 
                 try {
-                    BrowserWindowOpener opener = new BrowserWindowOpener(new ExternalResource(quoteFile.getString("driveWebViewLink")));
-                    opener.setFeatures("");
-                    opener.extend(open_sheet);
+                    opener = new BrowserWindowOpener(new ExternalResource(quoteFile.getString("driveWebViewLink")));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                opener.setFeatures("");
+                opener.extend(open_sheet);
             }
         });
 
@@ -114,7 +116,7 @@ public class SOWPopupWindow extends Window {
                 JSONObject saved = proposalDataProvider.saveSOWFile(proposal_sow);
                 if (!(saved == null))
                 {
-                    NotificationUtil.showNotification("Saved Successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    NotificationUtil.showNotification("SOW details saved Successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                     DashboardEventBus.unregister(this);
                     close();
                 }

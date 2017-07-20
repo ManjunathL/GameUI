@@ -678,8 +678,11 @@ public class CreateProposalsView extends Panel implements View {
                     {
                         readonlyFlag = "yes";
                     }
-                }               Proposal_sow proposal_sowsV2 = proposalDataProvider.getProposalSowLineItems(proposalHeader.getId(),"2.0");
-                if (proposal_sowsV2 == null)
+                }
+
+                LOG.debug("Version to be considered : " + versionToBeConsidered);
+                List<Proposal_sow> proposal_sowsV2 = proposalDataProvider.getProposalSowLineItems(proposalHeader.getId(),"2.0");
+                if (proposal_sowsV2.size() == 0)
                 {
                     proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(),"1.0");
 

@@ -1589,6 +1589,8 @@ public class ProductAndAddons extends Window
                 if (!mapped) {
                     NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 } else {
+                    JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersion.getVersion()),"yes");
+
                     String versionNew = String.valueOf(proposalVersion.getVersion());
                     if (versionNew.startsWith("0.")) {
                         proposalVersion.setFromVersion(proposalVersion.getVersion());
@@ -2041,7 +2043,17 @@ public class ProductAndAddons extends Window
         try {
             if (response.getString("status").equalsIgnoreCase("success"))
             {
+                String disAmount= response.getString("discountAmount");
+
                 NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
+                proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
+                proposalVersion.setAmount(response.getDouble("grandTotal"));
+                proposalVersion.setFinalAmount(response.getDouble("discountTotal"));
+                proposalVersion.setDiscountAmount(response.getDouble(disAmount.replace(",","")));
+                proposalVersion.setDiscountPercentage(response.getDouble("discountPercentage"));
+                proposalVersion.setRemarks(response.getString("remarksTextArea"));
+                proposalVersion.setTitle(response.getString("ttitle"));
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
                 DashboardEventBus.unregister(this);
                 close();

@@ -1931,7 +1931,7 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
-    public List<LookupItem> getHinges(String LookupType) {
+    public List<LookupItem> getCodeLookup(String LookupType) {
         try {
             JSONArray jsonArray = dataProviderMode.getResourceArray("module/selectfromcodemaster", new HashMap<String, String>() {
                 {
@@ -2146,7 +2146,7 @@ public class ProposalDataProvider {
             throw new RuntimeException(e);
         }
     }
-    public List<ModuleHingeMap> getHinges(String moduleCode,String type)
+    public List<ModuleHingeMap> getCodeLookup(String moduleCode,String type)
     {
         LOG.debug("hinges inside proposal data provider : " + moduleCode  +" :" + type);
         try {
@@ -2230,16 +2230,16 @@ public class ProposalDataProvider {
         return !jsonObject.has("error");
     }
 
-    public Proposal_sow getProposalSowLineItems(int proposalId, String version) {
+    public List<Proposal_sow> getProposalSowLineItems(int proposalId, String version) {
         try {
-            JSONObject jsonObject = dataProviderMode.getResource("sow/selectlineitemsv2", new HashMap<String, String>() {
+            JSONArray array = dataProviderMode.getResourceArray("sow/selectlineitemsv2", new HashMap<String, String>() {
                 {
                     put("proposalId", String.valueOf(proposalId));
                     put("version", version);
                 }
             });
-            return this.mapper.readValue(jsonObject.toString(), Proposal_sow.class);
-
+            Proposal_sow[] items = this.mapper.readValue(array.toString(), Proposal_sow[].class);
+            return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
