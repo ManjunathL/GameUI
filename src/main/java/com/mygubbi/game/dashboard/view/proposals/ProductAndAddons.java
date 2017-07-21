@@ -2043,17 +2043,17 @@ public class ProductAndAddons extends Window
         try {
             if (response.getString("status").equalsIgnoreCase("success"))
             {
-                String disAmount= response.getString("discountAmount");
+                String disAmount= String.valueOf(discountAmount);
 
                 NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                 proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
                 proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
-                proposalVersion.setAmount(response.getDouble("grandTotal"));
-                proposalVersion.setFinalAmount(response.getDouble("discountTotal"));
-                proposalVersion.setDiscountAmount(response.getDouble(disAmount.replace(",","")));
-                proposalVersion.setDiscountPercentage(response.getDouble("discountPercentage"));
-                proposalVersion.setRemarks(response.getString("remarksTextArea"));
-                proposalVersion.setTitle(response.getString("ttitle"));
+                proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
+                proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
+                proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
+                proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
+                proposalVersion.setRemarks(remarksTextArea.getValue());
+                proposalVersion.setTitle(ttitle.getValue());
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
                 DashboardEventBus.unregister(this);
                 close();
