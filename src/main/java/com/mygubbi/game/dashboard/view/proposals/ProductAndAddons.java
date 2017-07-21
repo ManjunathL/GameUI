@@ -1511,17 +1511,24 @@ public class ProductAndAddons extends Window
                     }
                     else if(version.getVersion().startsWith("1.") && version.getStatus().equals("Published") && !version.getVersion().equals("1.0"))
                     {
-                        proposalVersionList.add(version);
+                        if(version.getVersion().equals("1.0"))
+                        {
+                            amount+=version.getFinalAmount();
+                            quoteNumberCRM+=p.getQuoteNoNew();
+                        }else
+                        {
+                            proposalVersionList.add(version);
+                        }
                     }
                     else if(version.getVersion().startsWith("0.") && version.getStatus().equals("Published"))
                     {
                         proposalVersionList1.add(version);
                     }
-                    else if(version.getVersion().equals("1.0"))
+                    /*else if(version.getVersion().equals("1.0"))
                     {
                         amount+=version.getFinalAmount();
                         quoteNumberCRM+=p.getQuoteNoNew();
-                    }
+                    }*/
                 }
                 if(proposalVersionList.size()!=0)
                 {
