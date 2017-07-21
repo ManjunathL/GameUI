@@ -90,7 +90,7 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
 
         Label label_message_3 = new Label();
         try {
-            label_message_3.setCaption(" <h2> Comments : </h2>" + response.getString("comments"));
+            label_message_3.setCaption(" <h2> Comments : </h2>" + response.getString("comments") + " : " + response.getString("params") );
         } catch (JSONException e) {
             e.printStackTrace();
         }
