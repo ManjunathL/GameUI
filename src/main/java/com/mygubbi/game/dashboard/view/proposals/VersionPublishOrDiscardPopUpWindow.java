@@ -63,7 +63,7 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
 
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("35%");
+        setWidth("45%");
         setHeight("35%");
         setClosable(false);
 
@@ -79,28 +79,33 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
 
         verticalLayout1.setSpacing(true);
 
-        Label label_message = new Label();
-        label_message.setCaption("We have found some mismatches in the SOW and the proposal");
-        verticalLayout1.addComponent(label_message);
-
-        Label label_message_2 = new Label();
-        label_message_2.setCaption(" Please review them before proceeding further");
-        verticalLayout1.addComponent(label_message_2);
-        verticalLayout1.setSpacing(false);
-
-        Label label_message_3 = new Label();
         try {
-            label_message_3.setCaption(" <h2> Comments : </h2>" + response.getString("comments") + " : " + response.getString("params") );
-        } catch (JSONException e) {
+            Label label_message = new Label();
+            label_message.setCaption(response.getString("comments"));
+            verticalLayout1.addComponent(label_message);
+        }catch (JSONException e){
             e.printStackTrace();
         }
-        label_message_3.addStyleName("comments_label_style");
-        label_message_3.setCaptionAsHtml(true);
-        verticalLayout1.addComponent(label_message_3);
+//        Label label_message_2 = new Label();
+//        label_message_2.setCaption(" Please review them before proceeding further");
+////        verticalLayout1.addComponent(label_message_2);
+//        verticalLayout1.setSpacing(false);
+
+//        Label label_message_3 = new Label();
+//        try {
+////            label_message_3.setCaption(" <h2> Comments : </h2>" + response.getString("comments"));
+//            label_message_3.setCaption(response.getString("comments"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        label_message_3.addStyleName("comments_label_style");
+//        label_message_3.setCaptionAsHtml(true);
+//        verticalLayout1.addComponent(label_message_3);
 
         HorizontalLayout horizontalLayout1 = new HorizontalLayout();
         horizontalLayout1.setSizeFull();
         horizontalLayout1.setMargin(new MarginInfo(true,true,true,true));
+
 
         Button open_sheet = new Button();
         open_sheet.setCaption("Open SOW Sheet");
@@ -116,13 +121,16 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
         });
 
         horizontalLayout1.addComponent(open_sheet);
+        horizontalLayout1.setExpandRatio(open_sheet,0.3f);
         horizontalLayout1.setSpacing(true);
 
         Button close = new Button();
         close.setCaption("Close");
         close.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+        close.addStyleName("close_button_wrap");
 
         horizontalLayout1.addComponent(close);
+        horizontalLayout1.setExpandRatio(close,0.2f);
         horizontalLayout1.setSpacing(true);
 
         close.addClickListener(new Button.ClickListener() {
@@ -133,9 +141,12 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
             }
         });
 
-        Button discard_sheet = new Button();
+        Button discard_sheet = new Button(); //
         discard_sheet.setCaption("Ignore changes and Publish");
+
         discard_sheet.addStyleName(ValoTheme.BUTTON_DANGER);
+
+//        discard_sheet.addStyleName("ignore_button");
 
         discard_sheet.addClickListener(new Button.ClickListener() {
             @Override
@@ -155,6 +166,8 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
         });
 
         horizontalLayout1.addComponent(discard_sheet);
+        horizontalLayout1.setExpandRatio(discard_sheet,0.5f);
+
         horizontalLayout1.setSpacing(true);
 
         verticalLayout1.addComponent(horizontalLayout1);
