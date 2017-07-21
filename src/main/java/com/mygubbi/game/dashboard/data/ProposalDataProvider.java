@@ -1798,7 +1798,7 @@ public class ProposalDataProvider {
         */
             //LOG.info("sendToCRM.getOpportunity_name()" +sendToCRM.getOpportunity_name()+ "estimated_project_cost" +estimated_project_cost+ "sendToCRM.getQuotation_number_c()" +sendToCRM.getQuotation_number_c());
             JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrmOnPublish(baseCrmUrl, sendToCRM.getOpportunity_name(),estimated_project_cost,sendToCRM.getQuotation_number_c());
-            LOG.debug("Json Object : "+ jsonObject.toString());
+            LOG.debug("Json Object : "+ jsonObject);
 //            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
             return true;
         } catch (Exception e) {
@@ -2261,5 +2261,19 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<ProposalVersion> getAllProductDetails(int proposalId) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/crm/getproduct", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId + "");
+            }
+        });
+        try {
+            ProposalVersion[] items = this.mapper.readValue(jsonArray.toString(), ProposalVersion[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
 }
