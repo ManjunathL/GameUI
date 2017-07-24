@@ -43,7 +43,6 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
     private ProductAndAddonSelection productAndAddonSelection;
     JSONObject quoteFile = null;
 
-    private  Proposal proposal;
 
     private int proposalId;
     private String version;
@@ -51,19 +50,18 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
     private String status;
     String id ;
     private TextArea remarksOnIgnore;
+    private JSONObject textValues;
 
 
-    public VersionPublishOrDiscardPopUpWindow(JSONObject response, int proposalId, String version, Proposal proposal, ProposalVersion proposalVersion, ProductAndAddonSelection productAndAddonSelection, ProposalHeader proposalHeader) {
+    public VersionPublishOrDiscardPopUpWindow(JSONObject response, int proposalId, String version, Proposal proposal, ProposalVersion proposalVersion, ProductAndAddonSelection productAndAddonSelection, ProposalHeader proposalHeader, JSONObject textValues) {
 
         this.proposalId = proposalId;
         this.version = version;
         this.response = response;
-        this.proposal = proposal;
         this.proposalVersion = proposalVersion;
         this.productAndAddonSelection = productAndAddonSelection;
         this.proposalHeader = proposalHeader;
-
-
+        this.textValues = textValues;
 
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
@@ -234,22 +232,27 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
     private void saveProposalVersion() {
         try
         {
-            String disAmount= response.getString("discountAmount");
-            proposalVersion.setAmount(response.getDouble("grandTotal"));
-            proposalVersion.setFinalAmount(response.getDouble("discountTotal"));
-            proposalVersion.setDiscountAmount(response.getDouble(disAmount.replace(",","")));
-            proposalVersion.setDiscountPercentage(response.getDouble("discountPercentage"));
-            proposalVersion.setRemarks(response.getString("remarksTextArea"));
-            proposalVersion.setTitle(response.getString("ttitle"));
 
+            String disAmount = textValues.getString("discountAmount");
+            proposalVersion.setAmount(textValues.getDouble("grandTotal"));
+            proposalVersion.setFinalAmount(textValues.getDouble("discountTotal"));
+            if (disAmount.contains(",")) {
+                String replace = disAmount.replace(",", "");
+                proposalVersion.setDiscountAmount(Double.parseDouble(replace));
+            } else {
+                proposalVersion.setDiscountAmount(Double.parseDouble(disAmount));
+            }
+
+            proposalVersion.setDiscountPercentage(textValues.getDouble("discountPercentage"));
+            proposalVersion.setRemarks(textValues.getString("remarksTextArea"));
+            proposalVersion.setTitle(textValues.getString("ttitle"));
             proposalHeader.setStatus(proposalVersion.getStatus());
-            proposalHeader.setVersion(response.getString("versionNum"));
+            proposalHeader.setVersion(textValues.getString("versionNum"));
 
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
             if (success)
             {
                 NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-
             }
             else
             {
@@ -258,7 +261,7 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
 
             }
 
-            proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
+            proposalDataProvider.updateVersion(proposalVersion);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
         }
         catch (Exception e)
@@ -268,8 +271,8 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
         }
     }
 
-    public static void open(JSONObject response, int proposalId, String version, Proposal proposal, ProposalVersion proposalVersion, ProductAndAddonSelection productAndAddonSelection, ProposalHeader proposalHeader) {
-        Window w = new VersionPublishOrDiscardPopUpWindow(response, proposalId, version, proposal, proposalVersion, productAndAddonSelection, proposalHeader);
+    public static void open(JSONObject response, int proposalId, String version, Proposal proposal, ProposalVersion proposalVersion, ProductAndAddonSelection productAndAddonSelection, ProposalHeader proposalHeader, JSONObject textValues) {
+        Window w = new VersionPublishOrDiscardPopUpWindow(response, proposalId, version, proposal, proposalVersion, productAndAddonSelection, proposalHeader, textValues);
         UI.getCurrent().addWindow(w);
         w.focus();
 

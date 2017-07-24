@@ -2122,14 +2122,15 @@ public class ProductAndAddons extends Window
             }
             else
             {
-                response.put("discountAmount", discountAmount.getValue());
-                response.put("grandTotal", Double.parseDouble(grandTotal.getValue()));
-                response.put("discountTotal", Double.parseDouble(discountTotal.getValue()));
-                response.put("discountPercentage", Double.parseDouble(discountPercentage.getValue()));
-                response.put("remarksTextArea", remarksTextArea.getValue());
-                response.put("ttitle", this.ttitle.getValue());
-                response.put("versionNum", String.valueOf(versionNum));
-                VersionPublishOrDiscardPopUpWindow.open(response, proposalId, version, this.proposal, proposalVersion, productAndAddonSelection, proposalHeader);
+                JSONObject textValues = new JSONObject();
+                textValues.put("discountAmount", discountAmount.getValue());
+                textValues.put("grandTotal", Double.parseDouble(grandTotal.getValue()));
+                textValues.put("discountTotal", Double.parseDouble(discountTotal.getValue()));
+                textValues.put("discountPercentage", Double.parseDouble(discountPercentage.getValue()));
+                textValues.put("remarksTextArea", remarksTextArea.getValue());
+                textValues.put("ttitle", this.ttitle.getValue());
+                textValues.put("versionNum", String.valueOf(versionNum));
+                VersionPublishOrDiscardPopUpWindow.open(response, proposalId, version, this.proposal, proposalVersion, productAndAddonSelection, proposalHeader, textValues);
 
             }
         } catch (JSONException e) {

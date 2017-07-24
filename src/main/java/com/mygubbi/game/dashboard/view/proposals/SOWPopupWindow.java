@@ -120,7 +120,7 @@ public class SOWPopupWindow extends Window {
                         DashboardEventBus.unregister(this);
                         close();
                     } else {
-                        NotificationUtil.showNotification(saved.getString("comments"), NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                        NotificationUtil.showNotification(saved.getString("comments"), NotificationUtil.STYLE_BAR_ERROR_SMALL);
 
                     }
                 } catch (JSONException e) {
