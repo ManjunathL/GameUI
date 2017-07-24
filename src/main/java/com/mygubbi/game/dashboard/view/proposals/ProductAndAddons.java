@@ -2129,7 +2129,7 @@ public class ProductAndAddons extends Window
                 response.put("remarksTextArea", remarksTextArea.getValue());
                 response.put("ttitle", this.ttitle.getValue());
                 response.put("versionNum", String.valueOf(versionNum));
-                VersionPublishOrDiscardPopUpWindow.open(response,proposalId,version, this.proposal, proposalVersion,productAndAddonSelection );
+                VersionPublishOrDiscardPopUpWindow.open(response, proposalId, version, this.proposal, proposalVersion, productAndAddonSelection, proposalHeader);
 
             }
         } catch (JSONException e) {

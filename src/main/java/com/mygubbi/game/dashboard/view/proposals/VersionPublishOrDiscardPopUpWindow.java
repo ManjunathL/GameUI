@@ -53,7 +53,7 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
     private TextArea remarksOnIgnore;
 
 
-    public VersionPublishOrDiscardPopUpWindow(JSONObject response, int proposalId,String version, Proposal proposal, ProposalVersion proposalVersion, ProductAndAddonSelection productAndAddonSelection) {
+    public VersionPublishOrDiscardPopUpWindow(JSONObject response, int proposalId, String version, Proposal proposal, ProposalVersion proposalVersion, ProductAndAddonSelection productAndAddonSelection, ProposalHeader proposalHeader) {
 
         this.proposalId = proposalId;
         this.version = version;
@@ -61,6 +61,8 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
         this.proposal = proposal;
         this.proposalVersion = proposalVersion;
         this.productAndAddonSelection = productAndAddonSelection;
+        this.proposalHeader = proposalHeader;
+
 
 
         setModal(true);
@@ -266,8 +268,8 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
         }
     }
 
-    public static void open(JSONObject response, int proposalId, String version, Proposal proposal, ProposalVersion proposalVersion, ProductAndAddonSelection productAndAddonSelection) {
-        Window w = new VersionPublishOrDiscardPopUpWindow(response,proposalId,version, proposal, proposalVersion, productAndAddonSelection);
+    public static void open(JSONObject response, int proposalId, String version, Proposal proposal, ProposalVersion proposalVersion, ProductAndAddonSelection productAndAddonSelection, ProposalHeader proposalHeader) {
+        Window w = new VersionPublishOrDiscardPopUpWindow(response, proposalId, version, proposal, proposalVersion, productAndAddonSelection, proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
 
