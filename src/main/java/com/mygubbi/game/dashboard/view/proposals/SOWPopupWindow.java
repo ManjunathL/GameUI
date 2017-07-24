@@ -114,14 +114,17 @@ public class SOWPopupWindow extends Window {
                     e.printStackTrace();
                 }
                 JSONObject saved = proposalDataProvider.saveSOWFile(proposal_sow);
-                if (!(saved == null))
-                {
-                    NotificationUtil.showNotification("SOW details saved Successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                    DashboardEventBus.unregister(this);
-                    close();
-                }
-                else {
-                    NotificationUtil.showNotification("Problem occured while saving the file",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                try {
+                    if (saved.getString("status").equalsIgnoreCase("success")) {
+                        NotificationUtil.showNotification("SOW details saved Successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                        DashboardEventBus.unregister(this);
+                        close();
+                    } else {
+                        NotificationUtil.showNotification(saved.getString("comments"), NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         });
