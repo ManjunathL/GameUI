@@ -177,33 +177,24 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
 
 
     private void createSOWandOpenSOWPopup() {
-        List<ProposalVersion> proposalVersions = proposal.getVersions();
+        List<ProposalVersion> proposalVersions = proposalDataProvider.getProposalVersions(proposalId);
         String readOnlyFlag = "no";
 
-        double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
-        List<String> versions = new ArrayList<String>();
+        double versionToBeConsidered = Double.parseDouble(proposalVersion.getVersion());
+        /*List<String> versions = new ArrayList<String>();
 
-        for (ProposalVersion proposalVersion : proposalVersions)
-        {
-            if (proposalVersion.getVersion().equals("1.0") || proposalVersion.getVersion().startsWith("0.")){
-                versions.add(proposalVersion.getVersion());
-            }
-            if (proposalVersion.getVersion().contains("2."))
-            {
-                readOnlyFlag = "yes";
-            }
-        }
-        if (versions.contains("1.0"))
-        {
-            versionToBeConsidered = 1.0;
-        }
-        else
-        {
-            for (String version : versions) {
-                if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
-                    versionToBeConsidered = Double.parseDouble(version);
-            }
-        }
+       for (ProposalVersion proposalVersion : proposalVersions)
+       {
+           if (proposalVersion.getVersion().startsWith("1."))
+           {
+               versionToBeConsidered = 2.0;
+           }
+           else if (proposalVersion.getVersion().startsWith("0."))
+           {
+               versionToBeConsidered = 1.0;
+           }
+       }*/
+
         LOG.debug("Version to be considered : " + versionToBeConsidered);
         productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
 
