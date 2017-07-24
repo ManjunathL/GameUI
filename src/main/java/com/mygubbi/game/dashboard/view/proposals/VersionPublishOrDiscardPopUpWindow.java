@@ -15,6 +15,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.logging.log4j.LogManager;
@@ -49,6 +50,7 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
     private JSONObject response;
     private String status;
     String id ;
+    private TextArea remarksOnIgnore;
 
 
     public VersionPublishOrDiscardPopUpWindow(JSONObject response, int proposalId,String version, Proposal proposal, ProposalVersion proposalVersion, ProductAndAddonSelection productAndAddonSelection) {
@@ -102,6 +104,20 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
 //        label_message_3.setCaptionAsHtml(true);
 //        verticalLayout1.addComponent(label_message_3);
 
+        FormLayout formLayout = new FormLayout();
+        formLayout.setSizeFull();
+
+        remarksOnIgnore = new TextArea();
+        remarksOnIgnore.setCaption("Remarks");
+        remarksOnIgnore.setHeight("60px");
+        remarksOnIgnore.setWidth("70%");
+
+        remarksOnIgnore.setInputPrompt("Please enter remarks before you click on Ignore and Publish");
+
+        formLayout.addComponent(remarksOnIgnore);
+
+        verticalLayout1.addComponent(formLayout);
+
         HorizontalLayout horizontalLayout1 = new HorizontalLayout();
         horizontalLayout1.setSizeFull();
         horizontalLayout1.setMargin(new MarginInfo(true,true,true,true));
@@ -151,6 +167,15 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
         discard_sheet.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
+
+                if (remarksOnIgnore.getValue().isEmpty() || remarksOnIgnore.getValue() == null)
+                {
+                    NotificationUtil.showNotification("Remarks cannot be empty on clicking Ignore and Publish",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+                proposalVersion.setIgnoreAndPublishFlag("Yes");
+                proposalVersion.setRemarksIgnore(remarksOnIgnore.getValue());
+
                 saveProposalVersion();
                 proposalDataProvider.publishVersionOverride(version,proposalId);
                 proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());

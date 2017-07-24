@@ -26,10 +26,11 @@ public class BoqPopupWindow extends Window {
     JSONObject quoteFile = null;
 
 
-    public BoqPopupWindow(ProposalHeader proposalHeader, ProductAndAddonSelection productAndAddonSelection) {
+    public BoqPopupWindow(ProposalHeader proposalHeader, ProductAndAddonSelection productAndAddonSelection, JSONObject quoteFile) {
 
         this.proposalHeader = proposalHeader;
         this.productAndAddonSelection = productAndAddonSelection;
+        this.quoteFile = quoteFile;
 
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
@@ -99,7 +100,7 @@ public class BoqPopupWindow extends Window {
                     NotificationUtil.showNotification("File Saved Successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                 }
                 else {
-                    NotificationUtil.showNotification("Problem occured while saving the file",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    NotificationUtil.showNotification("Problem occurred while saving the file",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                 }
             }
         });
@@ -116,8 +117,8 @@ public class BoqPopupWindow extends Window {
         return verticalLayout1;
     }
 
-    public static void open(ProposalHeader proposalHeader,ProductAndAddonSelection productAndAddonSelection) {
-        Window w = new BoqPopupWindow(proposalHeader,productAndAddonSelection);
+    public static void open(ProposalHeader proposalHeader,ProductAndAddonSelection productAndAddonSelection, JSONObject quoteFile) {
+        Window w = new BoqPopupWindow(proposalHeader,productAndAddonSelection,quoteFile);
         UI.getCurrent().addWindow(w);
         w.focus();
 

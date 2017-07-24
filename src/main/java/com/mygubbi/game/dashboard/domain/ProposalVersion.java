@@ -25,6 +25,8 @@ public class ProposalVersion implements Cloneable {
     public static final String MARGIN="margin";
     public static final String AMOUNTWOTAX="amountWotax";
     public static final String MANUFACTUREAMOUNT="manufactureAmount";
+    public static final String REMARKS_IGNORE="remarksIgnore";
+    public static final String IGNORE_AND_PUBLISH_FLAG="ignoreAndPublishFlag";
 
 
     private String version;
@@ -45,6 +47,8 @@ public class ProposalVersion implements Cloneable {
     private double margin;
     private double amountWotax;
     private double manufactureAmount;
+    private String ignoreAndPublishFlag;
+    private String remarksIgnore;
 
     @Override
     public Object clone()  {
@@ -237,6 +241,22 @@ public class ProposalVersion implements Cloneable {
 
     public void setProfit(double profit) {
         this.profit = profit;
+    }
+
+    public String getIgnoreAndPublishFlag() {
+        return ignoreAndPublishFlag;
+    }
+
+    public void setIgnoreAndPublishFlag(String ignoreAndPublishFlag) {
+        this.ignoreAndPublishFlag = ignoreAndPublishFlag;
+    }
+
+    public String getRemarksIgnore() {
+        return remarksIgnore;
+    }
+
+    public void setRemarksIgnore(String remarksIgnore) {
+        this.remarksIgnore = remarksIgnore;
     }
 }
 

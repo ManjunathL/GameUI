@@ -2275,5 +2275,11 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
+    public JSONObject updateBoqLineItems(int proposalId, double proposalVersionToBeConsidered, String readOnlyFlag) {
+
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/createboqsheet", "{\"proposalId\": " + proposalId + "," + "\"version\" : "  + proposalVersionToBeConsidered  + "," + "\"userId\" :" + "\"" + getUserId() + "\"" +  ","  + "\"readOnlyFlag\" : "+ "\"" + readOnlyFlag  + "\"" + "}");
+        return jsonObject;
+    }
+
 
 }

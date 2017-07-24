@@ -774,6 +774,8 @@ public class CreateProposalsView extends Panel implements View {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 List<ProposalVersion> proposalVersions = proposal.getVersions();
+                String readOnlyFlag = "no";
+
                 ProposalVersion proposalVersionToBeConsidered = null;
                 for (ProposalVersion proposalVersion : proposalVersions) {
                     if (proposalVersion.getVersion().equals("2.0"))
@@ -781,7 +783,19 @@ public class CreateProposalsView extends Panel implements View {
                         proposalVersionToBeConsidered = proposalVersion;
                     }
                 }
-                BoqPopupWindow.open(proposalHeader,productAndAddonSelection);
+
+                if (proposalVersionToBeConsidered == null)
+                {
+                    NotificationUtil.showNotification("2.0 version not found for the proposal",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+
+                productAndAddonSelection.setFromVersion("2.0");
+
+                NotificationUtil.showNotification("Generating the Scope of services sheet v1.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+
+                JSONObject quoteFile = proposalDataProvider.updateBoqLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersionToBeConsidered.getVersion()),readOnlyFlag);
+                BoqPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
             }
         });
 
