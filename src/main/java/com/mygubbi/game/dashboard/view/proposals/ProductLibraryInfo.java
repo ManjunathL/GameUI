@@ -205,6 +205,7 @@ public class ProductLibraryInfo extends Window
             productsLibraryList=proposalDataProvider.getProductsLibrary(productTitleField.getValue().toString(),collectionField.getValue().toString());
             if(productsLibraryList.size()==0)
             {
+                productLibrary.setSize(product.getSpaceType());
                 productLibrary.setSubCategory(product.getSubCategory());
                 productLibrary.setAmountWoTax(product.getAmountWoTax());
                 productLibrary.setAmount(product.getAmount());

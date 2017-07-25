@@ -651,7 +651,7 @@ public class CreateProposalsView extends Panel implements View {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
 
-                List<ProposalVersion> proposalVersions = proposal.getVersions();
+                List<ProposalVersion> proposalVersions = proposalDataProvider.getProposalVersions(proposalHeader.getId());
                 String readonlyFlag = "no" ;
 
                 double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
@@ -659,7 +659,7 @@ public class CreateProposalsView extends Panel implements View {
 
                 for (ProposalVersion proposalVersion : proposalVersions)
                 {
-                    if (proposalVersion.getVersion().equals("2.0") || proposalVersion.getVersion().startsWith("1."))                    {
+                    if (proposalVersion.getVersion().equals("2.0") || proposalVersion.getVersion().startsWith("1.")) {
                         versions.add(proposalVersion.getVersion());
                     }
                 }
@@ -669,9 +669,11 @@ public class CreateProposalsView extends Panel implements View {
                 }
                 else
                 {
+                    versionToBeConsidered = Double.parseDouble(versions.get(0));
                     for (String version : versions) {
-                        if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
+                        if (Double.parseDouble(version) > Double.parseDouble(versions.get(0))) {
                             versionToBeConsidered = Double.parseDouble(version);
+                        }
                     }
 
                     if (versionToBeConsidered > 2.0)
@@ -711,7 +713,7 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void createSOWandOpenSOWPopup() {
-        List<ProposalVersion> proposalVersions = proposal.getVersions();
+        List<ProposalVersion> proposalVersions = proposalDataProvider.getProposalVersions(proposalHeader.getId());
         String readOnlyFlag = "no";
 
         double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
@@ -734,8 +736,10 @@ public class CreateProposalsView extends Panel implements View {
         else
         {
             for (String version : versions) {
-                if (Double.parseDouble(version) > Double.parseDouble(versions.get(0)))
+                if (Double.parseDouble(version) > Double.parseDouble(versions.get(0))) {
                     versionToBeConsidered = Double.parseDouble(version);
+
+                }
             }
         }
         LOG.debug("Version to be considered : " + versionToBeConsidered);

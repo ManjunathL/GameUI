@@ -83,6 +83,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     private int manualSeq;
     private String productCategory;
     private String productCategoryCode;
+    private String spaceType;
     private String room;
     private String roomCode;
     private String shutterDesign;
@@ -652,6 +653,14 @@ public class ProductLibrary implements FileAttachmentsHolder
 
     public void setNoOfLengths(double noOfLengths) {
         this.noOfLengths = noOfLengths;
+    }
+
+    public String getSpaceType() {
+        return spaceType;
+    }
+
+    public void setSpaceType(String spaceType) {
+        this.spaceType = spaceType;
     }
 
     @Override
