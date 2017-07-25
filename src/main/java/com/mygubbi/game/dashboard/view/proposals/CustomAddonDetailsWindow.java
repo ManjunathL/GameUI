@@ -3,12 +3,14 @@ package com.mygubbi.game.dashboard.view.proposals;
 import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.*;
+import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.MarginInfo;
@@ -37,6 +39,9 @@ public class CustomAddonDetailsWindow extends Window {
     private TextField rate;
     private TextField quantity;
     private TextField amount;
+
+    private ComboBox spaceType;
+    private TextField roomText;
 
     private Button applyButton;
 
@@ -136,6 +141,26 @@ public class CustomAddonDetailsWindow extends Window {
         formLayout.setStyleName(ValoTheme.FORMLAYOUT_LIGHT);
         verticalLayout.addComponent(formLayout);
 
+        this.spaceType = getSimpleItemFilledCombo("Space Type", ProposalDataProvider.SPACETYPE_LOOKUP, null);
+        this.spaceType.setWidth("100%");
+        spaceType.setRequired(true);
+        binder.bind(spaceType, AddonProduct.ADDON_SPACE_TYPE);
+        spaceType.addValueChangeListener(valueChangeEvent -> {
+            String code = (String) valueChangeEvent.getProperty().getValue();
+            String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
+            addonProduct.setSpaceType(title);
+
+        });
+        formLayout.addComponent(this.spaceType);
+
+
+        this.roomText = new TextField("Room");
+        this.roomText.setRequired(true);
+        roomText.setNullRepresentation("");
+        binder.bind(this.roomText, AddonProduct.ADDON_ROOM);
+        formLayout.addComponent(roomText);
+
+
 
         this.title = new TextArea("Product");
         this.title.setNullRepresentation("");
@@ -181,7 +206,7 @@ public class CustomAddonDetailsWindow extends Window {
         this.amount.setReadOnly(false);
         this.amount.setValue(String.valueOf(Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)));
         this.amount.setReadOnly(true);
-        checkApply();
+//        checkApply();
     }
 
     private void quantityChanged(Property.ValueChangeEvent valueChangeEvent) {
@@ -194,7 +219,30 @@ public class CustomAddonDetailsWindow extends Window {
         this.amount.setReadOnly(false);
         this.amount.setValue(String.valueOf(Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)));
         this.amount.setReadOnly(true);
-        checkApply();
+//        checkApply();
+    }
+
+
+    private ComboBox getSimpleItemFilledCombo(String caption, String dataType, Property.ValueChangeListener listener) {
+        List<LookupItem> list = proposalDataProvider.getLookupItems(dataType);
+        return getSimpleItemFilledCombo(caption, list, listener);
+    }
+
+    private ComboBox getSimpleItemFilledCombo(String caption, List<LookupItem> list, Property.ValueChangeListener listener) {
+
+        final BeanContainer<String, LookupItem> container =
+                new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty("code");
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setWidth("250px");
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId("title");
+        if (listener != null) select.addValueChangeListener(listener);
+        if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
+        return select;
     }
 
 
@@ -308,7 +356,7 @@ public class CustomAddonDetailsWindow extends Window {
         });
         applyButton.focus();
         applyButton.setVisible(true);
-        applyButton.setEnabled(this.binder.isValid());
+//        applyButton.setEnabled(this.binder.isValid());
 
         footer.addComponent(applyButton);
         footer.setComponentAlignment(cancelBtn, Alignment.TOP_RIGHT);
