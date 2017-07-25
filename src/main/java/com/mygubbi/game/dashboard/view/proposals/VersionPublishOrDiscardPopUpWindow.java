@@ -234,8 +234,17 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
         productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
 
 
-        JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalId,versionToBeConsidered,readOnlyFlag);
-        LOG.debug("Quote file :" + quoteFile);
+        JSONObject quoteFile = null;
+        try {
+            quoteFile = proposalDataProvider.updateSowLineItems(proposalId, versionToBeConsidered, readOnlyFlag);
+            if (quoteFile.getString("status").equalsIgnoreCase("failure")) {
+                NotificationUtil.showNotification("Couldn't create SOW file. Please click on the button to generate the sheet again", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            LOG.error("Couldnt create Sow File :" + e.getMessage());
+        }
         SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
     }
 

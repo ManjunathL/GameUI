@@ -1709,7 +1709,16 @@ public class ProductAndAddons extends Window
 
                     if (success) {
                         saveButton.setVisible(false);
-                        JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersion.getVersion()), "yes");
+                        try {
+                            JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersion.getVersion()), "yes");
+                            if (quoteFile.getString("status").equalsIgnoreCase("failure")) {
+                                NotificationUtil.showNotification("Couldn't create SOW file. Please click on the button to generate the sheet again", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                                return;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            LOG.error("Couldnt create Sow File :" + e.getMessage());
+                        }
                         NotificationUtil.showNotification("Confirmed successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                         handleState();
                     } else {
