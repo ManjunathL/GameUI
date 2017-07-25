@@ -177,7 +177,16 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
                 proposalVersion.setRemarksIgnore(remarksOnIgnore.getValue());
 
                 saveProposalVersion();
-                proposalDataProvider.publishVersionOverride(version,proposalId);
+                JSONObject jsonObject=proposalDataProvider.publishVersionOverride(version,proposalId);
+                if (jsonObject!=null)
+                {
+                    if (!(proposalVersion.getVersion().startsWith("2.")))
+                    {
+                        PublishOnCRM publishOnCRM=new PublishOnCRM(proposalHeader);
+                        publishOnCRM.updatePriceInCRMOnPublish();
+                    }
+                }
+                LOG.info("JSON OBJECt $$$ " +jsonObject);
                 proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
                 proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));

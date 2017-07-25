@@ -1473,11 +1473,11 @@ public class ProductAndAddons extends Window
             LOG.info("proposalVersion.getstatus " +proposalVersion.getStatus()+ "versionNum.getValue() " +versionNum.getValue());
 
 
-            if (!(proposalVersion.getVersion().startsWith("2.")))
+           /* if (!(proposalVersion.getVersion().startsWith("2.")))
             {
                 SendToCRMOnPublish sendToCRM = updatePriceInCRMOnPublish();
                 proposalDataProvider.updateCrmPriceOnPublish(sendToCRM);
-            }
+            }*/
 
 
 //            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
@@ -1550,7 +1550,7 @@ public class ProductAndAddons extends Window
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionList1.get(0);
                 for(ProposalVersion proposalVersion:proposalVersionList1)
                 {
-                    if (proposalVersion.getDate().after(date))
+                    if (proposalVersion.getUpdatedOn().after(date))
                     {
                         proposalVersionTobeConsidered = proposalVersion;
                     }
@@ -1570,44 +1570,38 @@ public class ProductAndAddons extends Window
         String quoteNumberCRM="";
         SendToCRM sendToCRM = new SendToCRM();
         sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
+        List<ProposalVersion> proposalVersionList= new ArrayList<>();
         List<ProposalHeader> proposalHeaders=proposalDataProvider.getProposalHeadersByCrmIds(proposalHeader.getCrmId());
         for(ProposalHeader p:proposalHeaders)
         {
+            proposalVersionList= new ArrayList<>();
             List<ProposalVersion> pv=proposalDataProvider.getAllProductDetails(p.getId());
             for(ProposalVersion version:pv)
             {
-                if (version.getVersion().equals("2.0"))
+                if (version.getVersion().equals("2.0") && version.getStatus().equals("DSO"))
                 {
-                    amount+=version.getFinalAmount();
-                    quoteNumberCRM+=p.getQuoteNoNew();
+                    proposalVersionList.add(version);
                 }
-                else if(version.getVersion().equals("1.0"))
+                else if(version.getVersion().equals("1.0") && version.getStatus().equals("Confirmed"))
                 {
-                    amount+=version.getFinalAmount();
-                    quoteNumberCRM+=p.getQuoteNoNew();
+                    proposalVersionList.add(version);
                 }
+            }
+            if(proposalVersionList.size()!=0)
+            {
+                Date date = proposalVersionList.get(0).getDate();
+                ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
+                for(ProposalVersion proposalVersion:proposalVersionList)
+                {
+                    if (proposalVersion.getDate().after(date))
+                    {
+                        proposalVersionTobeConsidered = proposalVersion;
+                    }
+                }
+                amount+=proposalVersionTobeConsidered.getFinalAmount();
+                quoteNumberCRM+=p.getQuoteNoNew();
             }
         }
-
-
-        /*List<ProposalHeader> proposalHeaders=proposalDataProvider.getProposalHeadersByCrmIds(proposalHeader.getCrmId());
-        for(ProposalHeader p:proposalHeaders) {
-            if ((p.getStatus().equals("DSO")) || (p.getStatus().equals("Confirmed"))){
-                List<ProposalVersion> pv = proposalDataProvider.getLatestVersionDetails(p.getId(), p.getVersion());
-                LOG.info("size of pv"+pv.size());
-
-                for (ProposalVersion version : pv) {
-                    LOG.info("pv" + version.getVersion() + "pv quote" + version.getProposalId());
-                    amount += version.getFinalAmount();
-                    LOG.info("confirmed amount " + amount);
-                }
-
-                quoteNumberCRM += p.getQuoteNoNew();
-
-
-                LOG.info("psize***" + proposalHeaders.size());
-            }
-        }*/
         sendToCRM.setFinal_proposal_amount_c(amount);
         sendToCRM.setEstimated_project_cost_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
@@ -2117,6 +2111,12 @@ public class ProductAndAddons extends Window
                 proposalVersion.setRemarks(remarksTextArea.getValue());
                 proposalVersion.setTitle(ttitle.getValue());
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+                if (!(proposalVersion.getVersion().startsWith("2.")))
+                {
+                    PublishOnCRM publishOnCRM=new PublishOnCRM(proposalHeader);
+                    publishOnCRM.updatePriceInCRMOnPublish();
+                }
+
                 DashboardEventBus.unregister(this);
                 close();
             }
@@ -2131,6 +2131,7 @@ public class ProductAndAddons extends Window
                 textValues.put("ttitle", this.ttitle.getValue());
                 textValues.put("versionNum", String.valueOf(versionNum));
                 VersionPublishOrDiscardPopUpWindow.open(response, proposalId, version, this.proposal, proposalVersion, productAndAddonSelection, proposalHeader, textValues);
+
 
             }
         } catch (JSONException e) {

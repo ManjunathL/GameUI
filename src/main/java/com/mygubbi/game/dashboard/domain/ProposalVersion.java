@@ -1,5 +1,7 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.Date;
+
 /**
  * Created by Chirag on 06-12-2016.
  */
@@ -27,6 +29,7 @@ public class ProposalVersion implements Cloneable {
     public static final String MANUFACTUREAMOUNT="manufactureAmount";
     public static final String REMARKS_IGNORE="remarksIgnore";
     public static final String IGNORE_AND_PUBLISH_FLAG="ignoreAndPublishFlag";
+    public static final String UPDATED_ON="updatedOn";
 
 
     private String version;
@@ -37,6 +40,7 @@ public class ProposalVersion implements Cloneable {
     private String status;
     private String internalStatus;
     private java.util.Date date;
+    private java.util.Date updatedOn;
     private String remarks;
     private String fromVersion;
     private String toVersion;
@@ -257,6 +261,14 @@ public class ProposalVersion implements Cloneable {
 
     public void setRemarksIgnore(String remarksIgnore) {
         this.remarksIgnore = remarksIgnore;
+    }
+
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
     }
 }
 
