@@ -1592,11 +1592,11 @@ public class ProductAndAddons extends Window
             }
             if(proposalVersionList.size()!=0)
             {
-                Date date = proposalVersionList.get(0).getDate();
+                Date date = proposalVersionList.get(0).getUpdatedOn();
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
                 for(ProposalVersion proposalVersion:proposalVersionList)
                 {
-                    if (proposalVersion.getDate().after(date))
+                    if (proposalVersion.getUpdatedOn().after(date))
                     {
                         proposalVersionTobeConsidered = proposalVersion;
                     }
@@ -1605,8 +1605,12 @@ public class ProductAndAddons extends Window
                 quoteNumberCRM+=p.getQuoteNoNew();
             }
         }
+        PublishOnCRM publishOnCRM=new PublishOnCRM(proposalHeader);
+        SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
+        LOG.info("estimated amount " +sendToCRMOnPublish.getEstimated_project_cost_c());
+        sendToCRM.setEstimated_project_cost_c(sendToCRMOnPublish.getEstimated_project_cost_c());
         sendToCRM.setFinal_proposal_amount_c(amount);
-        sendToCRM.setEstimated_project_cost_c(amount);
+
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
         LOG.debug("Send to CRM on confirm### : " + sendToCRM.toString());
 
