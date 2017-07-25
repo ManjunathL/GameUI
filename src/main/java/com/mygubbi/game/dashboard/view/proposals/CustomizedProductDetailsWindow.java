@@ -177,28 +177,28 @@ public class CustomizedProductDetailsWindow extends Window {
         setCaption("Add Kitchen/Wardrobe");
 
         VerticalLayout vLayout = new VerticalLayout();
-        vLayout.setSizeFull();
-        vLayout.addStyleName("vLayoutScroll");
+        setContent(vLayout);
 
         vLayout.setMargin(new MarginInfo(true, true, true, true));
         setContent(vLayout);
         Responsive.makeResponsive(this);
+
         HorizontalLayout horizontalLayout0 = new HorizontalLayout();
+        horizontalLayout0.setSizeFull();
 
         horizontalLayout0.addComponent(buildAddItemBasicFormLeft());
         horizontalLayout0.setSpacing(true);
         horizontalLayout0.addComponent(buildAddItemBasicFormLayoutMiddle());
         horizontalLayout0.setSpacing(true);
         horizontalLayout0.addComponent(buildAddItemBasicFormLayoutRight());
-        vLayout.addComponent(horizontalLayout0);
-        horizontalLayout0.setHeightUndefined();
-        horizontalLayout0.setSizeFull();
-        //vLayout.setSpacing(true);
-        vLayout.setExpandRatio(horizontalLayout0, 0.60f);
 
-        HorizontalLayout horizontalLayout1 = new HorizontalLayout();
-        horizontalLayout1.setSizeFull();
-        horizontalLayout1.setStyleName("product-details-grid-tabs");
+        vLayout.addComponent(horizontalLayout0);
+        vLayout.setSpacing(true);
+
+
+        //vLayout.setSpacing(true);
+
+//        horizontalLayout1.setStyleName("product-details-grid-tabs");
 
         tabSheet = new TabSheet();
         //tabSheet.addStyleName("tabsheetstyle");
@@ -213,19 +213,17 @@ public class CustomizedProductDetailsWindow extends Window {
         if (product.getModules().isEmpty()) {
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
         }
+    vLayout.addComponent(tabSheet);
 
 /*
         tabSheet.addTab(fileAttachmentComponent, "Attachments");
 */
         tabSheet.setEnabled(true);
-        horizontalLayout1.addComponent(tabSheet);
-        horizontalLayout1.setHeightUndefined();
-        vLayout.addComponent(horizontalLayout1);
-        vLayout.setExpandRatio(horizontalLayout1, 0.40f);
+       // vLayout.addComponent(tabSheet);
+
 
         Component footerLayOut = buildFooter();
         vLayout.addComponent(footerLayOut);
-        vLayout.setExpandRatio(footerLayOut, 0.08f);
 
         handleState();
         updatePsftCosts();
@@ -1495,7 +1493,6 @@ public class CustomizedProductDetailsWindow extends Window {
 
         modulesGrid = new Grid(genContainer);
         modulesGrid.setSelectionMode(Grid.SelectionMode.NONE);
-        modulesGrid.setStyleName("modules-grid");
         modulesGrid.setSizeFull();
         modulesGrid.setResponsive(true);
         modulesGrid.setColumnReorderingAllowed(true);
@@ -1892,7 +1889,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private Component buildFooter() {
         HorizontalLayout footer = new HorizontalLayout();
         footer.setSizeFull();
-        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+//        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
         //footer.addStyleName("footerstyle");
         HorizontalLayout right = new HorizontalLayout();
         right.setSpacing(true);

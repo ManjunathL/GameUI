@@ -331,6 +331,11 @@ public class MarginDetailsWindow extends Window
                 PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails("NSTDMC:studytable",this.priceDate,this.city);
                 rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
             }
+            else if(Objects.equals(product.getProductCategoryCode(), "crunit"))
+            {
+                PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails("NSTDMC:crunit",this.priceDate,this.city);
+                rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
+            }
             else
             {
                 PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
