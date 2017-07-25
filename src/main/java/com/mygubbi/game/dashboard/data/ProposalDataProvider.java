@@ -826,7 +826,7 @@ public class ProposalDataProvider {
     public JSONObject saveSOWFile(Proposal_sow proposal_sow) {
         try {
             String productSelectionsJson = this.mapper.writeValueAsString(proposal_sow);
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/savesowfile", productSelectionsJson);
+            JSONObject jsonObject = dataProviderMode.postResource("sow/savesowfile", productSelectionsJson);
             return jsonObject;
         } catch (JsonProcessingException e) {
             throw  new RuntimeException(e);
