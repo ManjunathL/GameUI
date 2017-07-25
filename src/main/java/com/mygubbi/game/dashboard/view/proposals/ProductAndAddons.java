@@ -943,12 +943,13 @@ public class ProductAndAddons extends Window
         productsGrid.addSelectionListener(this::updateTotal);
         productsGrid.setSizeFull();
         productsGrid.setColumnReorderingAllowed(true);
-        productsGrid.setColumns(Product.SEQ,Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
+        productsGrid.setColumns(Product.SEQ, Product.SPACE_TYPE, Product.ROOM_CODE, Product.TITLE, "productCategoryText", Product.AMOUNT, TYPE, "actions");
 
         List<Grid.Column> columns = productsGrid.getColumns();
         int idx = 0;
 
         columns.get(idx++).setHeaderCaption("Seq");
+        columns.get(idx++).setHeaderCaption("Space Type");
         columns.get(idx++).setHeaderCaption("Room");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Category");
@@ -1183,12 +1184,14 @@ public class ProductAndAddons extends Window
         /*addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         addonsGrid.addSelectionListener(this::updateTotal);*/
         addonsGrid.setColumnReorderingAllowed(true);
-        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.PRODUCT_SUBTYPE_CODE, AddonProduct.BRAND_CODE,
+        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_SPACE_TYPE, AddonProduct.ROOM_CODE, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.PRODUCT_SUBTYPE_CODE, AddonProduct.BRAND_CODE,
                 AddonProduct.PRODUCT, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("#");
+        columns.get(idx++).setHeaderCaption("Space Type");
+        columns.get(idx++).setHeaderCaption("Room");
         columns.get(idx++).setHeaderCaption("Category");
         columns.get(idx++).setHeaderCaption("Product Type");
         columns.get(idx++).setHeaderCaption("Product Sub-Type");
@@ -1645,7 +1648,6 @@ public class ProductAndAddons extends Window
                 if (!mapped) {
                     NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 } else {
-                    JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersion.getVersion()),"yes");
 
                     String versionNew = String.valueOf(proposalVersion.getVersion());
                     if (versionNew.startsWith("0.")) {
@@ -1703,6 +1705,7 @@ public class ProductAndAddons extends Window
 
                     if (success) {
                         saveButton.setVisible(false);
+                        JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersion.getVersion()), "yes");
                         NotificationUtil.showNotification("Confirmed successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                         handleState();
                     } else {
