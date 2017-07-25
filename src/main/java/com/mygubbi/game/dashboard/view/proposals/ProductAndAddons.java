@@ -2117,7 +2117,8 @@ public class ProductAndAddons extends Window
                 if (!(proposalVersion.getVersion().startsWith("2.")))
                 {
                     PublishOnCRM publishOnCRM=new PublishOnCRM(proposalHeader);
-                    publishOnCRM.updatePriceInCRMOnPublish();
+                    SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
+                    proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
                 }
 
                 DashboardEventBus.unregister(this);
