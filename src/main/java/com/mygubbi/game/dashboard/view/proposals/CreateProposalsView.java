@@ -211,7 +211,7 @@ public class CreateProposalsView extends Panel implements View {
 
         boolean DSO_flag = false;
 
-
+/*
                 List<ProposalVersion> proposalVersions = proposal.getVersions();
         for (ProposalVersion proposalVersion : proposalVersions )
         {
@@ -224,7 +224,7 @@ public class CreateProposalsView extends Panel implements View {
         if (role.equals("planning") || role.equals("admin") && DSO_flag)
         {
             tabs.addTab(buildBoq(), "BOQ");
-        }
+        }*/
 
 
 
@@ -676,7 +676,7 @@ public class CreateProposalsView extends Panel implements View {
                         }
                     }
 
-                    if (versionToBeConsidered > 2.0)
+                    if (versionToBeConsidered >= 2.0)
                     {
                         readonlyFlag = "yes";
                     }
