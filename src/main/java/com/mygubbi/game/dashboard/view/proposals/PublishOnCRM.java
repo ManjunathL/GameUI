@@ -60,13 +60,20 @@ public class PublishOnCRM
             if(proposalVersionList.size()!=0)
             {
                 Date date = proposalVersionList.get(0).getUpdatedOn();
+                LOG.info("updated date " +date);
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
                 for(ProposalVersion proposalVersion:proposalVersionList)
                 {
-                    if (proposalVersion.getUpdatedOn().after(date))
+                    LOG.info("value " +(!proposalVersion.getInternalStatus().equals("Locked")));
+                    if(!proposalVersion.getInternalStatus().equals("Locked"))
                     {
-                        proposalVersionTobeConsidered = proposalVersion;
+                        if (proposalVersion.getUpdatedOn().after(date) || proposalVersion.getUpdatedOn().equals(date))
+                        {
+                            LOG.info("true value " +proposalVersion.getVersion() +" " +proposalVersion.getProposalId());
+                            proposalVersionTobeConsidered = proposalVersion;
+                        }
                     }
+
                 }
                 amount+=proposalVersionTobeConsidered.getFinalAmount();
                 quoteNumberCRM+=p.getQuoteNoNew();

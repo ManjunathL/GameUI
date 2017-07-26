@@ -1539,7 +1539,7 @@ public class ProductAndAddons extends Window
                     ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
                     for(ProposalVersion proposalVersion:proposalVersionList)
                     {
-                        if (proposalVersion.getDate().after(date))
+                        if (proposalVersion.getDate().after(date) && !proposalVersion.getInternalStatus().equals("Locked"))
                         {
                             proposalVersionTobeConsidered = proposalVersion;
                         }
@@ -1596,19 +1596,29 @@ public class ProductAndAddons extends Window
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
                 for(ProposalVersion proposalVersion:proposalVersionList)
                 {
-                    if (proposalVersion.getUpdatedOn().after(date))
+                   /* if(!proposalVersion.getInternalStatus().equals("Locked"))
                     {
-                        proposalVersionTobeConsidered = proposalVersion;
-                    }
+                        LOG.info("1st if in dso");*/
+                        if (proposalVersion.getUpdatedOn().after(date))// || proposalVersion.getUpdatedOn().equals(date))
+                        {
+                            LOG.info("2nd if in dso" + proposalVersion.getProposalId()+ " " +proposalVersion.getVersion());
+                            proposalVersionTobeConsidered = proposalVersion;
+                        }
+                   // }
+
                 }
                 amount+=proposalVersionTobeConsidered.getFinalAmount();
                 quoteNumberCRM+=p.getQuoteNoNew();
             }
         }
         PublishOnCRM publishOnCRM=new PublishOnCRM(proposalHeader);
-        SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
-        LOG.info("estimated amount " +sendToCRMOnPublish.getEstimated_project_cost_c());
-        sendToCRM.setEstimated_project_cost_c(sendToCRMOnPublish.getEstimated_project_cost_c());
+        /*if (!(proposalVersion.getVersion().startsWith("2.")))
+        {*/
+            SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
+            sendToCRM.setEstimated_project_cost_c(sendToCRMOnPublish.getEstimated_project_cost_c());
+            //proposalDataProvider.updateCrmPriceOnPublish(sendToCRM);
+        //}
+
         sendToCRM.setFinal_proposal_amount_c(amount);
 
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
@@ -2127,12 +2137,12 @@ public class ProductAndAddons extends Window
                 proposalVersion.setRemarks(remarksTextArea.getValue());
                 proposalVersion.setTitle(ttitle.getValue());
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-                if (!(proposalVersion.getVersion().startsWith("2.")))
-                {
+                /*if (!(proposalVersion.getVersion().startsWith("2.")))
+                {*/
                     PublishOnCRM publishOnCRM=new PublishOnCRM(proposalHeader);
                     SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
                     proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
-                }
+                //}
 
                 DashboardEventBus.unregister(this);
                 close();
