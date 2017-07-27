@@ -1596,15 +1596,15 @@ public class ProductAndAddons extends Window
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
                 for(ProposalVersion proposalVersion:proposalVersionList)
                 {
-                   /* if(!proposalVersion.getInternalStatus().equals("Locked"))
+                    if(!proposalVersion.getInternalStatus().equals("Locked"))
                     {
-                        LOG.info("1st if in dso");*/
-                        if (proposalVersion.getUpdatedOn().after(date))// || proposalVersion.getUpdatedOn().equals(date))
+                        LOG.info("1st if in dso");
+                        if (proposalVersion.getUpdatedOn().after(date) || proposalVersion.getUpdatedOn().equals(date))
                         {
                             LOG.info("2nd if in dso" + proposalVersion.getProposalId()+ " " +proposalVersion.getVersion());
                             proposalVersionTobeConsidered = proposalVersion;
                         }
-                   // }
+                    }
 
                 }
                 amount+=proposalVersionTobeConsidered.getFinalAmount();
@@ -1638,8 +1638,7 @@ public class ProductAndAddons extends Window
             } else if (grandTotal.getValue().equals("0")) {
                 NotificationUtil.showNotification("Please add products", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-            }
-                String disAmount=discountAmount.getValue();
+            }String disAmount=discountAmount.getValue();
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
             proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
             proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
