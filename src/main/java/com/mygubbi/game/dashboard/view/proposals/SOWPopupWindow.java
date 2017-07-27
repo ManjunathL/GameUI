@@ -57,7 +57,7 @@ public class SOWPopupWindow extends Window {
         verticalLayout1.setSpacing(true);
 
         Label label_message = new Label();
-        label_message.setCaption("Click on the Open Sheet button to edit the Scope Of Services.");
+        label_message.setCaption("Double click on the Open Sheet button to edit the Scope Of Services.");
         label_message.addStyleName(ValoTheme.LABEL_BOLD);
         label_message.addStyleName(ValoTheme.LABEL_H2);
         verticalLayout1.addComponent(label_message);
@@ -96,7 +96,7 @@ public class SOWPopupWindow extends Window {
 
         Button save_sheet = new Button();
         save_sheet.setCaption("Save");
-        save_sheet.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        save_sheet.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 
         horizontalLayout1.addComponent(save_sheet);
         horizontalLayout1.setSpacing(true);

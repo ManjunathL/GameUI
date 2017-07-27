@@ -980,6 +980,7 @@ public class ProductAndAddons extends Window
                 Product proposalProductDetails = proposalDataProvider.getProposalProductDetails(p.getId(),p.getFromVersion());
                 List<Module> modulesFromOldProduct = proposalProductDetails.getModules();
                 Product copyProduct = new Product();
+                copyProduct.setSpaceType(p.getSpaceType());
                 copyProduct.setType(Product.TYPES.CUSTOMIZED.name());
                 copyProduct.setSeq(length);
                 copyProduct.setProposalId(proposalHeader.getId());
@@ -1670,6 +1671,7 @@ public class ProductAndAddons extends Window
                         proposalHeader.setStatus(proposalVersion.getStatus());
                         proposalHeader.setVersion(proposalVersion.getVersion());
                         proposalDataProvider.saveProposalOnConfirm(proposalHeader);
+                        proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(), "1.0");
                         proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
                         success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
                         proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
