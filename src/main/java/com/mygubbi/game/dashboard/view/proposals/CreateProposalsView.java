@@ -691,18 +691,19 @@ public class CreateProposalsView extends Panel implements View {
                 }
                 NotificationUtil.showNotification("Generating the Scope of services sheet v2.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
                 productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
-                JSONObject quoteFile = null;
-                try {
-                    quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(), versionToBeConsidered, readonlyFlag);
-                    if (quoteFile.getString("status").equalsIgnoreCase("failure")) {
-                        NotificationUtil.showNotification("Couldn't create SOW file. Please click on the button to generate the sheet again", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+
+                JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readonlyFlag);
+                LOG.debug("Quote file :" + quoteFile);
+                try{
+                    if(quoteFile.getString("status").equalsIgnoreCase("success")) {
+                        SOWPopupWindow.open(proposalHeader, productAndAddonSelection, quoteFile);
+                    }else{
+                        NotificationUtil.showNotification(quoteFile.getString("comments"), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                     }
-                } catch (JSONException e) {
+                }catch(Exception e){
                     e.printStackTrace();
-                    LOG.error("Couldnt create Sow File :" + e.getMessage());
                 }
-
 
                 SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
 
@@ -758,20 +759,18 @@ public class CreateProposalsView extends Panel implements View {
 
         NotificationUtil.showNotification("Generating the Scope of services sheet v1.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
 
-
-        JSONObject quoteFile = null;
-        try {
-            quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(), versionToBeConsidered, readOnlyFlag);
-            if (quoteFile.getString("status").equalsIgnoreCase("failure")) {
-                NotificationUtil.showNotification("Couldn't create SOW file. Please click on the button to generate the sheet again", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readOnlyFlag);
+        LOG.debug("Quote file :" + quoteFile);
+        try{
+            if(quoteFile.getString("status").equalsIgnoreCase("success")) {
+                SOWPopupWindow.open(proposalHeader, productAndAddonSelection, quoteFile);
+            }else{
+                NotificationUtil.showNotification(quoteFile.getString("comments"), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-        } catch (JSONException e) {
+        }catch(Exception e){
             e.printStackTrace();
-            LOG.error("Couldnt create Sow File :" + e.getMessage());
         }
-
-        SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
     }
 
     private Component buildBoq() {
