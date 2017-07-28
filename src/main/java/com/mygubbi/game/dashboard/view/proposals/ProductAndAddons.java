@@ -908,6 +908,7 @@ public class ProductAndAddons extends Window
                     newProduct.setType(Product.TYPES.CUSTOMIZED.name());
                     newProduct.setProposalId(this.proposalHeader.getId());
                     newProduct.setFromVersion(this.vid);
+                    newProduct.setProductCategoryLocked("No");
                     CustomizedProductDetailsWindow.open(ProductAndAddons.this.proposal, newProduct, proposalVersion, proposalHeader);
                 }
         );
@@ -1029,6 +1030,7 @@ public class ProductAndAddons extends Window
                 copyProduct.setlConnectorPrice(p.getlConnectorPrice());
                 copyProduct.setHandleThickness(p.getHandleThickness());
                 copyProduct.setNoOfLengths(p.getNoOfLengths());
+                copyProduct.setProductCategoryLocked(p.getProductCategoryLocked());
                // LOG.info("COPIED@"+ copyProduct);
                 copyProduct.setAddons(p.getAddons());
 

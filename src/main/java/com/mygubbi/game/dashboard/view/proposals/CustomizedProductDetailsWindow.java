@@ -23,6 +23,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.data.util.PropertyValueGenerator;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
@@ -151,6 +152,8 @@ public class CustomizedProductDetailsWindow extends Window {
     private BeanContainer<String, HandleMaster> knobfinishBeanContainer;
     private BeanContainer<String, HandleMaster> handlethicknessBeanContainer;
 
+    private String productlocked=null;
+
     public CustomizedProductDetailsWindow(Proposal proposal, Product product, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         //LOG.info("Productaszasasc" +product);
         this.proposal = proposal;
@@ -275,20 +278,37 @@ public class CustomizedProductDetailsWindow extends Window {
         this.productSelection = getSimpleItemFilledCombo("Product Category", ProposalDataProvider.CATEGORY_LOOKUP, null);
         productSelection.setRequired(true);
         binder.bind(productSelection, PRODUCT_CATEGORY_CODE);
-        productSelection.addValueChangeListener(valueChangeEvent -> {
-            String code = (String) valueChangeEvent.getProperty().getValue();
-            String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
-            product.setProductCategory(title);
-            if(productSelection.getValue().equals("Wardrobe"))
-            {
-                handleSelection.setValue("Normal");
-            }
-        });
+        LOG.info("product.getProductCategoryLocked()" +product.getProductCategoryLocked());
+        LOG.info("this.modules " +product.getModules().size());
         if (productSelection.size() > 0)
         {
             String code = StringUtils.isNotEmpty(product.getProductCategoryCode()) ? product.getProductCategoryCode() : (String) productSelection.getItemIds().iterator().next();
             productSelection.setValue(code);
         }
+        if(product.getProductCategoryLocked().equals("Yes"))
+        {
+            productSelection.setReadOnly(true);
+        }
+        productSelection.addFocusListener(this::onFocusToproductselection);
+
+        productSelection.addValueChangeListener(valueChangeEvent -> {
+            LOG.info("inside value change " +productlocked);
+            if(productlocked.equals("Yes"))
+            {
+                productSelection.setReadOnly(true);
+            }
+            else {
+                String code = (String) valueChangeEvent.getProperty().getValue();
+                String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
+                product.setProductCategory(title);
+                if(productSelection.getValue().equals("Wardrobe"))
+                {
+                    handleSelection.setValue("Normal");
+                }
+            }
+        });
+
+        //productSelection.addValueChangeListener(this::onProductValueChange);
         formLayoutLeft.addComponent(this.productSelection);
 
         itemTitleField = (TextField) binder.buildAndBind("Title", TITLE);
@@ -379,6 +399,19 @@ public class CustomizedProductDetailsWindow extends Window {
         return formLayoutLeft;
     }
 
+    private void onFocusToproductselection(FieldEvents.FocusEvent event)
+    {
+                if(product.getModules().size()==0)
+                {
+                    productlocked="No";
+                    productSelection.setReadOnly(false);
+                }
+                else
+                {
+                    productlocked="Yes";
+                    productSelection.setReadOnly(true);
+                }
+    }
     private void checkForDuplicateSeq(Property.ValueChangeEvent valueChangeEvent) {
         Boolean value=checkForDuplicatefunction();
         if(value==false)
@@ -1181,6 +1214,10 @@ public class CustomizedProductDetailsWindow extends Window {
 
                     Module module = new Module();
                     product.setType(TYPES.CUSTOMIZED.name());
+                    product.setProductCategoryLocked("Yes");
+                    productSelection.setReadOnly(true);
+                    productlocked="Yes";
+                    LOG.info("product locked value assigned " +productlocked);
                     if (product.getSource() == null) {
                         product.setSource("GAME");
                     }

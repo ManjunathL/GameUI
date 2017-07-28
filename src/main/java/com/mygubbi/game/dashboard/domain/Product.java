@@ -69,6 +69,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String HANDLE_CODE="handleCode";
     public static final String KNOB_CODE="knobCode";
     public static final String LCONNECTOR_PRICE="lConnectorPrice";
+    public static final String PRODUCT_CATEGORYLOCKED="productCategoryLocked";
 
     private int id;
     private int proposalId;
@@ -129,6 +130,7 @@ public class Product implements FileAttachmentsHolder {
     private String handleCode;
     private String knobCode;
     private double lConnectorPrice;
+    private String productCategoryLocked;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -636,6 +638,14 @@ public class Product implements FileAttachmentsHolder {
 
     public void setNoOfLengths(double noOfLengths) {
         this.noOfLengths = noOfLengths;
+    }
+
+    public String getProductCategoryLocked() {
+        return productCategoryLocked;
+    }
+
+    public void setProductCategoryLocked(String productCategoryLocked) {
+        this.productCategoryLocked = productCategoryLocked;
     }
 
     @Override
