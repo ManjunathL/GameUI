@@ -816,7 +816,7 @@ public class ProposalDataProvider {
         try {
             productAndAddonSelection.setUserId(getUserId());
             String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
-            JSONObject obj = dataProviderMode.postResource("proposal/downloadquotePdf", productSelectionsJson);
+            JSONObject obj = dataProviderMode.postResource("proposal/downloadquoteandSow", productSelectionsJson);
             return obj.getString("quoteFile");
         } catch (JSONException | JsonProcessingException e) {
             throw new RuntimeException(e);
