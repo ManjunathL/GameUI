@@ -2744,6 +2744,7 @@ public class CustomizedProductDetailsWindow extends Window {
             fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
             fileAttachmentComponent.setReadOnly(true);
             addModules.setEnabled(false);
+            spaceTypeSelection.setReadOnly(true);
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
                 handleType.setReadOnly(true);
                 handle.setReadOnly(true);
