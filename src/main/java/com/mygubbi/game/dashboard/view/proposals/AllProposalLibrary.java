@@ -373,6 +373,7 @@ public class AllProposalLibrary extends Window
             product.setKnobCode(p.getKnobCode());
             product.setlConnectorPrice(p.getlConnectorPrice());
             product.setNoOfLengths(p.getNoOfLengths());
+            product.setProductCategoryLocked("Yes");
             List<Module> modules = p.getModules();
             List<Module> refreshedModules = new ArrayList<>();
             for (Module refreshedModule: modules)

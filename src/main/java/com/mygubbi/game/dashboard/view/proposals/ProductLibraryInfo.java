@@ -268,6 +268,7 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setlConnectorPrice(product.getlConnectorPrice());
                 productLibrary.setNoOfLengths(product.getNoOfLengths());
                 productLibrary.setSpaceType(product.getSpaceType());
+                productLibrary.setProductCategoryLocked(product.getProductCategoryLocked());
                 boolean success = proposalDataProvider.InsertProductLibrary(productLibrary);
                // LOG.info("field vale " +productLocationField.getValue() + " " +productLibrary.getProductLocation());
                 //LOG.info("success in " + success);

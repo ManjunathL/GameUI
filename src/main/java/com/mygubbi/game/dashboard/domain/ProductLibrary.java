@@ -73,6 +73,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String LCONNECTOR_PRICE="lConnectorPrice";
     public static final String NO_OF_LENGTHS="noOfLengths";
     public static final String DESIGNER="designer";
+    public static final String PRODUCTCATEGORY_LOCKED="productCategoryLocked";
 
 
     private int id;
@@ -138,7 +139,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     private String knobCode;
     private double lConnectorPrice;
     private double noOfLengths;
-
+    private String productCategoryLocked;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -661,6 +662,14 @@ public class ProductLibrary implements FileAttachmentsHolder
 
     public void setSpaceType(String spaceType) {
         this.spaceType = spaceType;
+    }
+
+    public String getProductCategoryLocked() {
+        return productCategoryLocked;
+    }
+
+    public void setProductCategoryLocked(String productCategoryLocked) {
+        this.productCategoryLocked = productCategoryLocked;
     }
 
     @Override
