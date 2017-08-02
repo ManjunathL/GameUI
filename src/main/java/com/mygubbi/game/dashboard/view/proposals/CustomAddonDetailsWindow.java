@@ -124,6 +124,8 @@ public class CustomAddonDetailsWindow extends Window {
 
     private void setComponentsReadOnly() {
 
+        spaceType.setReadOnly(true);
+        roomText.setReadOnly(true);
         title.setReadOnly(true);
         uom.setReadOnly(true);
         quantity.setReadOnly(true);

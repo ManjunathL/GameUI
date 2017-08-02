@@ -151,6 +151,8 @@ public class AddonDetailsWindow extends Window {
 
     private void setComponentsReadOnly() {
         category.setReadOnly(true);
+        spaceType.setReadOnly(true);
+        roomText.setReadOnly(true);
         productType.setReadOnly(true);
         productSubtype.setReadOnly(true);
         brand.setReadOnly(true);

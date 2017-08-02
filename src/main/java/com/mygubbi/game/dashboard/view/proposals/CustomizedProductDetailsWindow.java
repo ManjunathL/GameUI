@@ -2560,6 +2560,7 @@ public class CustomizedProductDetailsWindow extends Window {
         itemTitleField.setReadOnly(true);
         productSelection.setReadOnly(true);
         roomText.setReadOnly(true);
+        spaceTypeSelection.setReadOnly(true);
        // manualSeq.setReadOnly(true);
         shutterDesign.setReadOnly(true);
         baseCarcassSelection.setReadOnly(true);
@@ -2733,6 +2734,7 @@ public class CustomizedProductDetailsWindow extends Window {
         {
             itemTitleField.setReadOnly(true);
             productSelection.setReadOnly(true);
+            spaceTypeSelection.setReadOnly(true);
             roomText.setReadOnly(true);
             shutterDesign.setReadOnly(true);
             baseCarcassSelection.setReadOnly(true);
