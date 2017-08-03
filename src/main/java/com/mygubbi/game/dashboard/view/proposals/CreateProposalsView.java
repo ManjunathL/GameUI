@@ -954,7 +954,11 @@ public class CreateProposalsView extends Panel implements View {
 
     private void save(Button.ClickEvent clickEvent) {
 
-
+        if(Objects.equals(proposalHeader.getOfferType(),""))
+        {
+            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
 
         LOG.debug("Proposal Header inside save :" + this.proposalHeader.toString());
 

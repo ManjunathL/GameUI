@@ -15,10 +15,7 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FileResource;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.ThemeResource;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -29,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.sql.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static com.mygubbi.game.dashboard.domain.Product.ROOM_CODE;
 import static com.mygubbi.game.dashboard.domain.Product.SPACE_TYPE;
@@ -121,6 +119,7 @@ public class AddonDetailsWindow extends Window {
         this.productCodeChanged(null);
 
         handleState();
+        handlePackage();
     }
 
     private void handleState() {
@@ -163,7 +162,23 @@ public class AddonDetailsWindow extends Window {
         rate.setReadOnly(true);
         amount.setReadOnly(true);
     }
-
+    private void handlePackage() {
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+        if (Objects.equals(proposalHeader.getAdminPackageFlag(), "Yes") && !("admin").equals(role)) {
+            category.setReadOnly(true);
+            spaceType.setReadOnly(true);
+            roomText.setReadOnly(true);
+            productType.setReadOnly(true);
+            productSubtype.setReadOnly(true);
+            brand.setReadOnly(true);
+            product.setReadOnly(true);
+            title.setReadOnly(true);
+            uom.setReadOnly(true);
+            quantity.setReadOnly(true);
+            rate.setReadOnly(true);
+            amount.setReadOnly(true);
+        }
+    }
     private Component buildAddonSelectionsComponent() {
 
         VerticalLayout verticalLayout = new VerticalLayout();

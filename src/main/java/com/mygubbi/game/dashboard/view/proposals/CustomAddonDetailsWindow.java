@@ -13,6 +13,7 @@ import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
@@ -21,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.StrictMath.round;
 
@@ -62,15 +64,17 @@ public class CustomAddonDetailsWindow extends Window {
     double rateForAddonWOTax;
     double rateForAddonSourcePrice;
     Double addonDealerPrice=0.0;
+    ProposalHeader proposalHeader;
 
     private static final Logger LOG = LogManager.getLogger(AddonProduct.class);
 
 
-    public CustomAddonDetailsWindow(AddonProduct addonProduct, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
+    public CustomAddonDetailsWindow(AddonProduct addonProduct, String title, boolean isProposalAddon, ProposalVersion proposalVersion,ProposalHeader proposalHeader) {
         this.addonProduct = addonProduct;
         this.isProposalAddon = isProposalAddon;
         this.originalImagePath = this.addonProduct.getImagePath();
         this.proposalVersion = proposalVersion;
+        this.proposalHeader=proposalHeader;
         this.binder.setItemDataSource(this.addonProduct);
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
@@ -95,6 +99,7 @@ public class CustomAddonDetailsWindow extends Window {
         setContent(verticalLayout);
 
         handleState();
+        handlePackage();
     }
 
     private void handleState() {
@@ -132,7 +137,21 @@ public class CustomAddonDetailsWindow extends Window {
         rate.setReadOnly(true);
         amount.setReadOnly(true);
     }
+    private void handlePackage()
+    {
+        String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+        if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+        {
+            spaceType.setReadOnly(true);
+            roomText.setReadOnly(true);
+            title.setReadOnly(true);
+            uom.setReadOnly(true);
+            quantity.setReadOnly(true);
+            rate.setReadOnly(true);
+            amount.setReadOnly(true);
+        }
 
+    }
     private Component buildAddonSelectionsComponent() {
 
         VerticalLayout verticalLayout = new VerticalLayout();
@@ -372,8 +391,8 @@ public class CustomAddonDetailsWindow extends Window {
         }
     }
 
-    public static void open(AddonProduct addon, String title, boolean isProposalAddon, ProposalVersion proposalVersion) {
-        Window w = new CustomAddonDetailsWindow(addon, title, isProposalAddon,proposalVersion);
+    public static void open(AddonProduct addon, String title, boolean isProposalAddon, ProposalVersion proposalVersion,ProposalHeader proposalHeader) {
+        Window w = new CustomAddonDetailsWindow(addon, title, isProposalAddon,proposalVersion,proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
 

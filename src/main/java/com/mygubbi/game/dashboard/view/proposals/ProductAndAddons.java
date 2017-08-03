@@ -1181,7 +1181,7 @@ public class ProductAndAddons extends Window
         customAddonAddButton.addClickListener(clickEvent -> {
             AddonProduct addonProduct = new AddonProduct();
             addonProduct.setAdd(true);
-            CustomAddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion);
+            CustomAddonDetailsWindow.open(addonProduct, "Add Addon", true, proposalVersion,proposalHeader);
         });
         hLayoutInner.addComponent(customAddonAddButton);
         hLayoutInner.setComponentAlignment(customAddonAddButton,Alignment.TOP_RIGHT);
@@ -1226,7 +1226,7 @@ public class ProductAndAddons extends Window
 
                 if (("Custom Addon").equals(addon.getCategoryCode()))
                 {
-                    CustomAddonDetailsWindow.open(addon,"Edit Addon",true,proposalVersion);
+                    CustomAddonDetailsWindow.open(addon,"Edit Addon",true,proposalVersion,proposalHeader);
                 }else {
                     AddonDetailsWindow.open(addon, "Edit Addon", true, proposalVersion, proposalHeader);
                 }
@@ -1480,9 +1480,12 @@ public class ProductAndAddons extends Window
                     return;
                 }
 
+                String disAmount=discountAmount.getValue();
                 proposalHeader.setStatus(proposalVersion.getStatus());
                 proposalHeader.setVersion(versionNum.getValue());
                 proposalDataProvider.saveProposal(proposalHeader);
+                proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",","")));
+                proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
                 response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId());
 
             } catch (FieldGroup.CommitException e) {
@@ -2181,6 +2184,7 @@ public class ProductAndAddons extends Window
             }
             else
             {
+                LOG.info("elase part ***");
                 JSONObject textValues = new JSONObject();
                 textValues.put("discountAmount", discountAmount.getValue());
                 textValues.put("grandTotal", Double.parseDouble(grandTotal.getValue()));
