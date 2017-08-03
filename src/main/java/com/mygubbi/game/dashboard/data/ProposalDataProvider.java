@@ -53,6 +53,7 @@ public class ProposalDataProvider {
     public static final String ACCESSORY_LOOKUP = "accessories";
     public static final String COLLECTION_LOOKUP = "collection";
     public static final String SPACETYPE_LOOKUP = "spacetype";
+    public static final String OFFERTYPE_LOOKUP = "offerName";
 
 
     public ProposalDataProvider(DataProviderMode dataProviderMode) {
@@ -1768,7 +1769,7 @@ public class ProposalDataProvider {
     {
         try {
            /* String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
-            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "http://52.66.107.178/mygubbi_crm/rest_update_opp.php");
+            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
             //LOG.info("basecrmurl " +baseCrmUrl);
             String final_amount = String.valueOf(sendToCRM.getFinal_proposal_amount_c());
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
@@ -1790,7 +1791,7 @@ public class ProposalDataProvider {
     {
         try {
             /*String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
-            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "http://52.66.107.178/mygubbi_crm/rest_update_opp.php");
+            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
            // LOG.info("basecrmurl " +baseCrmUrl);
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
         /*
