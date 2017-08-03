@@ -143,6 +143,7 @@ public class CRMsearchWindow extends Window
                         if(!(Objects.equals(proposalHeader.getPackageFlag(), "Yes")))
                         {
                             proposalHeader.setPackageFlag("No");
+                            proposalHeader.setAdminPackageFlag("No");
                         }
                         boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
                        /* LOG.info("proposal create value in crm search window " +success);

@@ -1699,6 +1699,12 @@ public class CustomizedProductDetailsWindow extends Window {
                     Notification.show("Cannot delete modules on Published, Confirmed amd Locked versions");
                     return;
                 }
+                String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+                if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+                {
+                    Notification.show("Cannot delete modules");
+                    return;
+                }
 
                     ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Module?",
                             "Yes", "No", dialog -> {

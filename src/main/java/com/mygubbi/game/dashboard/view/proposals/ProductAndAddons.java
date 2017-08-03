@@ -255,7 +255,7 @@ public class ProductAndAddons extends Window
 
         String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
-        if (("admin").equals(role))
+        if (("admin").equals(role) || ("planning").equals(role))
         {
             Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             downloadButton.setCaptionAsHtml(true);
@@ -971,6 +971,12 @@ public class ProductAndAddons extends Window
                     Notification.show("Cannot copy Products");
                     return;
                 }
+                String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+                if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+                {
+                    Notification.show("Cannot copy Products");
+                    return;
+                }
                 Product p = (Product) rendererClickEvent.getItemId();
 
                 productContainer.removeAllItems();
@@ -1082,6 +1088,12 @@ public class ProductAndAddons extends Window
                 if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()) || ("DSO").equals(proposalVersion.getInternalStatus()) || ("PSO").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot delete products on Published, Confirmed and Locked versions");
+                    return;
+                }
+                String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+                if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+                {
+                    Notification.show("Cannot delete Products");
                     return;
                 }
 
@@ -1226,6 +1238,12 @@ public class ProductAndAddons extends Window
                 if (("Published").equals(proposalVersion.getInternalStatus()) || ("Confirmed").equals(proposalVersion.getInternalStatus()) || ("Locked").equals(proposalVersion.getInternalStatus()) || ("DSO").equals(proposalVersion.getInternalStatus()) || ("PSO").equals(proposalVersion.getInternalStatus()))
                 {
                     Notification.show("Cannot delete addons on Published, Confirmed and Locked versions");
+                    return;
+                }
+                String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+                if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+                {
+                    Notification.show("Cannot delete Addons");
                     return;
                 }
 
@@ -2120,6 +2138,17 @@ public class ProductAndAddons extends Window
             addFromCatalogueButton.setEnabled(false);
             discountAmount.setReadOnly(true);
             discountPercentage.setReadOnly(true);
+
+            String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+            if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+            {
+                confirmButton.setEnabled(false);
+                submitButton.setEnabled(false);
+                designSignOffButton.setEnabled(false);
+                productionSignOffButton.setEnabled(false);
+                addonAddButton.setEnabled(false);
+                customAddonAddButton.setEnabled(false);
+            }
         }
     }
 

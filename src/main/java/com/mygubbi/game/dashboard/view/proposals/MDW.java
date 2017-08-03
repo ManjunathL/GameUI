@@ -1938,6 +1938,11 @@ public class MDW extends Window {
             addons31.setReadOnly(true);
             addons32.setReadOnly(true);
             addons33.setReadOnly(true);
+            String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+            if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+            {
+                colorCombo.setReadOnly(true);
+            }
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
                 single.setReadOnly(true);

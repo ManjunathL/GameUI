@@ -92,6 +92,7 @@ public class CreateProposalsView extends Panel implements View {
     private Field<?> projectAddressLine1;
     private Field<?> projectAddressLine2;
     private ComboBox projectCityField;
+    private ComboBox offerField;
 
     private ComboBox salesPerson;
     private Field<?> salesEmail;
@@ -346,6 +347,12 @@ public class CreateProposalsView extends Panel implements View {
                 ProposalVersion pVersion = (ProposalVersion) rendererClickEvent.getItemId();
                 LOG.debug("Proposal version to be copied :" + pVersion.toString());
 
+                String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+                if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+                {
+                    Notification.show("Cannot copy the version");
+                    return;
+                }
                 if ((0.0) == pVersion.getFinalAmount()) {
                     Notification.show("Please add products before copying");
                     return;
@@ -384,7 +391,7 @@ public class CreateProposalsView extends Panel implements View {
 
                 } else if (pVersion.getVersion().startsWith("2.")) {
 
-                    String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+                    //String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
                     if (!(("planning").equals(role) || ("admin").equals(role)))
                     {
@@ -1423,6 +1430,12 @@ public class CreateProposalsView extends Panel implements View {
         ((TextField) designEmail).setValue(email);
     }
 
+    private void offerFieldValueChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        LOG.info("offer value changed " +valueChangeEvent.getProperty().getValue().toString());
+        proposalHeader.setOfferType(valueChangeEvent.getProperty().getValue().toString());
+    }
+
     private void salesPersonChanged(Property.ValueChangeEvent valueChangeEvent) {
         String phone = (String) salesPerson.getItem(salesPerson.getValue()).getItemProperty(User.PHONE).getValue();
         ((TextField) salesContact).setValue(phone);
@@ -1483,6 +1496,29 @@ public class CreateProposalsView extends Panel implements View {
         return select;
     }
 
+    private ComboBox getOfferCombo()
+    {
+        List<LookupItem> list = proposalDataProvider.getLookupItems(ProposalDataProvider.OFFERTYPE_LOOKUP);
+        LOG.info("size of offer combo list " +list.size());
+        final BeanContainer<String, LookupItem> container =
+                new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty(LookupItem.TITLE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox("Offer Type");
+        select.setWidth("300px");
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(LookupItem.TITLE);
+
+        if (StringUtils.isNotEmpty(this.proposalHeader.getOfferType())) {
+            select.setValue(this.proposalHeader.getOfferType());
+        } else if (container.size() == 1) {
+            select.setValue(select.getItemIds().iterator().next());
+        }
+
+        return select;
+    }
     private ComboBox getDesignPersonCombo() {
         List<User> list = proposalDataProvider.getDesignerUsers();
         final BeanContainer<String, User> container =
@@ -1558,6 +1594,12 @@ public class CreateProposalsView extends Panel implements View {
         /*quote.setRequired(true);*/
         quote.setReadOnly(true);
         formLayoutRight.addComponent(quote);
+
+        offerField = getOfferCombo();
+        binder.bind(offerField, OFFER_TYPE);
+        offerField.setRequired(true);
+        formLayoutRight.addComponent(offerField);
+        offerField.addValueChangeListener(this::offerFieldValueChanged);
 
         return formLayoutRight;
     }
@@ -1835,6 +1877,7 @@ public class CreateProposalsView extends Panel implements View {
     private void packageselectionchanged(Property.ValueChangeEvent valueChangeEvent)
     {
         proposalHeader.setPackageFlag(valueChangeEvent.getProperty().getValue().toString());
+        proposalHeader.setAdminPackageFlag(valueChangeEvent.getProperty().getValue().toString());
     }
 
    /* private boolean validateAddonsAgainstSOW(int proposalId, String version)

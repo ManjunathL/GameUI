@@ -52,6 +52,8 @@ public class ProposalHeader {
     public static final String MAX_DISCOUNTPERCENTAGE="maxDiscountPercentage";
     public static final String BEFORE_PRODUCTION_SPECIFICATION="beforeProductionSpecification";
     public static final String PACKAGE_FLAG="packageFlag";
+    public static final String ADMIN_PACKAGEFLAG="adminPackageFlag";
+    public static final String OFFER_TYPE="offerType";
 
     private int id;
     private String quoteNoNew;
@@ -93,6 +95,8 @@ public class ProposalHeader {
     private double maxDiscountPercentage;
     private String beforeProductionSpecification;
     private String packageFlag;
+    private String adminPackageFlag;
+    private String offerType;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -423,11 +427,26 @@ public class ProposalHeader {
         this.packageFlag = packageFlag;
     }
 
+    public String getAdminPackageFlag() {
+        return adminPackageFlag;
+    }
+
+    public void setAdminPackageFlag(String adminPackageFlag) {
+        this.adminPackageFlag = adminPackageFlag;
+    }
+
+    public String getOfferType() {
+        return offerType;
+    }
+
+    public void setOfferType(String offerType) {
+        this.offerType = offerType;
+    }
+
     @Override
     public String toString() {
         return "ProposalHeader{" +
-                "amount=" + amount +
-                ", id=" + id +
+                "id=" + id +
                 ", quoteNoNew='" + quoteNoNew + '\'' +
                 ", status='" + status + '\'' +
                 ", title='" + title + '\'' +
@@ -456,6 +475,7 @@ public class ProposalHeader {
                 ", designPartnerName='" + designPartnerName + '\'' +
                 ", designPartnerEmail='" + designPartnerEmail + '\'' +
                 ", designPartnerPhone='" + designPartnerPhone + '\'' +
+                ", amount=" + amount +
                 ", folderPath='" + folderPath + '\'' +
                 ", createdOn=" + createdOn +
                 ", createdBy='" + createdBy + '\'' +
@@ -466,6 +486,8 @@ public class ProposalHeader {
                 ", maxDiscountPercentage=" + maxDiscountPercentage +
                 ", beforeProductionSpecification='" + beforeProductionSpecification + '\'' +
                 ", packageFlag='" + packageFlag + '\'' +
+                ", adminPackageFlag='" + adminPackageFlag + '\'' +
+                ", offerType='" + offerType + '\'' +
                 '}';
     }
 }
