@@ -2171,6 +2171,8 @@ public class ProductAndAddons extends Window
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
                 proposalVersion.setRemarks(remarksTextArea.getValue());
                 proposalVersion.setTitle(ttitle.getValue());
+                proposalDataProvider.updateVersion(proposalVersion);
+
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
                 /*if (!(proposalVersion.getVersion().startsWith("2.")))
                 {*/
