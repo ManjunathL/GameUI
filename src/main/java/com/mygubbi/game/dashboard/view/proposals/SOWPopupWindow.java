@@ -12,6 +12,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.eclipse.jetty.util.log.Log;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
@@ -78,16 +79,11 @@ public class SOWPopupWindow extends Window {
         open_sheet.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                BrowserWindowOpener opener = null;
-
                 try {
-                    opener = new BrowserWindowOpener(new ExternalResource(quoteFile.getString("driveWebViewLink")));
-
+                    getUI().getPage().open(quoteFile.getString("driveWebViewLink"),"googleSheet");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                opener.setFeatures("");
-                opener.extend(open_sheet);
             }
         });
 
