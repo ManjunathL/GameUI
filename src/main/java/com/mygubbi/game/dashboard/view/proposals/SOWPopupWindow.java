@@ -58,7 +58,7 @@ public class SOWPopupWindow extends Window {
         verticalLayout1.setSpacing(true);
 
         Label label_message = new Label();
-        label_message.setCaption("Double click on the Open Sheet button to edit the Scope Of Services.");
+        label_message.setCaption("Please click on the Open Sheet button to edit the Scope Of Services.");
         label_message.addStyleName(ValoTheme.LABEL_BOLD);
         label_message.addStyleName(ValoTheme.LABEL_H2);
         verticalLayout1.addComponent(label_message);
