@@ -14,6 +14,16 @@ public class ProductAndAddonSelection {
     private double discountPercentage;
     private String fromVersion;
     private String userId;
+    private String bookingFormFlag;
+    private String city;
+
+    public String getBookingFormFlag() {
+        return bookingFormFlag;
+    }
+
+    public void setBookingFormFlag(String bookingFormFlag) {
+        this.bookingFormFlag = bookingFormFlag;
+    }
 
     public String getUserId() {return userId;}
 
@@ -67,6 +77,14 @@ public class ProductAndAddonSelection {
         this.discountPercentage = discountPercentage;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     @Override
     public String toString() {
         return "ProductAndAddonSelection{" +
@@ -75,7 +93,10 @@ public class ProductAndAddonSelection {
                 ", addonIds=" + addonIds +
                 ", discountAmount=" + discountAmount +
                 ", discountPercentage=" + discountPercentage +
-                ", userId ="+getUserId()+
+                ", fromVersion='" + fromVersion + '\'' +
+                ", userId='" + userId + '\'' +
+                ", bookingFormFlag='" + bookingFormFlag + '\'' +
+                ", city='" + city + '\'' +
                 '}';
     }
 }
