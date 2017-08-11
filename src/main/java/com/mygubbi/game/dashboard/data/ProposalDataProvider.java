@@ -337,8 +337,7 @@ public class ProposalDataProvider {
 
     public ProposalVersion createDraft(int pid, String title) {
         try {
-
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/createdraft", "{\"proposalId\": " + pid + "," + "\"fromVersion\" : \"0.0\"" + "," + "\"title\" : " + "\"" + title + "\"" + "}");
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/version/createdraft", "{\"proposalId\": " + pid + "," + "\"fromVersion\" : \"0.0\"" + "," + "\"title\" : " + "\"" + title + "\"" +","+"\"createdBy\" : "+"\""+getUserId()+"\"" +"}");
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);
@@ -772,6 +771,7 @@ public class ProposalDataProvider {
 
     public ProposalVersion copyProposalVersion(ProposalVersion proposalVersion) {
         try {
+            proposalVersion.setUpdatedBy(getUserId());
             String productJson = this.mapper.writeValueAsString(proposalVersion);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "proposal/version/copyversion", productJson);
@@ -1240,6 +1240,7 @@ public class ProposalDataProvider {
     public ProposalVersion updateVersion(ProposalVersion proposalVersion) {
 
         try {
+            proposalVersion.setUpdatedBy(getUserId());
             String versionJson = this.mapper.writeValueAsString(proposalVersion);
             JSONObject jsonObject = dataProviderMode.postResource("proposal/updateversion", versionJson);
 

@@ -17,6 +17,7 @@ public class ProposalVersion implements Cloneable {
     public static final String STATUS = "status";
     public static final String INTERNAL_STATUS = "internalStatus";
     public static final String DATE = "date";
+    public static final String CREATEDBY = "createdBy";
     public static final String REMARKS = "remarks";
     public static final String PRODUCTS = "products";
     public static final String DISCOUNT_AMOUNT="discountAmount";
@@ -30,6 +31,7 @@ public class ProposalVersion implements Cloneable {
     public static final String REMARKS_IGNORE="remarksIgnore";
     public static final String IGNORE_AND_PUBLISH_FLAG="ignoreAndPublishFlag";
     public static final String UPDATED_ON="updatedOn";
+    public static final String UPDATEDBY = "updatedBy";
 
 
     private String version;
@@ -40,7 +42,9 @@ public class ProposalVersion implements Cloneable {
     private String status;
     private String internalStatus;
     private java.util.Date date;
+    private String createdBy;
     private java.util.Date updatedOn;
+    private String updatedBy;
     private String remarks;
     private String fromVersion;
     private String toVersion;
@@ -94,12 +98,14 @@ public class ProposalVersion implements Cloneable {
                 ", status='" + status + '\'' +
                 ", internalStatus='" + internalStatus + '\'' +
                 ", date='" + date + '\'' +
+                ", createdBy = '"+createdBy+"\'"+
                 ", remarks='" + remarks + '\'' +
                 ", fromVersion='" + fromVersion + '\'' +
                 ", toVersion='" + toVersion + '\'' +
                 ", discountAmount=" + discountAmount +
                 ", discountPercentage=" + discountPercentage +
                 ", amount=" + amount +
+                ", updatedBY = '"+updatedBy+"\'"+
                 '}';
     }
 
@@ -181,6 +187,14 @@ public class ProposalVersion implements Cloneable {
 
     public void setDate(java.util.Date date) {
         this.date = date;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public String getRemarks() {
@@ -270,6 +284,15 @@ public class ProposalVersion implements Cloneable {
     public void setUpdatedOn(Date updatedOn) {
         this.updatedOn = updatedOn;
     }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
 }
 
 
