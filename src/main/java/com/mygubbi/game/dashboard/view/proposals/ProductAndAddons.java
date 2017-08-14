@@ -1400,7 +1400,6 @@ public class ProductAndAddons extends Window
     }
 
     private InputStream getInputStreamPdf() {
-        LOG.info("inside insputstream pdf");
         String replace = discountAmount.getValue().replace(",", "");
         double discountamount= Double.valueOf(replace);
 
@@ -1414,7 +1413,6 @@ public class ProductAndAddons extends Window
         }
 
         productAndAddonSelection.setCity(proposalHeader.getPcity());
-        LOG.info("Produvts and adon selection " +productAndAddonSelection);
         String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
 
         InputStream input = null;
