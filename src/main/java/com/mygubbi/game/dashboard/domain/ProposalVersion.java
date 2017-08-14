@@ -31,7 +31,6 @@ public class ProposalVersion implements Cloneable {
     public static final String IGNORE_AND_PUBLISH_FLAG="ignoreAndPublishFlag";
     public static final String UPDATED_ON="updatedOn";
 
-
     private String version;
     private int proposalId;
     private int oldProposalId;

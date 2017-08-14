@@ -65,6 +65,9 @@ public class BookingFormPopupWindow extends Window
         optionGroup.addItems("Yes","No");
         optionGroup.addStyleName("horizontal");
         optionGroup.setRequired(true);
+        optionGroup.select("No");
+        optionGroup.setImmediate(true);
+        productAndAddonSelection.setBookingFormFlag("No");
         optionGroup.addValueChangeListener(this::optiongroupValueChange);
         verticalLayout1.addComponent(optionGroup);
 
@@ -119,12 +122,6 @@ public class BookingFormPopupWindow extends Window
 
     private void checkProductsAndAddonsAvailable(Button.ClickEvent clickEvent) {
 
-     if(optionValue.equals(null))
-     {
-
-         NotificationUtil.showNotification("Please select any one option", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-         return;
-     }
     }
     private StreamResource createQuoteResourcePdf() {
         StreamResource.StreamSource source = () ->
@@ -133,6 +130,7 @@ public class BookingFormPopupWindow extends Window
                 LOG.info("option value " +optionValue);
 
                     LOG.info("inside if");
+                    LOG.info("products and addons " +productAndAddonSelection);
                     String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
                     LOG.info("quote file " + quoteFile);
 

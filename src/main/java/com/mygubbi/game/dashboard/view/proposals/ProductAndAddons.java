@@ -233,7 +233,7 @@ public class ProductAndAddons extends Window
 
         HorizontalLayout right = new HorizontalLayout();
 
-        quotePdf = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        /*quotePdf = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         quotePdf.setCaptionAsHtml(true);
         quotePdf.setIcon(FontAwesome.DOWNLOAD);
         quotePdf.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
@@ -244,7 +244,7 @@ public class ProductAndAddons extends Window
         quotePdf.setWidth("120px");
         quotePdf.addClickListener(this::checkProductsAndAddonsAvailable);
         right.addComponent(quotePdf);
-        right.setComponentAlignment(quotePdf, Alignment.MIDDLE_RIGHT);
+        right.setComponentAlignment(quotePdf, Alignment.MIDDLE_RIGHT);*/
 
         Button quotePdf1 = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         quotePdf1.setCaptionAsHtml(true);
@@ -265,15 +265,13 @@ public class ProductAndAddons extends Window
 
         String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
-        if(proposalVersion.getStatus().equals("Published") && proposalVersion.getVersion().startsWith("0."))
+        /*if(proposalVersion.getVersion().equals("1.0"))
         {
-            LOG.info("inside if ****");
             quotePdf1.setVisible(false);
         }else
         {
-            LOG.info("inside else ****");
             quotePdf.setVisible(false);
-        }
+        }*/
 
         if (("admin").equals(role) || ("planning").equals(role)) {
             Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
@@ -1408,9 +1406,15 @@ public class ProductAndAddons extends Window
 
         productAndAddonSelection.setDiscountPercentage(Double.valueOf(this.discountPercentage.getValue()));
         productAndAddonSelection.setDiscountAmount(discountamount);
-        productAndAddonSelection.setBookingFormFlag("No");
-        productAndAddonSelection.setCity(proposalHeader.getPcity());
+        if(proposalVersion.getVersion().equals("1.0"))
+        {
+            productAndAddonSelection.setBookingFormFlag("Yes");
+        }else {
+            productAndAddonSelection.setBookingFormFlag("No");
+        }
 
+        productAndAddonSelection.setCity(proposalHeader.getPcity());
+        LOG.info("Produvts and adon selection " +productAndAddonSelection);
         String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
 
         InputStream input = null;

@@ -484,12 +484,14 @@ public class CreateProposalsView extends Panel implements View {
             ProposalHeader proposalHeaderNew;
             proposalHeaderNew = new ProposalHeader();
             proposalHeaderNew = proposalDataProvider.createProposal();
+            proposalHeaderNew.setFromProposal(proposalHeader.getId());
+            LOG.info("proposal header " +proposalHeader.getId());
+            proposalDataProvider.saveProposal(proposalHeaderNew);
             if("Yes".equals(proposalHeader.getPackageFlag()))
             {
                 proposalHeaderNew.setPackageFlag(proposalHeader.getPackageFlag());
                 proposalHeaderNew.setMaxDiscountPercentage(proposalHeader.getMaxDiscountPercentage());
                 proposalDataProvider.saveProposal(proposalHeaderNew);
-
             }
 
             ProposalVersion copyVersion = new ProposalVersion();
@@ -1587,17 +1589,17 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.addComponent(crmId);
 
         quotenew = new TextField("Quotation #");
-        quotenew.setValue(this.proposalHeader.getQuoteNo());
-        quotenew.setRequired(true);
         quotenew.setValue(this.proposalHeader.getQuoteNoNew());
+        quotenew.setRequired(true);
+       /* quotenew.setValue(this.proposalHeader.getQuoteNoNew());*/
         quotenew.setNullRepresentation("");
         formLayoutRight.addComponent(quotenew);
 
-        quote = binder.buildAndBind("Quotation # (Old)", QUOTE_NO);
+        /*quote = binder.buildAndBind("Quotation # (Old)", QUOTE_NO);
         ((TextField) quote).setNullRepresentation("");
-        /*quote.setRequired(true);*/
+        *//*quote.setRequired(true);*//*
         quote.setReadOnly(true);
-        formLayoutRight.addComponent(quote);
+        formLayoutRight.addComponent(quote);*/
 
         offerField = getOfferCombo();
         binder.bind(offerField, OFFER_TYPE);

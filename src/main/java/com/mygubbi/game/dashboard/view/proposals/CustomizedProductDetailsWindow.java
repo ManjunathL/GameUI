@@ -2094,7 +2094,9 @@ public class CustomizedProductDetailsWindow extends Window {
             addToproductLibraryBtn.addClickListener(clickEvent -> {
                // LOG.info("product in customized product " +product);
                 close();
-                ProductLibraryInfo.open(product,proposal);
+                ProductLibrary productLibrary=new ProductLibrary();
+                productLibrary.setProductCategoryCode(product.getProductCategoryCode());
+                ProductLibraryInfo.open(product,proposal,productLibrary);
             });
         }
 

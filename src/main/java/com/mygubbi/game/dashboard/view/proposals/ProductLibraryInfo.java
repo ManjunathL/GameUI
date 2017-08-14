@@ -45,7 +45,9 @@ public class ProductLibraryInfo extends Window
     private final BeanFieldGroup<ProductLibrary> binder = new BeanFieldGroup<>(ProductLibrary.class);
     Product product;
     Proposal proposal;
-    ProductLibrary productLibrary=new ProductLibrary();
+    //ProductLibrary productLibrary=new ProductLibrary();
+    ProductLibrary productLibrary;
+
     private ProposalHeader proposalHeader;
 
     //TextField subcategory;
@@ -70,17 +72,18 @@ public class ProductLibraryInfo extends Window
     private FileAttachmentComponent fileAttachmentComponent;
     private Upload quoteUploadCtrl;
     private File uploadedQuoteFile;
-    public static void open(Product product, Proposal proposal)
+    public static void open(Product product, Proposal proposal,ProductLibrary productLibrary)
     {
-        ProductLibraryInfo w=new ProductLibraryInfo(product,proposal);
+        ProductLibraryInfo w=new ProductLibraryInfo(product,proposal,productLibrary);
         UI.getCurrent().addWindow(w);
         w.focus();
     }
 
-    public ProductLibraryInfo(Product product,Proposal proposal)
+    public ProductLibraryInfo(Product product,Proposal proposal,ProductLibrary productLibrary)
     {
         this.proposal=proposal;
         this.product=product;
+        this.productLibrary=productLibrary;
         //LOG.info("Product " +product);
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
@@ -126,8 +129,8 @@ public class ProductLibraryInfo extends Window
         collectionField.setRequired(true);
         formLayoutLeft.addComponent(collectionField);
 
-        categoryField=getcategory();
-        binder.buildAndBind("Category",ProductLibrary.PRODUCT_CATEGORY);
+       // categoryField=getcategory();
+        categoryField=binder.buildAndBind("Category",ProductLibrary.PRODUCT_CATEGORY);
         ((TextField) categoryField).setNullRepresentation("");
         categoryField.setRequired(true);
         categoryField.setReadOnly(true);
@@ -339,7 +342,12 @@ public class ProductLibraryInfo extends Window
     private TextField getcategory()
     {
         TextField category=new TextField("Category");
-        category.setValue(product.getProductCategoryCode());
+        if(product.getProductCategoryCode()=="null")
+        {
+            category.setValue(productLibrary.getProductCategoryCode());
+        }else {
+            category.setValue(product.getProductCategoryCode());
+        }
 
         return category;
     }

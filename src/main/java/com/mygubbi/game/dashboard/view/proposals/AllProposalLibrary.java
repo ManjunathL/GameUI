@@ -7,6 +7,7 @@ import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
+import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -16,16 +17,23 @@ import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.tools.CvalChecker;
 import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.ButtonRenderer;
+import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.gridutil.cell.GridCellFilter;
+import org.vaadin.gridutil.renderer.DeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
+import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -155,7 +163,7 @@ public class AllProposalLibrary extends Window
         addonsGrid.setHeightByRows(11);
         addonsGrid.setHeightMode(HeightMode.ROW);
         addonsGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.SIZE,ProductLibrary.FINISH_TYPE_CODE,ProductLibrary.AMOUNT,ProductLibrary.DESIGNER,ProductLibrary.IMAGE_PATH,ProductLibrary.PRODUCT_LOCATION);
+        addonsGrid.setColumns(ProductLibrary.COLLECTION,ProductLibrary.PRODUCT_CATEGORY_CODE,ProductLibrary.SUB_CATEGORY,ProductLibrary.PRODUCT_TITLE,ProductLibrary.SIZE,ProductLibrary.FINISH_TYPE_CODE,ProductLibrary.AMOUNT,ProductLibrary.DESIGNER,ProductLibrary.IMAGE_PATH,ProductLibrary.PRODUCT_LOCATION,"Actions");
         addonsGrid.addSelectionListener( selectionEvent -> {
             if (!selectionEvent.getAdded().isEmpty()) {
                 Object selected = ((Grid.SingleSelectionModel) addonsGrid.getSelectionModel()).getSelectedRow();
@@ -237,6 +245,30 @@ public class AllProposalLibrary extends Window
                 return String.class;
             }
         });
+        columns.get(idx++).setHeaderCaption("Actions").setRenderer(new ButtonRenderer ( clickEvent ->
+        {
+            String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+            if(("admin").equals(role)) {
+                ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Product?",
+                        "Yes", "No", dialog -> {
+                            if (dialog.isConfirmed()) {
+                                ProductLibrary productLibrary = (ProductLibrary) clickEvent.getItemId();
+                                LOG.info("id " + productLibrary.getId());
+                                productsContainer.removeAllItems();
+                                Boolean success = proposalDataProvider.deleteProductsLibrary(productLibrary.getId());
+                                List<ProductLibrary> products = proposalDataProvider.getAllProductsLibrary();
+                                productsContainer.addAll(products);
+                                NotificationUtil.showNotification("Product deleted successfully.", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                            }
+                        });
+            }
+            else
+            {
+                Notification.show("Product cannot be deleted.");
+
+            }
+        }));
+
         verticalLayout.addComponent(horizontalLayout);
         verticalLayout.setSpacing(true);
         verticalLayout.addComponent(addonsGrid);
@@ -250,6 +282,7 @@ public class AllProposalLibrary extends Window
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productsContainer);
         genContainer.addGeneratedProperty("Link", getEmptyActionTextGenerator());
         genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
+        genContainer.addGeneratedProperty("Actions", getEmptyActionTextGenerator1());
         return genContainer;
     }
 
@@ -318,6 +351,21 @@ public class AllProposalLibrary extends Window
         };
     }
 
+    private PropertyValueGenerator<String> getEmptyActionTextGenerator1() {
+        return new PropertyValueGenerator<String>() {
+
+            @Override
+            public String getValue(Item item, Object o, Object o1) {
+                return "DELETE";
+            }
+
+            @Override
+            public Class<String> getType() {
+                return String.class;
+            }
+        };
+    }
+
     private void AddToProposalProduct(Button.ClickEvent clickEvent)
     {
         List<ProductLibrary> productLibraries=proposalDataProvider.getProductsLibraryBasedonId(Id);
@@ -374,6 +422,7 @@ public class AllProposalLibrary extends Window
             product.setlConnectorPrice(p.getlConnectorPrice());
             product.setNoOfLengths(p.getNoOfLengths());
             product.setProductCategoryLocked("Yes");
+            product.setFromProduct(p.getId());
             List<Module> modules = p.getModules();
             List<Module> refreshedModules = new ArrayList<>();
             for (Module refreshedModule: modules)

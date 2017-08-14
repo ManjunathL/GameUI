@@ -54,6 +54,7 @@ public class ProposalHeader {
     public static final String PACKAGE_FLAG="packageFlag";
     public static final String ADMIN_PACKAGEFLAG="adminPackageFlag";
     public static final String OFFER_TYPE="offerType";
+    public static final String FROM_PROPOSAL="fromProposal";
 
     private int id;
     private String quoteNoNew;
@@ -97,6 +98,7 @@ public class ProposalHeader {
     private String packageFlag;
     private String adminPackageFlag;
     private String offerType;
+    private int fromProposal;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -443,6 +445,14 @@ public class ProposalHeader {
         this.offerType = offerType;
     }
 
+    public int getFromProposal() {
+        return fromProposal;
+    }
+
+    public void setFromProposal(int fromProposal) {
+        this.fromProposal = fromProposal;
+    }
+
     @Override
     public String toString() {
         return "ProposalHeader{" +
@@ -488,6 +498,7 @@ public class ProposalHeader {
                 ", packageFlag='" + packageFlag + '\'' +
                 ", adminPackageFlag='" + adminPackageFlag + '\'' +
                 ", offerType='" + offerType + '\'' +
+                ", fromProposal=" + fromProposal +
                 '}';
     }
 }

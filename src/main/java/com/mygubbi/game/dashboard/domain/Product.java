@@ -70,6 +70,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String KNOB_CODE="knobCode";
     public static final String LCONNECTOR_PRICE="lConnectorPrice";
     public static final String PRODUCT_CATEGORYLOCKED="productCategoryLocked";
+    public static final String FROM_PRODUCT="fromProduct";
 
     private int id;
     private int proposalId;
@@ -131,6 +132,7 @@ public class Product implements FileAttachmentsHolder {
     private String knobCode;
     private double lConnectorPrice;
     private String productCategoryLocked;
+    private int fromProduct;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -648,6 +650,14 @@ public class Product implements FileAttachmentsHolder {
         this.productCategoryLocked = productCategoryLocked;
     }
 
+    public int getFromProduct() {
+        return fromProduct;
+    }
+
+    public void setFromProduct(int fromProduct) {
+        this.fromProduct = fromProduct;
+    }
+
     @Override
     public int hashCode() {
         int result = id;
@@ -659,8 +669,7 @@ public class Product implements FileAttachmentsHolder {
     @Override
     public String toString() {
         return "Product{" +
-                "addons=" + addons +
-                ", id=" + id +
+                "id=" + id +
                 ", proposalId=" + proposalId +
                 ", fromVersion='" + fromVersion + '\'' +
                 ", title='" + title + '\'' +
@@ -670,6 +679,7 @@ public class Product implements FileAttachmentsHolder {
                 ", productCategoryCode='" + productCategoryCode + '\'' +
                 ", room='" + room + '\'' +
                 ", roomCode='" + roomCode + '\'' +
+                ", spaceType='" + spaceType + '\'' +
                 ", shutterDesign='" + shutterDesign + '\'' +
                 ", shutterDesignCode='" + shutterDesignCode + '\'' +
                 ", catalogueName='" + catalogueName + '\'' +
@@ -717,7 +727,10 @@ public class Product implements FileAttachmentsHolder {
                 ", handleCode='" + handleCode + '\'' +
                 ", knobCode='" + knobCode + '\'' +
                 ", lConnectorPrice=" + lConnectorPrice +
+                ", productCategoryLocked='" + productCategoryLocked + '\'' +
+                ", fromProduct='" + fromProduct + '\'' +
                 ", modules=" + modules +
+                ", addons=" + addons +
                 ", fileAttachmentList=" + fileAttachmentList +
                 '}';
     }

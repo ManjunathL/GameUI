@@ -2282,5 +2282,21 @@ public class ProposalDataProvider {
         return jsonObject;
     }
 
+    public boolean deleteProductsLibrary(int productId) {
 
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/productlibrarydelete", "{\"id\": "
+                + productId + "}");
+        boolean isError = jsonObject.has("error");
+
+        if (isError) {
+            String error = null;
+            try {
+                error = jsonObject.getString("error");
+            } catch (JSONException e) {
+                //
+            }
+            NotificationUtil.showNotification("Error in deleting product library - " + error, NotificationUtil.STYLE_BAR_ERROR_SMALL);
+        }
+        return !isError;
+    }
 }
