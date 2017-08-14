@@ -49,7 +49,7 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
     private JSONObject response;
     private String status;
     String id ;
-    private TextArea remarksOnIgnore;
+//    private TextArea remarksOnIgnore;
     private JSONObject textValues;
 
 
@@ -65,8 +65,8 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
 
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("45%");
-        setHeight("35%");
+        setWidth("40%");
+        setHeight("40%");
         setClosable(false);
 
         setContent(buildMainWindow());
@@ -77,14 +77,20 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
     private Component buildMainWindow() {
         VerticalLayout verticalLayout1 = new VerticalLayout();
         verticalLayout1.setSizeFull();
-        verticalLayout1.setMargin(new MarginInfo(true,true,true,true));
+        verticalLayout1.setMargin(new MarginInfo(true,true,false,true));
 
-        verticalLayout1.setSpacing(true);
+//        verticalLayout1.setSpacing(true);
 
         try {
             Label label_message = new Label();
             label_message.setCaption(response.getString("comments"));
+//            label_message.setWidth("75px");
+            label_message.addStyleName("captiontext");
+            label_message.addStyleName("width:500px;");
+
             verticalLayout1.addComponent(label_message);
+            verticalLayout1.setExpandRatio(label_message,0.65f);
+            verticalLayout1.setWidth("500px");
         }catch (JSONException e){
             e.printStackTrace();
         }
@@ -104,23 +110,23 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
 //        label_message_3.setCaptionAsHtml(true);
 //        verticalLayout1.addComponent(label_message_3);
 
-        FormLayout formLayout = new FormLayout();
-        formLayout.setSizeFull();
+//        FormLayout formLayout = new FormLayout();
+//        formLayout.setSizeFull();
 
-        remarksOnIgnore = new TextArea();
-        remarksOnIgnore.setCaption("Remarks");
-        remarksOnIgnore.setHeight("60px");
-        remarksOnIgnore.setWidth("70%");
+//        remarksOnIgnore = new TextArea();
+//        remarksOnIgnore.setCaption("Remarks");
+//        remarksOnIgnore.setHeight("60px");
+//        remarksOnIgnore.setWidth("70%");
+//
+//        remarksOnIgnore.setInputPrompt("Please enter remarks before you click on Ignore and Publish");
+//
+//        formLayout.addComponent(remarksOnIgnore);
 
-        remarksOnIgnore.setInputPrompt("Please enter remarks before you click on Ignore and Publish");
-
-        formLayout.addComponent(remarksOnIgnore);
-
-        verticalLayout1.addComponent(formLayout);
+//        verticalLayout1.addComponent(formLayout);
 
         HorizontalLayout horizontalLayout1 = new HorizontalLayout();
         horizontalLayout1.setSizeFull();
-        horizontalLayout1.setMargin(new MarginInfo(true,true,true,true));
+        horizontalLayout1.setMargin(new MarginInfo(false,true,true,true));
 
 
         Button open_sheet = new Button();
@@ -137,7 +143,7 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
         });
 
         horizontalLayout1.addComponent(open_sheet);
-        horizontalLayout1.setExpandRatio(open_sheet,0.3f);
+        horizontalLayout1.setExpandRatio(open_sheet,0.5f);
         horizontalLayout1.setSpacing(true);
 
         Button close = new Button();
@@ -146,7 +152,7 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
         close.addStyleName("close_button_wrap");
 
         horizontalLayout1.addComponent(close);
-        horizontalLayout1.setExpandRatio(close,0.2f);
+        horizontalLayout1.setExpandRatio(close,0.5f);
         horizontalLayout1.setSpacing(true);
 
         close.addClickListener(new Button.ClickListener() {
@@ -156,56 +162,57 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
                 close();
             }
         });
-
-        Button discard_sheet = new Button(); //
-        discard_sheet.setCaption("Ignore changes and Publish");
-
-        discard_sheet.addStyleName(ValoTheme.BUTTON_DANGER);
+//
+//        Button discard_sheet = new Button(); //
+//        discard_sheet.setCaption("Ignore changes and Publish");
+//
+//        discard_sheet.addStyleName(ValoTheme.BUTTON_DANGER);
 
 //        discard_sheet.addStyleName("ignore_button");
 
-        discard_sheet.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
+//        discard_sheet.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent clickEvent) {
+//
+//                if (remarksOnIgnore.getValue().isEmpty() || remarksOnIgnore.getValue() == null)
+//                {
+//                    NotificationUtil.showNotification("Remarks cannot be empty on clicking Ignore and Publish",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+//                    return;
+//                }
+//                proposalVersion.setIgnoreAndPublishFlag("Yes");
+//                proposalVersion.setRemarksIgnore(remarksOnIgnore.getValue());
+//
+//                saveProposalVersion();
+//                JSONObject jsonObject=proposalDataProvider.publishVersionOverride(version,proposalId);
+//                if (jsonObject!=null)
+//                {
+//                    /*if (!(proposalVersion.getVersion().startsWith("2.")))
+//                    {*/
+//                        PublishOnCRM publishOnCRM=new PublishOnCRM(proposalHeader);
+//                        SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
+//                        proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
+//                    //}
+//                }
+//                LOG.info("JSON OBJECt $$$ " +jsonObject);
+//                proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
+//                proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
+//                DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+//                NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+//                Collection<Window> windows = UI.getCurrent().getWindows();
+//                Object[] window = windows.toArray();
+//                Window window1 = (Window) window[0];
+//                UI.getCurrent().removeWindow(window1);
+//                close();
+//            }
+//        });
 
-                if (remarksOnIgnore.getValue().isEmpty() || remarksOnIgnore.getValue() == null)
-                {
-                    NotificationUtil.showNotification("Remarks cannot be empty on clicking Ignore and Publish",NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    return;
-                }
-                proposalVersion.setIgnoreAndPublishFlag("Yes");
-                proposalVersion.setRemarksIgnore(remarksOnIgnore.getValue());
-
-                saveProposalVersion();
-                JSONObject jsonObject=proposalDataProvider.publishVersionOverride(version,proposalId);
-                if (jsonObject!=null)
-                {
-                    /*if (!(proposalVersion.getVersion().startsWith("2.")))
-                    {*/
-                        PublishOnCRM publishOnCRM=new PublishOnCRM(proposalHeader);
-                        SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
-                        proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
-                    //}
-                }
-                LOG.info("JSON OBJECt $$$ " +jsonObject);
-                proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
-                proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
-                DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-                NotificationUtil.showNotification("Version published successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                Collection<Window> windows = UI.getCurrent().getWindows();
-                Object[] window = windows.toArray();
-                Window window1 = (Window) window[0];
-                UI.getCurrent().removeWindow(window1);
-                close();
-            }
-        });
-
-        horizontalLayout1.addComponent(discard_sheet);
-        horizontalLayout1.setExpandRatio(discard_sheet,0.5f);
-
-        horizontalLayout1.setSpacing(true);
+//        horizontalLayout1.addComponent(discard_sheet);
+//        horizontalLayout1.setExpandRatio(discard_sheet,0.5f);
+//
+//        horizontalLayout1.setSpacing(true);
 
         verticalLayout1.addComponent(horizontalLayout1);
+        verticalLayout1.setExpandRatio(horizontalLayout1,0.35f);
 
         return verticalLayout1;
     }
