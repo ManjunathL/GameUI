@@ -1141,7 +1141,7 @@ public class CustomizedProductDetailsWindow extends Window {
         horizontalLayout.setSizeFull();
 
         //if ((("admin").equals(role) || ("planning").equals(role)) && proposalVersion.getVersion().startsWith("2."))
-            if ((("admin").equals(role) || ("planning").equals(role)) || ("designer").equals(role))
+            if ((("admin").equals(role) || ("planning").equals(role)) || ("designer").equals(role) || ("finance").equals(role))
         {
             Button soExtractButton = new Button("SO Extract&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             soExtractButton.setCaptionAsHtml(true);

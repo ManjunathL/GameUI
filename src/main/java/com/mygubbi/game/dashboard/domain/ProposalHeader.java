@@ -55,6 +55,7 @@ public class ProposalHeader {
     public static final String ADMIN_PACKAGEFLAG="adminPackageFlag";
     public static final String OFFER_TYPE="offerType";
     public static final String FROM_PROPOSAL="fromProposal";
+    public static final String FROM_VERSION="fromVersion";
 
     private int id;
     private String quoteNoNew;
@@ -99,6 +100,7 @@ public class ProposalHeader {
     private String adminPackageFlag;
     private String offerType;
     private int fromProposal;
+    private String fromVersion;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -453,6 +455,14 @@ public class ProposalHeader {
         this.fromProposal = fromProposal;
     }
 
+    public String getFromVersion() {
+        return fromVersion;
+    }
+
+    public void setFromVersion(String fromVersion) {
+        this.fromVersion = fromVersion;
+    }
+
     @Override
     public String toString() {
         return "ProposalHeader{" +
@@ -499,6 +509,7 @@ public class ProposalHeader {
                 ", adminPackageFlag='" + adminPackageFlag + '\'' +
                 ", offerType='" + offerType + '\'' +
                 ", fromProposal=" + fromProposal +
+                ", fromVersion='" + fromVersion + '\'' +
                 '}';
     }
 }
