@@ -485,7 +485,7 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeaderNew = new ProposalHeader();
             proposalHeaderNew = proposalDataProvider.createProposal();
             proposalHeaderNew.setFromProposal(proposalHeader.getId());
-            //proposalHeaderNew.setFromVersion(proposalVersion.getVersion());
+            proposalHeaderNew.setFromVersion(pVersion.getVersion());
             LOG.info("proposal header " +proposalHeader.getId());
             proposalDataProvider.saveProposal(proposalHeaderNew);
             if("Yes".equals(proposalHeader.getPackageFlag()))
@@ -1505,18 +1505,29 @@ public class CreateProposalsView extends Panel implements View {
 
     private ComboBox getOfferCombo()
     {
-        List<LookupItem> list = proposalDataProvider.getLookupItems(ProposalDataProvider.OFFERTYPE_LOOKUP);
+        /*List<LookupItem> list = proposalDataProvider.getLookupItems(ProposalDataProvider.OFFERTYPE_LOOKUP);
         LOG.info("size of offer combo list " +list.size());
         final BeanContainer<String, LookupItem> container =
                 new BeanContainer<>(LookupItem.class);
         container.setBeanIdProperty(LookupItem.TITLE);
-        container.addAll(list);
+        container.addAll(list);*/
+        if (this.proposalHeader.getPriceDate() == null)
+        {
+            this.priceDate = new java.sql.Date(System.currentTimeMillis());
+        }
+        else {
+            this.priceDate = this.proposalHeader.getPriceDate();
+        }
+        List<Offer> offers=proposalDataProvider.getOfferCombo(String.valueOf(priceDate),String.valueOf(priceDate));
+        final BeanContainer<String,Offer> container=new BeanContainer<>(Offer.class);
+        container.setBeanIdProperty(Offer.OFFER_NAME);
+        container.addAll(offers);
 
         ComboBox select = new ComboBox("Offer Type");
         select.setWidth("300px");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId(LookupItem.TITLE);
+        select.setItemCaptionPropertyId(Offer.OFFER_NAME);
 
         if (StringUtils.isNotEmpty(this.proposalHeader.getOfferType())) {
             select.setValue(this.proposalHeader.getOfferType());

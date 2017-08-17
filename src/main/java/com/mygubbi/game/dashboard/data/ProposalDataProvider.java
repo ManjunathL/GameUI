@@ -2300,4 +2300,22 @@ public class ProposalDataProvider {
         }
         return !isError;
     }
+    public List<Offer> getOfferCombo(String fromDate,String toDate) {
+        try{
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/offerdetails", new HashMap<String, String>() {
+                {
+                    put("fromDate", URLEncoder.encode(fromDate,"UTF-8"));
+                    put("toDate" ,URLEncoder.encode(toDate,"UTF-8"));
+                }
+            });
+            Offer[] items = this.mapper.readValue(jsonArray.toString(), Offer[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
 }
