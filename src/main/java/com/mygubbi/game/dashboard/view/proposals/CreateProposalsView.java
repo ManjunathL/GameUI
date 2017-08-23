@@ -158,7 +158,6 @@ public class CreateProposalsView extends Panel implements View {
             //todo: this has to be removed once server side is fixed
         } else {
             this.proposalHeader = proposalDataProvider.createProposal();
-            LOG.debug("Proposal Header :" + this.proposalHeader.toString());
             this.proposalHeader.setVersion(NEW_VERSION);
             this.proposalHeader.setEditFlag(EDIT.W.name());
             this.proposalHeader.setStatus(ProposalState.Deleted.name());
@@ -166,21 +165,24 @@ public class CreateProposalsView extends Panel implements View {
             this.proposalHeader.setQuoteNo(QuoteNum);
             DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(true));
 
-           /* List<ProposalHeader> id=proposalDataProvider.getProposalId();
-            for(ProposalHeader val: id) {
-                pid=val.getId();
-            }*/
-
-           /* String date=new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-
-            QuoteNum=date+"-"+pid ;*/
-           /* proposalHeader.setQuoteNo(QuoteNum);*/
                 this.proposal = new Proposal();
                 this.proposal.setProposalHeader(this.proposalHeader);
 
                 proposalVersion = proposalDataProvider.createDraft(this.proposalHeader.getId(), NEW_DRAFT_TITLE);
-
-            }
+                if (this.proposalHeader.getPriceDate() == null)
+                {
+                    this.priceDate = new java.sql.Date(System.currentTimeMillis());
+                }
+                else {
+                    this.priceDate = this.proposalHeader.getPriceDate();
+                }
+                List<PriceMaster> priceMaster=proposalDataProvider.getDiscountAmount(String.valueOf(priceDate),String.valueOf(priceDate));
+                for(PriceMaster p: priceMaster)
+                {
+                    proposalVersion.setDiscountPercentage(10);
+                }
+                proposalDataProvider.updateDiscount(String.valueOf(proposalVersion.getDiscountPercentage()),String.valueOf(proposalVersion.getProposalId()),"0.1");
+        }
 
             // quotationField.setValue(String.valueOf(pid));
             this.productAndAddonSelection = new ProductAndAddonSelection();

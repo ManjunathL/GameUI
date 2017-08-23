@@ -2317,5 +2317,40 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
+    public List<PriceMaster> getDiscountAmount(String fromDate,String toDate)
+    {
+        try{
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/discount/discountAmount", new HashMap<String, String>() {
+                {
+                    put("fromDate", URLEncoder.encode(fromDate,"UTF-8"));
+                    put("toDate" ,URLEncoder.encode(toDate,"UTF-8"));
+                }
+            });
+            PriceMaster[] items = this.mapper.readValue(jsonArray.toString(), PriceMaster[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 
+    public ProposalVersion updateDiscount(String amount,String id,String vid)
+    {
+        try{
+            JSONObject jsonArray = dataProviderMode.getResource("proposal/versiondiscount", new HashMap<String, String>() {
+                {
+                    put("discountPercentage", amount);
+                    put("proposalId", id);
+                    put("version", vid);
+                }
+            });
+            return this.mapper.readValue(jsonArray.toString(),ProposalVersion.class);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("error");
+        }
+    }
 }
