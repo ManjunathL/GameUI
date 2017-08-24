@@ -418,6 +418,7 @@ public class MarginDetailsWindow extends Window
                 {
                     standardModuleCount++;
                     SWoodWorkCost+=modulePrice.getCarcassCost()+modulePrice.getShutterCost();
+                    stdModuleManufacturingCost+=(modulePrice.getCarcassCost()+modulePrice.getShutterCost())/rateForStdManfCost;
                 }
                 ShutterCost+=modulePrice.getShutterCost();
                 CarcassCost+=modulePrice.getCarcassCost();
@@ -504,7 +505,7 @@ public class MarginDetailsWindow extends Window
         //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
         totalSalesPriceWOtax = (totalSalesPrice) *rateForProductWOTax;
         //stdModuleManufacturingCost =SWoodWorkCost/2.46;
-        stdModuleManufacturingCost =SWoodWorkCost/rateForStdManfCost;
+        //stdModuleManufacturingCost =SWoodWorkCost/rateForStdManfCost;
         //nonStdModuleManufacturingCost =NSWoodWorkCost/1.288;
 
         //manufacturingLabourCost =(LabourCost)/1.288;
