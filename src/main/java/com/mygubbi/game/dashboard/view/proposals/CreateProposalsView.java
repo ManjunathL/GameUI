@@ -179,7 +179,8 @@ public class CreateProposalsView extends Panel implements View {
                 List<PriceMaster> priceMaster=proposalDataProvider.getDiscountAmount(String.valueOf(priceDate),String.valueOf(priceDate));
                 for(PriceMaster p: priceMaster)
                 {
-                    proposalVersion.setDiscountPercentage(10);
+                    PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails("VDP",this.priceDate,"all");
+                    proposalVersion.setDiscountPercentage(nstdmanfcostpriceMaster.getSourcePrice());
                 }
                 proposalDataProvider.updateDiscount(String.valueOf(proposalVersion.getDiscountPercentage()),String.valueOf(proposalVersion.getProposalId()),"0.1");
         }
