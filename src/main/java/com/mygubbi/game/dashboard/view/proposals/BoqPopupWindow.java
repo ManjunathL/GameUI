@@ -5,13 +5,18 @@ import com.mygubbi.game.dashboard.ServerManager;
 import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.ProductAndAddonSelection;
 import com.mygubbi.game.dashboard.domain.ProposalHeader;
+import com.mygubbi.game.dashboard.domain.Proposal_boq;
 import com.mygubbi.game.dashboard.domain.Proposal_sow;
+import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
@@ -20,10 +25,14 @@ import us.monoid.json.JSONObject;
  */
 public class BoqPopupWindow extends Window {
 
+    private static final Logger LOG = LogManager.getLogger(BoqPopupWindow.class);
+
+
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private ProposalHeader proposalHeader;
     private ProductAndAddonSelection productAndAddonSelection;
     JSONObject quoteFile = null;
+    String id;
 
 
     public BoqPopupWindow(ProposalHeader proposalHeader, ProductAndAddonSelection productAndAddonSelection, JSONObject quoteFile) {
@@ -32,9 +41,17 @@ public class BoqPopupWindow extends Window {
         this.productAndAddonSelection = productAndAddonSelection;
         this.quoteFile = quoteFile;
 
+        this.quoteFile = quoteFile;
+        try {
+            id = quoteFile.getString("id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
         setWidth("40%");
+        setHeight("20%");
         setClosable(false);
 
         setContent(buildMainWindow());
@@ -44,6 +61,8 @@ public class BoqPopupWindow extends Window {
     private Component buildMainWindow() {
         VerticalLayout verticalLayout1 = new VerticalLayout();
         verticalLayout1.setSizeFull();
+        verticalLayout1.setMargin(new MarginInfo(true, true, true, true));
+
 
         Label label_message = new Label();
         label_message.setCaption("Click on the link to open the file. " +
@@ -64,6 +83,7 @@ public class BoqPopupWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
               quoteFile  =  proposalDataProvider.getBOQFile(productAndAddonSelection);
+
             }
         });
 
@@ -90,24 +110,39 @@ public class BoqPopupWindow extends Window {
         save_sheet.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                String id = "abc";
-                Proposal_sow proposal_sow = new Proposal_sow();
-                proposal_sow.setProposalId(proposalHeader.getId());
-                proposal_sow.setId(id);
-                JSONObject saved = proposalDataProvider.saveBoQFile(proposal_sow);
-                if (!(saved == null))
-                {
-                    NotificationUtil.showNotification("File Saved Successfully",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                Proposal_boq proposal_boq = new Proposal_boq();
+                proposal_boq.setProposalId(proposalHeader.getId());
+                proposal_boq.setId(id);
+                try {
+                    JSONObject saved = proposalDataProvider.saveBoQFile(proposal_boq);
+
+                    if (saved.getString("status").equalsIgnoreCase("success")) {
+                        NotificationUtil.showNotification("SOW details saved Successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                        DashboardEventBus.unregister(this);
+                        close();
+                    } else {
+                        NotificationUtil.showNotification(saved.getString("comments"), NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                else {
-                    NotificationUtil.showNotification("Problem occurred while saving the file",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                }
+
+                NotificationUtil.showNotification("File Saved Successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+
             }
         });
 
         Button discard_sheet = new Button();
         discard_sheet.setCaption("Discard");
         discard_sheet.addStyleName(ValoTheme.BUTTON_DANGER);
+
+        discard_sheet.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                DashboardEventBus.unregister(this);
+                close();
+            }
+        });
 
         horizontalLayout1.addComponent(discard_sheet);
         horizontalLayout1.setSpacing(true);

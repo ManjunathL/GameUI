@@ -7,6 +7,7 @@ public class Proposal_boq {
 
     public int proposalId;
     public String id;
+    public String userId;
 
 
     public int getProposalId() {
@@ -23,5 +24,13 @@ public class Proposal_boq {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

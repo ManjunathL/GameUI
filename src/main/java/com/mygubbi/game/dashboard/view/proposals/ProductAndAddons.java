@@ -1676,7 +1676,7 @@ public class ProductAndAddons extends Window
                             proposalDataProvider.updateVersion(proposalVersion);
                             proposalHeader.setVersion(proposalVersion.getVersion());
                             SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
-                            proposalDataProvider.updateCrmPrice(sendToCRM);
+//                            proposalDataProvider.updateCrmPrice(sendToCRM);
                             proposalDataProvider.saveProposal(proposalHeader);
                         } else if (versionNew.startsWith("1.")) {
                             proposalVersion.setFromVersion(proposalVersion.getVersion());
@@ -1694,7 +1694,7 @@ public class ProductAndAddons extends Window
                             proposalDataProvider.updateVersion(proposalVersion);
                             proposalHeader.setVersion(proposalVersion.getVersion());
                             SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
-                            proposalDataProvider.updateCrmPrice(sendToCRM);
+//                            proposalDataProvider.updateCrmPrice(sendToCRM);
                             proposalDataProvider.saveProposal(proposalHeader);
 
 
@@ -1710,7 +1710,7 @@ public class ProductAndAddons extends Window
                             proposalHeader.setVersion(proposalVersion.getVersion());
                             if (versionNew.equals("2.0")) {
                                 SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
-                                proposalDataProvider.updateCrmPrice(sendToCRM);
+//                                proposalDataProvider.updateCrmPrice(sendToCRM);
                             }
                             proposalDataProvider.saveProposal(proposalHeader);
                         }
@@ -2124,7 +2124,7 @@ public class ProductAndAddons extends Window
                 {*/
                 PublishOnCRM publishOnCRM = new PublishOnCRM(proposalHeader);
                 SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
-                proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
+//                proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
                 //}
 
                 DashboardEventBus.unregister(this);

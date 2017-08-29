@@ -56,6 +56,8 @@ public class ProposalHeader {
     public static final String OFFER_TYPE="offerType";
     public static final String FROM_PROPOSAL="fromProposal";
     public static final String FROM_VERSION="fromVersion";
+    public static final String BOQ_STATUS = "boqStatus";
+    public static final String BOQ_DRIVE_LINK = "boqDriveLink";
 
     private int id;
     private String quoteNoNew;
@@ -99,6 +101,8 @@ public class ProposalHeader {
     private String packageFlag;
     private String adminPackageFlag;
     private String offerType;
+    private String boqStatus;
+    private String boqDriveLink;
     private int fromProposal;
     private String fromVersion;
 
@@ -445,6 +449,22 @@ public class ProposalHeader {
 
     public void setOfferType(String offerType) {
         this.offerType = offerType;
+    }
+
+    public String getBoqStatus() {
+        return boqStatus;
+    }
+
+    public void setBoqStatus(String boqStatus) {
+        this.boqStatus = boqStatus;
+    }
+
+    public String getBoqDriveLink() {
+        return boqDriveLink;
+    }
+
+    public void setBoqDriveLink(String boqDriveLink) {
+        this.boqDriveLink = boqDriveLink;
     }
 
     public int getFromProposal() {

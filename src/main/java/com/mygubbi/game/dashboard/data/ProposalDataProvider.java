@@ -844,10 +844,21 @@ public class ProposalDataProvider {
         }
     }
 
-    public JSONObject saveBoQFile(Proposal_sow proposal_sow) {
+    public JSONObject saveBoQFile(Proposal_boq proposal_boq) {
         try {
-            String productSelectionsJson = this.mapper.writeValueAsString(proposal_sow);
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/saveboqfile", productSelectionsJson);
+            String productSelectionsJson = this.mapper.writeValueAsString(proposal_boq);
+            JSONObject jsonObject = dataProviderMode.postResource("boq/saveboqfile", productSelectionsJson);
+            return jsonObject;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public JSONObject generateSoExtracts(Proposal_boq proposal_boq) {
+        try {
+            proposal_boq.setUserId(getUserId());
+            String productSelectionsJson = this.mapper.writeValueAsString(proposal_boq);
+            JSONObject jsonObject = dataProviderMode.postResource("boq/createsoextract", productSelectionsJson);
             return jsonObject;
         } catch (JsonProcessingException e) {
             throw  new RuntimeException(e);
@@ -1766,19 +1777,19 @@ public class ProposalDataProvider {
         }
     }
 
-    public boolean updateCrmPrice(SendToCRM sendToCRM)
+   /* public boolean updateCrmPrice(SendToCRM sendToCRM)
     {
         try {
-           /* String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
+           *//* String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*//*
             String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
             //LOG.info("basecrmurl " +baseCrmUrl);
             String final_amount = String.valueOf(sendToCRM.getFinal_proposal_amount_c());
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
             LOG.debug("Json Object : "+ final_amount  + " he he " + estimated_project_cost);
 
-        /*
+        *//*
                     JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
-        */
+        *//*
             JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrm(baseCrmUrl, sendToCRM.getOpportunity_name(),final_amount,estimated_project_cost,sendToCRM.getQuotation_number_c());
 //            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
             return true;
@@ -1791,13 +1802,13 @@ public class ProposalDataProvider {
     public boolean updateCrmPriceOnPublish(SendToCRMOnPublish sendToCRM)
     {
         try {
-            /*String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
+            *//*String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*//*
             String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
            // LOG.info("basecrmurl " +baseCrmUrl);
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
-        /*
+        *//*
                     JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
-        */
+        *//*
             //LOG.info("sendToCRM.getOpportunity_name()" +sendToCRM.getOpportunity_name()+ "estimated_project_cost" +estimated_project_cost+ "sendToCRM.getQuotation_number_c()" +sendToCRM.getQuotation_number_c());
             JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrmOnPublish(baseCrmUrl, sendToCRM.getOpportunity_name(),estimated_project_cost,sendToCRM.getQuotation_number_c());
             LOG.debug("Json Object : "+ jsonObject);
@@ -1807,9 +1818,9 @@ public class ProposalDataProvider {
             e.printStackTrace();
             return false;
         }
-    }
+    }*/
 
-    public static void main(String[] args)
+   /* public static void main(String[] args)
     {
         ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new RestDataProviderMode());
         SendToCRM sendToCRM = new SendToCRM();
@@ -1819,7 +1830,7 @@ public class ProposalDataProvider {
         sendToCRM.setQuotation_number_c("BLR-111-111");
         boolean jsonObject = proposalDataProvider.updateCrmPrice(sendToCRM);
         System.out.println(jsonObject);
-    }
+    }*/
 
     public List<UserProfile> getUserProfileDetails(String crmID) {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/selectuserprofiledata", new HashMap<String, String>() {
