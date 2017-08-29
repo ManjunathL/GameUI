@@ -427,14 +427,15 @@ public class MarginDetailsWindow extends Window
                // LOG.info(lConnectorSourcePrice);
                 manufacturingHandleAndKnobCost+=modulePrice.getHandleAndKnobSourceCost();
                 hingeCost+=modulePrice.getHingeCost();
+                manufacturingHingeCost+=modulePrice.getHingeSourceCost();
 
-                for(ModuleHingeMap moduleHingeMap:module.getHingePack())
+                /*for(ModuleHingeMap moduleHingeMap:module.getHingePack())
                 {
                     PriceMaster hingedetails=proposalDataProvider.getHingeRateDetails(moduleHingeMap.getHingecode(),this.priceDate,this.city);
                     {
                         manufacturingHingeCost+=hingedetails.getSourcePrice() * moduleHingeMap.getQty();
                     }
-                }
+                }*/
 
                 List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
                 for(ModuleAccessoryPack moduleAccessoryPack:moduleaccpack)

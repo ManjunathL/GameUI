@@ -133,7 +133,7 @@ public class ProductLibraryInfo extends Window
         categoryField=binder.buildAndBind("Category",ProductLibrary.PRODUCT_CATEGORY);
         ((TextField) categoryField).setNullRepresentation("");
         categoryField.setRequired(true);
-        categoryField.setReadOnly(true);
+        //categoryField.setReadOnly(true);
         formLayoutLeft.addComponent(categoryField);
 
         sizeField = binder.buildAndBind("Size", ProductLibrary.SIZE);

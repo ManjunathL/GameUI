@@ -16,6 +16,7 @@ public class ModulePrice {
     private double handleAndKnobCost;
     private double handleAndKnobSourceCost;
     private double hingeCost;
+    private double hingeSourceCost;
 
     public double getShutterCost() {
         return shutterCost;
@@ -103,6 +104,14 @@ public class ModulePrice {
 
     public void setHandleAndKnobSourceCost(double handleAndKnobSourceCost) {
         this.handleAndKnobSourceCost = handleAndKnobSourceCost;
+    }
+
+    public double getHingeSourceCost() {
+        return hingeSourceCost;
+    }
+
+    public void setHingeSourceCost(double hingeSourceCost) {
+        this.hingeSourceCost = hingeSourceCost;
     }
 
     @Override
