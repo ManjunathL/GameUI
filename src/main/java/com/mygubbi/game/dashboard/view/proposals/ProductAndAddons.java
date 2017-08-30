@@ -1577,17 +1577,20 @@ public class ProductAndAddons extends Window
 
     private SendToCRM updatePriceInCRMOnConfirm() {
         Double amount = 0.0;
+        Double DSOAmount=0.0;
         String quoteNumberCRM = "";
         SendToCRM sendToCRM = new SendToCRM();
         sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
         List<ProposalVersion> proposalVersionList = new ArrayList<>();
+        List<ProposalVersion> proposalVersionListDSO=new ArrayList<>();
         List<ProposalHeader> proposalHeaders = proposalDataProvider.getProposalHeadersByCrmIds(proposalHeader.getCrmId());
         for (ProposalHeader p : proposalHeaders) {
             proposalVersionList = new ArrayList<>();
             List<ProposalVersion> pv = proposalDataProvider.getAllProductDetails(p.getId());
             for (ProposalVersion version : pv) {
                 if (version.getVersion().equals("2.0") && version.getStatus().equals("DSO")) {
-                    proposalVersionList.add(version);
+                    //proposalVersionList.add(version);
+                    proposalVersionListDSO.add(version);
                 } else if (version.getVersion().equals("1.0") && version.getStatus().equals("Confirmed")) {
                     proposalVersionList.add(version);
                 }
@@ -1608,17 +1611,28 @@ public class ProductAndAddons extends Window
                 amount += proposalVersionTobeConsidered.getFinalAmount();
                 quoteNumberCRM += p.getQuoteNoNew();
             }
+
+            if (proposalVersionListDSO.size() != 0) {
+                Date date = proposalVersionListDSO.get(0).getUpdatedOn();
+                ProposalVersion proposalVersionTobeConsidered = proposalVersionListDSO.get(0);
+                for (ProposalVersion proposalVersion : proposalVersionListDSO) {
+                    if (!proposalVersion.getInternalStatus().equals("Locked")) {
+                        LOG.info("1st if in dso");
+                        if (proposalVersion.getUpdatedOn().after(date) || proposalVersion.getUpdatedOn().equals(date)) {
+                            LOG.info("2nd if in dso" + proposalVersion.getProposalId() + " " + proposalVersion.getVersion());
+                            proposalVersionTobeConsidered = proposalVersion;
+                        }
+                    }
+                }
+                DSOAmount += proposalVersionTobeConsidered.getFinalAmount();
+                quoteNumberCRM += p.getQuoteNoNew();
+            }
         }
         PublishOnCRM publishOnCRM = new PublishOnCRM(proposalHeader);
-        /*if (!(proposalVersion.getVersion().startsWith("2.")))
-        {*/
         SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
         sendToCRM.setEstimated_project_cost_c(sendToCRMOnPublish.getEstimated_project_cost_c());
-        //proposalDataProvider.updateCrmPriceOnPublish(sendToCRM);
-        //}
-
-        sendToCRM.setFinal_proposal_amount_c(amount);
-
+        sendToCRM.setFinal_proposal_amount_c(DSOAmount);
+        sendToCRM.setBooking_order_value_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
         LOG.debug("Send to CRM on confirm### : " + sendToCRM.toString());
 
