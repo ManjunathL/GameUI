@@ -44,6 +44,7 @@ public class CustomAddonDetailsWindow extends Window {
 
     private ComboBox spaceType;
     private TextField roomText;
+    private ComboBox category;
 
     private Button applyButton;
 
@@ -182,6 +183,19 @@ public class CustomAddonDetailsWindow extends Window {
         formLayout.addComponent(roomText);
 
 
+        this.category = getSimpleItemFilledCombo("Category", ProposalDataProvider.CUSTOM_ADDON_LOOKUP, null);
+        this.category.setWidth("100%");
+        category.setRequired(true);
+        binder.bind(category, AddonProduct.CODE);
+        category.addValueChangeListener(valueChangeEvent -> {
+            String code = (String) valueChangeEvent.getProperty().getValue();
+            String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
+//            addonProduct.setProductTypeCode(title);
+            addonProduct.setCode(code);
+
+        });
+        formLayout.addComponent(this.category);
+
 
         this.title = new TextArea("Product");
         this.title.setNullRepresentation("");
@@ -318,7 +332,7 @@ public class CustomAddonDetailsWindow extends Window {
                     addonProduct.setBrandCode("NA");
                     addonProduct.setTitle(this.title.getValue());
                     addonProduct.setProduct(this.title.getValue());
-                    addonProduct.setCode("NA");
+//                    addonProduct.setCode("NA");
                     //LOG.debug("Addon product Class :" + addonProduct.toString());
                     if (this.priceDate == null)
                     {

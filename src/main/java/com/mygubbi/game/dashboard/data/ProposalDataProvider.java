@@ -53,6 +53,7 @@ public class ProposalDataProvider {
     public static final String ACCESSORY_LOOKUP = "accessories";
     public static final String COLLECTION_LOOKUP = "collection";
     public static final String SPACETYPE_LOOKUP = "spacetype";
+        public static final String CUSTOM_ADDON_LOOKUP = "customAddCategory";
     public static final String OFFERTYPE_LOOKUP = "offerName";
 
 
