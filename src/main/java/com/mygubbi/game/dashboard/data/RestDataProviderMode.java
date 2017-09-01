@@ -71,11 +71,11 @@ public class RestDataProviderMode implements DataProviderMode {
     }
 
     @Override
-    public JSONResource postResourceWithUrlForCrm(String url, String opportunity_name, String final_proposal_amount_c, String estimated_project_cost_c, String quotation_number_c) {
+    public JSONResource postResourceWithUrlForCrm(String url, String opportunity_name, String final_proposal_amount_c, String estimated_project_cost_c, String quotation_number_c,String booking_order_value_c) {
 
         try {
 
-            return new Resty().json(url, form(data("opportunity_name", opportunity_name), data("final_proposal_amount_c", final_proposal_amount_c),data("estimated_project_cost_c", estimated_project_cost_c), data("quotation_number_c", quotation_number_c)));
+            return new Resty().json(url, form(data("opportunity_name", opportunity_name), data("final_proposal_amount_c", final_proposal_amount_c),data("estimated_project_cost_c", estimated_project_cost_c), data("quotation_number_c", quotation_number_c),data("booking_order_value_c",booking_order_value_c)));
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Error querying - " + url, e);
