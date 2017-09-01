@@ -113,10 +113,6 @@ public class ProductLibrary implements FileAttachmentsHolder
     private Date updatedOn;
     private double costWoAccessories;
     private String updatedBy;
-    private  double profit;
-    private double margin;
-    private double amountWoTax;
-    private double manufactureAmount;
     private String imageurl;
     private String productTitle;
     private String collection;
@@ -407,38 +403,6 @@ public class ProductLibrary implements FileAttachmentsHolder
         this.shutterDesignCode = shutterDesignCode;
     }
 
-    public double getMargin() {
-        return margin;
-    }
-
-    public void setMargin(double margin) {
-        this.margin = margin;
-    }
-
-    public double getProfit() {
-        return profit;
-    }
-
-    public void setProfit(double profit) {
-        this.profit = profit;
-    }
-
-    public double getAmountWoTax() {
-        return amountWoTax;
-    }
-
-    public void setAmountWoTax(double amountWoTax) {
-        this.amountWoTax = amountWoTax;
-    }
-
-    public double getManufactureAmount() {
-        return manufactureAmount;
-    }
-
-    public void setManufactureAmount(double manufactureAmount) {
-        this.manufactureAmount = manufactureAmount;
-    }
-
     public int getManualSeq() {
         return manualSeq;
     }
@@ -711,10 +675,6 @@ public class ProductLibrary implements FileAttachmentsHolder
                 ", updatedOn=" + updatedOn +
                 ", costWoAccessories=" + costWoAccessories +
                 ", updatedBy='" + updatedBy + '\'' +
-                ", profit=" + profit +
-                ", margin=" + margin +
-                ", amountWoTax=" + amountWoTax +
-                ", manufactureAmount=" + manufactureAmount +
                 ", imageurl='" + imageurl + '\'' +
                 ", productTitle='" + productTitle + '\'' +
                 ", collection='" + collection + '\'' +

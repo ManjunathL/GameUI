@@ -44,10 +44,6 @@ public class Product implements FileAttachmentsHolder {
     public static final String ADDONS = "addons";
     public static final String FILE_ATTACHMENT_LIST = "fileAttachmentList";
     public static final String COST_WO_ACCESSORIES = "costWoAccessories";
-    public static final String PROFIT="profit";
-    public static final String MARGIN="margin";
-    public static final String AMOUNTWOTAX="amountWoTax";
-    public static final String MANUFACTUREAMOUNT="manufactureAmount";
     public static final String SOURCE = "source";
     public static final String SUB_CATEGORY="subCategory";
     public static final String PRODUCT_DESCRIPTION="ProductDescription";
@@ -118,10 +114,6 @@ public class Product implements FileAttachmentsHolder {
     private Date updatedOn;
     private double costWoAccessories;
     private String updatedBy;
-    private  double profit;
-    private double margin;
-    private double amountWoTax;
-    private double manufactureAmount;
     private String handleImage;
     private String knobImage;
     private String productLocation;
@@ -399,38 +391,6 @@ public class Product implements FileAttachmentsHolder {
 
     public void setShutterDesign(String shutterDesign) {
         this.shutterDesign = shutterDesign;
-    }
-
-    public double getMargin() {
-        return margin;
-    }
-
-    public void setMargin(double margin) {
-        this.margin = margin;
-    }
-
-    public double getProfit() {
-        return profit;
-    }
-
-    public void setProfit(double profit) {
-        this.profit = profit;
-    }
-
-    public double getAmountWoTax() {
-        return amountWoTax;
-    }
-
-    public void setAmountWoTax(double amountWoTax) {
-        this.amountWoTax = amountWoTax;
-    }
-
-    public double getManufactureAmount() {
-        return manufactureAmount;
-    }
-
-    public void setManufactureAmount(double manufactureAmount) {
-        this.manufactureAmount = manufactureAmount;
     }
 
     public int getManualSeq() {
@@ -714,10 +674,6 @@ public class Product implements FileAttachmentsHolder {
                 ", updatedOn=" + updatedOn +
                 ", costWoAccessories=" + costWoAccessories +
                 ", updatedBy='" + updatedBy + '\'' +
-                ", profit=" + profit +
-                ", margin=" + margin +
-                ", amountWoTax=" + amountWoTax +
-                ", manufactureAmount=" + manufactureAmount +
                 ", handleImage='" + handleImage + '\'' +
                 ", knobImage='" + knobImage + '\'' +
                 ", productLocation='" + productLocation + '\'' +
