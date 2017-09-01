@@ -334,46 +334,6 @@ public class CustomAddonDetailsWindow extends Window {
                     addonProduct.setProduct(this.title.getValue());
 //                    addonProduct.setCode("NA");
                     //LOG.debug("Addon product Class :" + addonProduct.toString());
-                    if (this.priceDate == null)
-                    {
-                        this.priceDate = new Date(System.currentTimeMillis());
-                    }
-
-                    List<RateCard> Addonwotaxlist=proposalDataProvider.getFactorRateCodeDetails("F:ADWOTAX");
-                    for (RateCard addonWOcode : Addonwotaxlist ) {
-                        codeForAddonWOTax=addonWOcode.getCode();
-                    }
-                    List<RateCard> Addonsourcepricelist=proposalDataProvider.getFactorRateCodeDetails("F:CASP");
-                    for (RateCard addonsourceprice : Addonsourcepricelist ) {
-                        codeForAddonSourcePrice=addonsourceprice.getCode();
-                    }
-                    //LOG.info("parameters" +codeForAddonWOTax+ " " +this.priceDate+ " " +this.city);
-                    PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
-                    rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
-                    //LOG.info("Addon wo tax" +addonwotaxpriceMaster);
-                    PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
-                    rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
-
-                    //LOG.info("rate for addon" +rateForAddonWOTax);
-                    addonsTotalWOtax+=addonProduct.getAmount()*rateForAddonWOTax;
-                    if(addonProduct.getCode().equals("NA"))
-                    {
-                        //LOG.info("source price for custom addom " +rateForAddonSourcePrice);
-                        double addonDiscountedPrice=0;
-                        addonDiscountedPrice=rateForAddonSourcePrice*addonProduct.getAmount();
-                        addonDealerPrice+=addonDiscountedPrice;
-                    }
-
-                    PriceMaster addonMasterRate=proposalDataProvider.getAddonRate(addonProduct.getCode(),this.priceDate,this.city);
-                    {
-                        addonDealerPrice+=Double.valueOf(addonMasterRate.getSourcePrice());
-                    }
-                    addonsProfit=addonsTotalWOtax-addonDealerPrice;
-                    addonsMargin=(addonsProfit / addonsTotalWOtax)*100;
-                    addonProduct.setAmountWOTax(round(addonsTotalWOtax));
-                    addonProduct.setSourcePrice(round(addonDealerPrice));
-                    addonProduct.setMargin(round(addonsMargin));
-                    addonProduct.setProfit(round(addonsProfit));
                     addonProduct.setProposalId(proposalVersion.getProposalId());
 
 

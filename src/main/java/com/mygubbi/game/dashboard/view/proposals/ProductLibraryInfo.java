@@ -210,9 +210,7 @@ public class ProductLibraryInfo extends Window
             {
                 productLibrary.setSize(product.getSpaceType());
                 productLibrary.setSubCategory(product.getSubCategory());
-                productLibrary.setAmountWoTax(product.getAmountWoTax());
                 productLibrary.setAmount(product.getAmount());
-                productLibrary.setManufactureAmount(product.getManufactureAmount());
                 productLibrary.setProposalId(product.getProposalId());
                 productLibrary.setProductDescription(product.getProductDescription());
                 productLibrary.setAddons(product.getAddons());
@@ -230,10 +228,7 @@ public class ProductLibraryInfo extends Window
                 productLibrary.setFinishTypeCode(product.getFinishTypeCode());
                 productLibrary.setFromVersion(product.getFromVersion());
                 productLibrary.setManualSeq(product.getManualSeq());
-                productLibrary.setManufactureAmount(product.getManufactureAmount());
-                productLibrary.setMargin(product.getMargin());
                 productLibrary.setModules(product.getModules());
-                productLibrary.setProfit(product.getProfit());
                 productLibrary.setProductCategory(product.getProductCategoryCode());
                 productLibrary.setProductCategoryCode(product.getProductCategoryCode());
                 productLibrary.setProposalId(product.getProposalId());

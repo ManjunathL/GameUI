@@ -592,14 +592,6 @@ public class ProductAndAddons extends Window
             Double amount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNT).getValue();
             productsTotal += amount;
 
-            Double amountWotax = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.AMOUNTWOTAX).getValue();
-            ProductsTotalWoTax += amountWotax;
-
-            Double manufactureAmount = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.MANUFACTUREAMOUNT).getValue();
-            ProductsManufactureAmount += manufactureAmount;
-
-            Double profit = (Double) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.PROFIT).getValue();
-            ProductsProfit += profit;
 
             Integer id = (Integer) this.productsGrid.getContainerDataSource().getItem(object).getItemProperty(Product.ID).getValue();
             if (anythingSelected) {
@@ -628,15 +620,6 @@ public class ProductAndAddons extends Window
         for (Object object : addonObjects) {
             Double amount = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT).getValue();
             addonsTotal += amount;
-
-            Double amountwotax = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.AMOUNT_WO_TAX).getValue();
-            addonsTotalWOTax += amountwotax;
-
-            Double manufactureamount = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.SOURCE_PRICE).getValue();
-            addonsManufactureAmount += manufactureamount;
-
-            Double profit = (Double) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.PROFIT).getValue();
-            addonsProfit += profit;
 
             Integer id = (Integer) this.addonsGrid.getContainerDataSource().getItem(object).getItemProperty(AddonProduct.ID).getValue();
 
@@ -990,10 +973,6 @@ public class ProductAndAddons extends Window
                 copyProduct.setQuoteFilePath(p.getQuoteFilePath());
                 copyProduct.setCreatedBy(p.getCreatedBy());
                 copyProduct.setCostWoAccessories(p.getCostWoAccessories());
-                copyProduct.setProfit(p.getProfit());
-                copyProduct.setMargin(p.getMargin());
-                copyProduct.setManufactureAmount(p.getManufactureAmount());
-                copyProduct.setAmountWoTax(p.getAmountWoTax());
                 copyProduct.setModules(modulesFromOldProduct);
                 copyProduct.setSource(p.getSource());
                 copyProduct.setHinge(p.getHinge());

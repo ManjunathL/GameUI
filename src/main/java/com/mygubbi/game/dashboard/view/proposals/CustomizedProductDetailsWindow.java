@@ -97,19 +97,6 @@ public class CustomizedProductDetailsWindow extends Window {
     private static Set<CustomizedProductDetailsWindow> previousInstances = new HashSet<>();
     private ProposalVersion proposalVersion;
 
-    String codeForProductWOTax;
-    String codeForStdManfCost;
-    String codeForNStdManfCost;
-    String codeForManfLabourCost;
-    String codeForAddonWOTax;
-    String codeForAddonSourcePrice;
-
-    double rateForProductWOTax;
-    double rateForStdManfCost;
-    double rateForNStdManfCost;
-    double rateForManfLabourCost;
-    double rateForAddonWOTax;
-    double rateForAddonSourcePrice;
     double rateForLconnectorPrice;
     private java.sql.Date priceDate;
     private String city;
@@ -459,50 +446,6 @@ public class CustomizedProductDetailsWindow extends Window {
         Double FinalmanufacturingAccoryCost=0.0;
         double totalModuleArea = 0;
 
-        List<RateCard> rateCard=proposalDataProvider.getFactorRateCodeDetails("F:PRODWOTAX");
-        for (RateCard productwotaxcode : rateCard) {
-            codeForProductWOTax=productwotaxcode.getCode();
-        }
-
-        List<RateCard> manfstdcostlist=proposalDataProvider.getFactorRateCodeDetails("F:STDMC");
-        for (RateCard manfstdcode :manfstdcostlist ) {
-            codeForStdManfCost=manfstdcode.getCode();
-        }
-
-        List<RateCard> manfnstdcostlist=proposalDataProvider.getFactorRateCodeDetails("F:NSTDMC");
-        for (RateCard manfnstdcode :manfnstdcostlist ) {
-            codeForNStdManfCost=manfnstdcode.getCode();
-        }
-
-        List<RateCard> labourcostlist=proposalDataProvider.getFactorRateCodeDetails("F:LC");
-        for (RateCard labourcostcode : labourcostlist ) {
-            codeForManfLabourCost=labourcostcode.getCode();
-        }
-
-        List<RateCard> Addonwotaxlist=proposalDataProvider.getFactorRateCodeDetails("F:ADWOTAX");
-        for (RateCard addonWOcode : Addonwotaxlist ) {
-            codeForAddonWOTax=addonWOcode.getCode();
-        }
-
-        List<RateCard> Addonsourcepricelist=proposalDataProvider.getFactorRateCodeDetails("F:CASP");
-        for (RateCard addonsourceprice : Addonsourcepricelist ) {
-            codeForAddonSourcePrice=addonsourceprice.getCode();
-        }
-
-
-        PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForProductWOTax,this.priceDate,this.city);
-        rateForProductWOTax=productWOtaxpriceMaster.getSourcePrice();
-        PriceMaster stdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForStdManfCost,this.priceDate,this.city);
-        rateForStdManfCost=stdmanfcostpriceMaster.getSourcePrice();
-        PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForNStdManfCost,this.priceDate,this.city);
-        rateForNStdManfCost=nstdmanfcostpriceMaster.getSourcePrice();
-        PriceMaster labourcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForManfLabourCost,this.priceDate,this.city);
-        rateForManfLabourCost=labourcostpriceMaster.getSourcePrice();
-        PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
-        rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
-        PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
-        rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
-
 
         for (Module module : modules)
         {
@@ -518,86 +461,9 @@ public class CustomizedProductDetailsWindow extends Window {
                 }
             }
 
-            if (module.getMgCode().startsWith("MG-NS"))
-            {
-                if(!module.getMgCode().equals("MG-NS-H-001"))
-                {
-                    NonStandardWoodworkCost+=module.getCarcassCost()+module.getShutterCost();
-                }
-                else
-                {
-                    hikeCost+=module.getWoodworkCost();
-                }
-            }
-            else
-            {
-                StandardWoodworkCost+=module.getCarcassCost()+module.getShutterCost();
-            }
-            hardwareCost+=module.getHardwareCost();
-            carcassCost+=module.getCarcassCost();
-            accessoryCost+=module.getAccessoryCost();
-            if(!module.getMgCode().equals("MG-NS-H-001"))
-            {
-                labourCost+=module.getLabourCost();
-            }
-
-            List<ModuleAccessoryPack> moduleaccpack=module.getAccessoryPacks();
-            for(ModuleAccessoryPack moduleAccessoryPack:moduleaccpack)
-            {
-                List<String> acccode=moduleAccessoryPack.getAccessories();
-                for(String ZgenericAccessory: acccode)
-                {
-                    PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(ZgenericAccessory,this.priceDate,this.city);
-                    {
-                        manufacturingAccessoryCost+=accessoryRateMaster.getSourcePrice();
-                    }
-                }
-
-                List <AccessoryDetails>  accesoryHardwareMasters =proposalDataProvider.getAccessoryDetails(moduleAccessoryPack.getCode());
-                for(AccessoryDetails acc: accesoryHardwareMasters)
-                {
-                    PriceMaster accessoryRateMaster=proposalDataProvider.getAccessoryRateDetails(acc.getCode(),this.priceDate,this.city);
-                    {
-                        manufacturingAccessoryCostForZgeneric+=accessoryRateMaster.getSourcePrice();
-                    }
-                    PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acc.getCode(),this.priceDate,this.city);
-                    {
-                        {
-                            manufacturingHardwareCost += hardwareRateMaster.getSourcePrice();
-                        }
-                    }
-                }
-
-            }
-
-            List<ModuleComponent> modulehardwaredetails=proposalDataProvider.getModuleAccessoryhwDetails(module.getMgCode());
-            for(ModuleComponent acchwdetails: modulehardwaredetails)
-            {
-                PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acchwdetails.getCompcode(),this.priceDate,this.city);
-                {
-                    {
-                        manufacturingHardwareCost += hardwareRateMaster.getSourcePrice() * acchwdetails.getQuantity();
-                    }
-                }
-            }
-
-            totalSalesPrice =NonStandardWoodworkCost+StandardWoodworkCost+hardwareCost+labourCost+accessoryCost;
-            totalSalesPriceWOtax = totalSalesPrice *rateForProductWOTax;
-            stdModuleManufacturingCost =StandardWoodworkCost/rateForStdManfCost;
-            nonStdModuleManufacturingCost =NonStandardWoodworkCost/rateForNStdManfCost;
-            manufacturingLabourCost =labourCost/rateForManfLabourCost;
-            FinalmanufacturingAccoryCost = manufacturingAccessoryCost + manufacturingAccessoryCostForZgeneric;
-            manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + FinalmanufacturingAccoryCost;
-
-            manufacturingProfit = totalSalesPriceWOtax - manufacturingTotalSalesPrice;
-            marginCompute=(manufacturingProfit / totalSalesPriceWOtax)*100;
         }
 
         product.setCostWoAccessories(round(totalCostWOAccessories));
-        product.setProfit(round(manufacturingProfit));
-        product.setMargin(round(marginCompute));
-        product.setAmountWoTax(round(totalSalesPriceWOtax));
-        product.setManufactureAmount(round(manufacturingTotalSalesPrice));
 
 
         Double cwa=product.getCostWoAccessories();
@@ -2003,8 +1869,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     }
 
 
-
-                List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
+                List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(this.proposalVersion.getProposalId(), this.proposalVersion.getVersion());
                 proposal.setProducts(getAllVersionProducts);
 
                 if (product.getSeq() == 0) {
@@ -2019,8 +1884,8 @@ public class CustomizedProductDetailsWindow extends Window {
                     double amountWoDiscount = 0;
                     double amountWoAccessories = 0;
                     double discountPercentage = this.proposalVersion.getDiscountPercentage();
-                    List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(), this.proposalVersion.getVersion());
-                    for (Product product : versionProducts) {
+//                    List<Product> versionProducts = proposalDataProvider.getVersionProducts(proposalHeader.getId(), this.proposalVersion.getVersion());
+                    for (Product product : getAllVersionProducts) {
                         LOG.debug("Product module :" + product.getAmount());
                         amountWoDiscount += product.getAmount();
                         amountWoAccessories += product.getCostWoAccessories();

@@ -401,10 +401,6 @@ public class AllProposalLibrary extends Window
             product.setQuoteFilePath(p.getQuoteFilePath());
             product.setCreatedBy(p.getCreatedBy());
             product.setCostWoAccessories(p.getCostWoAccessories());
-            product.setProfit(p.getProfit());
-            product.setMargin(p.getMargin());
-            product.setManufactureAmount(p.getManufactureAmount());
-            product.setAmountWoTax(p.getAmountWoTax());
             product.setHandleType(p.getHandleType());
             product.setKnobType(p.getKnobType());
             product.setHandleFinish(p.getHandleFinish());
