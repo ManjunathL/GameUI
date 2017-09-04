@@ -35,6 +35,7 @@ public class AddonProduct implements Cloneable {
     public static final String REMARKS="remarks";
     public static final String SPACE_TYPE="spaceType";
     public static final String ROOM_CODE="roomcode";
+    public static final String CUSTOM_ADDON_CATEGORY="customAddonCategory";
 
     private int seq;
     private int id;
@@ -44,6 +45,7 @@ public class AddonProduct implements Cloneable {
     private String catalogueCode;
     private String title;
     private String categoryCode;
+    private String customAddonCategory;
     private String category;
     private String product;
     private String productTypeCode;
@@ -72,6 +74,14 @@ public class AddonProduct implements Cloneable {
             throw new InternalError(e);
             //Will never happen since we are implementing Cloneable
         }
+    }
+
+    public String getCustomAddonCategory() {
+        return customAddonCategory;
+    }
+
+    public void setCustomAddonCategory(String customAddonCategory) {
+        this.customAddonCategory = customAddonCategory;
     }
 
     public String getCode() {
@@ -319,6 +329,7 @@ public class AddonProduct implements Cloneable {
                 ", title='" + title + '\'' +
                 ", categoryCode='" + categoryCode + '\'' +
                 ", category='" + category + '\'' +
+                ", customAddonCategory='" + customAddonCategory  + '\'' +
                 ", productTypeCode='" + productTypeCode + '\'' +
                 ", productSubtypeCode='" + productSubtypeCode + '\'' +
                 ", productType='" + productType + '\'' +
