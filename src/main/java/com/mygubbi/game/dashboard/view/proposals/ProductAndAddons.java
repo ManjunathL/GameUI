@@ -1565,6 +1565,7 @@ public class ProductAndAddons extends Window
         List<ProposalHeader> proposalHeaders = proposalDataProvider.getProposalHeadersByCrmIds(proposalHeader.getCrmId());
         for (ProposalHeader p : proposalHeaders) {
             proposalVersionList = new ArrayList<>();
+            proposalVersionListDSO=new ArrayList<>();
             List<ProposalVersion> pv = proposalDataProvider.getAllProductDetails(p.getId());
             for (ProposalVersion version : pv) {
                 if (version.getVersion().equals("2.0") && version.getStatus().equals("DSO")) {
@@ -1579,9 +1580,9 @@ public class ProductAndAddons extends Window
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
                 for (ProposalVersion proposalVersion : proposalVersionList) {
                     if (!proposalVersion.getInternalStatus().equals("Locked")) {
-                        LOG.info("1st if in dso");
+
                         if (proposalVersion.getUpdatedOn().after(date) || proposalVersion.getUpdatedOn().equals(date)) {
-                            LOG.info("2nd if in dso" + proposalVersion.getProposalId() + " " + proposalVersion.getVersion());
+                            //LOG.info("DSO Value" + proposalVersion.getProposalId() + " " + proposalVersion.getVersion() + " " +proposalVersion.getFinalAmount());
                             proposalVersionTobeConsidered = proposalVersion;
                         }
                     }
@@ -1594,11 +1595,12 @@ public class ProductAndAddons extends Window
             if (proposalVersionListDSO.size() != 0) {
                 Date date = proposalVersionListDSO.get(0).getUpdatedOn();
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionListDSO.get(0);
+                //LOG.info("DSO list size " +proposalVersionListDSO.size());
                 for (ProposalVersion proposalVersion : proposalVersionListDSO) {
                     if (!proposalVersion.getInternalStatus().equals("Locked")) {
-                        LOG.info("1st if in dso");
+                        //LOG.info("1st if in dso");
                         if (proposalVersion.getUpdatedOn().after(date) || proposalVersion.getUpdatedOn().equals(date)) {
-                            LOG.info("2nd if in dso" + proposalVersion.getProposalId() + " " + proposalVersion.getVersion());
+                            //LOG.info("2nd if in dso" + proposalVersion.getProposalId() + " " + proposalVersion.getVersion() + proposalVersionTobeConsidered.getFinalAmount());
                             proposalVersionTobeConsidered = proposalVersion;
                         }
                     }
