@@ -186,12 +186,12 @@ public class CustomAddonDetailsWindow extends Window {
         this.category = getSimpleItemFilledCombo("Category", ProposalDataProvider.CUSTOM_ADDON_LOOKUP, null);
         this.category.setWidth("100%");
         category.setRequired(true);
-        binder.bind(category, AddonProduct.CODE);
+        binder.bind(category, AddonProduct.CUSTOM_ADDON_CATEGORY);
         category.addValueChangeListener(valueChangeEvent -> {
             String code = (String) valueChangeEvent.getProperty().getValue();
             String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
 //            addonProduct.setProductTypeCode(title);
-            addonProduct.setCode(code);
+            addonProduct.setCustomAddonCategory(code);
 
         });
         formLayout.addComponent(this.category);
@@ -332,11 +332,11 @@ public class CustomAddonDetailsWindow extends Window {
                     addonProduct.setBrandCode("NA");
                     addonProduct.setTitle(this.title.getValue());
                     addonProduct.setProduct(this.title.getValue());
-//                    addonProduct.setCode("NA");
+                    addonProduct.setCode("NA");
                     //LOG.debug("Addon product Class :" + addonProduct.toString());
                     addonProduct.setProposalId(proposalVersion.getProposalId());
 
-
+                    LOG.info("Inserting addonPRoduct :: "+addonProduct);
                         if (isProposalAddon) {
                             DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));
                         } else {
