@@ -1419,7 +1419,7 @@ public class MDW extends Window {
 
     private List<Color> filterColorsByType() {
         Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
-        return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode());
+        return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
     }
 
     private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {

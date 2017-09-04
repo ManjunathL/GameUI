@@ -27,6 +27,7 @@ import com.vaadin.event.FieldEvents;
 import com.vaadin.server.*;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.renderers.ClickableRenderer;
@@ -63,6 +64,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox baseCarcassSelection;
     private ComboBox wallCarcassSelection;
     private ComboBox shutterFinishSelection;
+    private ComboBox colorCombo;
     private ComboBox shutterDesign;
     private ComboBox finishTypeSelection;
     private TextField manualSeq;
@@ -899,6 +901,17 @@ public class CustomizedProductDetailsWindow extends Window {
         }
         shutterFinishSelection.addValueChangeListener(this::shutterfinishchanged);
         formLayoutRight.addComponent(this.shutterFinishSelection);
+
+        /*List<Color> colors = filterColorsByType();
+        this.colorCombo = getColorsCombo("Color", colors);
+        colorCombo.setRequired(true);
+        binder.bind(colorCombo, COLOR_CODE);
+        if(colorCombo.size()>0)
+        {
+            String code = StringUtils.isNotEmpty(product.getColorGroupCode()) ? product.getColorGroupCode() : (String) colorCombo.getItemIds().iterator().next();
+            colorCombo.setValue(code);
+        }
+        formLayoutRight.addComponent(this.colorCombo);*/
 
         this.shutterDesign = getShutterDesignCombo();
         shutterDesign.setRequired(true);
@@ -2265,6 +2278,29 @@ public class CustomizedProductDetailsWindow extends Window {
         if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;
 
+    }
+
+    private List<Color> filterColorsByType() {
+        Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
+        //LOG.info("Finish colourgroup code " +proposalDataProvider.getColorsByGroup(finish.getColorGroupCode()).size());
+        return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+    }
+
+    private ComboBox getColorsCombo(String caption, List<Color> list) {
+
+        final BeanContainer<String, Color> container =
+                new BeanContainer<>(Color.class);
+        container.setBeanIdProperty("code");
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemIconPropertyId("colorImageResource");
+        select.setStyleName("colors-combo");
+        select.setItemCaptionPropertyId("name");
+        select.setFilteringMode(FilteringMode.CONTAINS);
+        return select;
     }
 
     private void updateTotalAmount() {
