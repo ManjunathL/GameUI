@@ -2115,9 +2115,9 @@ public class ProductAndAddons extends Window
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
                 /*if (!(proposalVersion.getVersion().startsWith("2.")))
                 {*/
-               /* PublishOnCRM publishOnCRM = new PublishOnCRM(proposalHeader);
+                PublishOnCRM publishOnCRM = new PublishOnCRM(proposalHeader);
                 SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
-                proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);*/
+                proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
                 //}
 
                 DashboardEventBus.unregister(this);
