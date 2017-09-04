@@ -469,10 +469,12 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<Color> getColorsByGroup(String colorGroupCode) {
+    public List<Color> getColorsByGroup(String colorGroupCode,String priceDate) {
         JSONArray array = dataProviderMode.getResourceArray("colorcodes", new HashMap<String, String>() {
             {
                 put("colorGroupCode", colorGroupCode);
+                put("fromDate", priceDate);
+                put("toDate", priceDate);
             }
         });
         try {
@@ -1565,12 +1567,14 @@ public class ProposalDataProvider {
 
     public List<ModuleComponent> getModuleAccessoryhwDetails(String modulecode)
     {
+        try {
         JSONArray array = dataProviderMode.getResourceArray("proposal/moduleacchwdetails", new HashMap<String, String>(){
             {
-                put("modulecode", modulecode);
+                //put("modulecode", modulecode);
+                put("modulecode", URLEncoder.encode(modulecode,"UTF-8"));
             }
         });
-        try {
+
             ModuleComponent[] items = this.mapper.readValue(array.toString(), ModuleComponent[].class);
             return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
@@ -1771,7 +1775,10 @@ public class ProposalDataProvider {
     {
         try {
            /* String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
-            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
+            //String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm_20thJun/rest_update_opp.php");
+            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "http://106.51.38.241/mygubbi_crm/rest_update_opp_test.php");
+            LOG.info("url link " +baseCrmUrl);
+            //https://suite.mygubbi.com/mygubbi_crm_20thJun/index.php?module=Home&action=index
             //LOG.info("basecrmurl " +baseCrmUrl);
             String final_amount = String.valueOf(sendToCRM.getFinal_proposal_amount_c());
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
@@ -1794,7 +1801,10 @@ public class ProposalDataProvider {
     {
         try {
             /*String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
-            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
+          //  String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
+
+            String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "http://106.51.38.241/mygubbi_crm/rest_update_opp_test.php");
+            LOG.info("url link " +baseCrmUrl);
            // LOG.info("basecrmurl " +baseCrmUrl);
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
         /*

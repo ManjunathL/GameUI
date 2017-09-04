@@ -1204,9 +1204,14 @@ public class MarginDetailsWindow extends Window
     private double round(double value, int places)
     {
         if (places < 0) throw new IllegalArgumentException();
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
+        if(Double.isNaN(value))
+        {
+            return value=0;
+        }        else {
+            BigDecimal bd = new BigDecimal(value);
+            bd = bd.setScale(places, RoundingMode.HALF_UP);
+            return bd.doubleValue();
+        }
     }
 
     private void onFocusToDiscountPercentage(FieldEvents.FocusEvent event)

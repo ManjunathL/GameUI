@@ -67,6 +67,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String LCONNECTOR_PRICE="lConnectorPrice";
     public static final String PRODUCT_CATEGORYLOCKED="productCategoryLocked";
     public static final String FROM_PRODUCT="fromProduct";
+    public static final String COLOR_CODE = "colorGroupCode";
 
     private int id;
     private int proposalId;
@@ -95,6 +96,7 @@ public class Product implements FileAttachmentsHolder {
     private String knobFinish;
     private int knobThickness;
     private String handleTypeSelection;
+    private String colorGroupCode;
 
     private String baseCarcass;
     private String baseCarcassCode;
@@ -616,6 +618,14 @@ public class Product implements FileAttachmentsHolder {
 
     public void setFromProduct(int fromProduct) {
         this.fromProduct = fromProduct;
+    }
+
+    public String getColorGroupCode() {
+        return colorGroupCode;
+    }
+
+    public void setColorGroupCode(String colorGroupCode) {
+        this.colorGroupCode = colorGroupCode;
     }
 
     @Override
