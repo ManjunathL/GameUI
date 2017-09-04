@@ -7,5 +7,6 @@
   "dataProviderMode" : "com.mygubbi.game.dashboard.data.RestDataProviderMode",
   "crmUrl": "http://52.66.79.232/mygubbi_crm/service/v4_1/rest.php?method=__METHOD__&input_type=json&response_type=json&rest_data=",
   "useCrmAuth": "false",
-  "baseCrmUrl": "http://106.51.38.241/mygubbi_crm/rest_update_opp_test.php"
+  "baseCrmUrl": "http://52.66.176.254/mgcrm/rest_update_opp_test.php"
+
 }
