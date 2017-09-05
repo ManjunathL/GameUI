@@ -47,6 +47,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -1465,7 +1467,9 @@ public class ProductAndAddons extends Window
                 proposalDataProvider.saveProposal(proposalHeader);
                 proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",", "")));
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
-                proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+                LocalDateTime localDate = LocalDateTime.now();
+                proposalVersion.setBusinessDate(dtf.format(localDate));
                 response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId(),proposalVersion.getBusinessDate().toString());
 
             } catch (FieldGroup.CommitException e) {
@@ -1639,7 +1643,9 @@ public class ProductAndAddons extends Window
                 proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
                 proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
                 proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
-                proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+                LocalDateTime localDate = LocalDateTime.now();
+                proposalVersion.setBusinessDate(dtf.format(localDate));
                 proposalHeader.setStatus(proposalVersion.getStatus());
                 proposalHeader.setVersion(proposalVersion.getVersion());
                 boolean success = proposalDataProvider.saveProposal(proposalHeader);
@@ -1662,7 +1668,7 @@ public class ProductAndAddons extends Window
                             proposalVersion.setFromVersion(proposalVersion.getVersion());
                             proposalVersion.setToVersion(proposalVersion.getVersion());
                             proposalVersion.setVersion("1.0");
-                            proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
+                            proposalVersion.setBusinessDate(dtf.format(localDate));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             proposalHeader.setVersion(proposalVersion.getVersion());
                             proposalDataProvider.saveProposalOnConfirm(proposalHeader);
@@ -1682,7 +1688,7 @@ public class ProductAndAddons extends Window
                             proposalVersion.setVersion("2.0");
                             proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
                             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
-                            proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
+                            proposalVersion.setBusinessDate(dtf.format(localDate));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             proposalHeader.setVersion(proposalVersion.getVersion());
                             boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
@@ -1701,7 +1707,7 @@ public class ProductAndAddons extends Window
                             proposalVersion.setToVersion(proposalVersion.getVersion());
                             proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
                             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Locked.name());
-                            proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
+                            proposalVersion.setBusinessDate(dtf.format(localDate));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                             proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());

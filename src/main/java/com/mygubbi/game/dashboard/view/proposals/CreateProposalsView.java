@@ -44,6 +44,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -176,7 +178,7 @@ public class CreateProposalsView extends Panel implements View {
                 else {
                     this.priceDate = this.proposalHeader.getPriceDate();
                 }
-                proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
+                proposalVersion.setBusinessDate(this.getCurrentDate());
                 List<PriceMaster> priceMaster=proposalDataProvider.getDiscountAmount(String.valueOf(priceDate),String.valueOf(priceDate));
                 for(PriceMaster p: priceMaster)
                 {
@@ -426,7 +428,9 @@ public class CreateProposalsView extends Panel implements View {
                 copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
                 copyVersion.setAmount(pVersion.getAmount());
                 copyVersion.setProposalId(pVersion.getProposalId());
-                copyVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+                LocalDateTime localDate = LocalDateTime.now();
+                copyVersion.setBusinessDate(dtf.format(localDate));
 
                 proposalDataProvider.createProposalVersion(copyVersion);
                 proposalDataProvider.createNewProduct(copyVersion);
@@ -514,7 +518,10 @@ public class CreateProposalsView extends Panel implements View {
             copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
             copyVersion.setAmount(pVersion.getAmount());
             copyVersion.setOldProposalId(pVersion.getProposalId());
-            copyVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+            LocalDateTime localDate = LocalDateTime.now();
+            copyVersion.setBusinessDate(dtf.format(localDate));
+
 
             proposalDataProvider.createProposalVersion(copyVersion);
 
@@ -1914,5 +1921,10 @@ public class CreateProposalsView extends Panel implements View {
 
 
     }*/
+   private String getCurrentDate(){
+       DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+       LocalDateTime localDate = LocalDateTime.now();
+       return dtf.format(localDate);
+   }
 }
 

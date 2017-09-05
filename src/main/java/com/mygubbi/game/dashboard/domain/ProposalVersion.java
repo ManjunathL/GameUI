@@ -57,7 +57,7 @@ public class ProposalVersion implements Cloneable {
     private double manufactureAmount;
     private String ignoreAndPublishFlag;
     private String remarksIgnore;
-    private java.util.Date businessDate;
+    private String businessDate;
 
     @Override
     public Object clone()  {
@@ -273,11 +273,11 @@ public class ProposalVersion implements Cloneable {
         this.updatedBy = updatedBy;
     }
 
-    public Date getBusinessDate() {
+    public String getBusinessDate() {
         return businessDate;
     }
 
-    public void setBusinessDate(Date businessDate) {
+    public void setBusinessDate(String businessDate) {
         this.businessDate = businessDate;
     }
 
