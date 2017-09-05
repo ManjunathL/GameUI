@@ -137,6 +137,7 @@ public class CustomAddonDetailsWindow extends Window {
         quantity.setReadOnly(true);
         rate.setReadOnly(true);
         amount.setReadOnly(true);
+        category.setReadOnly(true);
     }
     private void handlePackage()
     {
@@ -150,8 +151,8 @@ public class CustomAddonDetailsWindow extends Window {
             quantity.setReadOnly(true);
             rate.setReadOnly(true);
             amount.setReadOnly(true);
+            category.setReadOnly(true);
         }
-
     }
     private Component buildAddonSelectionsComponent() {
 
@@ -200,7 +201,7 @@ public class CustomAddonDetailsWindow extends Window {
         this.title = new TextArea("Product");
         this.title.setNullRepresentation("");
         this.title.setHeight("45px");
-
+        this.title.setRequired(true);
         binder.bind(this.title, AddonProduct.PRODUCT);
         formLayout.addComponent(this.title);
 

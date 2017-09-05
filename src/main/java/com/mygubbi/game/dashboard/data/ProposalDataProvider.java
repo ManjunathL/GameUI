@@ -468,6 +468,21 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
+    /*public List<Finish> getfinishByDate(String priceDate) {
+        JSONArray array = dataProviderMode.getResourceArray("finishbydate", new HashMap<String, String>() {
+            {
+                put("fromDate", priceDate);
+                put("toDate", priceDate);
+            }
+        });
+        try {
+            Finish[] items = this.mapper.readValue(array.toString(), Finish[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }*/
 
     public List<Color> getColorsByGroup(String colorGroupCode,String priceDate) {
         JSONArray array = dataProviderMode.getResourceArray("colorcodes", new HashMap<String, String>() {
