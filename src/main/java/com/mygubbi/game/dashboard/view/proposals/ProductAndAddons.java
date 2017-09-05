@@ -1465,7 +1465,8 @@ public class ProductAndAddons extends Window
                 proposalDataProvider.saveProposal(proposalHeader);
                 proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",", "")));
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
-                response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId());
+                proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
+                response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId(),proposalVersion.getBusinessDate().toString());
 
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -1638,6 +1639,7 @@ public class ProductAndAddons extends Window
                 proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
                 proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
                 proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
+                proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
                 proposalHeader.setStatus(proposalVersion.getStatus());
                 proposalHeader.setVersion(proposalVersion.getVersion());
                 boolean success = proposalDataProvider.saveProposal(proposalHeader);
@@ -1660,12 +1662,13 @@ public class ProductAndAddons extends Window
                             proposalVersion.setFromVersion(proposalVersion.getVersion());
                             proposalVersion.setToVersion(proposalVersion.getVersion());
                             proposalVersion.setVersion("1.0");
+                            proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             proposalHeader.setVersion(proposalVersion.getVersion());
                             proposalDataProvider.saveProposalOnConfirm(proposalHeader);
                             proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(), "1.0");
                             proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
-                            success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
+                            success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion(),proposalVersion.getBusinessDate().toString());
                             proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                             proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                             proposalDataProvider.updateVersion(proposalVersion);
@@ -1679,11 +1682,12 @@ public class ProductAndAddons extends Window
                             proposalVersion.setVersion("2.0");
                             proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
                             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
+                            proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             proposalHeader.setVersion(proposalVersion.getVersion());
                             boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                             proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
-                            success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
+                            success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion(),proposalVersion.getBusinessDate().toString());
                             proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                             proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                             proposalDataProvider.updateVersion(proposalVersion);
@@ -1697,10 +1701,11 @@ public class ProductAndAddons extends Window
                             proposalVersion.setToVersion(proposalVersion.getVersion());
                             proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
                             proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Locked.name());
+                            proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                             proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
-                            success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion());
+                            success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion(),proposalVersion.getBusinessDate().toString());
                             proposalDataProvider.updateVersion(proposalVersion);
                             proposalHeader.setVersion(proposalVersion.getVersion());
                             if (versionNew.equals("2.0")) {

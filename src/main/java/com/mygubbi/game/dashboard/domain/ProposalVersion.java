@@ -32,6 +32,7 @@ public class ProposalVersion implements Cloneable {
     public static final String IGNORE_AND_PUBLISH_FLAG="ignoreAndPublishFlag";
     public static final String UPDATED_ON="updatedOn";
     public static final String UPDATEDBY = "updatedBy";
+    public static final String BUSINESS_DATE = "businessDate";
 
     private String version;
     private int proposalId;
@@ -56,6 +57,7 @@ public class ProposalVersion implements Cloneable {
     private double manufactureAmount;
     private String ignoreAndPublishFlag;
     private String remarksIgnore;
+    private java.util.Date businessDate;
 
     @Override
     public Object clone()  {
@@ -86,27 +88,6 @@ public class ProposalVersion implements Cloneable {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "ProposalVersion{" +
-                "version='" + version + '\'' +
-                ", proposalId=" + proposalId +
-                ", oldProposalId=" + oldProposalId +
-                ", title='" + title + '\'' +
-                ", finalAmount=" + finalAmount +
-                ", status='" + status + '\'' +
-                ", internalStatus='" + internalStatus + '\'' +
-                ", date='" + date + '\'' +
-                ", createdBy = '"+createdBy+"\'"+
-                ", remarks='" + remarks + '\'' +
-                ", fromVersion='" + fromVersion + '\'' +
-                ", toVersion='" + toVersion + '\'' +
-                ", discountAmount=" + discountAmount +
-                ", discountPercentage=" + discountPercentage +
-                ", amount=" + amount +
-                ", updatedBY = '"+updatedBy+"\'"+
-                '}';
-    }
 
     public String getVersion() {
         return version;
@@ -292,6 +273,43 @@ public class ProposalVersion implements Cloneable {
         this.updatedBy = updatedBy;
     }
 
+    public Date getBusinessDate() {
+        return businessDate;
+    }
+
+    public void setBusinessDate(Date businessDate) {
+        this.businessDate = businessDate;
+    }
+
+    @Override
+    public String toString() {
+        return "ProposalVersion{" +
+                "version='" + version + '\'' +
+                ", proposalId=" + proposalId +
+                ", oldProposalId=" + oldProposalId +
+                ", title='" + title + '\'' +
+                ", finalAmount=" + finalAmount +
+                ", status='" + status + '\'' +
+                ", internalStatus='" + internalStatus + '\'' +
+                ", date=" + date +
+                ", createdBy='" + createdBy + '\'' +
+                ", updatedOn=" + updatedOn +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", fromVersion='" + fromVersion + '\'' +
+                ", toVersion='" + toVersion + '\'' +
+                ", discountAmount=" + discountAmount +
+                ", discountPercentage=" + discountPercentage +
+                ", amount=" + amount +
+                ", profit=" + profit +
+                ", margin=" + margin +
+                ", amountWotax=" + amountWotax +
+                ", manufactureAmount=" + manufactureAmount +
+                ", ignoreAndPublishFlag='" + ignoreAndPublishFlag + '\'' +
+                ", remarksIgnore='" + remarksIgnore + '\'' +
+                ", businessDate=" + businessDate +
+                '}';
+    }
 }
 
 

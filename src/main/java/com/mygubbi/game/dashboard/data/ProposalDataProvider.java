@@ -389,8 +389,8 @@ public class ProposalDataProvider {
         }
     }
 
-    public JSONObject publishVersion(String version, int proposalId) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publish", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "}");
+    public JSONObject publishVersion(String version, int proposalId,String date) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publish", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId +  "," + "\"businessDate\": " +"\""+date+"\""+ "}");
         return jsonObject;
     }
 
@@ -399,18 +399,18 @@ public class ProposalDataProvider {
         return jsonObject;
     }
 
-    public boolean confirmVersion(String version, int proposalId, String fromVersion, String toVersion) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/confirm", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "}");
+    public boolean confirmVersion(String version, int proposalId, String fromVersion, String toVersion,String date) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/confirm", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "," + "\"businessDate\": " +"\""+date+"\""+ "}");
         return !jsonObject.has("error");
     }
 
-    public boolean versionDesignSignOff(String version, int proposalId, String fromVersion, String toVersion) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/designsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "}");
+    public boolean versionDesignSignOff(String version, int proposalId, String fromVersion, String toVersion,String date) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/designsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "," + "\"businessDate\": " +"\""+date+"\""+ "}");
         return !jsonObject.has("error");
     }
 
-    public boolean versionProductionSignOff(String version, int proposalId, String fromVersion, String toVersion) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/productionsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "}");
+    public boolean versionProductionSignOff(String version, int proposalId, String fromVersion, String toVersion,String date) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/productionsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "," + "\"businessDate\": " +"\""+date+"\""+ "}");
         LOG.debug("JSON OBJECT :" + jsonObject.toString());
         return !jsonObject.has("error");
     }
@@ -2348,7 +2348,7 @@ public class ProposalDataProvider {
         }
     }
 
-    public ProposalVersion updateDiscount(String amount,String id,String vid)
+    public ProposalVersion updateDiscount(String amount,String id,String vid,String bussinessDate)
     {
         try{
             JSONObject jsonArray = dataProviderMode.getResource("proposal/versiondiscount", new HashMap<String, String>() {
@@ -2356,6 +2356,7 @@ public class ProposalDataProvider {
                     put("discountPercentage", amount);
                     put("proposalId", id);
                     put("version", vid);
+                    put("businessDate",bussinessDate);
                 }
             });
             return this.mapper.readValue(jsonArray.toString(),ProposalVersion.class);

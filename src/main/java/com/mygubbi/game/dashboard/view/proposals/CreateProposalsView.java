@@ -176,13 +176,14 @@ public class CreateProposalsView extends Panel implements View {
                 else {
                     this.priceDate = this.proposalHeader.getPriceDate();
                 }
+                proposalVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
                 List<PriceMaster> priceMaster=proposalDataProvider.getDiscountAmount(String.valueOf(priceDate),String.valueOf(priceDate));
                 for(PriceMaster p: priceMaster)
                 {
                     PriceMaster nstdmanfcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails("VDP",this.priceDate,"all");
                     proposalVersion.setDiscountPercentage(nstdmanfcostpriceMaster.getSourcePrice());
                 }
-                proposalDataProvider.updateDiscount(String.valueOf(proposalVersion.getDiscountPercentage()),String.valueOf(proposalVersion.getProposalId()),"0.1");
+                proposalDataProvider.updateDiscount(String.valueOf(proposalVersion.getDiscountPercentage()),String.valueOf(proposalVersion.getProposalId()),"0.1",proposalVersion.getBusinessDate().toString());
         }
 
             // quotationField.setValue(String.valueOf(pid));
@@ -425,7 +426,7 @@ public class CreateProposalsView extends Panel implements View {
                 copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
                 copyVersion.setAmount(pVersion.getAmount());
                 copyVersion.setProposalId(pVersion.getProposalId());
-
+                copyVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
 
                 proposalDataProvider.createProposalVersion(copyVersion);
                 proposalDataProvider.createNewProduct(copyVersion);
@@ -513,6 +514,7 @@ public class CreateProposalsView extends Panel implements View {
             copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
             copyVersion.setAmount(pVersion.getAmount());
             copyVersion.setOldProposalId(pVersion.getProposalId());
+            copyVersion.setBusinessDate(new java.sql.Date(System.currentTimeMillis()));
 
             proposalDataProvider.createProposalVersion(copyVersion);
 
