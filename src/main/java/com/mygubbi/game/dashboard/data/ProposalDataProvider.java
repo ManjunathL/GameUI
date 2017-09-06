@@ -2371,13 +2371,15 @@ public class ProposalDataProvider {
                     put("discountPercentage", amount);
                     put("proposalId", id);
                     put("version", vid);
-                    put("businessDate",bussinessDate);
+                    put("businessDate",URLEncoder.encode(bussinessDate, "UTF-8"));
                 }
             });
+            LOG.info("jsonArray = "+jsonArray.toString());
             return this.mapper.readValue(jsonArray.toString(),ProposalVersion.class);
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             throw new RuntimeException("error");
         }
     }
