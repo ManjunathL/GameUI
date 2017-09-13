@@ -313,7 +313,7 @@ public class MarginDetailsWindow extends Window
             {
                 PriceMaster productWOtaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails("STDMC:Wardrobe",this.priceDate,this.city);
                 rateForStdManfCost=productWOtaxpriceMaster.getSourcePrice();
-               // LOG.info("rateForStdManfCost for wardrobe " +rateForStdManfCost);
+                // LOG.info("rateForStdManfCost for wardrobe " +rateForStdManfCost);
             }
             else
             {
@@ -353,7 +353,7 @@ public class MarginDetailsWindow extends Window
             rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
             PriceMaster lConnectorRate=proposalDataProvider.getHardwareRateDetails("H074",this.priceDate,this.city);
             rateForLconnectorPrice=lConnectorRate.getSourcePrice();
-           // LOG.info("rateForLconnectorPrice " +rateForLconnectorPrice);
+            // LOG.info("rateForLconnectorPrice " +rateForLconnectorPrice);
             Amount+=product.getAmount();
             if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
             {
@@ -449,14 +449,15 @@ public class MarginDetailsWindow extends Window
                         }
                     }
 
-                    List <AccessoryDetails> accesoryNormal=proposalDataProvider.getAccessoryhwDetails(moduleAccessoryPack.getCode());
+                    /*List <AccessoryDetails> accesoryNormal=proposalDataProvider.getAccessoryhwDetails(moduleAccessoryPack.getCode());
                     for(AccessoryDetails acc: accesoryNormal)
                     {
                         PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acc.getCode(),this.priceDate,this.city);
                         {
                             manufacturingHardwareCost+=hardwareRateMaster.getSourcePrice()*Double.valueOf(acc.getQty());
+                            LOG.info("manufacturingHardwareCost " +acc.getCode() + " QTY" +acc.getQty()+ " price " +hardwareRateMaster.getSourcePrice());
                         }
-                    }
+                    }*/
                     List <AccessoryDetails>  accesoryHardwareMasters =proposalDataProvider.getAccessoryDetails(moduleAccessoryPack.getCode());
                     for(AccessoryDetails acc: accesoryHardwareMasters)
                     {
@@ -464,20 +465,22 @@ public class MarginDetailsWindow extends Window
                         {
                             manufacturingAccessoryCostForZgeneric+=accessoryRateMaster.getSourcePrice();
                         }
-                        PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acc.getCode(),this.priceDate,this.city);
+                        /*PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acc.getCode(),this.priceDate,this.city);
                         {
                             {
+                                LOG.info("manufacturingHardwareCost2 " +acc.getCode() + " QTY" +acc.getQty()+ " price " +hardwareRateMaster.getSourcePrice());
                                 manufacturingHardwareCost += hardwareRateMaster.getSourcePrice();
                             }
-                        }
+                        }*/
                     }
                 }
                 HardwareCost+=modulePrice.getHardwareCost();
+                manufacturingHardwareCost +=modulePrice.getHardwareSourceCost();
                 if(!(module.getMgCode().startsWith("MG-NS-H")))
                 {
                     LabourCost+=modulePrice.getLabourCost();
                 }
-                List<ModuleComponent> modulehardwaredetails=proposalDataProvider.getModuleAccessoryhwDetails(module.getMgCode());
+                /*List<ModuleComponent> modulehardwaredetails=proposalDataProvider.getModuleAccessoryhwDetails(module.getMgCode());
                 for(ModuleComponent acchwdetails: modulehardwaredetails)
                 {
                     PriceMaster hardwareRateMaster=proposalDataProvider.getHardwareRateDetails(acchwdetails.getCompcode(),this.priceDate,this.city);
@@ -492,11 +495,11 @@ public class MarginDetailsWindow extends Window
                             {
                                 quantity = calculateQuantityUsingFormula(acchwdetails.getQuantityFormula(),module);
                             }
-
+                            LOG.info("manufacturingHardwareCost3 " +acchwdetails.getCompcode() + " QTY" + quantity + " price " +hardwareRateMaster.getSourcePrice());
                             manufacturingHardwareCost += hardwareRateMaster.getSourcePrice() * quantity;
                         }
                     }
-                }
+                }*/
             }
         }
         totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost+handleAndKnonCost+hingeCost+lConnectorPrice;
