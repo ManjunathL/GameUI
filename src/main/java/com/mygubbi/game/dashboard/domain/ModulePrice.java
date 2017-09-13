@@ -9,10 +9,15 @@ public class ModulePrice {
     private double woodworkCost;
     private double moduleArea;
     public double shutterCost;
+    public double shutterSourceCost;
     private double carcassCost;
+    private double carcassSourceCost;
     private double accessoryCost;
+    private double accessorySourceCost;
     private double hardwareCost;
+    private double hardwareSourceCost;
     private double labourCost;
+    private double labourSourceCost;
     private double handleAndKnobCost;
     private double handleAndKnobSourceCost;
     private double hingeCost;
@@ -114,20 +119,66 @@ public class ModulePrice {
         this.hingeSourceCost = hingeSourceCost;
     }
 
+    public double getShutterSourceCost() {
+        return shutterSourceCost;
+    }
+
+    public void setShutterSourceCost(double shutterSourceCost) {
+        this.shutterSourceCost = shutterSourceCost;
+    }
+
+    public double getCarcassSourceCost() {
+        return carcassSourceCost;
+    }
+
+    public void setCarcassSourceCost(double carcassSourceCost) {
+        this.carcassSourceCost = carcassSourceCost;
+    }
+
+    public double getAccessorySourceCost() {
+        return accessorySourceCost;
+    }
+
+    public void setAccessorySourceCost(double accessorySourceCost) {
+        this.accessorySourceCost = accessorySourceCost;
+    }
+
+    public double getHardwareSourceCost() {
+        return hardwareSourceCost;
+    }
+
+    public void setHardwareSourceCost(double hardwareSourceCost) {
+        this.hardwareSourceCost = hardwareSourceCost;
+    }
+
+    public double getLabourSourceCost() {
+        return labourSourceCost;
+    }
+
+    public void setLabourSourceCost(double labourSourceCost) {
+        this.labourSourceCost = labourSourceCost;
+    }
+
     @Override
     public String toString() {
         return "ModulePrice{" +
-                "accessoryCost=" + accessoryCost +
-                ", totalCost=" + totalCost +
+                "totalCost=" + totalCost +
                 ", woodworkCost=" + woodworkCost +
                 ", moduleArea=" + moduleArea +
                 ", shutterCost=" + shutterCost +
+                ", shutterSourceCost=" + shutterSourceCost +
                 ", carcassCost=" + carcassCost +
+                ", carcassSourceCost=" + carcassSourceCost +
+                ", accessoryCost=" + accessoryCost +
+                ", accessorySourceCost=" + accessorySourceCost +
                 ", hardwareCost=" + hardwareCost +
+                ", hardwareSourceCost=" + hardwareSourceCost +
                 ", labourCost=" + labourCost +
+                ", labourSourceCost=" + labourSourceCost +
                 ", handleAndKnobCost=" + handleAndKnobCost +
                 ", handleAndKnobSourceCost=" + handleAndKnobSourceCost +
                 ", hingeCost=" + hingeCost +
+                ", hingeSourceCost=" + hingeSourceCost +
                 '}';
     }
 }
