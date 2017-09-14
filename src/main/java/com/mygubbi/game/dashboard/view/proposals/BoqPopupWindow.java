@@ -82,7 +82,12 @@ public class BoqPopupWindow extends Window {
         open_sheet.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-              quoteFile  =  proposalDataProvider.getBOQFile(productAndAddonSelection);
+                try {
+                    getUI().getPage().open(quoteFile.getString("driveWebViewLink"), "googleSheet");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
 
             }
         });

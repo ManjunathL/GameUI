@@ -906,9 +906,14 @@ public class CreateProposalsView extends Panel implements View {
         openBoqFile.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                BrowserWindowOpener opener = new BrowserWindowOpener(new ExternalResource(webViewLink));
-                opener.setFeatures("");
-                opener.extend(openBoqFile);
+
+                String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
+
+                Proposal_boq proposal_boq = new Proposal_boq();
+                proposal_boq.setProposalId(proposalHeader.getId());
+                proposal_boq.setId("0");
+                proposal_boq.setUserId(email);
+                JSONObject soExtract = proposalDataProvider.generateSoExtracts(proposal_boq);
             }
         });
 
