@@ -88,6 +88,7 @@ public class Module implements Cloneable {
     public static final String NO_OF_HANDLE="noOFHandle";
     public static final String GOLA_PROFILE_FLAG = "golaProfileFlag";
     public static final String HANDLE_OVERRIDE_FLAG="handleOverrideFlag";
+    public static final String FINISH_SETID="finishSetId";
 
     private int seq;
     private int moduleSequence;
@@ -164,6 +165,7 @@ public class Module implements Cloneable {
     private int noOFHandle;
     private String golaProfileFlag;
     private String handleOverrideFlag;
+    private String finishSetId;
 
     private List<ModuleAccessoryPack> accessoryPacks=new ArrayList<>();
     private List<HandleMaster> handlePack=new ArrayList<>();
@@ -862,6 +864,14 @@ public class Module implements Cloneable {
 
     public void setHandleOverrideFlag(String handleOverrideFlag) {
         this.handleOverrideFlag = handleOverrideFlag;
+    }
+
+    public String getFinishSetId() {
+        return finishSetId;
+    }
+
+    public void setFinishSetId(String finishSetId) {
+        this.finishSetId = finishSetId;
     }
 
     @Override

@@ -84,6 +84,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private final BeanFieldGroup<Product> binder = new BeanFieldGroup<>(Product.class);
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private List<Finish> shutterFinishMasterList;
+    private List<Finish> FinishMasterList;
     private BeanItemContainer<Module> moduleContainer;
     private Grid modulesGrid;
     private TextField totalAmount;
@@ -515,6 +516,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 if (text.contains(Module.DEFAULT)) {
                     moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH_CODE).setValue(shutterFinishSelection.getValue());
                     moduleContainer.getItem(module).getItemProperty(Module.SHUTTER_FINISH).setValue(getDefaultText(getSelectedFinishText(shutterFinishSelection)));
+                    moduleContainer.getItem(module).getItemProperty(Module.FINISH_SETID).setValue(this.product.getFinishSetId());
                 }
             }
             else if(component == handleSelection)
@@ -671,6 +673,11 @@ public class CustomizedProductDetailsWindow extends Window {
                         }
                     }
                 }
+            }
+            else if(component == colorCombo)
+            {
+                moduleContainer.getItem(module).getItemProperty(Module.COLOR_CODE).setValue(colorCombo.getValue().toString());
+                moduleContainer.getItem(module).getItemProperty(Module.COLOR_CODE).setValue(colorCombo.getValue().toString());
             }
             /*else if(component==noOfLengths)
             {
@@ -888,7 +895,7 @@ public class CustomizedProductDetailsWindow extends Window {
         formLayoutRight.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
-        shutterFinishMasterList = proposalDataProvider.getFinishes();//todLookupItems(ProposalDataProvider.FINISH_LOOKUP);
+        shutterFinishMasterList = proposalDataProvider.getFinishes(proposalHeader.getPriceDate().toString());//todLookupItems(ProposalDataProvider.FINISH_LOOKUP);
         List<Finish> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
         shutterFinishSelection.setRequired(true);
@@ -902,16 +909,12 @@ public class CustomizedProductDetailsWindow extends Window {
         shutterFinishSelection.addValueChangeListener(this::shutterfinishchanged);
         formLayoutRight.addComponent(this.shutterFinishSelection);
 
-        /*List<Color> colors = filterColorsByType();
+        List<Color> colors = filterColorsByType();
         this.colorCombo = getColorsCombo("Color", colors);
         colorCombo.setRequired(true);
         binder.bind(colorCombo, COLOR_CODE);
-        if(colorCombo.size()>0)
-        {
-            String code = StringUtils.isNotEmpty(product.getColorGroupCode()) ? product.getColorGroupCode() : (String) colorCombo.getItemIds().iterator().next();
-            colorCombo.setValue(code);
-        }
-        formLayoutRight.addComponent(this.colorCombo);*/
+        colorCombo.addValueChangeListener(this::colorChangeSelection);
+        formLayoutRight.addComponent(this.colorCombo);
 
         this.shutterDesign = getShutterDesignCombo();
         shutterDesign.setRequired(true);
@@ -1109,6 +1112,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     module.setExposedBottom(false);
                     module.setExposedTop(false);
                     module.setExposedOpen(false);
+                    module.setFinishSetId(product.getFinishSetId());
                     module.setUnitType("Base Unit");
                     module.setCarcass(getDefaultText(
                             (module.getUnitType().toLowerCase().contains(Module.UnitTypes.wall.name())
@@ -1119,6 +1123,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     module.setCarcassCodeBasedOnUnitType(product);
                     module.setFinishTypeCode(product.getFinishTypeCode());
                     module.setFinishCode(product.getFinishCode());
+                    module.setColorCode(product.getColorGroupCode());
                     if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
                     {
                         module.setHandleType(product.getHandleType());
@@ -1244,9 +1249,29 @@ public class CustomizedProductDetailsWindow extends Window {
 
         if (finishes.size() > 0)
             shutterDesign.setValue(shutterDesign.getItemIds().iterator().next());
+
+        Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
+        this.product.setFinishSetId(finish.getSetCode());
+        this.colorCombo.getContainerDataSource().removeAllItems();
+
+        List<Color> color=proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+        ((BeanContainer<String,Color>) this.colorCombo.getContainerDataSource()).addAll(color);
+        if(color.size()>0)
+        {
+            colorCombo.setValue(colorCombo.getItemIds().iterator().next());
+        }
         refreshPrice(valueChangeEvent);
     }
 
+    private void colorChangeSelection(Property.ValueChangeEvent valueChangeEvent)
+    {
+        List<Module> modules = product.getModules();
+        for(Module module:modules)
+        {
+            module.setColorCode(colorCombo.getValue().toString());
+        }
+        refreshPrice(valueChangeEvent);
+    }
     private void shutterDesignchanged(Property.ValueChangeEvent valueChangeEvent)
     {
        // LOG.info("shutter design changed " +valueChangeEvent);
@@ -1535,7 +1560,7 @@ public class CustomizedProductDetailsWindow extends Window {
                 copyModule.setHingePack(m.getHingePack());
                 copyModule.setGlassType(m.getGlassType());
                 copyModule.setHandleOverrideFlag(m.getHandleOverrideFlag());
-
+                copyModule.setColorCode(m.getColorCode());
                 DashboardEventBus.post(new ProposalEvent.ModuleUpdated(copyModule,false,false,product.getModules().size(),CustomizedProductDetailsWindow.this));
                 DashboardEventBus.unregister(this);
                 modulesGrid.sort(Module.MODULE_SEQUENCE,SortDirection.ASCENDING);
@@ -2104,6 +2129,7 @@ public class CustomizedProductDetailsWindow extends Window {
         final BeanContainer<String, Finish> container =
                 new BeanContainer<>(Finish.class);
         container.setBeanIdProperty(Finish.FINISH_CODE);
+        product.setFinishSetId(Finish.SET_CODE);
         container.addAll(list);
 
         ComboBox select = new ComboBox(caption);
@@ -2281,24 +2307,41 @@ public class CustomizedProductDetailsWindow extends Window {
     }
 
     private List<Color> filterColorsByType() {
-        Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
-        //LOG.info("Finish colourgroup code " +proposalDataProvider.getColorsByGroup(finish.getColorGroupCode()).size());
-        return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+            Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
+            return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+    }
+
+    private List<Finish> getFinishMaterial()
+    {
+        return proposalDataProvider.getFinishMaterial(proposalHeader.getPriceDate().toString(),proposalHeader.getPriceDate().toString());
     }
 
     private ComboBox getColorsCombo(String caption, List<Color> list) {
+            final BeanContainer<String, Color> container =
+                    new BeanContainer<>(Color.class);
+            container.setBeanIdProperty("code");
+                container.addAll(list);
 
-        final BeanContainer<String, Color> container =
-                new BeanContainer<>(Color.class);
-        container.setBeanIdProperty("code");
+            ComboBox select = new ComboBox(caption);
+            select.setNullSelectionAllowed(false);
+            select.setContainerDataSource(container);
+            select.setItemIconPropertyId("colorImageResource");
+            select.setStyleName("colors-combo");
+            select.setItemCaptionPropertyId("name");
+            select.setFilteringMode(FilteringMode.CONTAINS);
+            return select;
+    }
+
+    private ComboBox getFinishMaterialCombo(String caption,List<Finish> list)
+    {
+        final BeanContainer<String, Finish> container = new BeanContainer<>(Finish.class);
+        container.setBeanIdProperty("finishCode");
         container.addAll(list);
 
         ComboBox select = new ComboBox(caption);
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
-        select.setItemIconPropertyId("colorImageResource");
-        select.setStyleName("colors-combo");
-        select.setItemCaptionPropertyId("name");
+        select.setItemCaptionPropertyId("finishMaterial");
         select.setFilteringMode(FilteringMode.CONTAINS);
         return select;
     }

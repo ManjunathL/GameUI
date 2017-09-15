@@ -35,10 +35,7 @@ import org.vaadin.gridutil.renderer.DeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.EditDeleteButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditDeleteButtonValueRenderer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.StrictMath.round;
@@ -369,6 +366,7 @@ public class AllProposalLibrary extends Window
     private void AddToProposalProduct(Button.ClickEvent clickEvent)
     {
         List<ProductLibrary> productLibraries=proposalDataProvider.getProductsLibraryBasedonId(Id);
+        String newFinishCode=" ";
         for(ProductLibrary p:productLibraries)
         {
             Product product=new Product();
@@ -393,7 +391,20 @@ public class AllProposalLibrary extends Window
             product.setFinishType(p.getFinishType());
             product.setFinishTypeCode(p.getFinishTypeCode());
             product.setFinish(p.getFinish());
-            product.setFinishCode(p.getFinishCode());
+            java.util.Date headerdate = proposalHeader.getPriceDate();
+            java.util.Date currentDate = new Date(117, 8, 19, 0, 0, 00);
+            if (headerdate.after(currentDate)) {
+                List<OldToNewFinishMap> oldToNewFinishMap=proposalDataProvider.getNewFinishCodeForOldFinish(p.getFinishCode());
+                for(OldToNewFinishMap oldToNewFinishMap1:oldToNewFinishMap)
+                {
+                    newFinishCode=oldToNewFinishMap1.getNewCode();
+                    product.setFinishCode(oldToNewFinishMap1.getNewCode());
+                }
+            }else
+            {
+                product.setFinishCode(p.getFinishCode());
+            }
+
             product.setDimension(p.getDimension());
             product.setAmount(p.getAmount());
             product.setQuantity(p.getQuantity());
@@ -419,11 +430,15 @@ public class AllProposalLibrary extends Window
             product.setNoOfLengths(p.getNoOfLengths());
             product.setProductCategoryLocked("Yes");
             product.setFromProduct(p.getId());
+            product.setColorGroupCode(p.getColorGroupCode());
             List<Module> modules = p.getModules();
             List<Module> refreshedModules = new ArrayList<>();
             for (Module refreshedModule: modules)
             {
                 ModuleForPrice moduleForPrice = new ModuleForPrice();
+                if (headerdate.after(currentDate)) {
+                    refreshedModule.setFinishCode(newFinishCode);
+                }
 
                 if (proposalHeader.getPriceDate() == null) {
                     java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
@@ -443,11 +458,12 @@ public class AllProposalLibrary extends Window
                 double amount = round(modulePrice.getTotalCost());
                 double areainsft = modulePrice.getModuleArea();
                 double costwoaccessories = round(modulePrice.getWoodworkCost());
-
-
                 modules.get(modules.indexOf(refreshedModule)).setAmount(amount);
                 modules.get(modules.indexOf(refreshedModule)).setAmountWOAccessories(costwoaccessories);
                 modules.get(modules.indexOf(refreshedModule)).setArea(areainsft);
+                if (headerdate.after(currentDate)) {
+                    modules.get(modules.indexOf(refreshedModule)).setFinishCode(newFinishCode);
+                }
             }
             product.setModules(refreshedModules);
             product.setModules(p.getModules());

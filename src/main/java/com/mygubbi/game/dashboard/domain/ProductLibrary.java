@@ -74,7 +74,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     public static final String NO_OF_LENGTHS="noOfLengths";
     public static final String DESIGNER="designer";
     public static final String PRODUCTCATEGORY_LOCKED="productCategoryLocked";
-
+    public static final String COLORGROUP_CODE="colorGroupCode";
 
     private int id;
     private int proposalId;
@@ -136,6 +136,7 @@ public class ProductLibrary implements FileAttachmentsHolder
     private double lConnectorPrice;
     private double noOfLengths;
     private String productCategoryLocked;
+    private String colorGroupCode;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -634,6 +635,14 @@ public class ProductLibrary implements FileAttachmentsHolder
 
     public void setProductCategoryLocked(String productCategoryLocked) {
         this.productCategoryLocked = productCategoryLocked;
+    }
+
+    public String getColorGroupCode() {
+        return colorGroupCode;
+    }
+
+    public void setColorGroupCode(String colorGroupCode) {
+        this.colorGroupCode = colorGroupCode;
     }
 
     @Override

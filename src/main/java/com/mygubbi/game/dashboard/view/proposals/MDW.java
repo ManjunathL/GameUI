@@ -426,6 +426,10 @@ public class MDW extends Window {
             if (module.getFinish().contains(Module.DEFAULT)) {
                 module.setFinishCode(product.getFinishCode());
             }
+            if(module.getColorCode().contains(Module.DEFAULT))
+            {
+                module.setColorCode(product.getColorGroupCode());
+            }
     }
 
     private void addListenerstoDimensionCheckBoxes() {
@@ -495,7 +499,7 @@ public class MDW extends Window {
         formLayout.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
-        shutterFinishMasterList = proposalDataProvider.getFinishes(); //LookupItems(ProposalDataProvider.FINISH_LOOKUP);
+        shutterFinishMasterList = proposalDataProvider.getFinishes(proposalHeader.getPriceDate().toString()); //LookupItems(ProposalDataProvider.FINISH_LOOKUP);
         List<Finish> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
         binder.bind(shutterFinishSelection, Module.SHUTTER_FINISH_CODE);
@@ -1349,6 +1353,9 @@ public class MDW extends Window {
 
 
     private void finishChanged(Property.ValueChangeEvent valueChangeEvent) {
+        Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
+        this.module.setFinishSetId(finish.getSetCode());
+
         List<Color> filteredColors = filterColorsByType();
         String previousColorCode = (String) this.colorCombo.getValue();
         colorCombo.getContainerDataSource().removeAllItems();
@@ -1417,8 +1424,9 @@ public class MDW extends Window {
         return filteredShutterFinish;
     }
 
-    private List<Color> filterColorsByType() {
-        Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
+    private List<Color> filterColorsByType(){
+        String value=removeDefaultPrefix(shutterFinishSelection.getValue().toString());
+        Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(value).getBean();
         return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
     }
 
@@ -1704,6 +1712,7 @@ public class MDW extends Window {
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
         select.setItemCaptionPropertyId(Finish.TITLE);
+        module.setFinishSetId(Finish.SET_CODE);
         if (listener != null) select.addValueChangeListener(listener);
         if (container.size() > 0) select.setValue(select.getItemIds().iterator().next());
         return select;

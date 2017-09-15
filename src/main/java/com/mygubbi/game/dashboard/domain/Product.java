@@ -68,6 +68,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String PRODUCT_CATEGORYLOCKED="productCategoryLocked";
     public static final String FROM_PRODUCT="fromProduct";
     public static final String COLOR_CODE = "colorGroupCode";
+    public static final String FINISH_SETID="finishSetId";
 
     private int id;
     private int proposalId;
@@ -126,6 +127,7 @@ public class Product implements FileAttachmentsHolder {
     private String knobCode;
     private double lConnectorPrice;
     private String productCategoryLocked;
+    private String finishSetId;
     private int fromProduct;
 
     private List<Module> modules = new ArrayList<>();
@@ -626,6 +628,14 @@ public class Product implements FileAttachmentsHolder {
 
     public void setColorGroupCode(String colorGroupCode) {
         this.colorGroupCode = colorGroupCode;
+    }
+
+    public String getFinishSetId() {
+        return finishSetId;
+    }
+
+    public void setFinishSetId(String finishSetId) {
+        this.finishSetId = finishSetId;
     }
 
     @Override

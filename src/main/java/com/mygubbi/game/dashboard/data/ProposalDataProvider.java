@@ -663,12 +663,14 @@ public class ProposalDataProvider {
 
 
     public List<AccessoryPack> getAccessoryPacks(String mgCode) {
+        try {
         JSONArray array = dataProviderMode.getResourceArray("module/accpacks", new HashMap<String, String>() {
             {
                 put("mgCode", mgCode);
+                //put("mgCode", URLEncoder.encode(mgCode, "UTF-8"));
             }
         });
-        try {
+
             AccessoryPack[] items = this.mapper.readValue(array.toString(), AccessoryPack[].class);
             return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
@@ -697,8 +699,13 @@ public class ProposalDataProvider {
     }
 
 
-    public List<Finish> getFinishes() {
-        JSONArray array = dataProviderMode.getResourceArray("finishcodes", new HashMap<>());
+    public List<Finish> getFinishes(String date) {
+        JSONArray array = dataProviderMode.getResourceArray("finishcodes", new HashMap<String,String>(){
+        {
+            put("fromDate",date);
+            put("toDate",date);
+        }
+    });
         try {
             Finish[] items = this.mapper.readValue(array.toString(), Finish[].class);
             return new ArrayList<>(Arrays.asList(items));
@@ -993,12 +1000,14 @@ public class ProposalDataProvider {
     }
 
     public List<Module> getModuleDetails(String moduleCode) {
+        try {
         JSONArray array = dataProviderMode.getResourceArray("module/moduledetails", new HashMap<String, String>() {
             {
-                put("code", urlEncode(moduleCode));
+               // put("code", urlEncode(moduleCode));
+                put("code", URLEncoder.encode(moduleCode, "UTF-8"));
             }
         });
-        try {
+
             Module[] items = this.mapper.readValue(array.toString(), Module[].class);
             return new ArrayList<>(Arrays.asList(items));
         } catch (Exception e) {
@@ -2371,7 +2380,7 @@ public class ProposalDataProvider {
                     put("discountPercentage", amount);
                     put("proposalId", id);
                     put("version", vid);
-                    put("businessDate",URLEncoder.encode(bussinessDate, "UTF-8"));
+                    put("businessDate" ,URLEncoder.encode(bussinessDate,"UTF-8"));
                 }
             });
             LOG.info("jsonArray = "+jsonArray.toString());
@@ -2383,4 +2392,36 @@ public class ProposalDataProvider {
             throw new RuntimeException("error");
         }
     }
+    public List<Finish> getFinishMaterial(String fromDate,String toDate) {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/finishType", new HashMap<String,String>() {
+            {
+                put("fromDate", fromDate);
+                put("toDate",toDate);
+            }
+        });
+        try {
+            Finish[] items = this.mapper.readValue(array.toString(), Finish[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+    public List<OldToNewFinishMap> getNewFinishCodeForOldFinish(String OldFinishCode) {
+        JSONArray array = dataProviderMode.getResourceArray("proposal/getfinishmap", new HashMap<String,String>() {
+            {
+                put("oldCode", OldFinishCode);
+            }
+        });
+        try {
+            OldToNewFinishMap[] items = this.mapper.readValue(array.toString(), OldToNewFinishMap[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return new ArrayList<>();
+        }
+    }
+
 }

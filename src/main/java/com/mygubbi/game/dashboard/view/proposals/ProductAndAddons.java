@@ -993,6 +993,7 @@ public class ProductAndAddons extends Window
                 copyProduct.setHandleThickness(p.getHandleThickness());
                 copyProduct.setNoOfLengths(p.getNoOfLengths());
                 copyProduct.setProductCategoryLocked(p.getProductCategoryLocked());
+                copyProduct.setColorGroupCode(p.getColorGroupCode());
                 // LOG.info("COPIED@"+ copyProduct);
                 copyProduct.setAddons(p.getAddons());
 

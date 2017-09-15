@@ -1,5 +1,8 @@
 package com.mygubbi.game.dashboard.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by nitinpuri on 15-06-2016.
  */
@@ -11,6 +14,9 @@ public class Finish {
     public static final String COLOR_GROUP_CODE = "colorGroupCode";
     public static final String TITLE = "title";
     public static final String IMAGE_PATH = "imagePath";
+    public static final String FROM_DATE="fromDate";
+    public static final String TO_DATE="toDate";
+    public static final String SET_CODE="setCode";
 
     private String finishMaterial;
     private String finishCode;
@@ -18,6 +24,9 @@ public class Finish {
     private String title;
     private String shutterCode;
     private String imagePath;
+    private String toDate;
+    private String fromDate;
+    private String setCode;
 
     public String getFinishMaterial() {
         return finishMaterial;
@@ -67,15 +76,43 @@ public class Finish {
         this.imagePath = imagePath;
     }
 
+    public String getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(String toDate) {
+        this.toDate = toDate;
+    }
+
+    public String getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(String fromDate) {
+        this.fromDate = fromDate;
+    }
+
+
+    public String getSetCode() {
+        return setCode;
+    }
+
+    public void setSetCode(String setCode) {
+        this.setCode = setCode;
+    }
+
     @Override
     public String toString() {
         return "Finish{" +
-                "colorGroupCode='" + colorGroupCode + '\'' +
-                ", finishMaterial='" + finishMaterial + '\'' +
+                "finishMaterial='" + finishMaterial + '\'' +
                 ", finishCode='" + finishCode + '\'' +
+                ", colorGroupCode='" + colorGroupCode + '\'' +
                 ", title='" + title + '\'' +
                 ", shutterCode='" + shutterCode + '\'' +
                 ", imagePath='" + imagePath + '\'' +
+                ", toDate='" + toDate + '\'' +
+                ", fromDate='" + fromDate + '\'' +
+                ", setCode='" + setCode + '\'' +
                 '}';
     }
 }

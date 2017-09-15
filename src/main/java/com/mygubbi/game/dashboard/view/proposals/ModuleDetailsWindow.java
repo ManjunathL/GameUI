@@ -590,7 +590,7 @@ public class ModuleDetailsWindow extends Window {
         formLayout.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
-        shutterFinishMasterList = proposalDataProvider.getFinishes(); //LookupItems(ProposalDataProvider.FINISH_LOOKUP);
+        shutterFinishMasterList = proposalDataProvider.getFinishes(proposalHeader.getPriceDate().toString()); //LookupItems(ProposalDataProvider.FINISH_LOOKUP);
         List<Finish> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
         binder.bind(shutterFinishSelection, Module.SHUTTER_FINISH_CODE);
@@ -671,7 +671,7 @@ public class ModuleDetailsWindow extends Window {
         formLayout.addComponent(this.finishTypeSelection);
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
-        shutterFinishMasterList = proposalDataProvider.getFinishes(); //LookupItems(ProposalDataProvider.FINISH_LOOKUP);
+        shutterFinishMasterList = proposalDataProvider.getFinishes(proposalHeader.getPriceDate().toString()); //LookupItems(ProposalDataProvider.FINISH_LOOKUP);
         List<Finish> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
         binder.bind(shutterFinishSelection, Module.SHUTTER_FINISH_CODE);
@@ -1489,7 +1489,8 @@ public class ModuleDetailsWindow extends Window {
 
     private List<Color> filterColorsByType() {
         Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
-        return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+        //return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+        return null;
     }
 
     private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {

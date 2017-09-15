@@ -360,9 +360,9 @@ public class MarginDetailsWindow extends Window
                 if(product.getHandleTypeSelection().equals("Gola Profile"))
                 {
                     lConnectorSourcePrice = product.getNoOfLengths() * rateForLconnectorPrice;
+                    manufacturingHandleAndKnobCost+=lConnectorSourcePrice;
                 }
             }
-            manufacturingHandleAndKnobCost+=lConnectorSourcePrice;
             LOG.info("lConnectorSourcePrice" +lConnectorSourcePrice);
             LOG.info("rateForStdManfCost" +rateForStdManfCost+ "rateForNStdManfCost" +rateForNStdManfCost+ "rateForManfLabourCost" +rateForManfLabourCost);
             List<Module> modules=product.getModules();
