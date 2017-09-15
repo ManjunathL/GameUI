@@ -363,6 +363,7 @@ public class MarginDetailsWindow extends Window
                     manufacturingHandleAndKnobCost+=lConnectorSourcePrice;
                 }
             }
+
             LOG.info("lConnectorSourcePrice" +lConnectorSourcePrice);
             LOG.info("rateForStdManfCost" +rateForStdManfCost+ "rateForNStdManfCost" +rateForNStdManfCost+ "rateForManfLabourCost" +rateForManfLabourCost);
             List<Module> modules=product.getModules();
@@ -503,7 +504,7 @@ public class MarginDetailsWindow extends Window
             }
         }
         totalSalesPrice =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+AccessoryCost+hikeCost+handleAndKnonCost+hingeCost+lConnectorPrice;
-        LOG.debug("TSP :" + totalSalesPrice + "Standard WoodWorkCost: " + SWoodWorkCost + "Non Standard WoodWorkCost: " +NSWoodWorkCost+  ":Hardware cost: " + HardwareCost + "Labour Cost : " + LabourCost + "Accessory Cost: " +AccessoryCost + "Handle & Knob Cost: " + handleAndKnonCost + "Hinge Cost: " + hingeCost+ "LConnector Price: " +lConnectorPrice);
+        LOG.debug("TSP :" + totalSalesPrice + "Standard WoodWorkCost: " + SWoodWorkCost + "Non Standard WoodWorkCost: " +NSWoodWorkCost+  ":Hardware cost: " + HardwareCost + "Labour Cost : " + LabourCost + "Accessory Cost: " +AccessoryCost + "Handle & Knob Cost: " + handleAndKnonCost + "Hinge Cost: " + hingeCost+ "LConnector Price: " +lConnectorPrice+",hikeCost ="+hikeCost);
         totalSalesPriceWOAcc =NSWoodWorkCost+SWoodWorkCost+HardwareCost+LabourCost+hikeCost+handleAndKnonCost+hingeCost+lConnectorPrice;
 
         //totalSalesPriceWOtax = (totalSalesPrice-hikeCost) *0.8558;
