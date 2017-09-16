@@ -294,6 +294,11 @@ public class MarginDetailsWindow extends Window
             codeForAddonSourcePrice=addonsourceprice.getCode();
         }
 
+        PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
+        rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
+        PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
+        rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
+
         products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for(Product product:products)
         {
@@ -347,10 +352,6 @@ public class MarginDetailsWindow extends Window
 
             PriceMaster labourcostpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForManfLabourCost,this.priceDate,this.city);
             rateForManfLabourCost=labourcostpriceMaster.getSourcePrice();
-            PriceMaster addonwotaxpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonWOTax,this.priceDate,this.city);
-            rateForAddonWOTax=addonwotaxpriceMaster.getSourcePrice();
-            PriceMaster addonsourcepricepriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForAddonSourcePrice,this.priceDate,this.city);
-            rateForAddonSourcePrice=addonsourcepricepriceMaster.getSourcePrice();
             PriceMaster lConnectorRate=proposalDataProvider.getHardwareRateDetails("H074",this.priceDate,this.city);
             rateForLconnectorPrice=lConnectorRate.getSourcePrice();
             // LOG.info("rateForLconnectorPrice " +rateForLconnectorPrice);
@@ -641,13 +642,15 @@ public class MarginDetailsWindow extends Window
 
     private margin calculateSalesPriceWithDiscount(margin margin,Double Tsp)
     {
-
-        Double Tspwt=(Tsp)*rateForProductWOTax;
+        Double Tspwt=0.0;
+        Double MProfit=0.0;
+        Double marginCompute=0.0;
+        Tspwt=(Tsp)*rateForProductWOTax;
 
         //Tspwt=Tspwt+hikeCost;
 
-        Double MProfit=Tspwt- manufacturingTotalSalesPrice;
-        Double marginCompute=(MProfit/Tspwt)*100;
+        MProfit=Tspwt- manufacturingTotalSalesPrice;
+        marginCompute=(MProfit/Tspwt)*100;
         if(Double.isNaN(marginCompute))
         {
             marginCompute=0.0;
@@ -664,6 +667,10 @@ public class MarginDetailsWindow extends Window
 
         Double total=Tsp+AddonTotal;
         Double totalwt=Tspwt+AddonTotalWOtax;
+        if(MProfit.isNaN())
+        {
+            MProfit=0.0;
+        }
         Double profit=MProfit+AddonsProfit;
         Double finalmargin=(profit/totalwt)*100;
         if(Double.isNaN(finalmargin))
@@ -687,6 +694,10 @@ public class MarginDetailsWindow extends Window
         margin.setProductaddontspwt(totalwt);
         margin.setProductaddonProfit(profit);
         margin.setProductaddonMargin(finalmargin);
+        if(manufacturingTotalSalesPrice.isNaN() )
+        {
+            manufacturingTotalSalesPrice=0.0;
+        }
         margin.setProductaddonManufactingCost(manufacturingTotalSalesPrice+addonDealerPrice);
         return margin;
     }
@@ -1208,7 +1219,7 @@ public class MarginDetailsWindow extends Window
     private double round(double value, int places)
     {
         if (places < 0) throw new IllegalArgumentException();
-        if(Double.isNaN(value))
+        if(Double.isNaN(value) || Double.isInfinite(value))
         {
             return value=0;
         }        else {

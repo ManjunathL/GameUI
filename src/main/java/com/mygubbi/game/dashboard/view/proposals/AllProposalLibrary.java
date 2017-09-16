@@ -367,6 +367,7 @@ public class AllProposalLibrary extends Window
     {
         List<ProductLibrary> productLibraries=proposalDataProvider.getProductsLibraryBasedonId(Id);
         String newFinishCode=" ";
+        String newFinishTitle=" ";
         for(ProductLibrary p:productLibraries)
         {
             Product product=new Product();
@@ -398,6 +399,7 @@ public class AllProposalLibrary extends Window
                 for(OldToNewFinishMap oldToNewFinishMap1:oldToNewFinishMap)
                 {
                     newFinishCode=oldToNewFinishMap1.getNewCode();
+                    newFinishTitle=oldToNewFinishMap1.getTitle();
                     product.setFinishCode(oldToNewFinishMap1.getNewCode());
                 }
             }else
@@ -438,6 +440,7 @@ public class AllProposalLibrary extends Window
                 ModuleForPrice moduleForPrice = new ModuleForPrice();
                 if (headerdate.after(currentDate)) {
                     refreshedModule.setFinishCode(newFinishCode);
+                    refreshedModule.setFinish(newFinishTitle);
                 }
 
                 if (proposalHeader.getPriceDate() == null) {
@@ -463,6 +466,7 @@ public class AllProposalLibrary extends Window
                 modules.get(modules.indexOf(refreshedModule)).setArea(areainsft);
                 if (headerdate.after(currentDate)) {
                     modules.get(modules.indexOf(refreshedModule)).setFinishCode(newFinishCode);
+                    modules.get(modules.indexOf(refreshedModule)).setFinish(newFinishTitle);
                 }
             }
             product.setModules(refreshedModules);

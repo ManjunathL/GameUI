@@ -426,9 +426,13 @@ public class MDW extends Window {
             if (module.getFinish().contains(Module.DEFAULT)) {
                 module.setFinishCode(product.getFinishCode());
             }
-            if(module.getColorCode().contains(Module.DEFAULT))
+
+            if(module.getColorCode() != null)
             {
-                module.setColorCode(product.getColorGroupCode());
+                if(module.getColorCode().contains(Module.DEFAULT))
+                {
+                    module.setColorCode(product.getColorGroupCode());
+                }
             }
     }
 

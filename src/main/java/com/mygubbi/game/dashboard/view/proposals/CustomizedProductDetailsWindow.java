@@ -1265,6 +1265,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private void colorChangeSelection(Property.ValueChangeEvent valueChangeEvent)
     {
+        product.setColorGroupCode(colorCombo.getValue().toString());
         List<Module> modules = product.getModules();
         for(Module module:modules)
         {
@@ -1857,6 +1858,11 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
         saveBtn.addClickListener(event -> {
             try {
+                if(colorCombo.getValue() == null || product.getColorGroupCode() == null || product.getColorGroupCode().length()==0)
+                {
+                    NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
                 try {
                     //LOG.info("on save "+ product.getShutterDesignImage());
                     product.setCloseButtonFlag("No");
@@ -1942,6 +1948,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     NotificationUtil.showNotification("Product save failed, please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
             } catch(Exception e){
+                e.printStackTrace();
                 Notification.show("Error while saving Item details",
                         Type.ERROR_MESSAGE);
             }
@@ -2526,6 +2533,7 @@ public class CustomizedProductDetailsWindow extends Window {
         fileAttachmentComponent.setReadOnly(true);
         addModules.setEnabled(false);
         spaceTypeSelection.setReadOnly(true);
+        colorCombo.setReadOnly(true);
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
             handleType.setReadOnly(true);
             handle.setReadOnly(true);
