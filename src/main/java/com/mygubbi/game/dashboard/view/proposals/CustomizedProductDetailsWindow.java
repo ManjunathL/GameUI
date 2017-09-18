@@ -896,6 +896,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
         shutterFinishMasterList = proposalDataProvider.getFinishes(proposalHeader.getPriceDate().toString());//todLookupItems(ProposalDataProvider.FINISH_LOOKUP);
+        LOG.debug("SHutter finish master list size : " + shutterFinishMasterList.size());
         List<Finish> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
         shutterFinishSelection.setRequired(true);
@@ -1224,6 +1225,8 @@ public class CustomizedProductDetailsWindow extends Window {
 
         String selectedFinishTypeCode = (String) finishTypeSelection.getValue();
 
+        LOG.debug("Finish type value :" + selectedFinishTypeCode);
+
         for (Finish shutterFinishComboItem : shutterFinishMasterList) {
             if (selectedFinishTypeCode.equals(shutterFinishComboItem.getFinishMaterial())) {
                 filteredShutterFinish.add(shutterFinishComboItem);
@@ -1254,7 +1257,10 @@ public class CustomizedProductDetailsWindow extends Window {
         this.product.setFinishSetId(finish.getSetCode());
         this.colorCombo.getContainerDataSource().removeAllItems();
 
+        LOG.debug("Color Group code : " + finish.getColorGroupCode());
+
         List<Color> color=proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+        this.colorCombo.setRequired(true);
         ((BeanContainer<String,Color>) this.colorCombo.getContainerDataSource()).addAll(color);
         if(color.size()>0)
         {
