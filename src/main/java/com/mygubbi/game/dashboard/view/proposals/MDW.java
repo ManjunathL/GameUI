@@ -514,6 +514,7 @@ public class MDW extends Window {
 
         List<Color> colors = filterColorsByType();
         this.colorCombo = getColorsCombo("Color", colors);
+        colorCombo.setRequired(true);
         binder.bind(colorCombo, Module.COLOR_CODE);
         formLayout.addComponent(this.colorCombo);
 
@@ -1581,7 +1582,12 @@ public class MDW extends Window {
                     return;
                 }
             }
-
+            LOG.info("color group code " +module.getColorCode() + "color combo " +colorCombo.getValue());
+            if(colorCombo.getValue() == null || module.getColorCode() == null || module.getColorCode().length()==0)
+            {
+                NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
             try {
                 binder.commit();
             } catch (FieldGroup.CommitException e) {
