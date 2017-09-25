@@ -845,7 +845,7 @@ public class CreateProposalsView extends Panel implements View {
 
         verticalLayoutSO.addComponent(new Label("Please click on the Generate SO Extracts button only after you have saved the BOQ Master sheet"));
 
-        verticalLayoutSO.addComponent(new Label("Note: Once the Generate SO Extracts button is clicked, changes to BOQ cannot be made and the master sheet would get locked"));
+//        verticalLayoutSO.addComponent(new Label("Note: Once the Generate SO Extracts button is clicked, changes to BOQ cannot be made and the master sheet would get locked"));
 
         Button generateSo = new Button();
         generateSo.setCaption("Generate SO Extracts");
@@ -864,31 +864,30 @@ public class CreateProposalsView extends Panel implements View {
                 try {
                     JSONObject jsonObject = proposalDataProvider.generateSoExtracts(proposal_boq);
 
-                    if (jsonObject.getString("status").equalsIgnoreCase("failure")) {
-                        NotificationUtil.showNotification("Could not generate SO extracts", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        return;
-                    } else if (jsonObject.getString("status").equalsIgnoreCase("success")) {
-                        verticalLayout.removeComponent(verticalLayoutSO);
-                        verticalLayout.addComponent(boqLinkLayout(jsonObject.getString("webViewLink")));
 
-                        NotificationUtil.showNotification("Successfully generated SO extracts", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                    if (jsonObject.getString("status").equalsIgnoreCase("success")) {
+                        SOPopupWindow.open(jsonObject);
+                    } else {
+                        NotificationUtil.showNotification("Error in generating SO extracts, Please contact GAME admin", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     }
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                }
+                    }
+
 
             }
         });
-        if (proposalHeader.getBoqDriveLink() == null || !(proposalHeader.getBoqDriveLink().equals(""))) {
+       /* if (proposalHeader.getBoqDriveLink() == null || !(proposalHeader.getBoqDriveLink().equals(""))) {
             verticalLayout.removeComponent(verticalLayoutSO);
             verticalLayout.addComponent(boqLinkLayout(proposalHeader.getBoqDriveLink()));
         }
-
+*/
 
 
 
         return verticalLayout;
     }
+/*
 
     private VerticalLayout boqLinkLayout(String webViewLink) {
 
@@ -921,6 +920,7 @@ public class CreateProposalsView extends Panel implements View {
         return boqLinkLayout;
 
     }
+*/
 
 
     private void refreshVersionsGrid(List<ProposalVersion> updatedProposalVersions) {
