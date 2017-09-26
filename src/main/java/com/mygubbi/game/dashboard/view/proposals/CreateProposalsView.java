@@ -817,11 +817,8 @@ public class CreateProposalsView extends Panel implements View {
 
                 JSONObject quoteFile = null;
 
-                if (proposalHeader.getBoqStatus().equalsIgnoreCase("Yes")) {
-                    quoteFile = proposalDataProvider.updateBoqLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersionToBeConsidered.getVersion()), "yes");
-                } else {
-                    quoteFile = proposalDataProvider.updateBoqLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersionToBeConsidered.getVersion()), "no");
-                }
+
+                quoteFile = proposalDataProvider.updateBoqLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersionToBeConsidered.getVersion()), "no");
 
 
                 LOG.debug("Quote file :" + quoteFile);
