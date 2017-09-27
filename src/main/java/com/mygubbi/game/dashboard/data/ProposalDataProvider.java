@@ -156,6 +156,9 @@ public class ProposalDataProvider {
             }
         });
         try {
+            LOG.info("1. jsonArray.toString() = "+jsonArray.toString());
+            LOG.info("2. jsonArray.toString() = "+jsonArray.length());
+
             Product[] items = this.mapper.readValue(jsonArray.toString(), Product[].class);
             return new ArrayList<>(Arrays.asList(items));
         } catch (IOException e) {
