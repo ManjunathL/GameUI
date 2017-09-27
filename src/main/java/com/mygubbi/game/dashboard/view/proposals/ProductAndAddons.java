@@ -994,6 +994,8 @@ public class ProductAndAddons extends Window
                 copyProduct.setNoOfLengths(p.getNoOfLengths());
                 copyProduct.setProductCategoryLocked(p.getProductCategoryLocked());
                 copyProduct.setColorGroupCode(p.getColorGroupCode());
+                copyProduct.setCustomColorCode(p.getCustomColorCode());
+                copyProduct.setFinishSetId(p.getFinishSetId());
                 // LOG.info("COPIED@"+ copyProduct);
                 copyProduct.setAddons(p.getAddons());
 
@@ -1705,20 +1707,26 @@ public class ProductAndAddons extends Window
 
 
                         } else if (versionNew.startsWith("2.")) {
+                            proposalVersion.setFromVersion(proposalVersion.getVersion());
                             proposalVersion.setToVersion(proposalVersion.getVersion());
+                            proposalVersion.setVersion("3.0");
                             proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
-                            proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Locked.name());
+                            proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.PSO.name());
                             proposalVersion.setBusinessDate(dtf.format(localDate));
                             proposalHeader.setStatus(proposalVersion.getStatus());
+                            proposalHeader.setVersion(proposalVersion.getVersion());
                             boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                             proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
                             success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion(),proposalVersion.getBusinessDate().toString());
+                            proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
+                            proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                             proposalDataProvider.updateVersion(proposalVersion);
                             proposalHeader.setVersion(proposalVersion.getVersion());
-                            if (versionNew.equals("2.0")) {
+
+                            /*if (versionNew.equals("2.0")) {
                                 SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
                                 proposalDataProvider.updateCrmPrice(sendToCRM);
-                            }
+                            }*/
                             proposalDataProvider.saveProposal(proposalHeader);
                         }
 

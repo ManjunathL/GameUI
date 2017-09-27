@@ -414,6 +414,26 @@ public class CreateProposalsView extends Panel implements View {
                     String str = ("2." + (size));
                     versionNew = Float.valueOf(str);
                 }
+                else if (pVersion.getVersion().startsWith("3.")) {
+                    LOG.info("inside 3 ");
+                    //String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+
+                    if (!(("planning").equals(role) || ("admin").equals(role)))
+                    {
+                        NotificationUtil.showNotification("You are not authorized to create more versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+
+                    List<ProposalVersion> proposalVersionProduction = proposalDataProvider.getProposalVersionafterProduction(proposalHeader.getId());
+                    int size = proposalVersionProduction.size();
+                    if (size == 9) {
+                        NotificationUtil.showNotification("Cannot exceed more than 9 versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                    LOG.info("size" + size);
+                    String str = ("3." + (size));
+                    versionNew = Float.valueOf(str);
+                }
 
                 copyVersion.setVersion(String.valueOf(versionNew));
                 copyVersion.setFromVersion(pVersion.getVersion());

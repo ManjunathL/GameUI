@@ -522,7 +522,7 @@ public class MarginDetailsWindow extends Window
 
         manufacturingHikeCost=0.6*hikeCost;
         manufacturingTotalSalesPrice = stdModuleManufacturingCost + nonStdModuleManufacturingCost + manufacturingLabourCost + manufacturingHardwareCost + FinalmanufacturingAccoryCost + manufacturingHandleAndKnobCost + manufacturingHingeCost +manufacturingHikeCost;
-        LOG.debug("Total Manufacturing Cost : "+manufacturingTotalSalesPrice+ "Std Manufacture Cost : " +stdModuleManufacturingCost+ "Non Std man Cost " + nonStdModuleManufacturingCost+ "Manufacturing Labour Cost " +manufacturingLabourCost+ "Manufacturing Hardware Cost " +manufacturingHardwareCost+ "Manufacturing Accessory Cost " +FinalmanufacturingAccoryCost+ "Manufacturing H&K Cost " +manufacturingHandleAndKnobCost + " :" + "Manufacturing Hinge Cost :" + manufacturingHingeCost);
+        LOG.debug("Total Manufacturing Cost : "+manufacturingTotalSalesPrice+ "Std Manufacture Cost : " +stdModuleManufacturingCost+ "Non Std man Cost " + nonStdModuleManufacturingCost+ "Manufacturing Labour Cost " +manufacturingLabourCost+ "Manufacturing Hardware Cost " +manufacturingHardwareCost+ "Manufacturing Accessory Cost " +FinalmanufacturingAccoryCost+ "Manufacturing H&K Cost " +manufacturingHandleAndKnobCost + " :" + "Manufacturing Hinge Cost :" + manufacturingHingeCost+ "manufacctuirnh hike cost " +manufacturingHikeCost);
 
         List<AddonProduct> addonProducts=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (AddonProduct addonProduct:addonProducts)

@@ -69,6 +69,7 @@ public class Product implements FileAttachmentsHolder {
     public static final String FROM_PRODUCT="fromProduct";
     public static final String COLOR_CODE = "colorGroupCode";
     public static final String FINISH_SETID="finishSetId";
+    public static final String CUSTOM_COLORCODE="customColorCode";
 
     private int id;
     private int proposalId;
@@ -129,6 +130,7 @@ public class Product implements FileAttachmentsHolder {
     private String productCategoryLocked;
     private String finishSetId;
     private int fromProduct;
+    private String customColorCode;
 
     private List<Module> modules = new ArrayList<>();
 
@@ -638,6 +640,14 @@ public class Product implements FileAttachmentsHolder {
         this.finishSetId = finishSetId;
     }
 
+    public String getCustomColorCode() {
+        return customColorCode;
+    }
+
+    public void setCustomColorCode(String customColorCode) {
+        this.customColorCode = customColorCode;
+    }
+
     @Override
     public int hashCode() {
         int result = id;
@@ -676,6 +686,7 @@ public class Product implements FileAttachmentsHolder {
                 ", knobFinish='" + knobFinish + '\'' +
                 ", knobThickness=" + knobThickness +
                 ", handleTypeSelection='" + handleTypeSelection + '\'' +
+                ", colorGroupCode='" + colorGroupCode + '\'' +
                 ", baseCarcass='" + baseCarcass + '\'' +
                 ", baseCarcassCode='" + baseCarcassCode + '\'' +
                 ", wallCarcass='" + wallCarcass + '\'' +
@@ -704,7 +715,9 @@ public class Product implements FileAttachmentsHolder {
                 ", knobCode='" + knobCode + '\'' +
                 ", lConnectorPrice=" + lConnectorPrice +
                 ", productCategoryLocked='" + productCategoryLocked + '\'' +
-                ", fromProduct='" + fromProduct + '\'' +
+                ", finishSetId='" + finishSetId + '\'' +
+                ", fromProduct=" + fromProduct +
+                ", customColorCode='" + customColorCode + '\'' +
                 ", modules=" + modules +
                 ", addons=" + addons +
                 ", fileAttachmentList=" + fileAttachmentList +

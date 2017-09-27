@@ -60,6 +60,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private TextField itemTitleField;
     private TextField roomText;
+    private TextField othersText;
     private ComboBox productSelection;
     private ComboBox baseCarcassSelection;
     private ComboBox wallCarcassSelection;
@@ -917,6 +918,12 @@ public class CustomizedProductDetailsWindow extends Window {
         colorCombo.addValueChangeListener(this::colorChangeSelection);
         formLayoutRight.addComponent(this.colorCombo);
 
+        othersText = (TextField) binder.buildAndBind("Custom Color Code", CUSTOM_COLORCODE);
+        othersText.setReadOnly(true);
+        //othersText.setRequired(true);
+        othersText.setNullRepresentation("");
+        formLayoutRight.addComponent(othersText);
+
         this.shutterDesign = getShutterDesignCombo();
         shutterDesign.setRequired(true);
         binder.bind(shutterDesign, SHUTTER_DESIGN_CODE);
@@ -1277,6 +1284,15 @@ public class CustomizedProductDetailsWindow extends Window {
         {
             module.setColorCode(colorCombo.getValue().toString());
         }
+        if(product.getColorGroupCode().equals("Others"))
+        {
+            othersText.setReadOnly(false);
+        }
+        else
+        {
+            othersText.setReadOnly(true);
+        }
+        product.setCustomColorCode(othersText.getValue());
         refreshPrice(valueChangeEvent);
     }
     private void shutterDesignchanged(Property.ValueChangeEvent valueChangeEvent)
@@ -1864,6 +1880,11 @@ public class CustomizedProductDetailsWindow extends Window {
         saveBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
         saveBtn.addClickListener(event -> {
             try {
+                if(Objects.equals(product.getColorGroupCode(),"Others") && Objects.equals(othersText.getValue(),""))
+                {
+                    NotificationUtil.showNotification("Please fill Custom Color code", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
                 if(colorCombo.getValue() == null || product.getColorGroupCode() == null || product.getColorGroupCode().length()==0)
                 {
                     NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2540,6 +2561,7 @@ public class CustomizedProductDetailsWindow extends Window {
         addModules.setEnabled(false);
         spaceTypeSelection.setReadOnly(true);
         colorCombo.setReadOnly(true);
+        othersText.setReadOnly(true);
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
             handleType.setReadOnly(true);
             handle.setReadOnly(true);
