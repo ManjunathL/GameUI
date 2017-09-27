@@ -1694,6 +1694,7 @@ public class ProductAndAddons extends Window
                             proposalVersion.setBusinessDate(dtf.format(localDate));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             proposalHeader.setVersion(proposalVersion.getVersion());
+                            proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(), "2.0");
                             boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                             proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
                             success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion(),proposalVersion.getBusinessDate().toString());
@@ -1915,7 +1916,13 @@ public class ProductAndAddons extends Window
                     designSignOffButton.setVisible(false);
                     productionSignOffButton.setEnabled(true);
                     confirmButton.setVisible(false);
-                } else {
+                } else if (versionNew.startsWith("3.")){
+                    designSignOffButton.setVisible(false);
+                    productionSignOffButton.setVisible(false);
+                    confirmButton.setVisible(false);
+                }
+                else
+                {
                     designSignOffButton.setVisible(false);
                     productionSignOffButton.setVisible(false);
                 }

@@ -752,12 +752,85 @@ public class CreateProposalsView extends Panel implements View {
             }
         });
 
+        Button scope_of_work_3 = new Button();
+        scope_of_work_3.setCaption("Scope of Services V3");
+        scope_of_work_3.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        scope_of_work_3.setCaptionAsHtml(true);
+        scope_of_work_3.setIcon(FontAwesome.BINOCULARS);
+
+        scope_of_work_3.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+                List<ProposalVersion> proposalVersions = proposalDataProvider.getProposalVersions(proposalHeader.getId());
+                String readonlyFlag = "no" ;
+
+                double versionToBeConsidered = Double.parseDouble(proposalVersions.get(0).getVersion());
+                List<String> versions = new ArrayList<String>();
+
+                for (ProposalVersion proposalVersion : proposalVersions)
+                {
+                    if (proposalVersion.getVersion().equals("3.0") || proposalVersion.getVersion().startsWith("2.")) {
+                        versions.add(proposalVersion.getVersion());
+                    }
+                }
+                if (versions.contains("3.0"))
+                {
+                    versionToBeConsidered = 3.0;
+                }
+                else
+                {
+                    versionToBeConsidered = Double.parseDouble(versions.get(0));
+                    for (String version : versions) {
+                        if (Double.parseDouble(version) > Double.parseDouble(versions.get(0))) {
+                            versionToBeConsidered = Double.parseDouble(version);
+                        }
+                    }
+
+                    if (versionToBeConsidered >= 3.0)
+                    {
+                        readonlyFlag = "yes";
+                    }
+                }
+
+                LOG.debug("Version to be considered : " + versionToBeConsidered);
+                List<Proposal_sow> proposal_sowsV3 = proposalDataProvider.getProposalSowLineItems(proposalHeader.getId(),"3.0");
+                if (proposal_sowsV3.size() == 0)
+                {
+                    proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(),"2.0");
+
+                }
+                NotificationUtil.showNotification("Generating the Scope of services sheet v3.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+
+                JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readonlyFlag);
+                LOG.debug("Quote file :" + quoteFile);
+                try{
+                    if(quoteFile.getString("status").equalsIgnoreCase("success")) {
+                        SOWPopupWindow.open(proposalHeader, productAndAddonSelection, quoteFile);
+                    }else{
+                        NotificationUtil.showNotification(quoteFile.getString("comments"), NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+                SOWPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
+
+            }
+        });
+
         List<ProposalVersion> versions = proposal.getVersions();
         for (ProposalVersion proposalVersion : versions)
         {
             if (proposalVersion.getVersion().contains("1."))
             {
                 horizontalLayout.addComponent(scope_of_work_2);
+            }
+            if (proposalVersion.getVersion().contains("2."))
+            {
+                horizontalLayout.addComponent(scope_of_work_3);
             }
         }
 
