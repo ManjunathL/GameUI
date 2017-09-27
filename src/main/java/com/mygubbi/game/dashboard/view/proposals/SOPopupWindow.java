@@ -85,13 +85,13 @@ public class SOPopupWindow extends Window {
         });
 
 
-        try {
+     /*   try {
             BrowserWindowOpener opener = new BrowserWindowOpener(new ExternalResource(quoteFile.getString("driveWebViewLink")));
             opener.setFeatures("");
             opener.extend(open_sheet);
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
         horizontalLayout1.addComponent(open_sheet);
