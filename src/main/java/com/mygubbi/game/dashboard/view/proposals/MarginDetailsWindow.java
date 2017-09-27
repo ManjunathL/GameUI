@@ -154,7 +154,7 @@ public class MarginDetailsWindow extends Window
         }
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("75%");
+        setWidth("80%");
         setClosable(false);
         setCaption("Margin Computation");
 
@@ -162,6 +162,13 @@ public class MarginDetailsWindow extends Window
 
         VerticalLayout verticalLayout = new VerticalLayout();
         Responsive.makeResponsive(this);
+
+        HorizontalLayout proposaldetailsLayout=new HorizontalLayout();
+        proposaldetailsLayout.setMargin(new MarginInfo(false, false, false, false));
+        proposaldetailsLayout.setSizeFull();
+        verticalLayout.addComponent(buildProposalDetails());
+        verticalLayout.addComponent(proposaldetailsLayout);
+        verticalLayout.setComponentAlignment(proposaldetailsLayout,Alignment.TOP_CENTER);
 
         HorizontalLayout mainhorizontalLayout= new HorizontalLayout();
         mainhorizontalLayout.setMargin(new MarginInfo(false, false, false, false));
@@ -700,6 +707,30 @@ public class MarginDetailsWindow extends Window
         }
         margin.setProductaddonManufactingCost(manufacturingTotalSalesPrice+addonDealerPrice);
         return margin;
+    }
+
+    public Component buildProposalDetails()
+    {
+        HorizontalLayout horizontalLayout=new HorizontalLayout();
+        horizontalLayout.setMargin(new MarginInfo(false,true,false,true));
+        horizontalLayout.setSpacing(true);
+        Label clientName=new Label("Client Name:   " + proposalHeader.getCname());
+        clientName.addStyleName("margin-label-style1");
+        horizontalLayout.addComponent(clientName);
+
+        Label crmid=new Label("CRM ID:   " +proposalHeader.getCrmId());
+        crmid.addStyleName("margin-label-style1");
+        horizontalLayout.addComponent(crmid);
+
+        Label quoteNum=new Label("Quotation #:   "+proposalHeader.getQuoteNoNew());
+        quoteNum.addStyleName("margin-label-style1");
+        horizontalLayout.addComponent(quoteNum);
+
+        Label Versionnum=new Label("Version #:   "+proposalVersion.getVersion());
+        Versionnum.addStyleName("margin-label-style1");
+        horizontalLayout.addComponent(Versionnum);
+
+        return horizontalLayout;
     }
 
     public Component buildTsp()
