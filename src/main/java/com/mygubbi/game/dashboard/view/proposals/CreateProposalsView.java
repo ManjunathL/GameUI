@@ -1370,7 +1370,7 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.addComponent(projectName);
         projectAddressLine1 = binder.buildAndBind("Address", P_ADDRESS1);
         ((TextField) projectAddressLine1).setNullRepresentation("");
-        projectAddressLine1.setReadOnly(true);
+        //projectAddressLine1.setReadOnly(true);
         formLayoutRight.addComponent(projectAddressLine1);
        /* projectAddressLine2 = binder.buildAndBind("Address Line 2", P_ADDRESS2);
         ((TextField) projectAddressLine2).setNullRepresentation("");
