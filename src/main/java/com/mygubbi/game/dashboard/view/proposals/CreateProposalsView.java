@@ -9,7 +9,6 @@ import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.event.ProposalEvent;
-import com.mygubbi.game.dashboard.view.DashboardMenu;
 import com.mygubbi.game.dashboard.view.DashboardViewType;
 import com.mygubbi.game.dashboard.view.FileAttachmentComponent;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
@@ -27,7 +26,6 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,10 +34,6 @@ import org.vaadin.gridutil.renderer.ViewEditButtonValueRenderer;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -108,28 +102,20 @@ public class CreateProposalsView extends Panel implements View {
 
     Button searchcrmid;
 
-    private Grid productsGrid;
     private Label proposalTitleLabel;
     private final BeanFieldGroup<ProposalHeader> binder = new BeanFieldGroup<>(ProposalHeader.class);
-    private Button submitButton;
-    private Label draftLabel;
     private ProposalHeader proposalHeader;
     private ProposalVersion proposalVersion;
     private Proposal proposal;
     private Button saveButton;
     private Button saveAndCloseButton;
     private Button cancelButton;
-    private ProposalVersion getLatestVersionDetails;
-    private BeanItemContainer productContainer;
-    private Label grandTotal;
     String cityCode= "";
     String cityStatus= "";
     int month;
     java.sql.Date priceDate;
     String codeForDiscount;
     Double rateForDiscount;
-
-    private DashboardMenu dashboardMenu;
 
     private ProductAndAddonSelection productAndAddonSelection;
 
@@ -140,9 +126,6 @@ public class CreateProposalsView extends Panel implements View {
 
     int pid;
     String parameters;
-    List<ProposalCity> proposalCityData;
-    Profile profile;
-    String UserId;
 
     public CreateProposalsView() {
     }
@@ -218,11 +201,10 @@ public class CreateProposalsView extends Panel implements View {
 
         boolean DSO_flag = false;
 
-/*
                 List<ProposalVersion> proposalVersions = proposal.getVersions();
         for (ProposalVersion proposalVersion : proposalVersions )
         {
-            if (proposalVersion.getVersion().equals("2.0"))
+            if (proposalVersion.getVersion().equals("3.0"))
             {
                 DSO_flag = true;
             }
@@ -231,7 +213,7 @@ public class CreateProposalsView extends Panel implements View {
         if (role.equals("planning") || role.equals("admin") && DSO_flag)
         {
             tabs.addTab(buildBoq(), "BOQ");
-        }*/
+        }
 
 
 
@@ -912,6 +894,7 @@ public class CreateProposalsView extends Panel implements View {
         boq.setCaption("BOQ");
         boq.addStyleName(ValoTheme.BUTTON_PRIMARY);
         boq.setCaptionAsHtml(true);
+        horizontalLayout.addComponent(boq);
 
 
         boq.addClickListener(new Button.ClickListener() {
@@ -922,7 +905,7 @@ public class CreateProposalsView extends Panel implements View {
 
                 ProposalVersion proposalVersionToBeConsidered = null;
                 for (ProposalVersion proposalVersion : proposalVersions) {
-                    if (proposalVersion.getVersion().equals("2.0"))
+                    if (proposalVersion.getVersion().equals("3.0"))
                     {
                         proposalVersionToBeConsidered = proposalVersion;
                     }
@@ -930,22 +913,117 @@ public class CreateProposalsView extends Panel implements View {
 
                 if (proposalVersionToBeConsidered == null)
                 {
-                    NotificationUtil.showNotification("2.0 version not found for the proposal",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    NotificationUtil.showNotification("3.0 version not found for the proposal", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
 
-                productAndAddonSelection.setFromVersion("2.0");
+                productAndAddonSelection.setFromVersion("3.0");
 
-                NotificationUtil.showNotification("Generating the Scope of services sheet v1.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                NotificationUtil.showNotification("Generating the BOQ sheet", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
 
-                JSONObject quoteFile = proposalDataProvider.updateBoqLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersionToBeConsidered.getVersion()),readOnlyFlag);
-                BoqPopupWindow.open(proposalHeader,productAndAddonSelection,quoteFile);
+                JSONObject quoteFile = null;
+
+
+                quoteFile = proposalDataProvider.updateBoqLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersionToBeConsidered.getVersion()), "no");
+
+
+                LOG.debug("Quote file :" + quoteFile);
+                try {
+                    if (quoteFile.getString("status").equalsIgnoreCase("success")) {
+                        BoqPopupWindow.open(proposalHeader, productAndAddonSelection, quoteFile);
+                    } else {
+                        NotificationUtil.showNotification("Error in opening BOQ sheet, Please contact GAME admin", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
+
+        verticalLayout.addComponent(horizontalLayout);
+
+        VerticalLayout verticalLayoutSO = new VerticalLayout();
+        verticalLayoutSO.setSizeFull();
+
+        verticalLayoutSO.addComponent(new Label("Please click on the Generate SO Extracts button only after you have saved the BOQ Master sheet"));
+
+//        verticalLayoutSO.addComponent(new Label("Note: Once the Generate SO Extracts button is clicked, changes to BOQ cannot be made and the master sheet would get locked"));
+
+        Button generateSo = new Button();
+        generateSo.setCaption("Generate SO Extracts");
+        generateSo.addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+        Proposal_boq proposal_boq = new Proposal_boq();
+        proposal_boq.setProposalId(proposalHeader.getId());
+        verticalLayoutSO.addComponent(generateSo);
+
+        verticalLayout.addComponent(verticalLayoutSO);
+
+        generateSo.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+                try {
+                    JSONObject jsonObject = proposalDataProvider.generateSoExtracts(proposal_boq);
+
+
+                    if (jsonObject.getString("status").equalsIgnoreCase("success")) {
+                        SOPopupWindow.open(jsonObject);
+                    } else {
+                        NotificationUtil.showNotification("Error in generating SO extracts, Please contact GAME admin", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    }
+
+
+            }
+        });
+       /* if (proposalHeader.getBoqDriveLink() == null || !(proposalHeader.getBoqDriveLink().equals(""))) {
+            verticalLayout.removeComponent(verticalLayoutSO);
+            verticalLayout.addComponent(boqLinkLayout(proposalHeader.getBoqDriveLink()));
+        }
+*/
+
 
 
         return verticalLayout;
     }
+/*
+
+    private VerticalLayout boqLinkLayout(String webViewLink) {
+
+        VerticalLayout boqLinkLayout = new VerticalLayout();
+        boqLinkLayout.setSizeFull();
+
+        boqLinkLayout.addComponent(new Label("Please click the below button to navigate to the folder where the SO's have been created"));
+
+        Button openBoqFile = new Button();
+        openBoqFile.setCaption("Generate SO Extracts");
+        openBoqFile.addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+        boqLinkLayout.addComponent(openBoqFile);
+
+        openBoqFile.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+                String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
+
+                Proposal_boq proposal_boq = new Proposal_boq();
+                proposal_boq.setProposalId(proposalHeader.getId());
+                proposal_boq.setId("0");
+                proposal_boq.setUserId(email);
+                JSONObject soExtract = proposalDataProvider.generateSoExtracts(proposal_boq);
+            }
+        });
+
+
+        return boqLinkLayout;
+
+    }
+*/
 
 
     private void refreshVersionsGrid(List<ProposalVersion> updatedProposalVersions) {
@@ -1842,13 +1920,6 @@ public class CreateProposalsView extends Panel implements View {
         QuoteNumNew = s;
     }
 
-
-    private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
-        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productContainer);
-        genContainer.addGeneratedProperty("actions", getActionTextGenerator());
-        genContainer.addGeneratedProperty("productCategoryText", getProductCategoryTextGenerator());
-        return genContainer;
-    }
 
     private PropertyValueGenerator<String> getActionTextGenerator() {
         return new PropertyValueGenerator<String>() {

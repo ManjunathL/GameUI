@@ -6,7 +6,6 @@ import com.mygubbi.game.dashboard.data.ProposalDataProvider;
 import com.mygubbi.game.dashboard.domain.ProductAndAddonSelection;
 import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.domain.Proposal_boq;
-import com.mygubbi.game.dashboard.domain.Proposal_sow;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
 import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.event.ShortcutAction;
@@ -23,22 +22,16 @@ import us.monoid.json.JSONObject;
 /**
  * Created by User on 12-07-2017.
  */
-public class BoqPopupWindow extends Window {
-
-    private static final Logger LOG = LogManager.getLogger(BoqPopupWindow.class);
+public class SOPopupWindow extends Window {
 
 
-    private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
-    private ProposalHeader proposalHeader;
-    private ProductAndAddonSelection productAndAddonSelection;
     JSONObject quoteFile = null;
     String id;
 
 
-    public BoqPopupWindow(ProposalHeader proposalHeader, ProductAndAddonSelection productAndAddonSelection, JSONObject quoteFile) {
+    public SOPopupWindow(JSONObject quoteFile) {
 
-        this.proposalHeader = proposalHeader;
-        this.productAndAddonSelection = productAndAddonSelection;
+
         this.quoteFile = quoteFile;
 
         this.quoteFile = quoteFile;
@@ -75,9 +68,8 @@ public class BoqPopupWindow extends Window {
         horizontalLayout1.setSizeFull();
 
         Button open_sheet = new Button();
-        open_sheet.setCaption("Open Sheet");
+        open_sheet.setCaption("Open Link");
         open_sheet.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        productAndAddonSelection.setFromVersion("2.0");
 
         open_sheet.addClickListener(new Button.ClickListener() {
             @Override
@@ -93,43 +85,20 @@ public class BoqPopupWindow extends Window {
         });
 
 
+     /*   try {
+            BrowserWindowOpener opener = new BrowserWindowOpener(new ExternalResource(quoteFile.getString("driveWebViewLink")));
+            opener.setFeatures("");
+            opener.extend(open_sheet);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }*/
+
+
         horizontalLayout1.addComponent(open_sheet);
         horizontalLayout1.setSpacing(true);
 
-        Button save_sheet = new Button();
-        save_sheet.setCaption("Save");
-        save_sheet.addStyleName(ValoTheme.BUTTON_PRIMARY);
-
-        horizontalLayout1.addComponent(save_sheet);
-        horizontalLayout1.setSpacing(true);
-
-        save_sheet.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                Proposal_boq proposal_boq = new Proposal_boq();
-                proposal_boq.setProposalId(proposalHeader.getId());
-                proposal_boq.setId(id);
-                try {
-                    JSONObject saved = proposalDataProvider.saveBoQFile(proposal_boq);
-
-                    if (saved.getString("status").equalsIgnoreCase("success")) {
-                        NotificationUtil.showNotification("SOW details saved Successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                        DashboardEventBus.unregister(this);
-                        close();
-                    } else {
-                        NotificationUtil.showNotification(saved.getString("comments"), NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                NotificationUtil.showNotification("File Saved Successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-
-            }
-        });
-
         Button discard_sheet = new Button();
-        discard_sheet.setCaption("Discard");
+        discard_sheet.setCaption("Close");
         discard_sheet.addStyleName(ValoTheme.BUTTON_DANGER);
 
         discard_sheet.addClickListener(new Button.ClickListener() {
@@ -148,8 +117,8 @@ public class BoqPopupWindow extends Window {
         return verticalLayout1;
     }
 
-    public static void open(ProposalHeader proposalHeader,ProductAndAddonSelection productAndAddonSelection, JSONObject quoteFile) {
-        Window w = new BoqPopupWindow(proposalHeader,productAndAddonSelection,quoteFile);
+    public static void open(JSONObject quoteFile) {
+        Window w = new SOPopupWindow(quoteFile);
         UI.getCurrent().addWindow(w);
         w.focus();
 

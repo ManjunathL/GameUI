@@ -130,7 +130,7 @@ public class VersionPublishOrDiscardPopUpWindow extends Window {
 
 
         Button open_sheet = new Button();
-        open_sheet.setCaption("Open SOW Sheet");
+        open_sheet.setCaption("Open Scope of Services Sheet");
         open_sheet.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
         open_sheet.addClickListener(new Button.ClickListener() {

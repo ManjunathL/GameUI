@@ -156,9 +156,6 @@ public class ProposalDataProvider {
             }
         });
         try {
-            LOG.info("1. jsonArray.toString() = "+jsonArray.toString());
-            LOG.info("2. jsonArray.toString() = "+jsonArray.length());
-
             Product[] items = this.mapper.readValue(jsonArray.toString(), Product[].class);
             return new ArrayList<>(Arrays.asList(items));
         } catch (IOException e) {
@@ -887,10 +884,21 @@ public class ProposalDataProvider {
         }
     }
 
-    public JSONObject saveBoQFile(Proposal_sow proposal_sow) {
+    public JSONObject saveBoQFile(Proposal_boq proposal_boq) {
         try {
-            String productSelectionsJson = this.mapper.writeValueAsString(proposal_sow);
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/saveboqfile", productSelectionsJson);
+            String productSelectionsJson = this.mapper.writeValueAsString(proposal_boq);
+            JSONObject jsonObject = dataProviderMode.postResource("boq/saveboqfile", productSelectionsJson);
+            return jsonObject;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public JSONObject generateSoExtracts(Proposal_boq proposal_boq) {
+        try {
+            proposal_boq.setUserId(getUserId());
+            String productSelectionsJson = this.mapper.writeValueAsString(proposal_boq);
+            JSONObject jsonObject = dataProviderMode.postResource("boq/createsoextract", productSelectionsJson);
             return jsonObject;
         } catch (JsonProcessingException e) {
             throw  new RuntimeException(e);
