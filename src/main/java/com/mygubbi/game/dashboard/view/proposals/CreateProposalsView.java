@@ -704,6 +704,10 @@ public class CreateProposalsView extends Panel implements View {
                     if (proposalVersion.getVersion().equals("2.0") || proposalVersion.getVersion().startsWith("1.")) {
                         versions.add(proposalVersion.getVersion());
                     }
+                    if (Double.parseDouble(proposalVersion.getVersion()) >= 2.0)
+                    {
+                        readonlyFlag = "yes";
+                    }
                 }
                 if (versions.contains("2.0"))
                 {
@@ -793,7 +797,7 @@ public class CreateProposalsView extends Panel implements View {
                     }
                 }
 
-                LOG.debug("Version to be considered : " + versionToBeConsidered);
+                LOG.debug("Version to be considered in scope of 3 button : " + versionToBeConsidered);
                 List<Proposal_sow> proposal_sowsV3 = proposalDataProvider.getProposalSowLineItems(proposalHeader.getId(),"3.0");
                 if (proposal_sowsV3.size() == 0)
                 {
