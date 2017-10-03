@@ -201,7 +201,7 @@ public class CreateProposalsView extends Panel implements View {
                 List<ProposalVersion> proposalVersions = proposal.getVersions();
         for (ProposalVersion proposalVersion : proposalVersions )
         {
-            if (proposalVersion.getVersion().equals("2.0"))
+            if (proposalVersion.getVersion().equals("3.0"))
             {
                 DSO_flag = true;
             }
@@ -799,7 +799,7 @@ public class CreateProposalsView extends Panel implements View {
 
                 ProposalVersion proposalVersionToBeConsidered = null;
                 for (ProposalVersion proposalVersion : proposalVersions) {
-                    if (proposalVersion.getVersion().equals("2.0"))
+                    if (proposalVersion.getVersion().equals("3.0"))
                     {
                         proposalVersionToBeConsidered = proposalVersion;
                     }
@@ -807,11 +807,11 @@ public class CreateProposalsView extends Panel implements View {
 
                 if (proposalVersionToBeConsidered == null)
                 {
-                    NotificationUtil.showNotification("2.0 version not found for the proposal",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    NotificationUtil.showNotification("3.0 version not found for the proposal", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
 
-                productAndAddonSelection.setFromVersion("2.0");
+                productAndAddonSelection.setFromVersion("3.0");
 
                 NotificationUtil.showNotification("Generating the BOQ sheet", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
 
