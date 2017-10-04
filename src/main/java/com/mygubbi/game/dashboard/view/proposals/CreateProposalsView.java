@@ -210,7 +210,7 @@ public class CreateProposalsView extends Panel implements View {
             }
         }
 
-        if (role.equals("planning") || role.equals("admin") && DSO_flag)
+        if ((role.equals("planning") || role.equals("admin")) && DSO_flag)
         {
             tabs.addTab(buildBoq(), "BOQ");
         }

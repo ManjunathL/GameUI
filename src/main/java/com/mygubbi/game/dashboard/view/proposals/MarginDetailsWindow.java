@@ -165,7 +165,7 @@ public class MarginDetailsWindow extends Window
         Responsive.makeResponsive(this);
 
         HorizontalLayout titleLayout=new HorizontalLayout();
-        titleLayout.setMargin(new MarginInfo(true, true, true, true));
+        titleLayout.setMargin(new MarginInfo(false, true, false, true));
         titleLayout.setSizeFull();
         Label customerDetailsLabel = new Label("Margin Computation");
         customerDetailsLabel.addStyleName(ValoTheme.LABEL_HUGE);
