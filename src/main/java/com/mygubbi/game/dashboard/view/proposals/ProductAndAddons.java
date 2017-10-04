@@ -276,7 +276,7 @@ public class ProductAndAddons extends Window
         }*/
 
         if (("admin").equals(role) || ("planning").equals(role)) {
-            Button downloadButton = new Button("Quote&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            Button downloadButton = new Button("Scope Of Worknbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             downloadButton.setCaptionAsHtml(true);
             downloadButton.setIcon(FontAwesome.DOWNLOAD);
             downloadButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
