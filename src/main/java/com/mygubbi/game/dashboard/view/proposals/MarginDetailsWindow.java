@@ -153,15 +153,27 @@ public class MarginDetailsWindow extends Window
             this.priceDate = new Date(System.currentTimeMillis());
         }
         setModal(true);
-        removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
-        setWidth("80%");
+        setSizeFull();
+        //removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);
+        //setWidth("80%");
         setClosable(false);
-        setCaption("Margin Computation");
+        //setCaption("Margin Computation");
 
         updateTotal();
 
         VerticalLayout verticalLayout = new VerticalLayout();
         Responsive.makeResponsive(this);
+
+        HorizontalLayout titleLayout=new HorizontalLayout();
+        titleLayout.setMargin(new MarginInfo(false, true, false, true));
+        titleLayout.setSizeFull();
+        Label customerDetailsLabel = new Label("Margin Computation");
+        customerDetailsLabel.addStyleName(ValoTheme.LABEL_HUGE);
+        customerDetailsLabel.addStyleName(ValoTheme.LABEL_COLORED);
+        customerDetailsLabel.addStyleName("products-and-addons-heading-text");
+        titleLayout.addComponent(customerDetailsLabel);
+        verticalLayout.addComponent(titleLayout);
+        verticalLayout.setComponentAlignment(titleLayout,Alignment.TOP_CENTER);
 
         HorizontalLayout proposaldetailsLayout=new HorizontalLayout();
         proposaldetailsLayout.setMargin(new MarginInfo(false, false, false, false));
