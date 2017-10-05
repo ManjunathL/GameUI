@@ -628,6 +628,10 @@ public class AddonDetailsWindow extends Window {
                         seq = addons.size()+1;
                         addonProduct.setSeq(seq);
                     }
+                    if(addonProduct.getRate() == 0){
+                        NotificationUtil.showNotification("This addon is not available.Please select other.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
                     addonProduct.setFromVersion(proposalVersion.getVersion());
                     addonProduct.setCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
                     addonProduct.setProductTypeCode(this.productTypeBeanContainer.getItem(this.productType.getValue()).getBean().getProductTypeCode());
@@ -650,6 +654,7 @@ public class AddonDetailsWindow extends Window {
                     {
                         moduleForPrice.setPriceDate(proposalHeader.getPriceDate());
                     }*/
+
                     addonProduct.setProposalId(proposalVersion.getProposalId());
 
                         if (isProposalAddon) {
