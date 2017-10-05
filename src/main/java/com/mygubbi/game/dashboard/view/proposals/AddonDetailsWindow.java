@@ -91,6 +91,7 @@ public class AddonDetailsWindow extends Window {
         this.addonProduct = addonProduct;
         this.isProposalAddon = isProposalAddon;
         this.proposalHeader=proposalHeader;
+        this.priceDate=proposalHeader.getPriceDate();
         this.originalImagePath = this.addonProduct.getImagePath();
         this.city = proposalHeader.getPcity();
         this.proposalVersion = proposalVersion;
