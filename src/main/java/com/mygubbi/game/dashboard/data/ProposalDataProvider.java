@@ -1103,7 +1103,6 @@ public class ProposalDataProvider {
         } catch (IOException e) {
             throw new RuntimeException("Couldn't get module price", e);
         }
-
     }
 
     public List<ModuleAccessory> getModuleAccessories(String moduleCode) {
@@ -2450,4 +2449,17 @@ public class ProposalDataProvider {
         }
     }
 
+    public VersionPriceHolder getVersionPrice(ProposalVersion proposalVersion) {
+        try {
+            String moduleForPriceJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource(
+                    "proposal/version/price", moduleForPriceJson);
+            if (jsonObject.has("errors")) {
+                throw new RuntimeException("Pricing has errors for this version, please contact GAME Admin.");
+            }
+            return this.mapper.readValue(jsonObject.toString(), VersionPriceHolder.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't get version price", e);
+        }
+    }
 }
