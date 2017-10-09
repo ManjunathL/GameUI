@@ -26,6 +26,7 @@ public class VersionPriceHolder
     private double addonCost;
     private double addonProfit;
     private double addonMargin;
+    private double costWoAccessories;
 
     public double getVrPrice() {
         return vrPrice;
@@ -179,10 +180,20 @@ public class VersionPriceHolder
         this.addonMargin = addonMargin;
     }
 
+    public double getCostWoAccessories() {
+        return costWoAccessories;
+    }
+
+    public void setCostWoAccessories(double costWoAccessories) {
+        this.costWoAccessories = costWoAccessories;
+    }
+
     @Override
     public String toString() {
         return "VersionPriceHolder{" +
-                "vrPrice=" + vrPrice +
+                "proposalId='" + proposalId + '\'' +
+                ", version='" + version + '\'' +
+                ", vrPrice=" + vrPrice +
                 ", vrPriceAfterDiscount=" + vrPriceAfterDiscount +
                 ", vrPriceWoTax=" + vrPriceWoTax +
                 ", vrCost=" + vrCost +
@@ -201,6 +212,7 @@ public class VersionPriceHolder
                 ", addonCost=" + addonCost +
                 ", addonProfit=" + addonProfit +
                 ", addonMargin=" + addonMargin +
+                ", costWoAccessories=" + costWoAccessories +
                 '}';
     }
 }

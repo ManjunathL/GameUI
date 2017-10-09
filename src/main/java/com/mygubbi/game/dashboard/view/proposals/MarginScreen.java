@@ -17,6 +17,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.util.List;
 
@@ -64,6 +66,9 @@ public class MarginScreen extends Window
     Label wodiscount,whatIf,withDiscount;
     OptionGroup checkProduct;
     VersionPriceHolder versionPriceHolder;
+    Double discountPercentage;
+    Double discountAmount;
+
     public static void open(ProposalVersion proposalVersion, ProposalHeader proposalHeader,List<Product> products)
     {
         MarginScreen w=new MarginScreen(proposalVersion,proposalHeader,products);
@@ -517,17 +522,52 @@ public class MarginScreen extends Window
 
     private void calculateDiscount()
     {
-        VersionPriceHolder versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(proposalVersion);
+        java.util.Date date =proposalHeader.getCreatedOn();
+        java.util.Date currentDate = new java.util.Date(117 ,3,20,0,0,00);
+        proposalVersion.setDiscountPercentage(Double.parseDouble(manualInputDiscountPercentage.getValue()));
+        LOG.info("proposal version " +proposalVersion);
+        VersionPriceHolder versionPriceHolderForDiscountOveride;
         if(checkProduct.getValue()=="Product") {
 
-            if("DP".equals(status))
+            /*if("DP".equals(status))
             {
                 manualInputDiscountAmount.setValue(String.valueOf("0"));
             }
             else if("DA".equals(status))
             {
                 manualInputDiscountPercentage.setValue(String.valueOf("0"));
+            }*/
+            if("DP".equals(status))
+            {
+                //LOG.info("Enter discount Percentage" + manualInputDiscountPercentage.getValue());
+                discountPercentage =Double.valueOf(manualInputDiscountPercentage.getValue());
+                if (date.after(currentDate)) {
+                    discountAmount = versionPriceHolder.getPrPrice() * discountPercentage / 100.0;
+                }
+                else
+                {
+                    discountAmount = (versionPriceHolder.getPrPrice()-versionPriceHolder.getCostWoAccessories()) * discountPercentage / 100.0;
+
+                }
+                manualInputDiscountAmount.setValue(String.valueOf(round(discountAmount,2)));
             }
+            else if("DA".equals(status))
+            {
+                discountAmount =Double.valueOf(manualInputDiscountAmount.getValue());
+                if (date.after(currentDate)) {
+                    discountPercentage =(discountAmount /versionPriceHolder.getPrPrice())*100;
+                }
+                else
+                {
+                    discountPercentage =(discountAmount /(versionPriceHolder.getPrPrice()-versionPriceHolder.getCostWoAccessories()))*100;
+                }
+
+                manualInputDiscountPercentage.setValue(String.valueOf(round(discountPercentage,2)));
+            }
+            proposalVersion.setDiscountPercentage(discountPercentage);
+            proposalVersion.setDiscountAmount(discountAmount);
+            versionPriceHolderForDiscountOveride=new VersionPriceHolder();
+            versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(proposalVersion);
             manualInputSalesPrice.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getPrPriceAfterDiscount()));
             manualInputSalesPriceWOtax.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getPrPriceWoTax()));
             manualInputProfitPercentage.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getPrProfit()));
@@ -544,6 +584,11 @@ public class MarginScreen extends Window
             {
                 manualInputDiscountPercentage.setValue("0.0");
             }
+            proposalVersion.setDiscountPercentage(Double.parseDouble("0.0"));
+            proposalVersion.setDiscountAmount(Double.parseDouble("0.0"));
+            versionPriceHolderForDiscountOveride=new VersionPriceHolder();
+            versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(proposalVersion);
+
             manualInputSalesPrice.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getAddonPriceAfterDiscount()));
             manualInputSalesPriceWOtax.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getAddonPriceWoTax()));
             manualInputProfitPercentage.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getAddonProfit()));
@@ -552,19 +597,61 @@ public class MarginScreen extends Window
         }
         else if(checkProduct.getValue()=="Product & Addon")
         {
-            if("DP".equals(status))
+            /*if("DP".equals(status))
             {
                 manualInputDiscountAmount.setValue(String.valueOf("0"));
             }
             else if("DA".equals(status))
             {
                 manualInputDiscountPercentage.setValue(String.valueOf("0"));
+            }*/
+
+            if("DP".equals(status))
+            {
+                discountPercentage = Double.valueOf(manualInputDiscountPercentage.getValue());
+                if (date.after(currentDate)) {
+                    discountAmount =versionPriceHolder.getPrPrice()* discountPercentage /100.0;
+                }
+                else
+                {
+                    discountAmount =(versionPriceHolder.getPrPrice()-versionPriceHolder.getCostWoAccessories())* discountPercentage /100.0;
+                }
+                manualInputDiscountAmount.setValue(String.valueOf(round(discountAmount,2)));
             }
+            else if("DA".equals(status))
+            {
+                discountAmount =Double.valueOf(manualInputDiscountAmount.getValue());
+                if (date.after(currentDate)) {
+                    discountPercentage = (discountAmount / versionPriceHolder.getPrPrice()) * 100;
+                }
+                else
+                {
+                    discountPercentage = (discountAmount / (versionPriceHolder.getPrPrice()-versionPriceHolder.getCostWoAccessories())) * 100;
+                }
+                manualInputDiscountPercentage.setValue(String.valueOf(round(discountPercentage,2)));
+            }
+
+            proposalVersion.setDiscountPercentage(discountPercentage);
+            proposalVersion.setDiscountAmount(discountAmount);
+            versionPriceHolderForDiscountOveride=new VersionPriceHolder();
+            versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(proposalVersion);
+
             manualInputSalesPrice.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getVrPriceAfterDiscount()));
             manualInputSalesPriceWOtax.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getVrPriceWoTax()));
             manualInputProfitPercentage.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getVrProfit()));
             manualInputMargin.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getVrMargin()));
             manualInputCost.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getVrCost()));
         }
+    }
+
+    private double round(double value, int places)
+    {
+        if (places < 0)
+        {
+            throw new IllegalArgumentException();
+        }
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }
