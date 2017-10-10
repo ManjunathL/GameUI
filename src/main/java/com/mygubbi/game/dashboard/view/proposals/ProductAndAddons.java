@@ -235,6 +235,35 @@ public class ProductAndAddons extends Window
 
         HorizontalLayout right = new HorizontalLayout();
 
+        Button pdfQuotation = new Button("Quote PDf&nbsp;&nbsp;");
+        pdfQuotation.setCaptionAsHtml(true);
+        pdfQuotation.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        pdfQuotation.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        pdfQuotation.addStyleName(ValoTheme.BUTTON_SMALL);
+        pdfQuotation.addStyleName("margin-top-for-headerlevelbutton");
+        pdfQuotation.addStyleName("margin-right-10-for-headerlevelbutton");
+        pdfQuotation.setWidth("120px");
+        right.addComponent(pdfQuotation);
+        right.setComponentAlignment(pdfQuotation, Alignment.MIDDLE_RIGHT);
+        pdfQuotation.addClickListener(
+                clickEvent -> {
+                    Download_quotation.open(proposalHeader,proposal,proposalVersion);
+                }
+        );
+
+        /*Button newBtn = new Button("click");
+        newBtn.setIcon(FontAwesome.PLUS_CIRCLE);
+        newBtn.addStyleName(ValoTheme.BUTTON_SMALL);
+        right.addComponent(newBtn);
+        //right.setComponentAlignment(addKitchenOrWardrobeButton, Alignment.TOP_RIGHT);
+        right.setSpacing(true);
+
+        newBtn.addClickListener(
+                clickEvent -> {
+                    Download_quotation.open(proposalHeader,proposal,proposalVersion);
+                }
+        );*/
+
         /*quotePdf = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         quotePdf.setCaptionAsHtml(true);
         quotePdf.setIcon(FontAwesome.DOWNLOAD);
@@ -248,7 +277,7 @@ public class ProductAndAddons extends Window
         right.addComponent(quotePdf);
         right.setComponentAlignment(quotePdf, Alignment.MIDDLE_RIGHT);*/
 
-        Button quotePdf1 = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        /*Button quotePdf1 = new Button("Quote Pdf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         quotePdf1.setCaptionAsHtml(true);
         quotePdf1.setIcon(FontAwesome.DOWNLOAD);
         quotePdf1.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
@@ -263,7 +292,7 @@ public class ProductAndAddons extends Window
         FileDownloader fileDownloaderPdf = new FileDownloader(quotePdfresource);
         fileDownloaderPdf.extend(quotePdf1);
         right.addComponent(quotePdf1);
-        right.setComponentAlignment(quotePdf1, Alignment.MIDDLE_RIGHT);
+        right.setComponentAlignment(quotePdf1, Alignment.MIDDLE_RIGHT);*/
 
         String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 

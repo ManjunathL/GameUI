@@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -440,8 +442,10 @@ public class MarginScreen extends Window
     }
     private void checkSelectedValue(Property.ValueChangeEvent valueChangeEvent)
     {
+        LOG.info("check box value change listener " +proposalVersion.getDiscountPercentage() );
         if(checkProduct.getValue()=="Product")
         {
+
             profitPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
             profitPercentageAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
             discountedSalesPrice.setValue(String.valueOf(versionPriceHolder.getPrPriceAfterDiscount()));
@@ -509,22 +513,38 @@ public class MarginScreen extends Window
     private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
         if("DA".equals(status))
         {
-            calculateDiscount();
+            calculateDiscount(proposalVersion);
         }
     }
 
     private void onDiscountPercentageValueChange(Property.ValueChangeEvent valueChangeEvent) {
         if("DP".equals(status))
         {
-            calculateDiscount();
+            calculateDiscount(proposalVersion);
         }
     }
 
-    private void calculateDiscount()
+    private void calculateDiscount(ProposalVersion proposalVersion)
     {
+        ProposalVersion copyVersion = new ProposalVersion();
+        copyVersion.setVersion(proposalVersion.getVersion());
+        copyVersion.setFromVersion(proposalVersion.getFromVersion());
+        copyVersion.setProposalId(proposalVersion.getProposalId());
+        copyVersion.setTitle(proposalVersion.getTitle());
+        copyVersion.setRemarks(proposalVersion.getRemarks());
+        copyVersion.setFinalAmount(proposalVersion.getFinalAmount());
+        copyVersion.setStatus(proposalVersion.getStatus());
+        copyVersion.setInternalStatus(proposalVersion.getInternalStatus());
+        copyVersion.setToVersion(proposalVersion.getToVersion());
+        copyVersion.setDiscountAmount(proposalVersion.getDiscountAmount());
+        copyVersion.setDiscountPercentage(proposalVersion.getDiscountPercentage());
+        copyVersion.setAmount(proposalVersion.getAmount());
+        copyVersion.setProposalId(proposalVersion.getProposalId());
+        copyVersion.setBusinessDate(proposalVersion.getBusinessDate());
+
         java.util.Date date =proposalHeader.getCreatedOn();
         java.util.Date currentDate = new java.util.Date(117 ,3,20,0,0,00);
-        proposalVersion.setDiscountPercentage(Double.parseDouble(manualInputDiscountPercentage.getValue()));
+       // proposalVersion.setDiscountPercentage(Double.parseDouble(manualInputDiscountPercentage.getValue()));
         LOG.info("proposal version " +proposalVersion);
         VersionPriceHolder versionPriceHolderForDiscountOveride;
         if(checkProduct.getValue()=="Product") {
@@ -564,10 +584,10 @@ public class MarginScreen extends Window
 
                 manualInputDiscountPercentage.setValue(String.valueOf(round(discountPercentage,2)));
             }
-            proposalVersion.setDiscountPercentage(discountPercentage);
-            proposalVersion.setDiscountAmount(discountAmount);
-            versionPriceHolderForDiscountOveride=new VersionPriceHolder();
-            versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(proposalVersion);
+            copyVersion.setDiscountPercentage(discountPercentage);
+            copyVersion.setDiscountAmount(discountAmount);
+            //versionPriceHolderForDiscountOveride=new VersionPriceHolder();
+            versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(copyVersion);
             manualInputSalesPrice.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getPrPriceAfterDiscount()));
             manualInputSalesPriceWOtax.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getPrPriceWoTax()));
             manualInputProfitPercentage.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getPrProfit()));
@@ -584,10 +604,11 @@ public class MarginScreen extends Window
             {
                 manualInputDiscountPercentage.setValue("0.0");
             }
-            proposalVersion.setDiscountPercentage(Double.parseDouble("0.0"));
-            proposalVersion.setDiscountAmount(Double.parseDouble("0.0"));
+            copyVersion.setDiscountPercentage(Double.parseDouble("0.0"));
+            copyVersion.setDiscountAmount(Double.parseDouble("0.0"));
             versionPriceHolderForDiscountOveride=new VersionPriceHolder();
-            versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(proposalVersion);
+
+            versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(copyVersion);
 
             manualInputSalesPrice.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getAddonPriceAfterDiscount()));
             manualInputSalesPriceWOtax.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getAddonPriceWoTax()));
@@ -631,10 +652,10 @@ public class MarginScreen extends Window
                 manualInputDiscountPercentage.setValue(String.valueOf(round(discountPercentage,2)));
             }
 
-            proposalVersion.setDiscountPercentage(discountPercentage);
-            proposalVersion.setDiscountAmount(discountAmount);
+            copyVersion.setDiscountPercentage(discountPercentage);
+            copyVersion.setDiscountAmount(discountAmount);
             versionPriceHolderForDiscountOveride=new VersionPriceHolder();
-            versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(proposalVersion);
+            versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(copyVersion);
 
             manualInputSalesPrice.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getVrPriceAfterDiscount()));
             manualInputSalesPriceWOtax.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getVrPriceWoTax()));

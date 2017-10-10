@@ -188,6 +188,32 @@ public class VersionPriceHolder
         this.costWoAccessories = costWoAccessories;
     }
 
+    /*public VersionPriceHolder(VersionPriceHolder versionPriceHolder) {
+        super();
+        this.proposalId = versionPriceHolder.proposalId;
+        this.version = versionPriceHolder.version;
+        this.vrPrice = versionPriceHolder.vrPrice;
+        this.vrPriceAfterDiscount = versionPriceHolder.vrPriceAfterDiscount;
+        this.vrPriceWoTax = versionPriceHolder.vrPriceWoTax;
+        this.vrCost = versionPriceHolder.vrCost;
+        this.vrProfit = versionPriceHolder.vrProfit;
+        this.vrMargin = versionPriceHolder.vrMargin;
+        this.hikePrice = versionPriceHolder.hikePrice;
+        this.prPrice = versionPriceHolder.prPrice;
+        this.prPriceAfterDiscount = versionPriceHolder.prPriceAfterDiscount;
+        this.prPriceWoTax = versionPriceHolder.prPriceWoTax;
+        this.prCost = versionPriceHolder.prCost;
+        this.prProfit = versionPriceHolder.prProfit;
+        this.prMargin = versionPriceHolder.prMargin;
+        this.addonPrice = versionPriceHolder.addonPrice;
+        this.addonPriceAfterDiscount = versionPriceHolder.addonPriceAfterDiscount;
+        this.addonPriceWoTax = versionPriceHolder.addonPriceWoTax;
+        this.addonCost = versionPriceHolder.addonCost;
+        this.addonProfit = versionPriceHolder.addonProfit;
+        this.addonMargin = versionPriceHolder.addonMargin;
+        this.costWoAccessories = versionPriceHolder.costWoAccessories;
+    }
+*/
     @Override
     public String toString() {
         return "VersionPriceHolder{" +

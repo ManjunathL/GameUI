@@ -15,6 +15,7 @@ public class ProductAndAddonSelection {
     private String fromVersion;
     private String userId;
     private String bookingFormFlag;
+    private String worksContractFlag;
     private String city;
 
     public String getBookingFormFlag() {
@@ -85,6 +86,14 @@ public class ProductAndAddonSelection {
         this.city = city;
     }
 
+    public String getWorksContractFlag() {
+        return worksContractFlag;
+    }
+
+    public void setWorksContractFlag(String worksContractFlag) {
+        this.worksContractFlag = worksContractFlag;
+    }
+
     @Override
     public String toString() {
         return "ProductAndAddonSelection{" +
@@ -96,6 +105,7 @@ public class ProductAndAddonSelection {
                 ", fromVersion='" + fromVersion + '\'' +
                 ", userId='" + userId + '\'' +
                 ", bookingFormFlag='" + bookingFormFlag + '\'' +
+                ", worksContractFlag='" + worksContractFlag + '\'' +
                 ", city='" + city + '\'' +
                 '}';
     }
