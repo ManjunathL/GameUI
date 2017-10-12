@@ -723,7 +723,8 @@ public class MDW extends Window {
         module.setHeight(mgModule.getHeight());
         module.setDepth(mgModule.getDepth());
         module.setWidth(mgModule.getWidth());
-        module.clearAcessorryPacks();
+        module.getAccessoryPacks().clear();
+        this.removeAccessoryPacks();
         this.removeAddons();
         //this.removeHandleAndKnobQuantity();
         this.emptyAccessoryImages();
@@ -864,6 +865,17 @@ public class MDW extends Window {
         addons31.getContainerDataSource().removeAllItems();
         addons32.getContainerDataSource().removeAllItems();
         addons33.getContainerDataSource().removeAllItems();
+    }
+
+    private void removeAccessoryPacks() {
+        this.accessoryPack1.clear();
+        this.accessoryPack2.clear();
+        this.accessoryPack3.clear();
+
+        accessoryPack1.getContainerDataSource().removeAllItems();
+        accessoryPack2.getContainerDataSource().removeAllItems();
+        accessoryPack3.getContainerDataSource().removeAllItems();
+
     }
 
     private void allowDimensionChangesForModule() {
@@ -1204,7 +1216,7 @@ public class MDW extends Window {
 
         ModulePrice modulePrice = this.recalculatePriceForModule();
 
-       // LOG.info("module price in Module Details Window " +modulePrice);
+//        LOG.info("module price in Module Details Window " +modulePrice);
         if (modulePrice != null)
         {
             totalAmount.setReadOnly(false);

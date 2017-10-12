@@ -269,8 +269,8 @@ public class CustomizedProductDetailsWindow extends Window {
         this.productSelection = getSimpleItemFilledCombo("Product Category", ProposalDataProvider.CATEGORY_LOOKUP, null);
         productSelection.setRequired(true);
         binder.bind(productSelection, PRODUCT_CATEGORY_CODE);
-        LOG.info("product.getProductCategoryLocked()" +product.getProductCategoryLocked());
-        LOG.info("this.modules " +product.getModules().size());
+      /*  LOG.info("product.getProductCategoryLocked()" +product.getProductCategoryLocked());
+        LOG.info("this.modules " +product.getModules().size());*/
         if (productSelection.size() > 0)
         {
             String code = StringUtils.isNotEmpty(product.getProductCategoryCode()) ? product.getProductCategoryCode() : (String) productSelection.getItemIds().iterator().next();
@@ -283,7 +283,7 @@ public class CustomizedProductDetailsWindow extends Window {
         productSelection.addFocusListener(this::onFocusToproductselection);
 
         productSelection.addValueChangeListener(valueChangeEvent -> {
-            LOG.info("inside value change " +productlocked);
+//            LOG.info("inside value change " +productlocked);
             if(productlocked.equals("Yes"))
             {
                 productSelection.setReadOnly(true);
@@ -429,25 +429,6 @@ public class CustomizedProductDetailsWindow extends Window {
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
         Double totalCostWOAccessories = 0.0;
-        Double totalSalesPrice =0.0;
-        Double NonStandardWoodworkCost=0.0;
-        Double hikeCost=0.0;
-        Double StandardWoodworkCost=0.0;
-        Double hardwareCost=0.0;
-        Double carcassCost=0.0;
-        Double accessoryCost=0.0;
-        Double labourCost=0.0;
-        Double totalSalesPriceWOtax =0.0;
-        Double stdModuleManufacturingCost =0.0;
-        Double nonStdModuleManufacturingCost =0.0;
-        Double manufacturingLabourCost =0.0;
-        Double manufacturingHardwareCost =0.0;
-        Double manufacturingAccessoryCost =0.0;
-        Double manufacturingAccessoryCostForZgeneric=0.0;
-        Double manufacturingTotalSalesPrice =0.0;
-        Double manufacturingProfit =0.0;
-        Double marginCompute=0.0;
-        Double FinalmanufacturingAccoryCost=0.0;
         double totalModuleArea = 0;
 
 
@@ -475,9 +456,7 @@ public class CustomizedProductDetailsWindow extends Window {
             areaInSft.setReadOnly(false);
             areaInSft.setValue(round(totalModuleArea) + " sft");
             areaInSft.setReadOnly(true);
-            /*costWithoutAccessories.setReadOnly(false);
-            costWithoutAccessories.setValue(round(totalCostWOAccessories) + "");
-            costWithoutAccessories.setReadOnly(true);*/
+
         }
     }
 
@@ -486,13 +465,13 @@ public class CustomizedProductDetailsWindow extends Window {
         List<Module> boundModules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
 
         Component component = valueChangeEvent == null ? null : ((Field.ValueChangeEvent) valueChangeEvent).getComponent();
-        LOG.debug("Get component :" + component);
+//        LOG.debug("Get component :" + component);
 
         this.noPricingErrors();
 
         for (Module module : modules) {
 
-            LOG.debug("Inside For loop :");
+//            LOG.debug("Inside For loop :");
             if (component == baseCarcassSelection &&
                      (module.getUnitType().toLowerCase().contains(Module.UnitTypes.base.name()))) {
                 String text = (String) moduleContainer.getItem(module).getItemProperty(Module.CARCASS_MATERIAL).getValue();
@@ -544,7 +523,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         for (AccessoryDetails a : accDetailsforHandle) {
                    //         LOG.info("handle quantity " + a);
                             module.setHandleQuantity(Integer.valueOf(a.getQty()));
-                            LOG.debug("Module Handle QTY : " + module.getHandleQuantity());
+//                            LOG.debug("Module Handle QTY : " + module.getHandleQuantity());
                         }
                     }
 
@@ -554,7 +533,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     } else {
                         for (AccessoryDetails a : accDetailsforKnob) {
                             module.setKnobQuantity(Integer.valueOf(a.getQty()));
-                            LOG.debug("Module KNob QTY : " + module.getKnobQuantity());
+//                            LOG.debug("Module KNob QTY : " + module.getKnobQuantity());
 
                         }
                     }
@@ -622,7 +601,7 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             else if(component==thicknessfield)
             {
-                LOG.debug("Product Json :" + product);
+//                LOG.debug("Product Json :" + product);
 
                 module.setHandleThickness(valueChangeEvent.getProperty().getValue().toString());
                 List<HandleMaster> handleMasters=proposalDataProvider.getHandles("Handle",handleType.getValue().toString(),handle.getValue().toString(),thicknessfield.getValue().toString());
@@ -714,7 +693,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
                 if ((unitType.toLowerCase().contains(Module.UnitTypes.base.name()) && component != wallCarcassSelection)
                         || (unitType.toLowerCase().contains(Module.UnitTypes.wall.name()) && component != baseCarcassSelection)){
-                    LOG.debug("Inside the inner loop :");
+//                    LOG.debug("Inside the inner loop :");
                     double amount = 0;
                     double areainsft = 0;
                     double costwoaccessories = 0;
@@ -897,7 +876,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.finishTypeSelection.addValueChangeListener(this::finishTypeChanged);
 
         shutterFinishMasterList = proposalDataProvider.getFinishes(proposalHeader.getPriceDate().toString());//todLookupItems(ProposalDataProvider.FINISH_LOOKUP);
-        LOG.debug("SHutter finish master list size : " + shutterFinishMasterList.size());
+//        LOG.debug("SHutter finish master list size : " + shutterFinishMasterList.size());
         List<Finish> filteredShutterFinish = filterShutterFinishByType();
         this.shutterFinishSelection = getFinishItemFilledCombo("Finish", filteredShutterFinish, null);
         shutterFinishSelection.setRequired(true);
@@ -1058,25 +1037,7 @@ public class CustomizedProductDetailsWindow extends Window {
             FileDownloader jobcardDownloader = new FileDownloader(jobcardResource);
             jobcardDownloader.extend(jobcardButton);
             horizontalLayout.addComponent(jobcardButton);
-//            footer.setComponentAlignment(jobcardButton, Alignment.TOP_RIGHT);
-
-           /* Button marginButton = new Button("Margin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            marginButton.setCaptionAsHtml(true);
-            marginButton.setIcon(FontAwesome.DOWNLOAD);
-            marginButton.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-            marginButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-            marginButton.addStyleName(ValoTheme.BUTTON_SMALL);
-            soExtractButton.setWidth("100px");
-
-
-            StreamResource marginSheetResource = createMarginSheetResource();
-            FileDownloader marginSheetDownloader = new FileDownloader(marginSheetResource);
-            marginSheetDownloader.extend(marginButton);
-            footer.addComponent(marginButton);
-            footer.setComponentAlignment(marginButton, Alignment.TOP_RIGHT);*/
         }
-
-
 
 //        HorizontalLayout horizontalLayout = new HorizontalLayout();
 //        horizontalLayout.setWidth("100%");
@@ -1216,12 +1177,6 @@ public class CustomizedProductDetailsWindow extends Window {
             horizontalLayout1.setSpacing(true);
             verticalLayout.addComponent(horizontalLayout1);
         }
-        /*costWithoutAccessories = new TextField("Cost w/o Accessories : ");
-        costWithoutAccessories.setValue("0");
-        costWithoutAccessories.setImmediate(true);
-        costWithoutAccessories.setReadOnly(true);
-        formLayout.setSpacing(true);
-        formLayout.addComponent(costWithoutAccessories);*/
 
         verticalLayout.addComponent(formLayout);
         return verticalLayout;
@@ -1937,7 +1892,7 @@ public class CustomizedProductDetailsWindow extends Window {
                         }
 
                     }
-                    }
+                }
 
 
                 List<Product> getAllVersionProducts = proposalDataProvider.getVersionProducts(this.proposalVersion.getProposalId(), this.proposalVersion.getVersion());
