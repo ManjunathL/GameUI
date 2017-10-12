@@ -96,8 +96,8 @@ public class Download_quotation extends Window
         quotePdf1.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
         quotePdf1.addStyleName(ValoTheme.BUTTON_PRIMARY);
         quotePdf1.addStyleName(ValoTheme.BUTTON_SMALL);
-        quotePdf1.addStyleName("margin-top-for-headerlevelbutton");
-        quotePdf1.addStyleName("margin-right-10-for-headerlevelbutton");
+        /*quotePdf1.addStyleName("margin-top-for-headerlevelbutton");
+        quotePdf1.addStyleName("margin-right-10-for-headerlevelbutton");*/
         quotePdf1.setWidth("120px");
         quotePdf1.addClickListener(this::checkProductsAndAddonsAvailable1);
 
@@ -112,8 +112,8 @@ public class Download_quotation extends Window
         quotePdf.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
         quotePdf.addStyleName(ValoTheme.BUTTON_PRIMARY);
         quotePdf.addStyleName(ValoTheme.BUTTON_SMALL);
-        quotePdf.addStyleName("margin-top-for-headerlevelbutton");
-        quotePdf.addStyleName("margin-right-10-for-headerlevelbutton");
+        /*quotePdf.addStyleName("margin-top-for-headerlevelbutton");
+        quotePdf.addStyleName("margin-right-10-for-headerlevelbutton");*/
         quotePdf.setWidth("120px");
         quotePdf.addClickListener(this::checkProductsAndAddonsAvailable1);
         horizontalLayout1.addComponent(quotePdf);
@@ -122,6 +122,22 @@ public class Download_quotation extends Window
         FileDownloader fileDownloaderPdfwobookingform = new FileDownloader(quotePdfresourcewobookingform);
         fileDownloaderPdfwobookingform.extend(quotePdf);
         horizontalLayout1.addComponent(quotePdf);
+
+
+        Button closeBtn = new Button();
+        closeBtn.setCaption("Close");
+        closeBtn.addStyleName(ValoTheme.BUTTON_PRIMARY);
+        closeBtn.addStyleName(ValoTheme.BUTTON_SMALL);
+        closeBtn.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                DashboardEventBus.unregister(this);
+                close();
+
+            }
+        });
+        horizontalLayout1.addComponent(closeBtn);
+
         verticalLayout1.addComponent(horizontalLayout1);
 
         return verticalLayout1;
@@ -191,14 +207,26 @@ public class Download_quotation extends Window
     private InputStream getInputStreamPdf() {
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
+        productAndAddonSelection.setBookingFormFlag("No");
+        productAndAddonSelection.setWorksContractFlag("No");
+
         if(proposalVersion.getVersion().startsWith("0.") || proposalVersion.getVersion().equals("1.0"))
         {
             productAndAddonSelection.setBookingFormFlag("Yes");
         }
-        if(!(proposalVersion.getVersion().equals("1.0")) && (proposalVersion.getVersion().startsWith("1.") || proposalVersion.getVersion().equals("2.0")))
+        else
+        {
+            productAndAddonSelection.setWorksContractFlag("Yes");
+
+        }
+        /*if(!(proposalVersion.getVersion().equals("1.0")) && (proposalVersion.getVersion().startsWith("1.") || proposalVersion.getVersion().equals("2.0")))
         {
             productAndAddonSelection.setWorksContractFlag("Yes");
         }
+        else
+        {
+            productAndAddonSelection.setWorksContractFlag("No");
+        }*/
 
         productAndAddonSelection.setCity(proposalHeader.getPcity());
         String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
@@ -206,6 +234,8 @@ public class Download_quotation extends Window
         InputStream input = null;
         try {
             input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
+            DashboardEventBus.unregister(this);
+            close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -222,20 +252,31 @@ public class Download_quotation extends Window
     private InputStream getInputStreamPdfWoBookingForm() {
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
-        if(proposalVersion.getVersion().startsWith("0.") || proposalVersion.getVersion().equals("1.0"))
+        /*if(proposalVersion.getVersion().startsWith("0.") || proposalVersion.getVersion().equals("1.0"))
         {
-            productAndAddonSelection.setBookingFormFlag("No");
-        }
-        if(!(proposalVersion.getVersion().equals("1.0")) && (proposalVersion.getVersion().startsWith("1.") || proposalVersion.getVersion().equals("2.0")))
+        */    productAndAddonSelection.setBookingFormFlag("No");
+        productAndAddonSelection.setWorksContractFlag("No");
+        /*}
+        else
+        {
+            productAndAddonSelection.setBookingFormFlag("Yes");
+        }*/
+        /*if(!(proposalVersion.getVersion().equals("1.0")) && (proposalVersion.getVersion().startsWith("1.") || proposalVersion.getVersion().equals("2.0")))
         {
             productAndAddonSelection.setWorksContractFlag("No");
         }
+        else
+        {
+            productAndAddonSelection.setWorksContractFlag("Yes");
+        }*/
         productAndAddonSelection.setCity(proposalHeader.getPcity());
         String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
 
         InputStream input = null;
         try {
             input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
+            DashboardEventBus.unregister(this);
+            close();
         } catch (IOException e) {
             e.printStackTrace();
         }
