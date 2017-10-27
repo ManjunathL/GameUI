@@ -28,8 +28,6 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.mygubbi.game.dashboard.domain.Product.ROOM_CODE;
-import static com.mygubbi.game.dashboard.domain.Product.SPACE_TYPE;
 import static java.lang.StrictMath.round;
 
 /**
@@ -545,6 +543,8 @@ public class AddonDetailsWindow extends Window {
 
         } else {
             select.setValue(select.getItemIds().iterator().next());
+            BeanItem<AddonProductItem> addonProduct1 = productCodeBeanContainer.getItem(select.getValue());
+            addonProduct.setScopeDisplayFlag(addonProduct1.getBean().getScopeDisplayFlag());
             addonProduct.setProduct(select.getValue().toString());
         }
 

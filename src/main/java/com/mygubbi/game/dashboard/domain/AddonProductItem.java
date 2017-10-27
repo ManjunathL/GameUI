@@ -10,6 +10,7 @@ public class  AddonProductItem {
     public static final String TITLE = "title";
     public static final String RATE = "rate";
     public static final String CODE = "code";
+    public static final String SCOPE_DISPLAY_FLAG = "scopeDisplayFlag";
     private String catalogueCode;
     private String room;
     private String product;
@@ -18,6 +19,9 @@ public class  AddonProductItem {
     private double rate;
     private String imagePath;
     private String uom;
+    private String scopeDisplayFlag;
+
+
 
     public String getCode() {
         return code;
@@ -73,6 +77,22 @@ public class  AddonProductItem {
 
     public void setUom(String uom) {
         this.uom = uom;
+    }
+
+    public String getRoom() {
+        return room;
+    }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }
+
+    public String getScopeDisplayFlag() {
+        return scopeDisplayFlag;
+    }
+
+    public void setScopeDisplayFlag(String scopeDisplayFlag) {
+        this.scopeDisplayFlag = scopeDisplayFlag;
     }
 
     @Override

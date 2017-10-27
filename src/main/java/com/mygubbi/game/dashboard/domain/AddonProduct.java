@@ -36,6 +36,7 @@ public class AddonProduct implements Cloneable {
     public static final String SPACE_TYPE="spaceType";
     public static final String ROOM_CODE="roomcode";
     public static final String CUSTOM_ADDON_CATEGORY="customAddonCategory";
+    public static final String SCOPEDISPLAYFLAG = "scopeDisplayFlag";
 
     private int seq;
     private int id;
@@ -63,6 +64,7 @@ public class AddonProduct implements Cloneable {
     private String remarks;
     private String spaceType;
     private String roomcode;
+    private String scopeDisplayFlag;
 
     private boolean add = false;
 
@@ -74,6 +76,14 @@ public class AddonProduct implements Cloneable {
             throw new InternalError(e);
             //Will never happen since we are implementing Cloneable
         }
+    }
+
+    public String getScopeDisplayFlag() {
+        return scopeDisplayFlag;
+    }
+
+    public void setScopeDisplayFlag(String scopeDisplayFlag) {
+        this.scopeDisplayFlag = scopeDisplayFlag;
     }
 
     public String getCustomAddonCategory() {
@@ -344,6 +354,7 @@ public class AddonProduct implements Cloneable {
                 ", updatedBy='" + updatedBy + '\'' +
                 ", description='" + description + '\'' +
                 ", add=" + add +
+                ", scopeDisplayFlag=" + scopeDisplayFlag +
                 '}';
     }
 }
