@@ -334,6 +334,7 @@ public class CustomAddonDetailsWindow extends Window {
                     addonProduct.setTitle(this.title.getValue());
                     addonProduct.setProduct(this.title.getValue());
                     addonProduct.setCode("NA");
+                    addonProduct.setScopeDisplayFlag("yes");
                     //LOG.debug("Addon product Class :" + addonProduct.toString());
                     addonProduct.setProposalId(proposalVersion.getProposalId());
 
