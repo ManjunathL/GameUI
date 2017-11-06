@@ -207,7 +207,7 @@ public class AddonDetailsWindow extends Window {
 
 
 
-        this.roomText = new TextField("Room");
+        this.roomText = new TextField("Room Name");
         this.roomText.setRequired(true);
         roomText.setNullRepresentation("");
         binder.bind(this.roomText, AddonProduct.ADDON_ROOM);
@@ -534,7 +534,7 @@ public class AddonDetailsWindow extends Window {
         productCodeBeanContainer.addAll(list);
 
 
-        ComboBox select = new ComboBox("Product");
+        ComboBox select = new ComboBox("Product Name");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(productCodeBeanContainer);
         select.setItemCaptionPropertyId(AddonProductItem.PRODUCT);
