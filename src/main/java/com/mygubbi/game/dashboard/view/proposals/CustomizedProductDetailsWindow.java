@@ -261,7 +261,7 @@ public class CustomizedProductDetailsWindow extends Window {
 
         formLayoutLeft.addComponent(this.spaceTypeSelection);
 
-        roomText = (TextField) binder.buildAndBind("Room", ROOM_CODE);
+        roomText = (TextField) binder.buildAndBind("Room Name", ROOM_CODE);
         roomText.setRequired(true);
         roomText.setNullRepresentation("");
         formLayoutLeft.addComponent(roomText);
@@ -302,7 +302,7 @@ public class CustomizedProductDetailsWindow extends Window {
         //productSelection.addValueChangeListener(this::onProductValueChange);
         formLayoutLeft.addComponent(this.productSelection);
 
-        itemTitleField = (TextField) binder.buildAndBind("Title", TITLE);
+        itemTitleField = (TextField) binder.buildAndBind("Product Name", TITLE);
         itemTitleField.setRequired(true);
         itemTitleField.setNullRepresentation("");
         formLayoutLeft.addComponent(itemTitleField);

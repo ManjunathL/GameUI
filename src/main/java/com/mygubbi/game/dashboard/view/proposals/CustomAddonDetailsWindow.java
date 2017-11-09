@@ -177,7 +177,7 @@ public class CustomAddonDetailsWindow extends Window {
         formLayout.addComponent(this.spaceType);
 
 
-        this.roomText = new TextField("Room");
+        this.roomText = new TextField("Room Name");
         this.roomText.setRequired(true);
         roomText.setNullRepresentation("");
         binder.bind(this.roomText, AddonProduct.ADDON_ROOM);
@@ -198,7 +198,7 @@ public class CustomAddonDetailsWindow extends Window {
         formLayout.addComponent(this.category);
 
 
-        this.title = new TextArea("Product");
+        this.title = new TextArea("Product Name");
         this.title.setNullRepresentation("");
         this.title.setHeight("45px");
         this.title.setRequired(true);
