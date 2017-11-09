@@ -723,9 +723,9 @@ public class MDW extends Window {
         module.setHeight(mgModule.getHeight());
         module.setDepth(mgModule.getDepth());
         module.setWidth(mgModule.getWidth());
-        module.getAccessoryPacks().clear();
-        this.removeAccessoryPacks();
+//        module.getAccessoryPacks().clear();
         this.removeAddons();
+        this.removeAccessoryPacks();
         //this.removeHandleAndKnobQuantity();
         this.emptyAccessoryImages();
         module.setModuleType(mgModule.getModuleType());
@@ -851,12 +851,14 @@ public class MDW extends Window {
                 module.setKnobCode(h.getCode());
             }
         }
-        refreshPrice();
+
         refreshAccPacks();
+        refreshPrice();
     }
 
     private void removeAddons() {
-        addons11.getContainerDataSource().removeAllItems();
+
+       /* addons11.getContainerDataSource().removeAllItems();
         addons12.getContainerDataSource().removeAllItems();
         addons13.getContainerDataSource().removeAllItems();
         addons21.getContainerDataSource().removeAllItems();
@@ -864,17 +866,31 @@ public class MDW extends Window {
         addons23.getContainerDataSource().removeAllItems();
         addons31.getContainerDataSource().removeAllItems();
         addons32.getContainerDataSource().removeAllItems();
-        addons33.getContainerDataSource().removeAllItems();
+        addons33.getContainerDataSource().removeAllItems();*/
+
+        addons11.clear();
+        addons12.clear();
+        addons13.clear();
+        addons21.clear();
+        addons22.clear();
+        addons23.clear();
+        addons31.clear();
+        addons32.clear();
+        addons33.clear();
     }
 
     private void removeAccessoryPacks() {
+
+        this.module.getAccessoryPacks().clear();
+
+        /*this.accessoryPack1.getContainerDataSource().removeAllItems();
+        this.accessoryPack2.getContainerDataSource().removeAllItems();
+        this.accessoryPack3.getContainerDataSource().removeAllItems();*/
+
         this.accessoryPack1.clear();
         this.accessoryPack2.clear();
         this.accessoryPack3.clear();
 
-        accessoryPack1.getContainerDataSource().removeAllItems();
-        accessoryPack2.getContainerDataSource().removeAllItems();
-        accessoryPack3.getContainerDataSource().removeAllItems();
 
     }
 
@@ -1012,6 +1028,7 @@ public class MDW extends Window {
         this.accessoryPack1 = getAccessoryPackCombo("Acc Pack 1", accessoryPackList, null);
         formLayout.addComponent(this.accessoryPack1);
         accessoryPack1.setFilteringMode(FilteringMode.CONTAINS);
+        accessoryPack1.setImmediate(true);
         accessoryPack1.addValueChangeListener(this::accessoryPack1Changed);
 
         this.addons11 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
@@ -1064,6 +1081,7 @@ public class MDW extends Window {
         this.accessoryPack2 = getAccessoryPackCombo("Acc Pack 2", accessoryPackList, null);
         formLayout.addComponent(this.accessoryPack2);
         accessoryPack2.setFilteringMode(FilteringMode.CONTAINS);
+        accessoryPack2.setImmediate(true);
         accessoryPack2.addValueChangeListener(this::accessoryPack2Changed);
 
         this.addons21 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
@@ -1099,6 +1117,7 @@ public class MDW extends Window {
         this.accessoryPack3 = getAccessoryPackCombo("Acc Pack 3", accessoryPackList, null);
         formLayout.addComponent(this.accessoryPack3);
         accessoryPack3.setFilteringMode(FilteringMode.CONTAINS);
+        accessoryPack3.setImmediate(true);
         accessoryPack3.addValueChangeListener(this::accessoryPack3Changed);
 
         this.addons31 = getAccessoryAddonsCombo("Addons 1", new ArrayList<>(), null);
