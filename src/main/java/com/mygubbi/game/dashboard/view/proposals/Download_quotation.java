@@ -69,8 +69,9 @@ public class Download_quotation extends Window
         verticalLayout1.setMargin(new MarginInfo(true,true,true,true));
 
         verticalLayout1.setSpacing(true);
+        Double ver = Double.parseDouble(proposalVersion.getVersion());
 
-        if(proposalVersion.getVersion().startsWith("0.1") || proposalVersion.getVersion().equals("1.0"))
+        if(ver <= 1.0)
         {
             Label label_message = new Label();
             label_message.setCaption("Do you want to print Booking Form");
