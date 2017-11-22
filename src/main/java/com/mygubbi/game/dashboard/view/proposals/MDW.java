@@ -1614,7 +1614,7 @@ public class MDW extends Window {
                 }
             }
             LOG.info("color group code " +module.getColorCode() + "color combo " +colorCombo.getValue());
-            if(colorCombo.getValue() == null || module.getColorCode() == null || module.getColorCode().length()==0)
+            if(colorCombo.getValue() == null)
             {
                 NotificationUtil.showNotification("Please fill all mandatory fields.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
