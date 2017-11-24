@@ -96,6 +96,7 @@ public class ProductAndAddons extends Window
     private TextArea remarksTextArea;
 
     private String status=null;
+    private String saveVersionFlag = "no";
     String vid;
     private Button confirmButton;
     private Button designSignOffButton;
@@ -754,6 +755,13 @@ public class ProductAndAddons extends Window
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
 
+
+        if (saveVersionFlag.equals("Yes") && proposalVersion.getAmount() != Double.parseDouble(this.grandTotal.getValue())) {
+            proposalVersion.setAmount(totalAmount.intValue());
+            proposalVersion.setFinalAmount(res);
+            proposalDataProvider.updateVersion(proposalVersion);
+            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+        }
     }
 
 
@@ -823,6 +831,7 @@ public class ProductAndAddons extends Window
 
     private void onGrandTotalValueChange(Property.ValueChangeEvent valueChangeEvent) {
         status = "DP";
+        saveVersionFlag = "Yes";
         updateTotal();
     }
 
