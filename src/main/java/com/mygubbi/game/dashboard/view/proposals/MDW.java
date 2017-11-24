@@ -1542,6 +1542,12 @@ public class MDW extends Window {
     private ClickListener  getApplyListener(boolean loadNext,boolean loadPrevious) {
         return event -> {
 
+            if (module.getAmount() < 0) {
+                NotificationUtil.showNotification("Module cannot have a negative price", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+
+            }
+
             if (module.getMgCode()== null)
             {
                 NotificationUtil.showNotification("Please select module before saving", NotificationUtil.STYLE_BAR_ERROR_SMALL);
