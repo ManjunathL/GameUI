@@ -1,15 +1,23 @@
 package com.mygubbi.game.dashboard.domain;
 
+import com.mygubbi.game.dashboard.view.proposals.PublishOnCRM;
 import com.vaadin.server.Resource;
 
 /**
  * Created by nitinpuri on 19-05-2016.
  */
 public class Color {
+
+    public static final String NAME ="name";
+    public static final String CODE ="code";
+    public static final String IMAGE_PATH ="imagePath";
+    public static final String COLORIMAGE_RESOURCE ="colorImageResource";
+
     private String name;
     private String code;
     private String imagePath;
     private Resource colorImageResource;
+
 
     public String getName() {
         return name;
@@ -44,18 +52,12 @@ public class Color {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Color color = (Color) o;
-
-        return code != null ? code.equals(color.code) : color.code == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return code != null ? code.hashCode() : 0;
+    public String toString() {
+        return "Color{" +
+                "name='" + name + '\'' +
+                ", code='" + code + '\'' +
+                ", imagePath='" + imagePath + '\'' +
+                ", colorImageResource=" + colorImageResource +
+                '}';
     }
 }

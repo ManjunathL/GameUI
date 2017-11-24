@@ -2433,10 +2433,13 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
-    public List<OldToNewFinishMap> getNewFinishCodeForOldFinish(String OldFinishCode) {
+    public List<OldToNewFinishMap> getNewFinishCodeForOldFinish(String OldFinishCode,String  priceDate) {
         JSONArray array = dataProviderMode.getResourceArray("proposal/getfinishmap", new HashMap<String,String>() {
             {
                 put("oldCode", OldFinishCode);
+                put("fromDate", priceDate);
+                put("toDate", priceDate);
+
             }
         });
         try {

@@ -101,6 +101,7 @@ public class MDW extends Window {
 
     private List<AccessoryPack> accessoryPackList;
     private List<Finish> shutterFinishMasterList;
+    private List<Color> colorList;
 
     private List<MGModule> mgModules;
     private String basePath = ConfigHolder.getInstance().getImageBasePath();
@@ -369,7 +370,12 @@ public class MDW extends Window {
             shutterFinishSelection.setValue(module.getFinishCode());
             defaultsOverridden.setVisible(true);
         }
-
+        if(module.getColorCode().contains(Module.DEFAULT)){
+                colorCombo.setValue(DEF_CODE_PREFIX +module.getColorCode());
+        }else {
+            colorCombo.setValue(module.getColorCode());
+            defaultsOverridden.setVisible(true);
+        }
         updateAccessoryPack(0, accessoryPack1, addons11, addons12, addons13);
         updateAccessoryPack(1, accessoryPack2, addons21, addons22, addons23);
         updateAccessoryPack(2, accessoryPack3, addons31, addons32, addons33);
@@ -429,13 +435,13 @@ public class MDW extends Window {
                 module.setFinishCode(product.getFinishCode());
             }
 
-            if(module.getColorCode() != null)
+            /*if(module.getColorCode() != null)
             {
                 if(module.getColorCode().contains(Module.DEFAULT))
                 {
                     module.setColorCode(product.getColorGroupCode());
                 }
-            }
+            }*/
     }
 
     private void addListenerstoDimensionCheckBoxes() {
@@ -512,10 +518,13 @@ public class MDW extends Window {
         shutterFinishSelection.addValueChangeListener(this::finishChanged);//refreshPrice);
         formLayout.addComponent(this.shutterFinishSelection);
 
-        List<Color> colors = filterColorsByType();
-        this.colorCombo = getColorsCombo("Color", colors);
-        colorCombo.setRequired(true);
+        String value=removeDefaultPrefix(shutterFinishSelection.getValue().toString());
+        Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(value).getBean();
+        colorList=proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+        List<Color> filtercolorSelection=filterColorsByType();
+        this.colorCombo=getcolorFilledCombo("Color",filtercolorSelection,null);
         binder.bind(colorCombo, Module.COLOR_CODE);
+        colorCombo.addValueChangeListener(this::colorchanged);
         formLayout.addComponent(this.colorCombo);
 
         totalAmount = new TextField("Total Amount");
@@ -1394,16 +1403,18 @@ public class MDW extends Window {
         Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(shutterFinishSelection.getValue()).getBean();
         this.module.setFinishSetId(finish.getSetCode());
 
-        List<Color> filteredColors = filterColorsByType();
-        String previousColorCode = (String) this.colorCombo.getValue();
-        colorCombo.getContainerDataSource().removeAllItems();
-        ((BeanContainer<String, Color>) colorCombo.getContainerDataSource()).addAll(filteredColors);
-
-        if (filteredColors.stream().anyMatch(color -> color.getCode().equals(previousColorCode))) {
-            colorCombo.setValue(previousColorCode);
+        colorList=proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+        if (colorList.size() > 0) {
+            this.colorCombo.getContainerDataSource().removeAllItems();
+            ((BeanContainer<String, Color>) this.colorCombo.getContainerDataSource()).addAll(colorList);
+                //this.colorCombo.setValue(this.colorCombo.getItemIds().iterator().next());
         }
-
+        checkDefaultsOverridden();
         refreshPrice();
+    }
+    private void colorchanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        this.module.setColorCode(valueChangeEvent.getProperty().getValue().toString());
     }
 
     private void moduleChanged(Property.ValueChangeEvent valueChangeEvent) {
@@ -1427,7 +1438,8 @@ public class MDW extends Window {
     private void checkDefaultsOverridden() {
         if (!((String) carcassMaterialSelection.getValue()).startsWith(DEF_CODE_PREFIX)
                 || !((String) finishTypeSelection.getValue()).startsWith(DEF_CODE_PREFIX)
-                || !((String) shutterFinishSelection.getValue()).startsWith(DEF_CODE_PREFIX)) {
+                || !((String) shutterFinishSelection.getValue()).startsWith(DEF_CODE_PREFIX)
+                || ! ((String) colorCombo.getValue()).startsWith(DEF_CODE_PREFIX) ) {
             defaultsOverridden.setVisible(true);
         } else {
             defaultsOverridden.setVisible(false);
@@ -1454,18 +1466,33 @@ public class MDW extends Window {
             newFinish.setTitle(Module.DEFAULT + " (" + defaultItem.getTitle() + ")");
             newFinish.setFinishCode(DEF_CODE_PREFIX + defaultItem.getFinishCode());
             newFinish.setFinishMaterial(defaultItem.getFinishMaterial());
-            newFinish.setColorGroupCode(defaultItem.getColorGroupCode());
-
             filteredShutterFinish.add(newFinish);
         }
 
         return filteredShutterFinish;
     }
 
-    private List<Color> filterColorsByType(){
-        String value=removeDefaultPrefix(shutterFinishSelection.getValue().toString());
-        Finish finish = ((BeanContainer<String, Finish>) shutterFinishSelection.getContainerDataSource()).getItem(value).getBean();
-        return proposalDataProvider.getColorsByGroup(finish.getColorGroupCode(),proposalHeader.getPriceDate().toString());
+    private List<Color> filterColorsByType()
+    {
+        List<Color> filteredcolorList = new ArrayList<>();
+        String colorCode = (String) module.getColorCode();
+        if(colorCode.startsWith("default"))
+        {
+            colorCode=colorCode.substring(9,colorCode.length()-1);
+        }
+        if (colorCode.equalsIgnoreCase(product.getColorGroupCode())) {
+            Color defaultItem = colorList.stream().filter(color -> color.getName().equals(product.getColorGroupCode())).findFirst().get();
+            Color newColor = new Color();
+            newColor.setCode(Module.DEFAULT + " (" + defaultItem.getName() + ")");
+            newColor.setName(Module.DEFAULT +" ("+ defaultItem.getCode()+ ")");
+            filteredcolorList.add(newColor);
+        }
+
+        for(Color colorComboItem : colorList)
+        {
+            filteredcolorList.add(colorComboItem);
+        }
+        return filteredcolorList;
     }
 
     private void finishTypeChanged(Property.ValueChangeEvent valueChangeEvent) {
@@ -1767,6 +1794,23 @@ public class MDW extends Window {
         return select;
     }
 
+    private ComboBox getcolorFilledCombo(String caption,List<Color> list,Property.ValueChangeListener listener)
+    {
+        final BeanContainer<String,Color> container=new BeanContainer<>(Color.class);
+        container.setBeanIdProperty(Color.CODE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(Color.NAME);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (container.size() > 0) {
+            select.setValue(select.getItemIds().iterator().next());
+        }
+        return select;
+    }
+
     private ComboBox getSimpleItemFilledCombo(String caption, List<LookupItem> list, Property.ValueChangeListener listener) {
 
         final BeanContainer<String, LookupItem> container =
@@ -1782,6 +1826,22 @@ public class MDW extends Window {
         return select;
     }
 
+    private ComboBox getSimpleItemcolorFilledCombo(String caption, List<Color> list, Property.ValueChangeListener listener) {
+        final BeanContainer<String, Color> container =
+                new BeanContainer<>(Color.class);
+        container.setBeanIdProperty(Color.CODE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox(caption);
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(Color.NAME);
+        if (listener != null) select.addValueChangeListener(listener);
+        if (container.size() > 0) {
+            select.setValue(select.getItemIds().iterator().next());
+        }
+        return select;
+    }
     private ComboBox getAccessoryPackCombo(String caption, List<AccessoryPack> list, Property.ValueChangeListener listener) {
 
         final BeanContainer<String, AccessoryPack> container =
