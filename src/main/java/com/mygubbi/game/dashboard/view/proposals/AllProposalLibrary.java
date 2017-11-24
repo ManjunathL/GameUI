@@ -395,7 +395,7 @@ public class AllProposalLibrary extends Window
             java.util.Date headerdate = proposalHeader.getPriceDate();
             java.util.Date currentDate = new Date(117, 8, 18, 0, 0, 00);
             if (headerdate.after(currentDate)) {
-                List<OldToNewFinishMap> oldToNewFinishMap=proposalDataProvider.getNewFinishCodeForOldFinish(p.getFinishCode());
+                List<OldToNewFinishMap> oldToNewFinishMap=proposalDataProvider.getNewFinishCodeForOldFinish(p.getFinishCode(),proposalHeader.getPriceDate().toString());
                 for(OldToNewFinishMap oldToNewFinishMap1:oldToNewFinishMap)
                 {
                     newFinishCode=oldToNewFinishMap1.getNewCode();
