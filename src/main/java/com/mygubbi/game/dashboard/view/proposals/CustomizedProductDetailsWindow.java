@@ -656,8 +656,10 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             else if(component == colorCombo)
             {
-                moduleContainer.getItem(module).getItemProperty(Module.COLOR_CODE).setValue(colorCombo.getValue().toString());
-                moduleContainer.getItem(module).getItemProperty(Module.COLOR_CODE).setValue(colorCombo.getValue().toString());
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.COLOR_CODE).getValue();
+                if (text.contains(Module.DEFAULT)) {
+                    moduleContainer.getItem(module).getItemProperty(Module.COLOR_CODE).setValue(getDefaultText(colorCombo.getValue().toString()));
+                }
             }
             /*else if(component==noOfLengths)
             {
@@ -1092,7 +1094,8 @@ public class CustomizedProductDetailsWindow extends Window {
                     module.setCarcassCodeBasedOnUnitType(product);
                     module.setFinishTypeCode(product.getFinishTypeCode());
                     module.setFinishCode(product.getFinishCode());
-                    module.setColorCode(product.getColorGroupCode());
+                    String defaultText = getDefaultText(getColorItemText(colorCombo));
+                    module.setColorCode(defaultText);
                     if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
                     {
                         module.setHandleType(product.getHandleType());
@@ -1234,11 +1237,6 @@ public class CustomizedProductDetailsWindow extends Window {
     private void colorChangeSelection(Property.ValueChangeEvent valueChangeEvent)
     {
         product.setColorGroupCode(colorCombo.getValue().toString());
-        List<Module> modules = product.getModules();
-        for(Module module:modules)
-        {
-            module.setColorCode(colorCombo.getValue().toString());
-        }
         if(product.getColorGroupCode().equals("Others"))
         {
             othersText.setReadOnly(false);
@@ -1376,6 +1374,10 @@ public class CustomizedProductDetailsWindow extends Window {
 
     private String getSelectedItemText(ComboBox combo) {
         return ((BeanContainer<String, LookupItem>) combo.getContainerDataSource()).getItem(combo.getValue()).getBean().getTitle();
+    }
+
+    private String getColorItemText(ComboBox combo) {
+        return ((BeanContainer<String, Color>) combo.getContainerDataSource()).getItem(combo.getValue()).getBean().getCode();
     }
 
     private void enableSave() {
@@ -1643,6 +1645,7 @@ public class CustomizedProductDetailsWindow extends Window {
         product.setFinishCode((String) this.shutterFinishSelection.getValue());
         product.setWallCarcassCode((String) this.wallCarcassSelection.getValue());
         product.setBaseCarcassCode((String) this.baseCarcassSelection.getValue());
+        product.setColorGroupCode((String) this.colorCombo.getValue());
         product.setTitle(itemTitleField.getValue());
         if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
         {
