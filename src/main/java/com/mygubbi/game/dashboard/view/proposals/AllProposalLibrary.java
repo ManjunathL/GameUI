@@ -466,7 +466,7 @@ public class AllProposalLibrary extends Window
                 modules.get(modules.indexOf(refreshedModule)).setArea(areainsft);
                 if (headerdate.after(currentDate)) {
                     modules.get(modules.indexOf(refreshedModule)).setFinishCode(newFinishCode);
-                    modules.get(modules.indexOf(refreshedModule)).setFinish(newFinishTitle);
+                    modules.get(modules.indexOf(refreshedModule)).setFinish("default("+newFinishTitle+")");
                 }
             }
             product.setModules(refreshedModules);
