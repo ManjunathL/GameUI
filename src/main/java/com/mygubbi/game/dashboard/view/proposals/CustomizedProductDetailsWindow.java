@@ -656,9 +656,9 @@ public class CustomizedProductDetailsWindow extends Window {
             }
             else if(component == colorCombo)
             {
-                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.COLOR_CODE).getValue();
+                String text = (String) moduleContainer.getItem(module).getItemProperty(Module.FINISH_TYPE).getValue();
                 if (text.contains(Module.DEFAULT)) {
-                    moduleContainer.getItem(module).getItemProperty(Module.COLOR_CODE).setValue(getDefaultText(colorCombo.getValue().toString()));
+                    moduleContainer.getItem(module).getItemProperty(Module.COLOR_CODE).setValue(colorCombo.getValue().toString());
                 }
             }
             /*else if(component==noOfLengths)
