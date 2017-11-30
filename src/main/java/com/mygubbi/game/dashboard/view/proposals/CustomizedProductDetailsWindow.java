@@ -1094,8 +1094,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     module.setCarcassCodeBasedOnUnitType(product);
                     module.setFinishTypeCode(product.getFinishTypeCode());
                     module.setFinishCode(product.getFinishCode());
-                    String defaultText = getDefaultText(getColorItemText(colorCombo));
-                    module.setColorCode(defaultText);
+                    module.setColorCode(colorCombo.getValue().toString());
                     if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
                     {
                         module.setHandleType(product.getHandleType());
@@ -2622,6 +2621,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     if (m.getHingeMandatory().equals("Yes")) {
                         module.setHingePresent(m.getHingeMandatory());
                         List<ModuleHingeMap> hingeMaps = proposalDataProvider.getCodeLookup(module.getMgCode(), hingeTypeValueChange);
+                        module.setHingePack(hingeMaps);
                         module.setHingePack(hingeMaps);
                     }
                 }
