@@ -1549,6 +1549,7 @@ public class CustomizedProductDetailsWindow extends Window {
             @Override
             public void onEdit(ClickableRenderer.RendererClickEvent rendererClickEvent)
             {
+
                 if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
                 {
                     if(handleSelection.getValue().equals("Gola Profile") && noOfLengths.getValue().equals("0"))
@@ -1558,7 +1559,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     }
                 }
 
-                if (!binder.isValid()) {
+                if (!binder.isValid() || colorCombo.getValue().toString().isEmpty()) {
                     NotificationUtil.showNotification("Please fill all mandatory fields before proceeding!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }

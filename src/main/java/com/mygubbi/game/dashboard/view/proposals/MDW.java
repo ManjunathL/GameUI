@@ -370,12 +370,6 @@ public class MDW extends Window {
             shutterFinishSelection.setValue(module.getFinishCode());
             defaultsOverridden.setVisible(true);
         }
-        if(module.getColorCode().contains(Module.DEFAULT)){
-                colorCombo.setValue(DEF_CODE_PREFIX +module.getColorCode());
-        }else {
-            colorCombo.setValue(module.getColorCode());
-            defaultsOverridden.setVisible(true);
-        }
         updateAccessoryPack(0, accessoryPack1, addons11, addons12, addons13);
         updateAccessoryPack(1, accessoryPack2, addons21, addons22, addons23);
         updateAccessoryPack(2, accessoryPack3, addons31, addons32, addons33);
