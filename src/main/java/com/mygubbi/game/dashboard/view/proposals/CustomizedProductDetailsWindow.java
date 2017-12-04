@@ -403,27 +403,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     productSelection.setReadOnly(true);
                 }
     }
-    private void checkForDuplicateSeq(Property.ValueChangeEvent valueChangeEvent) {
-        Boolean value=checkForDuplicatefunction();
-        if(value==false)
-        {
-            manualSeq.setValue("0");
-        }
-    }
-    private boolean checkForDuplicatefunction()
-    {
-        String manualSeqStr = manualSeq.getValue();
-        int manualSeq = Integer.parseInt(manualSeqStr);
-        List <Product> getManualSeq =  proposalDataProvider.getProposalProductManualSeq(proposalHeader.getId(),proposalVersion.getVersion());
-        for(Product product : getManualSeq) {
-            if (manualSeq == product.getManualSeq())
-            {
-                NotificationUtil.showNotification("Product Sequence already exists!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                return false;
-            }
-        }
-        return true;
-    }
+
     public void updatePsftCosts() {
 
         List<Module> modules = (List<Module>) binder.getItemDataSource().getItemProperty("modules").getValue();
