@@ -93,7 +93,7 @@ public class MarginScreen extends Window
 
         updateTotal();
         versionPriceHolder=proposalDataProvider.getVersionPrice(proposalVersion);
-        LOG.info("version Price " +versionPriceHolder.toString());
+
 
         VerticalLayout verticalLayout = new VerticalLayout();
         Responsive.makeResponsive(this);
@@ -442,7 +442,7 @@ public class MarginScreen extends Window
     }
     private void checkSelectedValue(Property.ValueChangeEvent valueChangeEvent)
     {
-        LOG.info("check box value change listener " +proposalVersion.getDiscountPercentage() );
+
         if(checkProduct.getValue()=="Product")
         {
 
@@ -502,12 +502,10 @@ public class MarginScreen extends Window
 
     private void onFocusToDiscountPercentage(FieldEvents.FocusEvent event)
     {
-        // LOG.info("DP focused");
         status="DP";
     }
     private void onFocusToDiscountAmount(FieldEvents.FocusEvent event)
     {
-        // LOG.info("DA focused");
         status="DA";
     }
     private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -544,8 +542,8 @@ public class MarginScreen extends Window
 
         java.util.Date date =proposalHeader.getCreatedOn();
         java.util.Date currentDate = new java.util.Date(117 ,3,20,0,0,00);
-       // proposalVersion.setDiscountPercentage(Double.parseDouble(manualInputDiscountPercentage.getValue()));
-        LOG.info("proposal version " +proposalVersion);
+        // proposalVersion.setDiscountPercentage(Double.parseDouble(manualInputDiscountPercentage.getValue()));
+
         VersionPriceHolder versionPriceHolderForDiscountOveride;
         if(checkProduct.getValue()=="Product") {
 
@@ -559,14 +557,14 @@ public class MarginScreen extends Window
             }*/
             if("DP".equals(status))
             {
-                //LOG.info("Enter discount Percentage" + manualInputDiscountPercentage.getValue());
+
                 discountPercentage =Double.valueOf(manualInputDiscountPercentage.getValue());
                 if (date.after(currentDate)) {
                     discountAmount = versionPriceHolder.getPrPrice() * discountPercentage / 100.0;
                 }
                 else
                 {
-                    discountAmount = (versionPriceHolder.getPrPrice()-versionPriceHolder.getCostWoAccessories()) * discountPercentage / 100.0;
+                    discountAmount = (versionPriceHolder.getCostWoAccessories()) * discountPercentage / 100.0;
 
                 }
                 manualInputDiscountAmount.setValue(String.valueOf(round(discountAmount,2)));
@@ -579,7 +577,7 @@ public class MarginScreen extends Window
                 }
                 else
                 {
-                    discountPercentage =(discountAmount /(versionPriceHolder.getPrPrice()-versionPriceHolder.getCostWoAccessories()))*100;
+                    discountPercentage =(discountAmount /(versionPriceHolder.getCostWoAccessories()))*100;
                 }
 
                 manualInputDiscountPercentage.setValue(String.valueOf(round(discountPercentage,2)));
@@ -635,7 +633,7 @@ public class MarginScreen extends Window
                 }
                 else
                 {
-                    discountAmount =(versionPriceHolder.getPrPrice()-versionPriceHolder.getCostWoAccessories())* discountPercentage /100.0;
+                    discountAmount =(versionPriceHolder.getCostWoAccessories())* discountPercentage /100.0;
                 }
                 manualInputDiscountAmount.setValue(String.valueOf(round(discountAmount,2)));
             }
@@ -647,7 +645,7 @@ public class MarginScreen extends Window
                 }
                 else
                 {
-                    discountPercentage = (discountAmount / (versionPriceHolder.getPrPrice()-versionPriceHolder.getCostWoAccessories())) * 100;
+                    discountPercentage = (discountAmount / (versionPriceHolder.getCostWoAccessories())) * 100;
                 }
                 manualInputDiscountPercentage.setValue(String.valueOf(round(discountPercentage,2)));
             }
