@@ -1,4 +1,4 @@
-package com.mygubbi.game.dashboard.view.proposals;
+    package com.mygubbi.game.dashboard.view.proposals;
 
 
 import com.google.common.eventbus.Subscribe;
@@ -61,6 +61,7 @@ public class CreateProposalsView extends Panel implements View {
     private final String NEW_TITLE = "New Quotation";
     private final String NEW_DRAFT_TITLE = "Provide Option Description";
     private final String NEW_VERSION = "1.0";
+    private final Integer MIN_WORK_COMPLETION_DAYS = 60;
     private String QuoteNum=null;
     private String QuoteNumNew=null;
     private String status=null;
@@ -68,6 +69,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private Field<?> proposalTitleField;
     private TextField maxDiscountPercentage;
+    private Field<?> noOfDaysForWorkCompletion;
     private Field<?> crmId;
     private Field<?> proposalVersionField;
     private Field<?> quotationField;
@@ -116,6 +118,8 @@ public class CreateProposalsView extends Panel implements View {
     java.sql.Date priceDate;
     String codeForDiscount;
     Double rateForDiscount;
+    String codeForDefDaysFromWorkCompletion;
+    Integer defDaysFromWorkCompletion;
 
     private ProductAndAddonSelection productAndAddonSelection;
 
@@ -1059,6 +1063,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private void setHeaderFieldsReadOnly(boolean readOnly) {
         proposalTitleField.setReadOnly(readOnly);
+        noOfDaysForWorkCompletion.setReadOnly(readOnly);
         crmId.setReadOnly(readOnly);
         quotationField.setReadOnly(readOnly);
         //customerIdField.setReadOnly(readOnly);
@@ -1150,6 +1155,10 @@ public class CreateProposalsView extends Panel implements View {
             return;
         }
 
+        if(Integer.parseInt(noOfDaysForWorkCompletion.getValue().toString()) < MIN_WORK_COMPLETION_DAYS){
+            NotificationUtil.showNotification("# of Days for Works completion should be minimum of "+MIN_WORK_COMPLETION_DAYS+" days.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
         LOG.debug("Proposal Header inside save :" + this.proposalHeader.toString());
 
 
@@ -1843,6 +1852,11 @@ public class CreateProposalsView extends Panel implements View {
         maxDiscountPercentage = new TextField("Max Discount Percentage");
         maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()));
         formLayoutLeft.addComponent(maxDiscountPercentage);
+
+        noOfDaysForWorkCompletion = binder.buildAndBind("# of Days for Works Completion", ProposalHeader.NO_OF_DAYS_FOR_WORK_COMPLETION);
+        noOfDaysForWorkCompletion.setRequired(true);
+        ((TextField) noOfDaysForWorkCompletion).setNullRepresentation("");
+        formLayoutLeft.addComponent(noOfDaysForWorkCompletion);
 
         if(!(("admin").equals(role)) )
         {

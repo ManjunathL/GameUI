@@ -50,6 +50,7 @@ public class ProposalHeader {
     public static final String UPDATED_BY = "updatedBy";
     public static final String PRICE_DATE = "priceDate";
     public static final String MAX_DISCOUNTPERCENTAGE="maxDiscountPercentage";
+    public static final String NO_OF_DAYS_FOR_WORK_COMPLETION = "noOfDaysForWorkCompletion";
     public static final String BEFORE_PRODUCTION_SPECIFICATION="beforeProductionSpecification";
     public static final String PACKAGE_FLAG="packageFlag";
     public static final String ADMIN_PACKAGEFLAG="adminPackageFlag";
@@ -97,6 +98,7 @@ public class ProposalHeader {
     private String editFlag = EDIT.R.name();
     private java.sql.Date priceDate;
     private double maxDiscountPercentage;
+    private double noOfDaysForWorkCompletion;
     private String beforeProductionSpecification;
     private String packageFlag;
     private String adminPackageFlag;
@@ -417,6 +419,14 @@ public class ProposalHeader {
 
     public void setMaxDiscountPercentage(double maxDiscountPercentage) {
         this.maxDiscountPercentage = maxDiscountPercentage;
+    }
+
+    public double getNoOfDaysForWorkCompletion() {
+        return noOfDaysForWorkCompletion;
+    }
+
+    public void setNoOfDaysForWorkCompletion(double noOfDaysForWorkCompletion) {
+        this.noOfDaysForWorkCompletion = noOfDaysForWorkCompletion;
     }
 
     public String getBeforeProductionSpecification() {

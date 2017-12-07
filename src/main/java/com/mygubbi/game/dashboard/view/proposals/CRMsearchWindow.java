@@ -26,9 +26,10 @@ public class CRMsearchWindow extends Window
 {
     private static final Logger LOG = LogManager.getLogger(CRMsearchWindow.class);
     Grid crmgrid;
+    java.sql.Date priceDate;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private BeanItemContainer<Profile> userprofilecontainer;
-    //ArrayList<Profile> profiles=new List<Profile>();
+    Integer defDaysFromWorkCompletion;    //ArrayList<Profile> profiles=new List<Profile>();
     ArrayList<Profile> profiles=new ArrayList<Profile>();
     ProposalHeader proposalHeader;
     private CRMsearchWindow(ProposalHeader proposalHeader)
@@ -145,6 +146,24 @@ public class CRMsearchWindow extends Window
                             proposalHeader.setPackageFlag("No");
                             proposalHeader.setAdminPackageFlag("No");
                         }
+                        String codeForDiscountAcc = "";
+                        Integer defDaysFromWorkCompletion = 0;
+                        List<RateCard> discountratecodeForAcc=proposalDataProvider.getFactorRateCodeDetails("F:DWC");
+                        for (RateCard discountcode : discountratecodeForAcc) {
+                            codeForDiscountAcc=discountcode.getCode();
+                        }
+                        if (proposalHeader.getPriceDate() == null)
+                        {
+                            priceDate = new java.sql.Date(System.currentTimeMillis());
+                        }
+                        else {
+                            priceDate = proposalHeader.getPriceDate();
+                        }
+                        PriceMaster discountpriceMaster=proposalDataProvider.getFactorRatePriceDetails(codeForDiscountAcc,this.priceDate,"all");
+                        defDaysFromWorkCompletion=((Double)discountpriceMaster.getSourcePrice()).intValue();
+                        proposalHeader.setNoOfDaysForWorkCompletion(defDaysFromWorkCompletion);
+
+
                         boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
                        /* LOG.info("proposal create value in crm search window " +success);
                         LOG.info("proposal header in crm window after save in crm search window" +proposalHeader);*/
