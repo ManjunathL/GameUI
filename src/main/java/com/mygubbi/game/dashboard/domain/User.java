@@ -7,6 +7,7 @@ public final class User {
     public static final String EMAIL = "email";
     public static final String PHONE = "phone";
     public static final String ADMIN_ROLE = "admin";
+    public static final String IS_VIEW_ONLY = "isViewOnly";
 
     private String name;
     private String role;
@@ -15,6 +16,7 @@ public final class User {
     private String sessionId;
     private String userId;
     private String userName;
+    private String isViewOnly;
 
     public User()
     {
@@ -84,6 +86,14 @@ public final class User {
         return userName;
     }
 
+    public String getIsViewOnly() {
+        return isViewOnly;
+    }
+
+    public void setIsViewOnly(String isViewOnly) {
+        this.isViewOnly = isViewOnly;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -94,6 +104,7 @@ public final class User {
                 ", sessionId='" + sessionId + '\'' +
                 ", userId='" + userId + '\'' +
                 ", userName='" + userName + '\'' +
+                ", isViewOnly='" + isViewOnly + '\'' +
                 '}';
     }
 }

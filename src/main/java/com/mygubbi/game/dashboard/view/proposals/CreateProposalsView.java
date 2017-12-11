@@ -125,7 +125,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private FileAttachmentComponent fileAttachmentComponent;
     private BeanItemContainer versionContainer;
-
+    String viewOnlyValue;
     private Grid versionsGrid;
 
     int pid;
@@ -184,6 +184,12 @@ public class CreateProposalsView extends Panel implements View {
 
             //proposalCityData = proposalDataProvider.getCityData(proposalHeader.getId());
 
+        String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
+        List<User> userList=proposalDataProvider.getUsersViewOnlyAcess(email);
+        for(User user:userList)
+        {
+            viewOnlyValue=user.getIsViewOnly();
+        }
             setWidth("100%");
             setHeight("100%");
 
@@ -221,10 +227,14 @@ public class CreateProposalsView extends Panel implements View {
 
 
 
-        vLayout.addComponent(tabs);
+            vLayout.addComponent(tabs);
             setContent(vLayout);
             Responsive.makeResponsive(tabs);
             cityLockedForOldProposal();
+            if(viewOnlyValue.equalsIgnoreCase("Yes"))
+            {
+                setComponentsReadonly();
+            }
     }
 
     private void setMaxDiscountPercentange() {
@@ -341,6 +351,11 @@ public class CreateProposalsView extends Panel implements View {
 
                 String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
                 if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+                {
+                    Notification.show("Cannot copy the version");
+                    return;
+                }
+                if(viewOnlyValue.equals("Yes"))
                 {
                     Notification.show("Cannot copy the version");
                     return;
@@ -489,6 +504,12 @@ public class CreateProposalsView extends Panel implements View {
                 NotificationUtil.showNotification("Cannot copy a proposal created before March 17", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
+            if(viewOnlyValue.equals("Yes"))
+            {
+                Notification.show("You are not autorized to copy proposal");
+                return;
+            }
+
             if(("Deleted").equals(this.proposalHeader.getStatus())) {
                 NotificationUtil.showNotification("Validation Error, please save the quote before proceeding", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
@@ -1071,13 +1092,10 @@ public class CreateProposalsView extends Panel implements View {
         customerAddressLine1.setReadOnly(readOnly);
         customerAddressLine2.setReadOnly(readOnly);
         customerAddressLine3.setReadOnly(readOnly);
-        customerCityField.setReadOnly(readOnly);
         customerEmailField.setReadOnly(readOnly);
         customerNumberField1.setReadOnly(readOnly);
-        customerNumberField2.setReadOnly(readOnly);
         projectName.setReadOnly(readOnly);
         projectAddressLine1.setReadOnly(readOnly);
-        projectAddressLine2.setReadOnly(readOnly);
         projectCityField.setReadOnly(readOnly);
         salesPerson.setReadOnly(readOnly);
         designPerson.setReadOnly(readOnly);
@@ -2108,5 +2126,30 @@ public class CreateProposalsView extends Panel implements View {
        LocalDateTime localDate = LocalDateTime.now();
        return dtf.format(localDate);
    }
+    private void setComponentsReadonly()
+    {
+        proposalTitleField.setReadOnly(true);
+        noOfDaysForWorkCompletion.setReadOnly(true);
+        crmId.setReadOnly(true);
+        customerNameField.setReadOnly(true);
+        customerAddressLine1.setReadOnly(true);
+        customerEmailField.setReadOnly(true);
+        projectName.setReadOnly(true);
+        projectAddressLine1.setReadOnly(true);
+        projectCityField.setReadOnly(true);
+        salesPerson.setReadOnly(true);
+        designPerson.setReadOnly(true);
+        offerField.setReadOnly(true);
+        maxDiscountPercentage.setReadOnly(true);
+        salesEmail.setReadOnly(true);
+        salesContact.setReadOnly(true);
+        designEmail.setReadOnly(true);
+        designContact.setReadOnly(true);
+        quotenew.setReadOnly(true);
+        designPartner.setReadOnly(true);
+        designContact.setReadOnly(true);
+        designEmail.setReadOnly(true);
+        searchcrmid.setEnabled(false);
+    }
 }
 

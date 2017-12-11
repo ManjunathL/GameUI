@@ -105,7 +105,7 @@ public class ProductAndAddons extends Window
     String codeForDiscount;
     Double rateForDiscount;
     java.sql.Date priceDate;
-
+    String viewOnlyValue;
     List<Product> products = new ArrayList<>();
     List<AddonProduct> addons = new ArrayList<>();
     private String value;
@@ -136,7 +136,12 @@ public class ProductAndAddons extends Window
         if (this.priceDate == null) {
             this.priceDate = new java.sql.Date(System.currentTimeMillis());
         }
-
+        String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
+        List<User> userList=proposalDataProvider.getUsersViewOnlyAcess(email);
+        for(User user:userList)
+        {
+            viewOnlyValue=user.getIsViewOnly();
+        }
         this.proposal.setProducts(this.products);
         this.proposal.setAddons(this.addons);
         this.productAndAddonSelection = new ProductAndAddonSelection();
@@ -193,6 +198,9 @@ public class ProductAndAddons extends Window
         calculateTotal();
         handleState();
         handlepackage();
+        if(viewOnlyValue.equalsIgnoreCase("Yes")) {
+            setReadOnlyForUser();
+        }
     }
 
 
@@ -975,6 +983,12 @@ public class ProductAndAddons extends Window
                     Notification.show("Cannot copy Products");
                     return;
                 }
+                if(viewOnlyValue.equals("Yes"))
+                {
+                    Notification.show("Cannot copy Product");
+                    return;
+                }
+
                 Product p = (Product) rendererClickEvent.getItemId();
 
                 productContainer.removeAllItems();
@@ -1089,6 +1103,11 @@ public class ProductAndAddons extends Window
                 String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
                 if (Objects.equals(proposalHeader.getAdminPackageFlag(), "Yes") && !("admin").equals(role)) {
                     Notification.show("Cannot delete Products");
+                    return;
+                }
+                if(viewOnlyValue.equals("Yes"))
+                {
+                    Notification.show("Cannot delete Product");
                     return;
                 }
 
@@ -2209,6 +2228,24 @@ public class ProductAndAddons extends Window
         }
 
     }
+
+    private void setReadOnlyForUser() {
+        addKitchenOrWardrobeButton.setEnabled(false);
+        addFromCatalogueButton.setEnabled(false);
+        addonAddButton.setEnabled(false);
+        confirmButton.setEnabled(false);
+        designSignOffButton.setEnabled(false);
+        submitButton.setEnabled(false);
+        customAddonAddButton.setEnabled(false);
+        discountAmount.setReadOnly(true);
+        discountPercentage.setReadOnly(true);
+        remarksTextArea.setReadOnly(true);
+        ttitle.setReadOnly(true);
+        if (Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            addFromProductLibrary.setEnabled(false);
+        }
+    }
+
 
 }
 

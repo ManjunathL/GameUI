@@ -135,7 +135,7 @@ public class CustomizedProductDetailsWindow extends Window {
     private ComboBox handleSelection;
     private Image knobImage;
     private TextField noOfLengths;
-
+    private String viewOnlyValue;
     private List<HandleMaster> handlethickness;
     private List<HandleMaster> Knobthickness;
     private String basePath = ConfigHolder.getInstance().getImageBasePath();
@@ -223,7 +223,15 @@ public class CustomizedProductDetailsWindow extends Window {
         updatePsftCosts();
         updateTotalAmount();
         handlepackage();
-
+        String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
+        List<User> userList=proposalDataProvider.getUsersViewOnlyAcess(email);
+        for(User user:userList)
+        {
+            viewOnlyValue=user.getIsViewOnly();
+        }
+        if(viewOnlyValue.equalsIgnoreCase("Yes")) {
+            setReadOnlyForUser();
+        }
     }
 
 
@@ -1449,6 +1457,12 @@ public class CustomizedProductDetailsWindow extends Window {
                     return;
                 }
 
+                if(viewOnlyValue.equals("Yes"))
+                {
+                    Notification.show("Cannot copy module");
+                    return;
+                }
+
                 Module m = (Module) rendererClickEvent.getItemId();
                // LOG.info("modules:"+ m);
                 List<Module> copy = product.getModules();
@@ -1567,6 +1581,11 @@ public class CustomizedProductDetailsWindow extends Window {
                 if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
                 {
                     Notification.show("Cannot delete modules");
+                    return;
+                }
+                if(viewOnlyValue.equals("Yes"))
+                {
+                    Notification.show("Cannot delete module");
                     return;
                 }
 
@@ -2686,6 +2705,37 @@ public class CustomizedProductDetailsWindow extends Window {
                 noOfLengths.setReadOnly(true);
                 thicknessfield.setReadOnly(true);
             }
+        }
+    }
+    private void setReadOnlyForUser()
+    {
+        itemTitleField.setReadOnly(true);
+        productSelection.setReadOnly(true);
+        spaceTypeSelection.setReadOnly(true);
+        roomText.setReadOnly(true);
+        shutterDesign.setReadOnly(true);
+        baseCarcassSelection.setReadOnly(true);
+        wallCarcassSelection.setReadOnly(true);
+        finishTypeSelection.setReadOnly(true);
+        shutterFinishSelection.setReadOnly(true);
+        quoteUploadCtrl.setEnabled(false);
+        closeBtn.setCaption(CLOSE);
+        fileAttachmentComponent.getFileUploadCtrl().setEnabled(false);
+        fileAttachmentComponent.setReadOnly(true);
+        addModules.setEnabled(false);
+        spaceTypeSelection.setReadOnly(true);
+        colorCombo.setReadOnly(true);
+        othersText.setReadOnly(true);
+        if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
+            handleType.setReadOnly(true);
+            handle.setReadOnly(true);
+            knobType.setReadOnly(true);
+            knob.setReadOnly(true);
+            hingesSelection.setReadOnly(true);
+            glassSelection.setReadOnly(true);
+            handleSelection.setReadOnly(true);
+            noOfLengths.setReadOnly(true);
+            thicknessfield.setReadOnly(true);
         }
     }
     private void handleselectionchanged(Property.ValueChangeEvent valueChangeEvent)

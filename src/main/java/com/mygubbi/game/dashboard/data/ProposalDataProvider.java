@@ -2465,4 +2465,19 @@ public class ProposalDataProvider {
             throw new RuntimeException("Couldn't get version price", e);
         }
     }
+
+    public List<User> getUsersViewOnlyAcess(String email) {
+        JSONArray array = dataProviderMode.getResourceArray("user/getisviewonly", new HashMap<String, String>() {
+            {
+                put("email", email);
+            }
+        });
+        try {
+            User[] items = this.mapper.readValue(array.toString(), User[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Could not find the value", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+    }
 }

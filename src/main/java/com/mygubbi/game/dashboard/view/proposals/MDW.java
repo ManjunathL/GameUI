@@ -126,7 +126,7 @@ public class MDW extends Window {
     OptionGroup single;
     private String hPresent;
     private String knobPresent;
-
+    private String viewOnlyValue;
     private MDW(Module module, Product product, int moduleIndex, ProposalVersion proposalVersion, ProposalHeader proposalHeader) {
         this.dontCalculatePriceNow = true;
         this.product = product;
@@ -259,6 +259,15 @@ public class MDW extends Window {
         updateValues();
         handleState();
         handlepackage();
+        String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
+        List<User> userList=proposalDataProvider.getUsersViewOnlyAcess(email);
+        for(User user:userList)
+        {
+            viewOnlyValue=user.getIsViewOnly();
+        }
+        if(viewOnlyValue.equalsIgnoreCase("Yes")) {
+            setReadOnlyForUser();
+        }
         this.dontCalculatePriceNow = false;
 
         this.refreshPrice();
@@ -2012,6 +2021,49 @@ public class MDW extends Window {
 
         }
 
+    }
+
+    private void setReadOnlyForUser()
+    {
+            moduleCategory.setReadOnly(true);
+            moduleSelection.setReadOnly(true);
+            carcassMaterialSelection.setReadOnly(true);
+            finishTypeSelection.setReadOnly(true);
+            shutterFinishSelection.setReadOnly(true);
+
+            //remarks.setReadOnly(true);
+            customText.setReadOnly(true);
+            height.setReadOnly(true);
+            width.setReadOnly(true);
+            depth.setReadOnly(true);
+            description.setReadOnly(true);
+            exposedBack.setReadOnly(true);
+            exposedBottom.setReadOnly(true);
+            exposedOpen.setReadOnly(true);
+            exposedLeft.setReadOnly(true);
+            exposedRight.setReadOnly(true);
+            exposedTop.setReadOnly(true);
+            accessoryPack1.setReadOnly(true);
+            accessoryPack2.setReadOnly(true);
+            accessoryPack3.setReadOnly(true);
+            addons11.setReadOnly(true);
+            addons12.setReadOnly(true);
+            addons13.setReadOnly(true);
+            addons21.setReadOnly(true);
+            addons22.setReadOnly(true);
+            addons23.setReadOnly(true);
+            addons31.setReadOnly(true);
+            addons32.setReadOnly(true);
+            addons33.setReadOnly(true);
+                colorCombo.setReadOnly(true);
+            if(Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes"))
+            {
+                single.setReadOnly(true);
+                handlequantity.setReadOnly(true);
+                knobqquantity.setReadOnly(true);
+                thicknessfield.setReadOnly(true);
+                thickness.setReadOnly(true);
+            }
     }
 }
 
