@@ -1257,6 +1257,12 @@ public class ProductAndAddons extends Window
                     return;
                 }
 
+                if(viewOnlyValue.equals("Yes"))
+                {
+                    Notification.show("You are Authorized to delete Addons");
+                    return;
+                }
+
                 ConfirmDialog.show(UI.getCurrent(), "", "Are you sure you want to Delete this Addon?",
                         "Yes", "No", dialog -> {
                             if (dialog.isConfirmed()) {

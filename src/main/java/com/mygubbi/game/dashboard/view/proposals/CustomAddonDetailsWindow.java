@@ -66,6 +66,7 @@ public class CustomAddonDetailsWindow extends Window {
     double rateForAddonSourcePrice;
     Double addonDealerPrice=0.0;
     ProposalHeader proposalHeader;
+    String viewOnlyValue;
 
     private static final Logger LOG = LogManager.getLogger(AddonProduct.class);
 
@@ -101,6 +102,15 @@ public class CustomAddonDetailsWindow extends Window {
 
         handleState();
         handlePackage();
+        String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
+        List<User> userList=proposalDataProvider.getUsersViewOnlyAcess(email);
+        for(User user:userList)
+        {
+            viewOnlyValue=user.getIsViewOnly();
+        }
+        if(viewOnlyValue.equalsIgnoreCase("Yes")) {
+            setReadOnlyForUser();
+        }
     }
 
     private void handleState() {
@@ -130,6 +140,16 @@ public class CustomAddonDetailsWindow extends Window {
 
     private void setComponentsReadOnly() {
 
+        spaceType.setReadOnly(true);
+        roomText.setReadOnly(true);
+        title.setReadOnly(true);
+        uom.setReadOnly(true);
+        quantity.setReadOnly(true);
+        rate.setReadOnly(true);
+        amount.setReadOnly(true);
+        category.setReadOnly(true);
+    }
+    private void  setReadOnlyForUser() {
         spaceType.setReadOnly(true);
         roomText.setReadOnly(true);
         title.setReadOnly(true);
