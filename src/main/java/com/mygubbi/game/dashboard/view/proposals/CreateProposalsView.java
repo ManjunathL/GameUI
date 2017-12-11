@@ -1174,7 +1174,7 @@ public class CreateProposalsView extends Panel implements View {
         }
 
         if(Integer.parseInt(noOfDaysForWorkCompletion.getValue().toString()) < MIN_WORK_COMPLETION_DAYS){
-            NotificationUtil.showNotification("# of Days for Works completion should be minimum of "+MIN_WORK_COMPLETION_DAYS+" days.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            NotificationUtil.showNotification("# of days for Works completion should be minimum of "+MIN_WORK_COMPLETION_DAYS+" days.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
         LOG.debug("Proposal Header inside save :" + this.proposalHeader.toString());
@@ -1871,7 +1871,7 @@ public class CreateProposalsView extends Panel implements View {
         maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()));
         formLayoutLeft.addComponent(maxDiscountPercentage);
 
-        noOfDaysForWorkCompletion = binder.buildAndBind("# of Days for Works Completion", ProposalHeader.NO_OF_DAYS_FOR_WORK_COMPLETION);
+        noOfDaysForWorkCompletion = binder.buildAndBind("# of days for Works Completion", ProposalHeader.NO_OF_DAYS_FOR_WORK_COMPLETION);
         noOfDaysForWorkCompletion.setRequired(true);
         ((TextField) noOfDaysForWorkCompletion).setNullRepresentation("");
         formLayoutLeft.addComponent(noOfDaysForWorkCompletion);
