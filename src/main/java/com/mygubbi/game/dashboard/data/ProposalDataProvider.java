@@ -2480,4 +2480,25 @@ public class ProposalDataProvider {
             throw new RuntimeException(e);
         }
     }
+
+    public JSONObject miscellenous(String json){
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/saveService", json);
+        return jsonObject;
+    }
+    public List<ProposalServices> getVersionServices(int proposalId, String Vid) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/miscellaneouslist", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId + "");
+                put("fromVersion", Vid + "");
+            }
+        });
+        try {
+            ProposalServices[] items = this.mapper.readValue(jsonArray.toString(), ProposalServices[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
 }

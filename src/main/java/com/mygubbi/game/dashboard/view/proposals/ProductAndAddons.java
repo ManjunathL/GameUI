@@ -77,7 +77,9 @@ public class ProductAndAddons extends Window
     private Button customAddonAddButton;
     private TextField ttitle;
     private BeanItemContainer<AddonProduct> addonsContainer;
+    private BeanItemContainer<ProposalServices> servicesContainer;
     private Grid addonsGrid;
+    private Grid servicesGrid;
 
     private Grid productsGrid;
     private final BeanFieldGroup<ProposalHeader> binder = new BeanFieldGroup<>(ProposalHeader.class);
@@ -177,6 +179,9 @@ public class ProductAndAddons extends Window
 
         Component componentAddonDetails = buildAddons();
         verticalLayout.addComponent(componentAddonDetails);
+
+        Component componentServicesDetails = buildServices();
+        verticalLayout.addComponent(componentServicesDetails);
 
         Component amountsLayout = getAmountLayout();
         this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
@@ -1156,6 +1161,62 @@ public class ProductAndAddons extends Window
 
         return verticalLayout;
     }
+    private Component buildServices()
+    {
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setSizeFull();
+        verticalLayout.setMargin(new MarginInfo(true, true, true, true));
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeFull();
+        horizontalLayout.setStyleName("v-has-width-forLabel");
+
+        Label addonTitle = new Label("Miscellaneous");
+        addonTitle.setStyleName("products-and-addons-label-text");
+        horizontalLayout.addComponent(addonTitle);
+        horizontalLayout.setComponentAlignment(addonTitle, Alignment.TOP_LEFT);
+        verticalLayout.setSpacing(true);
+
+        HorizontalLayout hLayoutInner = new HorizontalLayout();
+
+        Button servicesButton = new Button("Add");
+        servicesButton.setIcon(FontAwesome.PLUS_CIRCLE);
+        servicesButton.addStyleName(ValoTheme.BUTTON_SMALL);
+        servicesButton.addClickListener(clickEvent -> {
+        Miscellaneous.open(proposalVersion,proposalHeader);
+                    });
+        hLayoutInner.addComponent(servicesButton);
+        hLayoutInner.setComponentAlignment(servicesButton, Alignment.TOP_RIGHT);
+        hLayoutInner.setSpacing(true);
+
+        horizontalLayout.addComponent(hLayoutInner);
+        horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
+
+        servicesContainer =new BeanItemContainer<>(ProposalServices.class);
+        List<ProposalServices> miscellaneousList=proposalDataProvider.getVersionServices(proposalHeader.getId(),proposalVersion.getVersion());
+        for(ProposalServices miscellaneous:miscellaneousList)
+        {
+            LOG.info(miscellaneous);
+            servicesContainer.addItem(miscellaneous);
+        }
+
+        servicesGrid = new Grid(servicesContainer);
+        servicesGrid.setSelectionMode(Grid.SelectionMode.NONE);
+        servicesGrid.setSizeFull();
+        servicesGrid.setColumnReorderingAllowed(true);
+        servicesGrid.setColumns(ProposalServices.SERVICE_TITLE,ProposalServices.QUANTITY,ProposalServices.AMOUNT);
+
+        List<Grid.Column> columns = servicesGrid.getColumns();
+        int idx = 0;
+        columns.get(idx++).setHeaderCaption("Service Title");
+        columns.get(idx++).setHeaderCaption("Quantity");
+        columns.get(idx++).setHeaderCaption("Amount");
+
+        verticalLayout.addComponent(horizontalLayout);
+        verticalLayout.setSpacing(true);
+        verticalLayout.addComponent(servicesGrid);
+        return verticalLayout;
+    }
 
     private Component buildAddons() {
 
@@ -1198,6 +1259,13 @@ public class ProductAndAddons extends Window
         });
         hLayoutInner.addComponent(customAddonAddButton);
         hLayoutInner.setComponentAlignment(customAddonAddButton, Alignment.TOP_RIGHT);
+
+        Button newButton=new Button("test");
+        newButton.addClickListener(clickEvent -> {
+            Miscellaneous.open(proposalVersion,proposalHeader);
+        });
+        hLayoutInner.addComponent(newButton);
+        hLayoutInner.setComponentAlignment(newButton,Alignment.TOP_RIGHT);
 
         horizontalLayout.addComponent(hLayoutInner);
         horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
@@ -1842,7 +1910,10 @@ public class ProductAndAddons extends Window
         genContainer.addGeneratedProperty("actions", getEmptyActionTextGenerator());
         return genContainer;
     }
-
+    private GeneratedPropertyContainer createGeneratedServicesContainer(){
+        GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(servicesContainer);
+        return genContainer;
+    }
     private GeneratedPropertyContainer createGeneratedProductPropertyContainer() {
         GeneratedPropertyContainer genContainer = new GeneratedPropertyContainer(productContainer);
         genContainer.addGeneratedProperty("actions", getActionTextGenerator());
