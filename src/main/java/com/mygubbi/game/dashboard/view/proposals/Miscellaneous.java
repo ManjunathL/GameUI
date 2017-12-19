@@ -40,9 +40,11 @@ public class Miscellaneous extends Window
     private Date priceDate;
     private String city;
     Label PHCRate,DCCRate,FPCRate;
-    TextField PHCQTY,DCCQTY,FPCQTY;
+    TextField DCCQTY,FPCQTY;
+    Label PHCQTY;
     CheckBox PHCcheck,DCCcheck,FPCcheck;
-    TextField PHCAmount,DCCAmount,FPCAmount;
+    Label DCCAmount,FPCAmount;
+    Label PHCAmount;
     double projectHandlingChargesRate,deepCleaningChargesRate,floorProtectionChargesRate;
     Label projectHandlingLabel,deepClearingLabel,floorProtectionLabel;
     String userEmail = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
@@ -275,7 +277,38 @@ public class Miscellaneous extends Window
         verticalLayout.addComponent(vlayout);
         return verticalLayout;
     }
-
+    private void projectHandlingAppliedChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        LOG.info("project Handling value change " +valueChangeEvent.getProperty().getValue());
+        if(valueChangeEvent.getProperty().getValue().equals(true))
+        {
+            PHCAmount.setValue(String.valueOf(versionPriceHolder.getProjectHandlingAmount()));
+        }else {
+            PHCAmount.setValue("0");
+        }
+    }
+    private void deepClearingAppliedChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        if(valueChangeEvent.getProperty().getValue().equals(true))
+        {
+            DCCQTY.setReadOnly(false);
+            DCCAmount.setValue("0");
+        }else
+        {
+            DCCQTY.setReadOnly(true);
+        }
+    }
+    private void floorProtectionAppliedChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        if(valueChangeEvent.getProperty().getValue().equals(true))
+        {
+            FPCQTY.setReadOnly(false);
+            FPCAmount.setValue("0");
+        }else
+        {
+            FPCQTY.setReadOnly(true);
+        }
+    }
     private void projectHandlingchargesQuantityChanged(Property.ValueChangeEvent valueChangeEvent)
     {
         PHCAmount.setValue(String.valueOf(Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate));
@@ -376,6 +409,9 @@ public class Miscellaneous extends Window
         FPCcheck=new CheckBox("");
         verticalLayout.addComponent(FPCcheck);
 
+        PHCcheck.addValueChangeListener(this::projectHandlingAppliedChanged);
+        DCCcheck.addValueChangeListener(this::deepClearingAppliedChanged);
+        FPCcheck.addValueChangeListener(this::floorProtectionAppliedChanged);
         return verticalLayout;
     }
 
@@ -388,10 +424,10 @@ public class Miscellaneous extends Window
 
         Label heading=new Label();
         heading.addStyleName("margin-label-style2");
-        heading.setValue("Quantity");
+        heading.setValue(" ");
         verticalLayout.addComponent(heading);
 
-        PHCQTY =new TextField();
+        PHCQTY =new Label();
         PHCQTY.addStyleName("heighttext");
         PHCQTY.addStyleName("margin-label-style2");
         PHCQTY.setValue(String.valueOf(versionPriceHolder.getVrPriceAfterDiscount()));
@@ -401,12 +437,16 @@ public class Miscellaneous extends Window
         DCCQTY.addStyleName("margin-label-style2");
         DCCQTY.addStyleName("heighttext");
         DCCQTY.setValue(String.valueOf(versionPriceHolder.getDeepClearingQty()));
+        DCCQTY.setReadOnly(true);
+
         verticalLayout.addComponent(DCCQTY);
 
         FPCQTY = new TextField();
         FPCQTY.addStyleName("margin-label-style2");
         FPCQTY.addStyleName("heighttext");
         FPCQTY.setValue(String.valueOf(versionPriceHolder.getFloorProtectionSqft()));
+        FPCQTY.setReadOnly(true);
+
         verticalLayout.addComponent(FPCQTY);
 
         return verticalLayout;
@@ -423,21 +463,21 @@ public class Miscellaneous extends Window
         heading.setValue("Amount");
         verticalLayout.addComponent(heading);
 
-        PHCAmount =new TextField();
+        PHCAmount =new Label();
         PHCAmount.addStyleName("heighttext");
         PHCAmount.addStyleName("margin-label-style2");
         //PHCAmount.setValue(String.valueOf(Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate));
         PHCAmount.setValue(String.valueOf(versionPriceHolder.getProjectHandlingAmount()));
         verticalLayout.addComponent(PHCAmount);
 
-        DCCAmount =new TextField();
+        DCCAmount =new Label();
         DCCAmount.addStyleName("margin-label-style2");
         DCCAmount.addStyleName("heighttext");
         //DCCAmount.setValue(String.valueOf(Double.valueOf(DCCQTY.getValue()) * deepCleaningChargesRate));
         DCCAmount.setValue(String.valueOf(versionPriceHolder.getDeepClearingAmount()));
         verticalLayout.addComponent(DCCAmount);
 
-        FPCAmount = new TextField();
+        FPCAmount = new Label();
         FPCAmount.addStyleName("margin-label-style2");
         FPCAmount.addStyleName("heighttext");
         //FPCAmount.setValue(String.valueOf(Double.valueOf(FPCQTY.getValue()) * floorProtectionChargesRate));
