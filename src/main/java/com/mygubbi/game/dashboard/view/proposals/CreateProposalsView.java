@@ -454,6 +454,10 @@ public class CreateProposalsView extends Panel implements View {
                 copyVersion.setFloorProtectionSqft(pVersion.getFloorProtectionSqft());
                 copyVersion.setFloorProtectionAmount(pVersion.getFloorProtectionAmount());
                 copyVersion.setDeepClearingAmount(pVersion.getDeepClearingAmount());
+                copyVersion.setFloorProtectionChargesApplied(pVersion.getFloorProtectionChargesApplied());
+                copyVersion.setDeepClearingChargesApplied(pVersion.getDeepClearingChargesApplied());
+                copyVersion.setProjectHandlingChargesApplied(pVersion.getProjectHandlingChargesApplied());
+
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
                 LocalDateTime localDate = LocalDateTime.now();
                 copyVersion.setBusinessDate(dtf.format(localDate));
@@ -555,6 +559,9 @@ public class CreateProposalsView extends Panel implements View {
             copyVersion.setFloorProtectionSqft(pVersion.getFloorProtectionSqft());
             copyVersion.setFloorProtectionAmount(pVersion.getFloorProtectionAmount());
             copyVersion.setDeepClearingAmount(pVersion.getDeepClearingAmount());
+            copyVersion.setFloorProtectionChargesApplied(pVersion.getFloorProtectionChargesApplied());
+            copyVersion.setDeepClearingChargesApplied(pVersion.getDeepClearingChargesApplied());
+            copyVersion.setProjectHandlingChargesApplied(pVersion.getProjectHandlingChargesApplied());
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
             LocalDateTime localDate = LocalDateTime.now();
             copyVersion.setBusinessDate(dtf.format(localDate));

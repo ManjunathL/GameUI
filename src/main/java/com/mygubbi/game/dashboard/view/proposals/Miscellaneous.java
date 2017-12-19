@@ -208,7 +208,7 @@ public class Miscellaneous extends Window
         this.grandTotal.setReadOnly(true);
         left1.addComponent(grandTotal);
         this.grandTotal.setConverter(getAmountConverter());
-        this.grandTotal.setValue(String.valueOf(versionPriceHolder.getVrPrice()));
+        this.grandTotal.setValue(String.valueOf(proposalVersion.getFinalAmount()));
         this.grandTotal.setReadOnly(true);
         grandTotal.addStyleName("amount-text-label1");
         grandTotal.addStyleName("v-label-amount-text-label1");
@@ -265,7 +265,7 @@ public class Miscellaneous extends Window
         FormLayout left7 = new FormLayout();
         this.discountTotal = new Label();
         this.discountTotal.setConverter(getAmountConverter());
-        this.discountTotal.setValue(String.valueOf(versionPriceHolder.getVrPriceAfterDiscount()));
+        this.discountTotal.setValue(String.valueOf(proposalVersion.getAmount()));
         //this.discountTotal.setValue(proposalVersion.getDiscountAmount());
         this.discountTotal.setReadOnly(true);
         left7.addComponent(discountTotal);
@@ -284,6 +284,8 @@ public class Miscellaneous extends Window
         {
             LOG.info("project handling amount chnaged " +versionPriceHolder.getProjectHandlingAmount());
             PHCAmount.setValue(String.valueOf(versionPriceHolder.getProjectHandlingAmount()));
+            status="DP";
+            calculateDiscount(proposalVersion);
         }else {
             PHCAmount.setValue("0");
         }
@@ -402,12 +404,15 @@ public class Miscellaneous extends Window
         verticalLayout.addComponent(heading);
 
         PHCcheck=new CheckBox("");
+        PHCcheck.setValue(Boolean.valueOf(proposalVersion.getProjectHandlingChargesApplied()));
         verticalLayout.addComponent(PHCcheck);
 
         DCCcheck=new CheckBox("");
+        DCCcheck.setValue(Boolean.valueOf(proposalVersion.getDeepClearingChargesApplied()));
         verticalLayout.addComponent(DCCcheck);
 
         FPCcheck=new CheckBox("");
+        FPCcheck.setValue(Boolean.valueOf(proposalVersion.getFloorProtectionChargesApplied()));
         verticalLayout.addComponent(FPCcheck);
 
         PHCcheck.addValueChangeListener(this::projectHandlingAppliedChanged);
@@ -437,7 +442,7 @@ public class Miscellaneous extends Window
         DCCQTY =new TextField();
         DCCQTY.addStyleName("margin-label-style2");
         DCCQTY.addStyleName("heighttext");
-        DCCQTY.setValue(String.valueOf(versionPriceHolder.getDeepClearingQty()));
+        DCCQTY.setValue(String.valueOf(proposalVersion.getDeepClearingQty()));
         DCCQTY.setReadOnly(true);
 
         verticalLayout.addComponent(DCCQTY);
@@ -445,7 +450,7 @@ public class Miscellaneous extends Window
         FPCQTY = new TextField();
         FPCQTY.addStyleName("margin-label-style2");
         FPCQTY.addStyleName("heighttext");
-        FPCQTY.setValue(String.valueOf(versionPriceHolder.getFloorProtectionSqft()));
+        FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
         FPCQTY.setReadOnly(true);
 
         verticalLayout.addComponent(FPCQTY);
@@ -468,21 +473,21 @@ public class Miscellaneous extends Window
         PHCAmount.addStyleName("heighttext");
         PHCAmount.addStyleName("margin-label-style2");
         //PHCAmount.setValue(String.valueOf(Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate));
-        PHCAmount.setValue(String.valueOf(versionPriceHolder.getProjectHandlingAmount()));
+        PHCAmount.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));
         verticalLayout.addComponent(PHCAmount);
 
         DCCAmount =new Label();
         DCCAmount.addStyleName("margin-label-style2");
         DCCAmount.addStyleName("heighttext");
         //DCCAmount.setValue(String.valueOf(Double.valueOf(DCCQTY.getValue()) * deepCleaningChargesRate));
-        DCCAmount.setValue(String.valueOf(versionPriceHolder.getDeepClearingAmount()));
+        DCCAmount.setValue(String.valueOf(proposalVersion.getDeepClearingAmount()));
         verticalLayout.addComponent(DCCAmount);
 
         FPCAmount = new Label();
         FPCAmount.addStyleName("margin-label-style2");
         FPCAmount.addStyleName("heighttext");
         //FPCAmount.setValue(String.valueOf(Double.valueOf(FPCQTY.getValue()) * floorProtectionChargesRate));
-        FPCAmount.setValue(String.valueOf(versionPriceHolder.getFloorProtectionAmount()));
+        FPCAmount.setValue(String.valueOf(proposalVersion.getFloorProtectionAmount()));
         verticalLayout.addComponent(FPCAmount);
 
         return verticalLayout;
