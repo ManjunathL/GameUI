@@ -33,6 +33,11 @@ public class ProposalVersion implements Cloneable {
     public static final String UPDATED_ON="updatedOn";
     public static final String UPDATEDBY = "updatedBy";
     public static final String BUSINESS_DATE = "businessDate";
+    public static final String PROJECT_HANDLING_AMOUNT = "projectHandlingAmount";
+    public static final String DEEP_CLEARING_QTY = "deepClearingQty";
+    public static final String DEEP_CLEARING_AMOUNT= "deepClearingAmount";
+    public static final String FLOOR_PROTECTION_SQFT = "floorProtectionSqft";
+    public static final String FLOOR_PROTECTION_AMOUNT= "floorProtectionAmount";
 
     private String version;
     private int proposalId;
@@ -58,6 +63,11 @@ public class ProposalVersion implements Cloneable {
     private String ignoreAndPublishFlag;
     private String remarksIgnore;
     private String businessDate;
+    private double projectHandlingAmount;
+    private double deepClearingQty;
+    private double deepClearingAmount;
+    private double floorProtectionSqft;
+    private double floorProtectionAmount;
 
     @Override
     public Object clone()  {
@@ -281,6 +291,46 @@ public class ProposalVersion implements Cloneable {
         this.businessDate = businessDate;
     }
 
+    public double getProjectHandlingAmount() {
+        return projectHandlingAmount;
+    }
+
+    public void setProjectHandlingAmount(double projectHandlingAmount) {
+        this.projectHandlingAmount = projectHandlingAmount;
+    }
+
+    public double getDeepClearingQty() {
+        return deepClearingQty;
+    }
+
+    public void setDeepClearingQty(double deepClearingQty) {
+        this.deepClearingQty = deepClearingQty;
+    }
+
+    public double getFloorProtectionSqft() {
+        return floorProtectionSqft;
+    }
+
+    public void setFloorProtectionSqft(double floorProtectionSqft) {
+        this.floorProtectionSqft = floorProtectionSqft;
+    }
+
+    public double getFloorProtectionAmount() {
+        return floorProtectionAmount;
+    }
+
+    public void setFloorProtectionAmount(double floorProtectionAmount) {
+        this.floorProtectionAmount = floorProtectionAmount;
+    }
+
+    public double getDeepClearingAmount() {
+        return deepClearingAmount;
+    }
+
+    public void setDeepClearingAmount(double deepClearingAmount) {
+        this.deepClearingAmount = deepClearingAmount;
+    }
+
     @Override
     public String toString() {
         return "ProposalVersion{" +
@@ -307,7 +357,11 @@ public class ProposalVersion implements Cloneable {
                 ", manufactureAmount=" + manufactureAmount +
                 ", ignoreAndPublishFlag='" + ignoreAndPublishFlag + '\'' +
                 ", remarksIgnore='" + remarksIgnore + '\'' +
-                ", businessDate=" + businessDate +
+                ", businessDate='" + businessDate + '\'' +
+                ", projectHandlingAmount=" + projectHandlingAmount +
+                ", deepClearingQty=" + deepClearingQty +
+                ", floorProtectionSqft=" + floorProtectionSqft +
+                ", floorProtectionAmount=" + floorProtectionAmount +
                 '}';
     }
 }

@@ -27,6 +27,9 @@ public class VersionPriceHolder
     private double addonProfit;
     private double addonMargin;
     private double costWoAccessories;
+    private double projectHandlingAmount;
+    private double deepClearingAmount;
+    private double floorProtectionAmount;
 
     public double getVrPrice() {
         return vrPrice;
@@ -188,32 +191,73 @@ public class VersionPriceHolder
         this.costWoAccessories = costWoAccessories;
     }
 
-    /*public VersionPriceHolder(VersionPriceHolder versionPriceHolder) {
-        super();
-        this.proposalId = versionPriceHolder.proposalId;
-        this.version = versionPriceHolder.version;
-        this.vrPrice = versionPriceHolder.vrPrice;
-        this.vrPriceAfterDiscount = versionPriceHolder.vrPriceAfterDiscount;
-        this.vrPriceWoTax = versionPriceHolder.vrPriceWoTax;
-        this.vrCost = versionPriceHolder.vrCost;
-        this.vrProfit = versionPriceHolder.vrProfit;
-        this.vrMargin = versionPriceHolder.vrMargin;
-        this.hikePrice = versionPriceHolder.hikePrice;
-        this.prPrice = versionPriceHolder.prPrice;
-        this.prPriceAfterDiscount = versionPriceHolder.prPriceAfterDiscount;
-        this.prPriceWoTax = versionPriceHolder.prPriceWoTax;
-        this.prCost = versionPriceHolder.prCost;
-        this.prProfit = versionPriceHolder.prProfit;
-        this.prMargin = versionPriceHolder.prMargin;
-        this.addonPrice = versionPriceHolder.addonPrice;
-        this.addonPriceAfterDiscount = versionPriceHolder.addonPriceAfterDiscount;
-        this.addonPriceWoTax = versionPriceHolder.addonPriceWoTax;
-        this.addonCost = versionPriceHolder.addonCost;
-        this.addonProfit = versionPriceHolder.addonProfit;
-        this.addonMargin = versionPriceHolder.addonMargin;
-        this.costWoAccessories = versionPriceHolder.costWoAccessories;
+    public String getProposalId() {
+        return proposalId;
     }
-*/
+
+    public void setProposalId(String proposalId) {
+        this.proposalId = proposalId;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public double getProjectHandlingAmount() {
+        return projectHandlingAmount;
+    }
+
+    public void setProjectHandlingAmount(double projectHandlingAmount) {
+        this.projectHandlingAmount = projectHandlingAmount;
+    }
+
+    public double getDeepClearingAmount() {
+        return deepClearingAmount;
+    }
+
+    public void setDeepClearingAmount(double deepClearingAmount) {
+        this.deepClearingAmount = deepClearingAmount;
+    }
+
+    public double getFloorProtectionAmount() {
+        return floorProtectionAmount;
+    }
+
+    public void setFloorProtectionAmount(double floorProtectionAmount) {
+        this.floorProtectionAmount = floorProtectionAmount;
+    }
+
+    /*public VersionPriceHolder(VersionPriceHolder versionPriceHolder) {
+            super();
+            this.proposalId = versionPriceHolder.proposalId;
+            this.version = versionPriceHolder.version;
+            this.vrPrice = versionPriceHolder.vrPrice;
+            this.vrPriceAfterDiscount = versionPriceHolder.vrPriceAfterDiscount;
+            this.vrPriceWoTax = versionPriceHolder.vrPriceWoTax;
+            this.vrCost = versionPriceHolder.vrCost;
+            this.vrProfit = versionPriceHolder.vrProfit;
+            this.vrMargin = versionPriceHolder.vrMargin;
+            this.hikePrice = versionPriceHolder.hikePrice;
+            this.prPrice = versionPriceHolder.prPrice;
+            this.prPriceAfterDiscount = versionPriceHolder.prPriceAfterDiscount;
+            this.prPriceWoTax = versionPriceHolder.prPriceWoTax;
+            this.prCost = versionPriceHolder.prCost;
+            this.prProfit = versionPriceHolder.prProfit;
+            this.prMargin = versionPriceHolder.prMargin;
+            this.addonPrice = versionPriceHolder.addonPrice;
+            this.addonPriceAfterDiscount = versionPriceHolder.addonPriceAfterDiscount;
+            this.addonPriceWoTax = versionPriceHolder.addonPriceWoTax;
+            this.addonCost = versionPriceHolder.addonCost;
+            this.addonProfit = versionPriceHolder.addonProfit;
+            this.addonMargin = versionPriceHolder.addonMargin;
+            this.costWoAccessories = versionPriceHolder.costWoAccessories;
+        }
+    */
+
     @Override
     public String toString() {
         return "VersionPriceHolder{" +
@@ -239,6 +283,9 @@ public class VersionPriceHolder
                 ", addonProfit=" + addonProfit +
                 ", addonMargin=" + addonMargin +
                 ", costWoAccessories=" + costWoAccessories +
+                ", projectHandlingAmount=" + projectHandlingAmount +
+                ", deepClearingAmount=" + deepClearingAmount +
+                ", floorProtectionAmount=" + floorProtectionAmount +
                 '}';
     }
 }

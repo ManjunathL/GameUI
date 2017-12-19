@@ -14,8 +14,8 @@ public class ProposalServices
     private int proposalId;
     private String fromVersion;
     private String serviceTitle;
-    private String quantity;
-    private String amount;
+    private int quantity;
+    private double amount;
 
     public int getProposalId() {
         return proposalId;
@@ -41,19 +41,19 @@ public class ProposalServices
         this.serviceTitle = serviceTitle;
     }
 
-    public String getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public String getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 }

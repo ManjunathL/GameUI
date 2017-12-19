@@ -50,6 +50,7 @@ public class MarginScreen extends Window
     Label profitPercentageAmount;
 
     Label productsCost,addonsCost,totalPrice,hikeLabel;
+    Label projectHandlingCharges,deepcleaningCharges,floorProtectionCharges;
 
     Label discountedSalesPrice;
     Label discountedSalesPriceWOtax;
@@ -122,6 +123,14 @@ public class MarginScreen extends Window
         mainhorizontalLayout.addComponent(buildTsp());
         verticalLayout.addComponent(mainhorizontalLayout);
         verticalLayout.setComponentAlignment(mainhorizontalLayout,Alignment.TOP_CENTER);
+
+
+        HorizontalLayout miscelaneoushorizontalLayout= new HorizontalLayout();
+        miscelaneoushorizontalLayout.setMargin(new MarginInfo(false, false, false, false));
+        miscelaneoushorizontalLayout.setSizeFull();
+        miscelaneoushorizontalLayout.addComponent(buildMiscellaneous());
+        verticalLayout.addComponent(miscelaneoushorizontalLayout);
+        verticalLayout.setComponentAlignment(miscelaneoushorizontalLayout,Alignment.TOP_CENTER);
 
         HorizontalLayout checkboxlayout= new HorizontalLayout();
         checkboxlayout.setMargin(new MarginInfo(false, false, false, false));
@@ -263,6 +272,29 @@ public class MarginScreen extends Window
         hikeLabel=new Label("Hike Price:   "+versionPriceHolder.getHikePrice());
         hikeLabel.addStyleName("margin-label-style1");
         horizontalLayout.addComponent(hikeLabel);
+
+        return horizontalLayout;
+    }
+
+    public Component buildMiscellaneous()
+    {
+        HorizontalLayout horizontalLayout=new HorizontalLayout();
+        horizontalLayout.setMargin(new MarginInfo(true,true,true,true));
+        horizontalLayout.setSpacing(true);
+        //productsCost=new Label("Products Price:   " + round(totalSalesPrice,2));
+        projectHandlingCharges=new Label("Project Handling Charges:   " +versionPriceHolder.getProjectHandlingAmount());
+        projectHandlingCharges.addStyleName("margin-label-style1");
+        horizontalLayout.addComponent(projectHandlingCharges);
+
+        //addonsCost=new Label("Addons Price:   " +round(addonsTotal,2));
+        deepcleaningCharges=new Label("Deep Clearing Charges:   "+versionPriceHolder.getDeepClearingAmount());
+        deepcleaningCharges.addStyleName("margin-label-style1");
+        horizontalLayout.addComponent(deepcleaningCharges);
+
+        //totalPrice=new Label("Total Sales Price:   "+round(totalSalesPrice+addonsTotal,2));
+        floorProtectionCharges=new Label("Floor Protection Charges:   "+versionPriceHolder.getFloorProtectionAmount());
+        floorProtectionCharges.addStyleName("margin-label-style1");
+        horizontalLayout.addComponent(floorProtectionCharges);
 
         return horizontalLayout;
     }

@@ -1286,7 +1286,6 @@ public class ProposalDataProvider {
         } catch (IOException e) {
             throw new RuntimeException("Couldn't map products", e);
         }
-
     }
 
     public ProposalVersion updateVersion(ProposalVersion proposalVersion) {
@@ -1295,7 +1294,6 @@ public class ProposalDataProvider {
             proposalVersion.setUpdatedBy(getUserId());
             String versionJson = this.mapper.writeValueAsString(proposalVersion);
             JSONObject jsonObject = dataProviderMode.postResource("proposal/updateversion", versionJson);
-
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't update proposal", e);
@@ -2485,17 +2483,26 @@ public class ProposalDataProvider {
         JSONObject jsonObject = dataProviderMode.postResource("proposal/version/saveService", json);
         return jsonObject;
     }
-    public List<ProposalServices> getVersionServices(int proposalId, String Vid) {
-        JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/version/miscellaneouslist", new HashMap<String, String>() {
+    public List<JSONObject> getVersionServices(int proposalId, String Vid) {
+        LOG.info("proposalID " + proposalId+ "version id " +Vid);
+        JSONArray arrayJson = dataProviderMode.getResourceArray("proposal/version/miscellaneouslist", new HashMap<String, String>() {
             {
                 put("proposalId", proposalId + "");
-                put("fromVersion", Vid + "");
+                put("version", Vid + "");
             }
         });
         try {
-            ProposalServices[] items = this.mapper.readValue(jsonArray.toString(), ProposalServices[].class);
-            return new ArrayList<>(Arrays.asList(items));
-        } catch (IOException e) {
+            LOG.info("JSon object toString()" + arrayJson.toString());
+/*
+            JSONArray items = this.mapper.readValue(arrayJson.toString(), JSONArray.class);
+            LOG.info("items size " +items.length());
+            LOG.info("ITEMS :: "+items.get(0));
+*/
+            List l = new ArrayList<JSONObject>();
+            for(int i=0;i<arrayJson.length();i++)
+                 l.add(arrayJson.get(i));
+            return l;
+        } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }

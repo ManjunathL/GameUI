@@ -449,6 +449,11 @@ public class CreateProposalsView extends Panel implements View {
                 copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
                 copyVersion.setAmount(pVersion.getAmount());
                 copyVersion.setProposalId(pVersion.getProposalId());
+                copyVersion.setProjectHandlingAmount(pVersion.getProjectHandlingAmount());
+                copyVersion.setDeepClearingQty(pVersion.getDeepClearingQty());
+                copyVersion.setFloorProtectionSqft(pVersion.getFloorProtectionSqft());
+                copyVersion.setFloorProtectionAmount(pVersion.getFloorProtectionAmount());
+                copyVersion.setDeepClearingAmount(pVersion.getDeepClearingAmount());
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
                 LocalDateTime localDate = LocalDateTime.now();
                 copyVersion.setBusinessDate(dtf.format(localDate));
@@ -545,6 +550,11 @@ public class CreateProposalsView extends Panel implements View {
             copyVersion.setDiscountPercentage(pVersion.getDiscountPercentage());
             copyVersion.setAmount(pVersion.getAmount());
             copyVersion.setOldProposalId(pVersion.getProposalId());
+            copyVersion.setProjectHandlingAmount(pVersion.getProjectHandlingAmount());
+            copyVersion.setDeepClearingQty(pVersion.getDeepClearingQty());
+            copyVersion.setFloorProtectionSqft(pVersion.getFloorProtectionSqft());
+            copyVersion.setFloorProtectionAmount(pVersion.getFloorProtectionAmount());
+            copyVersion.setDeepClearingAmount(pVersion.getDeepClearingAmount());
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
             LocalDateTime localDate = LocalDateTime.now();
             copyVersion.setBusinessDate(dtf.format(localDate));
