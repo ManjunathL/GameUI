@@ -400,13 +400,13 @@ public class Miscellaneous extends Window
         DCCQTY =new TextField();
         DCCQTY.addStyleName("margin-label-style2");
         DCCQTY.addStyleName("heighttext");
-        DCCQTY.setValue("1");
+        DCCQTY.setValue(String.valueOf(versionPriceHolder.getDeepClearingQty()));
         verticalLayout.addComponent(DCCQTY);
 
         FPCQTY = new TextField();
         FPCQTY.addStyleName("margin-label-style2");
         FPCQTY.addStyleName("heighttext");
-        FPCQTY.setValue("1");
+        FPCQTY.setValue(String.valueOf(versionPriceHolder.getFloorProtectionSqft()));
         verticalLayout.addComponent(FPCQTY);
 
         return verticalLayout;

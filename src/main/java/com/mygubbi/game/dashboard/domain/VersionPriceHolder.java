@@ -30,6 +30,8 @@ public class VersionPriceHolder
     private double projectHandlingAmount;
     private double deepClearingAmount;
     private double floorProtectionAmount;
+    private double deepClearingQty;
+    private double floorProtectionSqft;
 
     public double getVrPrice() {
         return vrPrice;
@@ -231,6 +233,21 @@ public class VersionPriceHolder
         this.floorProtectionAmount = floorProtectionAmount;
     }
 
+    public double getDeepClearingQty() {
+        return deepClearingQty;
+    }
+
+    public void setDeepClearingQty(double deepClearingQty) {
+        this.deepClearingQty = deepClearingQty;
+    }
+
+    public double getFloorProtectionSqft() {
+        return floorProtectionSqft;
+    }
+
+    public void setFloorProtectionSqft(double floorProtectionSqft) {
+        this.floorProtectionSqft = floorProtectionSqft;
+    }
     /*public VersionPriceHolder(VersionPriceHolder versionPriceHolder) {
             super();
             this.proposalId = versionPriceHolder.proposalId;
@@ -286,6 +303,8 @@ public class VersionPriceHolder
                 ", projectHandlingAmount=" + projectHandlingAmount +
                 ", deepClearingAmount=" + deepClearingAmount +
                 ", floorProtectionAmount=" + floorProtectionAmount +
+                ", deepClearingQty=" + deepClearingQty +
+                ", floorProtectionSqft=" + floorProtectionSqft +
                 '}';
     }
 }
