@@ -730,7 +730,10 @@ public class ProductAndAddons extends Window
             this.discountAmount.setValue(String.valueOf(discountAmount.intValue()) + " ");
         }
         disAmount = discountAmount.intValue();
-        proposalVersion.setProjectHandlingAmount(totalAfterDiscount * (projectHandlingChargesRate / 100));
+        if(proposalVersion.getProjectHandlingChargesApplied().equals("true"))
+        {
+            proposalVersion.setProjectHandlingAmount(totalAfterDiscount * (projectHandlingChargesRate / 100));
+        }
         Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal +servicesTotal;
         double res = grandTotal - grandTotal % 10;
 

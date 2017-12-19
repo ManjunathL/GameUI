@@ -38,6 +38,9 @@ public class ProposalVersion implements Cloneable {
     public static final String DEEP_CLEARING_AMOUNT= "deepClearingAmount";
     public static final String FLOOR_PROTECTION_SQFT = "floorProtectionSqft";
     public static final String FLOOR_PROTECTION_AMOUNT= "floorProtectionAmount";
+    public static final String PROJECT_HANDLING_APPLIED="projectHandlingChargesApplied";
+    public static final String DEEP_CLEARING_APPLIED="deepClearingChargesApplied";
+    public static final String FLOOR_PROTECTION_APPLIED="floorProtectionChargesApplied";
 
     private String version;
     private int proposalId;
@@ -68,6 +71,9 @@ public class ProposalVersion implements Cloneable {
     private double deepClearingAmount;
     private double floorProtectionSqft;
     private double floorProtectionAmount;
+    private String projectHandlingChargesApplied;
+    private String deepClearingChargesApplied;
+    private String floorProtectionChargesApplied;
 
     @Override
     public Object clone()  {
@@ -331,6 +337,30 @@ public class ProposalVersion implements Cloneable {
         this.deepClearingAmount = deepClearingAmount;
     }
 
+    public String getProjectHandlingChargesApplied() {
+        return projectHandlingChargesApplied;
+    }
+
+    public void setProjectHandlingChargesApplied(String projectHandlingChargesApplied) {
+        this.projectHandlingChargesApplied = projectHandlingChargesApplied;
+    }
+
+    public String getDeepClearingChargesApplied() {
+        return deepClearingChargesApplied;
+    }
+
+    public void setDeepClearingChargesApplied(String deepClearingChargesApplied) {
+        this.deepClearingChargesApplied = deepClearingChargesApplied;
+    }
+
+    public String getFloorProtectionChargesApplied() {
+        return floorProtectionChargesApplied;
+    }
+
+    public void setFloorProtectionChargesApplied(String floorProtectionChargesApplied) {
+        this.floorProtectionChargesApplied = floorProtectionChargesApplied;
+    }
+
     @Override
     public String toString() {
         return "ProposalVersion{" +
@@ -360,8 +390,12 @@ public class ProposalVersion implements Cloneable {
                 ", businessDate='" + businessDate + '\'' +
                 ", projectHandlingAmount=" + projectHandlingAmount +
                 ", deepClearingQty=" + deepClearingQty +
+                ", deepClearingAmount=" + deepClearingAmount +
                 ", floorProtectionSqft=" + floorProtectionSqft +
                 ", floorProtectionAmount=" + floorProtectionAmount +
+                ", projectHandlingChargesApplied='" + projectHandlingChargesApplied + '\'' +
+                ", deepClearingChargesApplied='" + deepClearingChargesApplied + '\'' +
+                ", floorProtectionChargesApplied='" + floorProtectionChargesApplied + '\'' +
                 '}';
     }
 }

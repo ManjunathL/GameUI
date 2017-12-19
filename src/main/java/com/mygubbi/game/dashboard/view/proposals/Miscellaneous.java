@@ -282,6 +282,7 @@ public class Miscellaneous extends Window
         LOG.info("project Handling value change " +valueChangeEvent.getProperty().getValue());
         if(valueChangeEvent.getProperty().getValue().equals(true))
         {
+            LOG.info("project handling amount chnaged " +versionPriceHolder.getProjectHandlingAmount());
             PHCAmount.setValue(String.valueOf(versionPriceHolder.getProjectHandlingAmount()));
         }else {
             PHCAmount.setValue("0");
@@ -567,6 +568,7 @@ public class Miscellaneous extends Window
     }
     private void saveProposalVersion() {
         try {
+            LOG.info("Vlaue on save " +PHCcheck.getValue().toString());
             String disAmount = discountAmount.getValue();
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
@@ -579,6 +581,9 @@ public class Miscellaneous extends Window
             proposalVersion.setDeepClearingAmount(Double.valueOf(DCCAmount.getValue()));
             proposalVersion.setFloorProtectionSqft(Double.valueOf(FPCQTY.getValue()));
             proposalVersion.setFloorProtectionAmount(Double.valueOf(FPCAmount.getValue()));
+            proposalVersion.setProjectHandlingChargesApplied(PHCcheck.getValue().toString());
+            proposalVersion.setDeepClearingChargesApplied(DCCcheck.getValue().toString());
+            proposalVersion.setFloorProtectionChargesApplied(FPCcheck.getValue().toString());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(proposalVersion.getVersion());
 
