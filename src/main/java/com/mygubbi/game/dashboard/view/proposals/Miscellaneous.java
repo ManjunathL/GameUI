@@ -41,6 +41,7 @@ public class Miscellaneous extends Window
     private String city;
     Label PHCRate,DCCRate,FPCRate;
     TextField PHCQTY,DCCQTY,FPCQTY;
+    CheckBox PHCcheck,DCCcheck,FPCcheck;
     TextField PHCAmount,DCCAmount,FPCAmount;
     double projectHandlingChargesRate,deepCleaningChargesRate,floorProtectionChargesRate;
     Label projectHandlingLabel,deepClearingLabel,floorProtectionLabel;
@@ -110,6 +111,14 @@ public class Miscellaneous extends Window
         horizontalLayout2.addComponent(buildLayout2());
         verticalLayout.addComponent(horizontalLayout3);
         verticalLayout.setComponentAlignment(horizontalLayout3,Alignment.TOP_CENTER);
+        horizontalLayout2.setHeightUndefined();
+
+        HorizontalLayout horizontalLayout6 = new HorizontalLayout();
+        horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
+        horizontalLayout2.setSizeFull();
+        horizontalLayout2.addComponent(buildLayout5());
+        verticalLayout.addComponent(horizontalLayout6);
+        verticalLayout.setComponentAlignment(horizontalLayout6,Alignment.TOP_CENTER);
         horizontalLayout2.setHeightUndefined();
 
         HorizontalLayout horizontalLayout4 = new HorizontalLayout();
@@ -344,6 +353,28 @@ public class Miscellaneous extends Window
         FPCRate.setValue(String.valueOf(floorProtectionChargesRate));
         verticalLayout.addComponent(FPCRate);
         verticalLayout.setComponentAlignment(FPCRate,Alignment.MIDDLE_CENTER);
+
+        return verticalLayout;
+    }
+    public Component buildLayout5()
+    {
+        VerticalLayout verticalLayout=new VerticalLayout();
+        verticalLayout.setSpacing(true);
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+
+        Label heading=new Label("Applicable");
+        heading.addStyleName("margin-label-style2");
+        heading.setValue("Applicable");
+        verticalLayout.addComponent(heading);
+
+        PHCcheck=new CheckBox("");
+        verticalLayout.addComponent(PHCcheck);
+
+        DCCcheck=new CheckBox("");
+        verticalLayout.addComponent(DCCcheck);
+
+        FPCcheck=new CheckBox("");
+        verticalLayout.addComponent(FPCcheck);
 
         return verticalLayout;
     }

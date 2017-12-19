@@ -1208,7 +1208,7 @@ public class ProductAndAddons extends Window
 
         HorizontalLayout hLayoutInner = new HorizontalLayout();
 
-        Button servicesButton = new Button("Add");
+        Button servicesButton = new Button("Apply Discount");
         servicesButton.setIcon(FontAwesome.PLUS_CIRCLE);
         servicesButton.addStyleName(ValoTheme.BUTTON_SMALL);
         servicesButton.addClickListener(clickEvent -> {
@@ -1305,13 +1305,6 @@ public class ProductAndAddons extends Window
         });
         hLayoutInner.addComponent(customAddonAddButton);
         hLayoutInner.setComponentAlignment(customAddonAddButton, Alignment.TOP_RIGHT);
-
-        Button newButton=new Button("test");
-        newButton.addClickListener(clickEvent -> {
-            Miscellaneous.open(proposalVersion,proposalHeader);
-        });
-        hLayoutInner.addComponent(newButton);
-        hLayoutInner.setComponentAlignment(newButton,Alignment.TOP_RIGHT);
 
         horizontalLayout.addComponent(hLayoutInner);
         horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
