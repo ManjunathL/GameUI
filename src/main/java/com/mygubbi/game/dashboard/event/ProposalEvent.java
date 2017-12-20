@@ -156,4 +156,17 @@ public abstract class ProposalEvent {
             return product;
         }
     }
+
+    public static class ServicesCreatedEvent{
+        private ProposalVersion proposalVersion;
+        public ServicesCreatedEvent(ProposalVersion proposalVersion) {
+            this.proposalVersion = proposalVersion;
+        }
+
+        public ProposalVersion getProposalVersion() {
+            return proposalVersion;
+        }
+    }
+
+
 }

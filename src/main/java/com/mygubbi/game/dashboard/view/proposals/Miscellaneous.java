@@ -603,7 +603,7 @@ public class Miscellaneous extends Window
 
             proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-            DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+            DashboardEventBus.post(new ProposalEvent.ServicesCreatedEvent(proposalVersion));
             close();
         } catch (Exception e) {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);

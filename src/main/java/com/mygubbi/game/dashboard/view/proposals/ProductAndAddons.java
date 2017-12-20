@@ -79,7 +79,7 @@ public class ProductAndAddons extends Window
     private Button customAddonAddButton;
     private TextField ttitle;
     private BeanItemContainer<AddonProduct> addonsContainer;
-    private BeanItemContainer<JSONObject> servicesContainer;
+    private BeanItemContainer<ProposalServices> servicesContainer;
     private Grid addonsGrid;
     private Grid servicesGrid;
 
@@ -1224,7 +1224,7 @@ public class ProductAndAddons extends Window
         horizontalLayout.addComponent(hLayoutInner);
         horizontalLayout.setComponentAlignment(hLayoutInner, Alignment.TOP_RIGHT);
 
-        servicesContainer =new BeanItemContainer<>(JSONObject.class);
+        servicesContainer =new BeanItemContainer<>(ProposalServices.class);
         servicesGrid=new Grid();
         servicesGrid.setSizeFull();
         servicesGrid.setColumnReorderingAllowed(true);
@@ -1232,15 +1232,15 @@ public class ProductAndAddons extends Window
         servicesGrid.addColumn("Amount");
         servicesGrid.setHeight("200px");
 
-        List<JSONObject> miscellaneousList=proposalDataProvider.getVersionServices(proposalHeader.getId(),proposalVersion.getVersion());
+        List<ProposalServices> miscellaneousList=proposalDataProvider.getVersionServices(proposalHeader.getId(),proposalVersion.getVersion());
         LOG.info("misc list "+miscellaneousList.size());
         try {
 
-            for(JSONObject miscellaneous:miscellaneousList)
+            for(ProposalServices miscellaneous:miscellaneousList)
             {
                 LOG.info("misc json" +miscellaneous);
                 servicesContainer.addItem(miscellaneous);
-                servicesGrid.addRow(miscellaneous.get("title").toString(),miscellaneous.get("Amount").toString());
+               // servicesGrid.addRow(miscellaneous.get("title").toString(),miscellaneous.get("Amount").toString());
             }
         }
         catch (Exception e)
@@ -1250,16 +1250,16 @@ public class ProductAndAddons extends Window
         }
 
 
-        /*LOG.info("container size " +servicesContainer.size());
+        LOG.info("container size " +servicesContainer.size());
         servicesGrid = new Grid(servicesContainer);
         servicesGrid.setSelectionMode(Grid.SelectionMode.NONE);
         servicesGrid.setSizeFull();
         servicesGrid.setColumnReorderingAllowed(true);
-        servicesGrid.setColumns("Amount","title");
+        servicesGrid.setColumns(ProposalServices.SERVICE_TITLE,ProposalServices.AMOUNT);
         List<Grid.Column> columns = servicesGrid.getColumns();
         int idx = 0;
         columns.get(idx++).setHeaderCaption("Service Title");
-        columns.get(idx++).setHeaderCaption("Amount");*/
+        columns.get(idx++).setHeaderCaption("Amount");
 
         verticalLayout.addComponent(horizontalLayout);
         verticalLayout.setSpacing(true);
@@ -2249,6 +2249,21 @@ public class ProductAndAddons extends Window
     }
 
     @Subscribe
+    public void ServiceChange(final ProposalEvent.ServicesCreatedEvent event) {
+        /*List<Product> products = proposal.getProducts();
+        boolean removed = products.remove(event.getProduct());
+        if (removed) {*/
+        List<ProposalServices> miscellaneousList=proposalDataProvider.getVersionServices(proposalHeader.getId(),proposalVersion.getVersion());
+            servicesContainer.removeAllItems();
+            servicesContainer.addAll(miscellaneousList);
+           // servicesGrid.setContainerDataSource(createGeneratedProductPropertyContainer());
+            servicesGrid.getSelectionModel().reset();
+            updateTotal();
+            // saveVersionAmounts();
+        //}
+    }
+
+    @Subscribe
     public void productCreatedOrUpdated(final ProposalEvent.ProductCreatedOrUpdatedEvent event) {
         List<Product> products = proposalDataProvider.getVersionProducts(proposalHeader.getId(), proposalVersion.getVersion());
         productContainer.removeAllItems();
@@ -2365,7 +2380,6 @@ public class ProductAndAddons extends Window
             addFromProductLibrary.setEnabled(false);
         }
     }
-
 
 }
 

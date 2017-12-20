@@ -2483,7 +2483,7 @@ public class ProposalDataProvider {
         JSONObject jsonObject = dataProviderMode.postResource("proposal/version/saveService", json);
         return jsonObject;
     }
-    public List<JSONObject> getVersionServices(int proposalId, String Vid) {
+    public List<ProposalServices> getVersionServices(int proposalId, String Vid) {
         LOG.info("proposalID " + proposalId+ "version id " +Vid);
         JSONArray arrayJson = dataProviderMode.getResourceArray("proposal/version/miscellaneouslist", new HashMap<String, String>() {
             {
@@ -2492,16 +2492,14 @@ public class ProposalDataProvider {
             }
         });
         try {
-            LOG.info("JSon object toString()" + arrayJson.toString());
-/*
-            JSONArray items = this.mapper.readValue(arrayJson.toString(), JSONArray.class);
-            LOG.info("items size " +items.length());
-            LOG.info("ITEMS :: "+items.get(0));
-*/
+            /*LOG.info("JSon object toString()" + arrayJson.toString());
             List l = new ArrayList<JSONObject>();
             for(int i=0;i<arrayJson.length();i++)
                  l.add(arrayJson.get(i));
-            return l;
+            return l;*/
+            ProposalServices[] items = this.mapper.readValue(arrayJson.toString(), ProposalServices[].class);
+            return new ArrayList<>(Arrays.asList(items));
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
