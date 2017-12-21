@@ -45,16 +45,23 @@ public class Miscellaneous extends Window
     CheckBox PHCcheck,DCCcheck,FPCcheck;
     Label DCCAmount,FPCAmount;
     Label PHCAmount;
+    Label servicesTotal;
     double projectHandlingChargesRate,deepCleaningChargesRate,floorProtectionChargesRate;
     Label projectHandlingLabel,deepClearingLabel,floorProtectionLabel;
     String userEmail = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
     private TextField discountPercentage;
+    private TextField productdiscountPercentage;
     private TextField discountAmount;
+    private TextField productdiscountAmount;
     private Label grandTotal;
+    private Label productgrandTotal;
     private String status=null;
     private String saveVersionFlag = "no";
     Label totalWithoutDiscount;
+    Label producttotalWithoutDiscount;
     private Label discountTotal;
+    private Label totalAfterDiscount;
+    private Label producttotalAfterDiscount;
     VersionPriceHolder versionPriceHolder;
     Double discountPercentageValue;
     Double discountAmountValue;
@@ -85,8 +92,7 @@ public class Miscellaneous extends Window
         VerticalLayout verticalLayout = new VerticalLayout();
         Responsive.makeResponsive(this);
 
-       updateTotal();
-
+        updateTotal();
 
         HorizontalLayout titleLayout=new HorizontalLayout();
         titleLayout.setMargin(new MarginInfo(false, true, true, true));
@@ -99,10 +105,27 @@ public class Miscellaneous extends Window
         verticalLayout.addComponent(titleLayout);
         verticalLayout.setComponentAlignment(titleLayout,Alignment.TOP_CENTER);
 
+       /* Component servicesLayout1=getTestLayout();
+        verticalLayout.addComponent(servicesLayout1);*/
+
+        Component amountsLayout = getProductsAmountLayout();
+        this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
+        this.discountAmount.addFocusListener(this::onFocusToDiscountAmount);
+        this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
+        this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
+        this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
+        verticalLayout.addComponent(amountsLayout);
+
+        Component addonsLayout=getAddonsLayout();
+        verticalLayout.addComponent(addonsLayout);
+
+        Component servicesLayout=getServicesLabelLayout();
+        verticalLayout.addComponent(servicesLayout);
+
         HorizontalLayout horizontalLayout2 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
         horizontalLayout2.setSizeFull();
-        horizontalLayout2.addComponent(buildHeading());
+        horizontalLayout2.addComponent(buildServiceHeading());
         verticalLayout.addComponent(horizontalLayout2);
         verticalLayout.setComponentAlignment(horizontalLayout2,Alignment.TOP_CENTER);
         horizontalLayout2.setHeightUndefined();
@@ -115,13 +138,13 @@ public class Miscellaneous extends Window
         verticalLayout.setComponentAlignment(horizontalLayout3,Alignment.TOP_CENTER);
         horizontalLayout2.setHeightUndefined();
 
-        HorizontalLayout horizontalLayout6 = new HorizontalLayout();
+        /*HorizontalLayout horizontalLayout6 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
         horizontalLayout2.setSizeFull();
         horizontalLayout2.addComponent(buildLayout5());
         verticalLayout.addComponent(horizontalLayout6);
         verticalLayout.setComponentAlignment(horizontalLayout6,Alignment.TOP_CENTER);
-        horizontalLayout2.setHeightUndefined();
+        horizontalLayout2.setHeightUndefined();*/
 
         HorizontalLayout horizontalLayout4 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
@@ -142,16 +165,14 @@ public class Miscellaneous extends Window
         verticalLayout.setComponentAlignment(horizontalLayout5,Alignment.TOP_CENTER);
         horizontalLayout2.setHeightUndefined();
 
-        Component amountsLayout = getAmountLayout();
-        this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
-        this.discountAmount.addFocusListener(this::onFocusToDiscountAmount);
-        this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
-        this.discountPercentage.addValueChangeListener(this::onDiscountPercentageValueChange);
-        this.discountAmount.addValueChangeListener(this::onDiscountAmountValueChange);
-        verticalLayout.addComponent(amountsLayout);
+        Component serviceTotalLayout=getServicesTotal();
+        verticalLayout.addComponent(serviceTotalLayout);
 
-        Component OptionDescriptionLayout = buildOptionLayout();
-        verticalLayout.addComponent(OptionDescriptionLayout);
+        Component totalLayout=getTotalLayout();
+        verticalLayout.addComponent(totalLayout);
+
+        /*Component OptionDescriptionLayout = buildOptionLayout();
+        verticalLayout.addComponent(OptionDescriptionLayout);*/
 
         Component componentactionbutton = buildActionButtons();
         verticalLayout.addComponent(componentactionbutton);
@@ -188,31 +209,120 @@ public class Miscellaneous extends Window
         status = "DA";
     }
 
-    private Component getAmountLayout() {
+    private Component getAddonsLayout()
+    {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(new MarginInfo(false, true, false, true));
 
-        HorizontalLayout vlayout = new HorizontalLayout();
+        Label addonTitle = new Label("Addons ");
+        addonTitle.setStyleName("products-and-addons-label-text");
+        verticalLayout.addComponent(addonTitle);
+        verticalLayout.setComponentAlignment(addonTitle, Alignment.TOP_LEFT);
 
+        HorizontalLayout vlayout = new HorizontalLayout();
         FormLayout left = new FormLayout();
-        totalWithoutDiscount = new Label("Total Without Discount:");
+        totalWithoutDiscount = new Label("Addon Price:");
         left.addComponent(totalWithoutDiscount);
         totalWithoutDiscount.addStyleName("amount-text-label1");
-        totalWithoutDiscount.addStyleName("v-label-amount-text-label1");
         totalWithoutDiscount.addStyleName("margin-top-18");
+        totalWithoutDiscount.addStyleName("v-label-amount-text-label1");
         vlayout.addComponent(left);
 
         FormLayout left1 = new FormLayout();
-        this.grandTotal = new Label();
-        this.grandTotal.setConverter(getAmountConverter());
-        this.grandTotal.setReadOnly(true);
-        left1.addComponent(grandTotal);
-        this.grandTotal.setConverter(getAmountConverter());
-        this.grandTotal.setValue(String.valueOf(proposalVersion.getFinalAmount()));
-        this.grandTotal.setReadOnly(true);
-        grandTotal.addStyleName("amount-text-label1");
-        grandTotal.addStyleName("v-label-amount-text-label1");
-        grandTotal.addStyleName("margin-top-18");
+        Label addontTotal = new Label();
+        addontTotal.setConverter(getAmountConverter());
+        addontTotal.setReadOnly(true);
+        left1.addComponent(addontTotal);
+        addontTotal.setConverter(getAmountConverter());
+        addontTotal.setValue(String.valueOf(versionPriceHolder.getAddonPrice()));
+        addontTotal.setReadOnly(true);
+        addontTotal.addStyleName("amount-text-label1");
+        addontTotal.addStyleName("v-label-amount-text-label1");
+        addontTotal.addStyleName("margin-top-18");
+        vlayout.addComponent(left1);
+
+        verticalLayout.addComponent(vlayout);
+        return verticalLayout;
+    }
+    private  Component getServicesLabelLayout()
+    {
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setMargin(new MarginInfo(false, true, true, true));
+
+        Label addonTitle = new Label("Services ");
+        addonTitle.setStyleName("products-and-addons-label-text");
+        verticalLayout.addComponent(addonTitle);
+        verticalLayout.setComponentAlignment(addonTitle, Alignment.TOP_LEFT);
+
+        return verticalLayout;
+
+    }
+    private Component getServicesTotal()
+    {
+        HorizontalLayout verticalLayout = new HorizontalLayout();
+        verticalLayout.setMargin(new MarginInfo(false, true, true, true));
+        verticalLayout.setSpacing(true);
+
+        Label seriveLabel=new Label("Service Total Price : ");
+        seriveLabel.setStyleName("products-and-addons-label-text");
+        verticalLayout.addComponent(seriveLabel);
+        verticalLayout.setComponentAlignment(seriveLabel,Alignment.TOP_RIGHT);
+
+        Label servicesAmount=new Label();
+        servicesAmount.setValue(String.valueOf(versionPriceHolder.getFloorProtectionAmount()+versionPriceHolder.getProjectHandlingAmount()+versionPriceHolder.getDeepClearingAmount()));
+        verticalLayout.addComponent(servicesAmount);
+
+        verticalLayout.setComponentAlignment(servicesAmount,Alignment.TOP_RIGHT);
+
+        return verticalLayout;
+    }
+    private Component getTotalLayout()
+    {
+        HorizontalLayout horizontalLayout=new HorizontalLayout();
+        horizontalLayout.setMargin(new MarginInfo(false,true,true,true));
+        horizontalLayout.setSpacing(true);
+
+        Label productLabel=new Label("Total Price (A+B+C): ");
+        horizontalLayout.addComponent(productLabel);
+        productLabel.addStyleName("amount-text-label1");
+        productLabel.addStyleName("v-label-amount-text-label1");
+        horizontalLayout.addComponent(productLabel);
+
+        Label productamount= new Label(String.valueOf(versionPriceHolder.getVrPrice()));
+        horizontalLayout.addComponent(productamount);
+        productamount.addStyleName("amount-text-label1");
+        productamount.addStyleName("v-label-amount-text-label1");
+        horizontalLayout.addComponent(productamount);
+
+        return horizontalLayout;
+    }
+    private Component getProductsAmountLayout() {
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setMargin(new MarginInfo(false, true, false, true));
+
+        Label addonTitle = new Label("Modular Products ");
+        addonTitle.setStyleName("products-and-addons-label-text");
+        verticalLayout.addComponent(addonTitle);
+        verticalLayout.setComponentAlignment(addonTitle, Alignment.TOP_LEFT);
+
+        HorizontalLayout vlayout = new HorizontalLayout();
+        FormLayout left = new FormLayout();
+        producttotalWithoutDiscount = new Label("Product Price:");
+        left.addComponent(producttotalWithoutDiscount);
+        producttotalWithoutDiscount.addStyleName("amount-text-label1");
+        producttotalWithoutDiscount.addStyleName("v-label-amount-text-label1");
+        producttotalWithoutDiscount.addStyleName("margin-top-18");
+        vlayout.addComponent(left);
+
+        FormLayout left1 = new FormLayout();
+        this.productgrandTotal = new Label();
+        this.productgrandTotal.setConverter(getAmountConverter());
+        this.productgrandTotal.setReadOnly(true);
+        left1.addComponent(productgrandTotal);
+        this.productgrandTotal.setValue(String.valueOf(versionPriceHolder.getPrPrice()));
+        productgrandTotal.addStyleName("amount-text-label1");
+        productgrandTotal.addStyleName("v-label-amount-text-label1");
+        productgrandTotal.addStyleName("margin-top-18");
         vlayout.addComponent(left1);
 
         FormLayout left2 = new FormLayout();
@@ -224,15 +334,15 @@ public class Miscellaneous extends Window
         vlayout.addComponent(left2);
 
         FormLayout left3 = new FormLayout();
-        this.discountPercentage = new TextField();
-        discountPercentage.addStyleName("amount-text-label1");
-        discountPercentage.addStyleName("v-label-amount-text-label1");
-        discountPercentage.addStyleName("margin-top-18");
-        this.discountPercentage.setConverter(new StringToDoubleConverter());
-        this.discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
-        this.discountPercentage.setNullRepresentation("0");
+        this.productdiscountPercentage = new TextField();
+        productdiscountPercentage.addStyleName("amount-text-label1");
+        productdiscountPercentage.addStyleName("v-label-amount-text-label1");
+        productdiscountPercentage.addStyleName("margin-top-18");
+        this.productdiscountPercentage.setConverter(new StringToDoubleConverter());
+        this.productdiscountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
+        this.productdiscountPercentage.setNullRepresentation("0");
 
-        left3.addComponent(discountPercentage);
+        left3.addComponent(productdiscountPercentage);
         vlayout.addComponent(left3);
 
         FormLayout left4 = new FormLayout();
@@ -244,14 +354,14 @@ public class Miscellaneous extends Window
         vlayout.addComponent(left4);
 
         FormLayout left5 = new FormLayout();
-        this.discountAmount = new TextField();
-        this.discountAmount.setConverter(new StringToDoubleConverter());
-        this.discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
+        this.productdiscountAmount = new TextField();
+        this.productdiscountAmount.setConverter(new StringToDoubleConverter());
+        this.productdiscountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
         //this.discountAmount.setNullRepresentation("0");
-        left5.addComponent(discountAmount);
-        discountAmount.addStyleName("amount-text-label1");
-        discountAmount.addStyleName("v-label-amount-text-label1");
-        discountAmount.addStyleName("margin-top-18");
+        left5.addComponent(productdiscountAmount);
+        productdiscountAmount.addStyleName("amount-text-label1");
+        productdiscountAmount.addStyleName("v-label-amount-text-label1");
+        productdiscountAmount.addStyleName("margin-top-18");
         vlayout.addComponent(left5);
 
         FormLayout left6 = new FormLayout();
@@ -263,15 +373,16 @@ public class Miscellaneous extends Window
         vlayout.addComponent(left6);
 
         FormLayout left7 = new FormLayout();
-        this.discountTotal = new Label();
-        this.discountTotal.setConverter(getAmountConverter());
-        this.discountTotal.setValue(String.valueOf(proposalVersion.getAmount()));
+        this.producttotalAfterDiscount = new Label();
+        this.producttotalAfterDiscount.setConverter(getAmountConverter());
+        LOG.info("versin price aftere discount " +String.valueOf(versionPriceHolder.getPrPriceAfterDiscount()));
+        this.producttotalAfterDiscount.setValue(String.valueOf(versionPriceHolder.getPrPriceAfterDiscount()));
         //this.discountTotal.setValue(proposalVersion.getDiscountAmount());
-        this.discountTotal.setReadOnly(true);
-        left7.addComponent(discountTotal);
-        discountTotal.addStyleName("amount-text-label1");
-        discountTotal.addStyleName("v-label-amount-text-label1");
-        discountTotal.addStyleName("margin-top-18");
+        this.producttotalAfterDiscount.setReadOnly(true);
+        left7.addComponent(this.producttotalAfterDiscount);
+        producttotalAfterDiscount.addStyleName("amount-text-label1");
+        producttotalAfterDiscount.addStyleName("v-label-amount-text-label1");
+        producttotalAfterDiscount.addStyleName("margin-top-18");
         vlayout.addComponent(left7);
 
         verticalLayout.addComponent(vlayout);
@@ -332,8 +443,9 @@ public class Miscellaneous extends Window
         calculateDiscount(proposalVersion);
     }
 
-    public Component buildHeading()
+    public Component buildServiceHeading()
     {
+
         VerticalLayout verticalLayout=new VerticalLayout();
         verticalLayout.setSpacing(true);
         verticalLayout.setSpacing(true);
@@ -341,21 +453,21 @@ public class Miscellaneous extends Window
         verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
         Label heading=new Label("Service Title");
-        heading.addStyleName("margin-label-style");
+        heading.addStyleName("margin-label-style1");
         verticalLayout.addComponent(heading);
 
         projectHandlingLabel=new Label("Project Handling Charges");
-        projectHandlingLabel.addStyleName("margin-label-style");
+        projectHandlingLabel.addStyleName("margin-label-style2");
         verticalLayout.addComponent(projectHandlingLabel);
         verticalLayout.setComponentAlignment(projectHandlingLabel,Alignment.MIDDLE_CENTER);
 
         deepClearingLabel=new Label("Deep Clearing Charges");
-        deepClearingLabel.addStyleName("margin-label-style");
+        deepClearingLabel.addStyleName("margin-label-style2");
         verticalLayout.addComponent(deepClearingLabel);
         verticalLayout.setComponentAlignment(deepClearingLabel,Alignment.MIDDLE_CENTER);
 
         floorProtectionLabel=new Label("Floor Protection Charges(per Sqft)");
-        floorProtectionLabel.addStyleName("margin-label-style");
+        floorProtectionLabel.addStyleName("margin-label-style2");
         verticalLayout.addComponent(floorProtectionLabel);
         verticalLayout.setComponentAlignment(floorProtectionLabel,Alignment.MIDDLE_CENTER);
 
@@ -369,7 +481,7 @@ public class Miscellaneous extends Window
         verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
         Label heading=new Label();
-        heading.addStyleName("margin-label-style2");
+        heading.addStyleName("margin-label-style");
         heading.setValue("Rate");
 
         verticalLayout.addComponent(heading);
@@ -428,9 +540,8 @@ public class Miscellaneous extends Window
         verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
 
-        Label heading=new Label();
-        heading.addStyleName("margin-label-style2");
-        heading.setValue(" ");
+        Label heading=new Label("Quantity");
+        heading.addStyleName("margin-label-style");
         verticalLayout.addComponent(heading);
 
         PHCQTY =new Label();
@@ -465,7 +576,7 @@ public class Miscellaneous extends Window
         verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
         Label heading=new Label();
-        heading.addStyleName("margin-label-style2");
+        heading.addStyleName("margin-label-style");
         heading.setValue("Amount");
         verticalLayout.addComponent(heading);
 
@@ -492,6 +603,7 @@ public class Miscellaneous extends Window
 
         return verticalLayout;
     }
+
 
     private Component buildActionButtons() {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -650,22 +762,6 @@ public class Miscellaneous extends Window
 
     private void calculateDiscount(ProposalVersion proposalVersion)
     {
-        /*ProposalVersion copyVersion = new ProposalVersion();
-        copyVersion.setVersion(proposalVersion.getVersion());
-        copyVersion.setFromVersion(proposalVersion.getFromVersion());
-        copyVersion.setProposalId(proposalVersion.getProposalId());
-        copyVersion.setTitle(proposalVersion.getTitle());
-        copyVersion.setRemarks(proposalVersion.getRemarks());
-        copyVersion.setFinalAmount(proposalVersion.getFinalAmount());
-        copyVersion.setStatus(proposalVersion.getStatus());
-        copyVersion.setInternalStatus(proposalVersion.getInternalStatus());
-        copyVersion.setToVersion(proposalVersion.getToVersion());
-        copyVersion.setDiscountAmount(proposalVersion.getDiscountAmount());
-        copyVersion.setDiscountPercentage(proposalVersion.getDiscountPercentage());
-        copyVersion.setAmount(proposalVersion.getAmount());
-        copyVersion.setProposalId(proposalVersion.getProposalId());
-        copyVersion.setBusinessDate(proposalVersion.getBusinessDate());*/
-
         java.util.Date date = proposalHeader.getCreatedOn();
         java.util.Date currentDate = new java.util.Date(117, 3, 20, 0, 0, 00);
         // proposalVersion.setDiscountPercentage(Double.parseDouble(manualInputDiscountPercentage.getValue()));
@@ -705,6 +801,7 @@ public class Miscellaneous extends Window
             DCCAmount.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getDeepClearingAmount()));
             FPCAmount.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getFloorProtectionAmount()));
             PHCAmount.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getProjectHandlingAmount()));
+            totalAfterDiscount.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getPrPriceAfterDiscount()));
             grandTotal.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getVrPrice()));
         }
     private double round(double value, int places)
@@ -716,5 +813,94 @@ public class Miscellaneous extends Window
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    private Component getAmountLayout()
+    {
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setMargin(new MarginInfo(false, true, false, true));
+
+        HorizontalLayout vlayout = new HorizontalLayout();
+
+        FormLayout left = new FormLayout();
+        Label maintotalWithoutDiscountLabel = new Label("Total Without Discount:");
+        left.addComponent(maintotalWithoutDiscountLabel);
+        maintotalWithoutDiscountLabel.addStyleName("amount-text-label1");
+        maintotalWithoutDiscountLabel.addStyleName("v-label-amount-text-label1");
+        maintotalWithoutDiscountLabel.addStyleName("margin-top-18");
+        vlayout.addComponent(left);
+
+        FormLayout left1 = new FormLayout();
+        this.grandTotal = new Label();
+        this.grandTotal.setConverter(getAmountConverter());
+        this.grandTotal.setReadOnly(true);
+        left1.addComponent(grandTotal);
+        this.grandTotal.setValue(String.valueOf(proposalVersion.getAmount()));
+        grandTotal.addStyleName("amount-text-label1");
+        grandTotal.addStyleName("v-label-amount-text-label1");
+        grandTotal.addStyleName("margin-top-18");
+        vlayout.addComponent(left1);
+
+        FormLayout left2 = new FormLayout();
+        Label Discount = new Label("Discount % :");
+        Discount.addStyleName("amount-text-label1");
+        Discount.addStyleName("v-label-amount-text-label1");
+        Discount.addStyleName("margin-top-18");
+        left2.addComponent(Discount);
+        vlayout.addComponent(left2);
+
+        FormLayout left3 = new FormLayout();
+      //  this.discountPercentage = new Label();
+        discountPercentage.addStyleName("amount-text-label1");
+        discountPercentage.addStyleName("v-label-amount-text-label1");
+        discountPercentage.addStyleName("margin-top-18");
+        this.discountPercentage.setConverter(new StringToDoubleConverter());
+        this.discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
+
+
+        left3.addComponent(discountPercentage);
+        vlayout.addComponent(left3);
+
+        FormLayout left4 = new FormLayout();
+        Label DiscountAmount = new Label("Discount Amount :");
+        left4.addComponent(DiscountAmount);
+        DiscountAmount.addStyleName("amount-text-label1");
+        DiscountAmount.addStyleName("v-label-amount-text-label1");
+        DiscountAmount.addStyleName("margin-top-18");
+        vlayout.addComponent(left4);
+
+        FormLayout left5 = new FormLayout();
+        //this.discountAmount = new Label();
+        this.discountAmount.setConverter(new StringToDoubleConverter());
+        this.discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
+        //this.discountAmount.setNullRepresentation("0");
+        left5.addComponent(discountAmount);
+        discountAmount.addStyleName("amount-text-label1");
+        discountAmount.addStyleName("v-label-amount-text-label1");
+        discountAmount.addStyleName("margin-top-18");
+        vlayout.addComponent(left5);
+
+        FormLayout left6 = new FormLayout();
+        Label totalAfterDiscount = new Label("Total After Discount :");
+        left6.addComponent(totalAfterDiscount);
+        totalAfterDiscount.addStyleName("amount-text-label1");
+        totalAfterDiscount.addStyleName("v-label-amount-text-label1");
+        totalAfterDiscount.addStyleName("margin-top-18");
+        vlayout.addComponent(left6);
+
+        FormLayout left7 = new FormLayout();
+        this.discountTotal = new Label();
+        this.discountTotal.setConverter(getAmountConverter());
+        this.discountTotal.setValue(String.valueOf(proposalVersion.getFinalAmount()));
+        //this.discountTotal.setValue(proposalVersion.getDiscountAmount());
+        this.discountTotal.setReadOnly(true);
+        left7.addComponent(discountTotal);
+        discountTotal.addStyleName("amount-text-label1");
+        discountTotal.addStyleName("v-label-amount-text-label1");
+        discountTotal.addStyleName("margin-top-18");
+        vlayout.addComponent(left7);
+
+        verticalLayout.addComponent(vlayout);
+        return verticalLayout;
     }
 }

@@ -113,7 +113,7 @@ public class ProductAndAddons extends Window
     List<Product> products = new ArrayList<>();
     List<AddonProduct> addons = new ArrayList<>();
     private String value;
-    double projectHandlingChargesRate;
+    double projectHandlingChargesRate,deepCleaningChargesRate,floorProtectionChargesRate;
 
     double productsTotal = 0;
     double productsTotalAfterDiscount = 0;
@@ -125,6 +125,12 @@ public class ProductAndAddons extends Window
     private Label miscellaneousPrice;
     private Label totalPrice;
 
+    Label PHCRate,DCCRate,FPCRate;
+    TextField DCCQTY,FPCQTY;
+    Label PHCQTY;
+    CheckBox PHCcheck,DCCcheck,FPCcheck;
+    Label DCCAmount,FPCAmount;
+    Label PHCAmount;
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
@@ -194,6 +200,51 @@ public class ProductAndAddons extends Window
 
         Component componentServicesDetails = buildServices();
         verticalLayout.addComponent(componentServicesDetails);
+
+        HorizontalLayout horizontalLayout2 = new HorizontalLayout();
+        horizontalLayout2.setMargin(new MarginInfo(false, true, false, true));
+        horizontalLayout2.addStyleName("layout-with-border");
+        horizontalLayout2.setSizeFull();
+        horizontalLayout2.addComponent(buildServiceHeading());
+        verticalLayout.addComponent(horizontalLayout2);
+        verticalLayout.setComponentAlignment(horizontalLayout2,Alignment.TOP_CENTER);
+        horizontalLayout2.setHeightUndefined();
+
+        HorizontalLayout horizontalLayout3 = new HorizontalLayout();
+        horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
+        horizontalLayout2.setSizeFull();
+        horizontalLayout2.addComponent(buildLayout2());
+        verticalLayout.addComponent(horizontalLayout3);
+        verticalLayout.setComponentAlignment(horizontalLayout3,Alignment.TOP_CENTER);
+        horizontalLayout2.setHeightUndefined();
+
+        /*HorizontalLayout horizontalLayout6 = new HorizontalLayout();
+        horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
+        horizontalLayout2.setSizeFull();
+        horizontalLayout2.addComponent(buildLayout5());
+        verticalLayout.addComponent(horizontalLayout6);
+        verticalLayout.setComponentAlignment(horizontalLayout6,Alignment.TOP_CENTER);
+        horizontalLayout2.setHeightUndefined();*/
+
+        HorizontalLayout horizontalLayout4 = new HorizontalLayout();
+        horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
+        horizontalLayout2.setSizeFull();
+        horizontalLayout2.addComponent(buildLayout3());
+        verticalLayout.addComponent(horizontalLayout4);
+        verticalLayout.setComponentAlignment(horizontalLayout4,Alignment.TOP_CENTER);
+        horizontalLayout2.setHeightUndefined();
+        /*PHCQTY.addValueChangeListener(this::projectHandlingchargesQuantityChanged);
+        DCCQTY.addValueChangeListener(this::deepCleaningchargesQuantityChanged);
+        FPCQTY.addValueChangeListener(this::floorProtectionQuantityChanged);*/
+
+        HorizontalLayout horizontalLayout5 = new HorizontalLayout();
+        horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
+        horizontalLayout2.setSizeFull();
+        horizontalLayout2.addComponent(buildLayout4());
+        verticalLayout.addComponent(horizontalLayout5);
+        verticalLayout.setComponentAlignment(horizontalLayout5,Alignment.TOP_CENTER);
+        horizontalLayout2.setHeightUndefined();
+
 
         Component amountsLayout = getAmountLayout();
         /*this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
@@ -2423,6 +2474,166 @@ public class ProductAndAddons extends Window
         if (Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
             addFromProductLibrary.setEnabled(false);
         }
+    }
+    public Component buildServiceHeading()
+    {
+
+        VerticalLayout verticalLayout=new VerticalLayout();
+        verticalLayout.setSpacing(true);
+        verticalLayout.setSpacing(true);
+        verticalLayout.setSpacing(true);
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+
+        Label heading=new Label("Service Title");
+        heading.addStyleName("margin-label-style1");
+        verticalLayout.addComponent(heading);
+
+        Label projectHandlingLabel=new Label("Project Handling Charges");
+        projectHandlingLabel.addStyleName("margin-label-style2");
+        verticalLayout.addComponent(projectHandlingLabel);
+        verticalLayout.setComponentAlignment(projectHandlingLabel,Alignment.MIDDLE_CENTER);
+
+        Label deepClearingLabel=new Label("Deep Clearing Charges");
+        deepClearingLabel.addStyleName("margin-label-style2");
+        verticalLayout.addComponent(deepClearingLabel);
+        verticalLayout.setComponentAlignment(deepClearingLabel,Alignment.MIDDLE_CENTER);
+
+        Label floorProtectionLabel=new Label("Floor Protection Charges(per Sqft)");
+        floorProtectionLabel.addStyleName("margin-label-style2");
+        verticalLayout.addComponent(floorProtectionLabel);
+        verticalLayout.setComponentAlignment(floorProtectionLabel,Alignment.MIDDLE_CENTER);
+
+        return verticalLayout;
+    }
+
+    public Component buildLayout2()
+    {
+        VerticalLayout verticalLayout=new VerticalLayout();
+        verticalLayout.setSpacing(true);
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+
+        Label heading=new Label();
+        heading.addStyleName("margin-label-style");
+        heading.setValue("Rate");
+
+        verticalLayout.addComponent(heading);
+        PHCRate =new Label();
+        PHCRate.addStyleName("margin-label-style2");
+        PHCRate.setValue(String.valueOf(projectHandlingChargesRate));
+        verticalLayout.addComponent(PHCRate);
+
+        DCCRate =new Label();
+        DCCRate.addStyleName("margin-label-style2");
+        DCCRate.setValue(String.valueOf(deepCleaningChargesRate));
+        verticalLayout.addComponent(DCCRate);
+
+        FPCRate = new Label();
+        FPCRate.addStyleName("margin-label-style2");
+        FPCRate.setReadOnly(true);
+        FPCRate.setValue(String.valueOf(floorProtectionChargesRate));
+        verticalLayout.addComponent(FPCRate);
+        verticalLayout.setComponentAlignment(FPCRate,Alignment.MIDDLE_CENTER);
+
+        return verticalLayout;
+    }
+    public Component buildLayout5()
+    {
+        VerticalLayout verticalLayout=new VerticalLayout();
+        verticalLayout.setSpacing(true);
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+
+        Label heading=new Label("Applicable");
+        heading.addStyleName("margin-label-style2");
+        heading.setValue("Applicable");
+        verticalLayout.addComponent(heading);
+
+        PHCcheck=new CheckBox("");
+        PHCcheck.setValue(Boolean.valueOf(proposalVersion.getProjectHandlingChargesApplied()));
+        verticalLayout.addComponent(PHCcheck);
+
+        DCCcheck=new CheckBox("");
+        DCCcheck.setValue(Boolean.valueOf(proposalVersion.getDeepClearingChargesApplied()));
+        verticalLayout.addComponent(DCCcheck);
+
+        FPCcheck=new CheckBox("");
+        FPCcheck.setValue(Boolean.valueOf(proposalVersion.getFloorProtectionChargesApplied()));
+        verticalLayout.addComponent(FPCcheck);
+/*
+        PHCcheck.addValueChangeListener(this::projectHandlingAppliedChanged);
+        DCCcheck.addValueChangeListener(this::deepClearingAppliedChanged);
+        FPCcheck.addValueChangeListener(this::floorProtectionAppliedChanged);*/
+        return verticalLayout;
+    }
+
+    public Component buildLayout3()
+    {
+        VerticalLayout verticalLayout=new VerticalLayout();
+        verticalLayout.setSpacing(true);
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+
+
+        Label heading=new Label("Quantity");
+        heading.addStyleName("margin-label-style");
+        verticalLayout.addComponent(heading);
+
+        PHCQTY =new Label();
+        PHCQTY.addStyleName("heighttext");
+        PHCQTY.addStyleName("margin-label-style2");
+        //PHCQTY.setValue(String.valueOf(versionPriceHolder.getVrPriceAfterDiscount()));
+        verticalLayout.addComponent(PHCQTY);
+
+        DCCQTY =new TextField();
+        DCCQTY.addStyleName("margin-label-style2");
+        DCCQTY.addStyleName("heighttext");
+        DCCQTY.setValue(String.valueOf(proposalVersion.getDeepClearingQty()));
+        DCCQTY.setReadOnly(true);
+
+        verticalLayout.addComponent(DCCQTY);
+
+        FPCQTY = new TextField();
+        FPCQTY.addStyleName("margin-label-style2");
+        FPCQTY.addStyleName("heighttext");
+        FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
+        FPCQTY.setReadOnly(true);
+
+        verticalLayout.addComponent(FPCQTY);
+
+        return verticalLayout;
+    }
+
+    public Component buildLayout4()
+    {
+        VerticalLayout verticalLayout=new VerticalLayout();
+        verticalLayout.setSpacing(true);
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
+
+        Label heading=new Label();
+        heading.addStyleName("margin-label-style");
+        heading.setValue("Amount");
+        verticalLayout.addComponent(heading);
+
+        PHCAmount =new Label();
+        PHCAmount.addStyleName("heighttext");
+        PHCAmount.addStyleName("margin-label-style2");
+        //PHCAmount.setValue(String.valueOf(Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate));
+        PHCAmount.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));
+        verticalLayout.addComponent(PHCAmount);
+
+        DCCAmount =new Label();
+        DCCAmount.addStyleName("margin-label-style2");
+        DCCAmount.addStyleName("heighttext");
+        //DCCAmount.setValue(String.valueOf(Double.valueOf(DCCQTY.getValue()) * deepCleaningChargesRate));
+        DCCAmount.setValue(String.valueOf(proposalVersion.getDeepClearingAmount()));
+        verticalLayout.addComponent(DCCAmount);
+
+        FPCAmount = new Label();
+        FPCAmount.addStyleName("margin-label-style2");
+        FPCAmount.addStyleName("heighttext");
+        //FPCAmount.setValue(String.valueOf(Double.valueOf(FPCQTY.getValue()) * floorProtectionChargesRate));
+        FPCAmount.setValue(String.valueOf(proposalVersion.getFloorProtectionAmount()));
+        verticalLayout.addComponent(FPCAmount);
+
+        return verticalLayout;
     }
 
 }
