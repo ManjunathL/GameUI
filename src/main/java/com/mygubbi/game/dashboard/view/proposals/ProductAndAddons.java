@@ -155,6 +155,10 @@ public class ProductAndAddons extends Window
 
         PriceMaster projectHandlingCharges = proposalDataProvider.getFactorRatePriceDetails("PHC", this.priceDate, this.city);
         projectHandlingChargesRate = projectHandlingCharges.getPrice();
+        PriceMaster deepCleaningCharges = proposalDataProvider.getFactorRatePriceDetails("DCC", this.priceDate, this.city);
+        deepCleaningChargesRate = deepCleaningCharges.getPrice();
+        PriceMaster floorProtectionCharges = proposalDataProvider.getFactorRatePriceDetails("FPC", this.priceDate, this.city);
+        floorProtectionChargesRate = floorProtectionCharges.getPrice();
 
         String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
         List<User> userList=proposalDataProvider.getUsersViewOnlyAcess(email);
@@ -223,9 +227,9 @@ public class ProductAndAddons extends Window
         verticalLayout.addComponent(horizontalLayout4);
         verticalLayout.setComponentAlignment(horizontalLayout4,Alignment.TOP_CENTER);
         horizontalLayout2.setHeightUndefined();
-        /*PHCQTY.addValueChangeListener(this::projectHandlingchargesQuantityChanged);
+
         DCCQTY.addValueChangeListener(this::deepCleaningchargesQuantityChanged);
-        FPCQTY.addValueChangeListener(this::floorProtectionQuantityChanged);*/
+        FPCQTY.addValueChangeListener(this::floorProtectionQuantityChanged);
 
         HorizontalLayout horizontalLayout5 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
@@ -243,7 +247,7 @@ public class ProductAndAddons extends Window
         Component amountsLayout = getAmountLayout();
         this.discountPercentage.addFocusListener(this::onFocusToDiscountPercentage);
         this.discountAmount.addFocusListener(this::onFocusToDiscountAmount);
-        this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
+//        this.grandTotal.addValueChangeListener(this::onGrandTotalValueChange);
         /*this.productPrice.addValueChangeListener(this::onProductTotalValueChange);
         this.productPriceAfterDiscount.addValueChangeListener(this::onProductTotalValueChange);*/
 
@@ -469,7 +473,7 @@ public class ProductAndAddons extends Window
         right.addComponent(saveButton);
         right.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
 
-        Button servicesButton  = new Button("Apply Discount");
+        /*Button servicesButton  = new Button("Apply Discount");
         servicesButton.addStyleName(ValoTheme.BUTTON_SMALL);
         servicesButton.addStyleName("margin-right-10-for-headerlevelbutton");
         servicesButton.addClickListener(clickEvent -> {
@@ -477,7 +481,7 @@ public class ProductAndAddons extends Window
         });
         right.addComponent(servicesButton);
         right.setComponentAlignment(servicesButton, Alignment.MIDDLE_RIGHT);
-
+*/
         closeButton = new Button("Close");
         closeButton.addStyleName(ValoTheme.BUTTON_SMALL);
         closeButton.addStyleName("margin-right-10-for-headerlevelbutton");
@@ -545,7 +549,7 @@ public class ProductAndAddons extends Window
         grandTotal.addStyleName("margin-top-18");
         vlayout.addComponent(left1);
 
-        FormLayout left2 = new FormLayout();
+        /*FormLayout left2 = new FormLayout();
         Label Discount = new Label("Discount % :");
         Discount.addStyleName("amount-text-label1");
         Discount.addStyleName("v-label-amount-text-label1");
@@ -582,7 +586,7 @@ public class ProductAndAddons extends Window
         discountAmount.addStyleName("amount-text-label1");
         discountAmount.addStyleName("v-label-amount-text-label1");
         discountAmount.addStyleName("margin-top-18");
-        vlayout.addComponent(left5);
+        vlayout.addComponent(left5);*/
 
         FormLayout left6 = new FormLayout();
         Label totalAfterDiscount = new Label("Total After Discount :");
@@ -662,6 +666,7 @@ public class ProductAndAddons extends Window
         addonPrice.setValue(String.valueOf(addonsTotal));
         grandTotal.setValue(String.valueOf(totalBeforeDiscount));
         discountTotal.setValue(String.valueOf(totalAfterDiscount));
+        miscellaneousPrice.setValue(String.valueOf(servicesTotal));
 
         if (Objects.equals(proposalHeader.getPackageFlag(), "Yes")) {
             this.discountAmount.setReadOnly(false);
@@ -672,6 +677,7 @@ public class ProductAndAddons extends Window
         }
 
         proposalVersion.setFinalAmount(totalAfterDiscount);
+        proposalVersion.setProjectHandlingQty(productsTotalAfterDiscount);
         proposalVersion.setDiscountPercentage(disPercentage);
         proposalVersion.setDiscountAmount(disAmount);
         proposalVersion.setAmount(totalBeforeDiscount);
@@ -681,6 +687,7 @@ public class ProductAndAddons extends Window
 
     private void calculateDiscount()
     {
+        LOG.info("calculate discount ");
         Double totalVersionPrice=0.0,productsTotal=0.0,addonsTotal=0.0,servicesTotal=0.0,disPercentage,disAmount=0.0,productTotalWOAccessories=0.0;
         Double projectHandlingCharges=0.0;
         disPercentage=proposalVersion.getDiscountPercentage();
@@ -889,7 +896,8 @@ public class ProductAndAddons extends Window
         Double disPercent = 0.0, disAmount = 0.0;
         rateForDiscount = proposalHeader.getMaxDiscountPercentage();
         if ("DP".equals(status)) {
-            disPercent = proposalVersion.getDiscountPercentage();
+            LOG.info("inside DP ");
+            disPercent = Double.valueOf(discountPercentage.getValue());
             if (disPercent <= rateForDiscount) {
                 if (disPercent == null) {
                     disPercent = 0.0;
@@ -908,7 +916,8 @@ public class ProductAndAddons extends Window
                 return;
             }
         } else if ("DA".equals(status)) {
-            //discountAmount = (Double) this.discountAmount.getConvertedValue();
+            LOG.info("inside DA");
+            disAmount = (Double) this.discountAmount.getConvertedValue();
             disPercent = (disAmount / productsTotal) * 100;
             if (disPercent <= rateForDiscount) {
                 this.discountPercentage.setValue(String.valueOf(round(disPercent, 2)));
@@ -917,9 +926,12 @@ public class ProductAndAddons extends Window
                 return;
             }
         }
+        LOG.info("discount amount " +disAmount+ "discount Percentage " +disPercent);
         Double totalAfterDiscount = this.round((productsTotal - disAmount), 0);
         Double grandTotal = totalAfterDiscount + addonsTotal + serviceTotal;
         double res = grandTotal - grandTotal % 10;
+
+        this.productPriceAfterDiscount.setValue(String.valueOf(productsTotal-disAmount));
 
         this.discountTotal.setReadOnly(false);
         this.discountTotal.setValue(String.valueOf(res));
@@ -979,6 +991,7 @@ public class ProductAndAddons extends Window
         Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal +servicesTotal;
         double res = grandTotal - grandTotal % 10;
 
+        this.productPriceAfterDiscount.setValue(String.valueOf((totalWoAccessories+costOfAccessories)-discountAmount));
         this.discountTotal.setReadOnly(false);
         this.discountTotal.setValue(String.valueOf(res));
 
@@ -1315,10 +1328,37 @@ public class ProductAndAddons extends Window
         productPrice.setStyleName("products-and-addons-label-text");
         productSummaryLayout.addComponent(productPrice);
 
+        Label Discount = new Label("Discount % :");
+        Discount.addStyleName("amount-text-label1");
+        Discount.addStyleName("v-label-amount-text-label1");
+        Discount.addStyleName("margin-top-18");
+        productSummaryLayout.addComponent(Discount);
+
+        this.discountPercentage = new TextField();
+        discountPercentage.addStyleName("amount-text-label1");
+        discountPercentage.addStyleName("v-label-amount-text-label1");
+        discountPercentage.addStyleName("margin-top-18");
+        this.discountPercentage.setConverter(new StringToDoubleConverter());
+        this.discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
+        productSummaryLayout.addComponent(discountPercentage);
+
+        Label DiscountAmount = new Label("Discount Amount :");
+        DiscountAmount.addStyleName("amount-text-label1");
+        DiscountAmount.addStyleName("v-label-amount-text-label1");
+        DiscountAmount.addStyleName("margin-top-18");
+        productSummaryLayout.addComponent(DiscountAmount);
+
+        this.discountAmount = new TextField();
+        this.discountAmount.setConverter(new StringToDoubleConverter());
+        this.discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
+        discountAmount.addStyleName("amount-text-label1");
+        discountAmount.addStyleName("v-label-amount-text-label1");
+        discountAmount.addStyleName("margin-top-18");
+        productSummaryLayout.addComponent(discountAmount);
+
         Label productPriceAfterDiscounttitle = new Label("Total Product Price after Discount : ");
         productPriceAfterDiscounttitle.setStyleName("products-and-addons-label-text");
         productSummaryLayout.addComponent(productPriceAfterDiscounttitle);
-
 
         this.productPriceAfterDiscount = new Label();
         this.productPriceAfterDiscount.setStyleName("products-and-addons-label-text");
@@ -2639,7 +2679,7 @@ public class ProductAndAddons extends Window
         PHCQTY =new Label();
         PHCQTY.addStyleName("heighttext");
         PHCQTY.addStyleName("margin-label-style2");
-        //PHCQTY.setValue(String.valueOf(versionPriceHolder.getVrPriceAfterDiscount()));
+        PHCQTY.setValue(String.valueOf(proposalVersion.getAmount()));
         verticalLayout.addComponent(PHCQTY);
         verticalLayout.setComponentAlignment(PHCQTY,Alignment.MIDDLE_LEFT);
 
@@ -2647,7 +2687,6 @@ public class ProductAndAddons extends Window
         DCCQTY.addStyleName("margin-label-style2");
         DCCQTY.addStyleName("heighttext");
         DCCQTY.setValue(String.valueOf(proposalVersion.getDeepClearingQty()));
-        DCCQTY.setReadOnly(true);
         verticalLayout.addComponent(DCCQTY);
         verticalLayout.setComponentAlignment(DCCQTY,Alignment.MIDDLE_LEFT);
 
@@ -2655,7 +2694,6 @@ public class ProductAndAddons extends Window
         FPCQTY.addStyleName("margin-label-style2");
         FPCQTY.addStyleName("heighttext");
         FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
-        FPCQTY.setReadOnly(true);
         verticalLayout.addComponent(FPCQTY);
         verticalLayout.setComponentAlignment(FPCQTY,Alignment.MIDDLE_LEFT);
 
@@ -2701,5 +2739,19 @@ public class ProductAndAddons extends Window
         return verticalLayout;
     }
 
+    private void deepCleaningchargesQuantityChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        DCCAmount.setValue(String.valueOf(Double.valueOf(DCCQTY.getValue()) * deepCleaningChargesRate));
+        proposalVersion.setDeepClearingQty(Double.valueOf(DCCQTY.getValue()));
+        status="DP";
+        updatePrice();
+    }
+    private void floorProtectionQuantityChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        FPCAmount.setValue(String.valueOf(Double.valueOf(FPCQTY.getValue()) * floorProtectionChargesRate));
+        proposalVersion.setFloorProtectionSqft(Double.valueOf(FPCQTY.getValue()));
+        status="DP";
+        updatePrice();
+    }
 }
 

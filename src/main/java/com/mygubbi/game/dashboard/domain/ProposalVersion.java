@@ -34,6 +34,7 @@ public class ProposalVersion implements Cloneable {
     public static final String UPDATEDBY = "updatedBy";
     public static final String BUSINESS_DATE = "businessDate";
     public static final String PROJECT_HANDLING_AMOUNT = "projectHandlingAmount";
+    public static final String PROJECT_HANDLING_QTY = "projectHandlingQty";
     public static final String DEEP_CLEARING_QTY = "deepClearingQty";
     public static final String DEEP_CLEARING_AMOUNT= "deepClearingAmount";
     public static final String FLOOR_PROTECTION_SQFT = "floorProtectionSqft";
@@ -74,6 +75,7 @@ public class ProposalVersion implements Cloneable {
     private String projectHandlingChargesApplied;
     private String deepClearingChargesApplied;
     private String floorProtectionChargesApplied;
+    private double projectHandlingQty;
 
     @Override
     public Object clone()  {
@@ -361,6 +363,14 @@ public class ProposalVersion implements Cloneable {
         this.floorProtectionChargesApplied = floorProtectionChargesApplied;
     }
 
+    public double getProjectHandlingQty() {
+        return projectHandlingQty;
+    }
+
+    public void setProjectHandlingQty(double projectHandlingQty) {
+        this.projectHandlingQty = projectHandlingQty;
+    }
+
     @Override
     public String toString() {
         return "ProposalVersion{" +
@@ -396,6 +406,7 @@ public class ProposalVersion implements Cloneable {
                 ", projectHandlingChargesApplied='" + projectHandlingChargesApplied + '\'' +
                 ", deepClearingChargesApplied='" + deepClearingChargesApplied + '\'' +
                 ", floorProtectionChargesApplied='" + floorProtectionChargesApplied + '\'' +
+                ", projectHandlingQty=" + projectHandlingQty +
                 '}';
     }
 }

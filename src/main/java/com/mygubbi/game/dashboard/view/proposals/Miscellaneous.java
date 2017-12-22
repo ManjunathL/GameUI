@@ -752,7 +752,6 @@ public class Miscellaneous extends Window
     private void updateTotal() {
 
         PriceMaster projectHandlingCharges = proposalDataProvider.getFactorRatePriceDetails("PHC", this.priceDate, this.city);
-        LOG.info("project handling charges " +projectHandlingCharges);
         projectHandlingChargesRate = projectHandlingCharges.getPrice();
         PriceMaster deepCleaningCharges = proposalDataProvider.getFactorRatePriceDetails("DCC", this.priceDate, this.city);
         deepCleaningChargesRate = deepCleaningCharges.getPrice();
