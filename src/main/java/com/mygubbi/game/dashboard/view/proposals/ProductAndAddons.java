@@ -2175,13 +2175,22 @@ public class ProductAndAddons extends Window
 
     private void saveProposalVersion() {
         try {
-           String disAmount = discountAmount.getValue();
+            String disAmount = discountAmount.getValue();
             proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
             proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
             proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",", "")));
             proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             proposalVersion.setRemarks(remarksTextArea.getValue());
             proposalVersion.setTitle(this.ttitle.getValue());
+            proposalVersion.setDeepClearingQty(Double.valueOf(productPriceAfterDiscount.getValue()));
+            proposalVersion.setProjectHandlingAmount(Double.valueOf(PHCAmount.getValue()));
+            proposalVersion.setDeepClearingQty(Double.valueOf(DCCQTY.getValue()));
+            proposalVersion.setDeepClearingAmount(Double.valueOf(DCCAmount.getValue()));
+            proposalVersion.setFloorProtectionSqft(Double.valueOf(FPCQTY.getValue()));
+            proposalVersion.setFloorProtectionAmount(Double.valueOf(FPCAmount.getValue()));
+            proposalVersion.setProjectHandlingChargesApplied(PHCcheck.getValue().toString());
+            proposalVersion.setDeepClearingChargesApplied(DCCcheck.getValue().toString());
+            proposalVersion.setFloorProtectionChargesApplied(FPCcheck.getValue().toString());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(String.valueOf(versionNum));
 

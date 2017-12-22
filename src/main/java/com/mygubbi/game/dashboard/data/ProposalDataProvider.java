@@ -392,7 +392,6 @@ public class ProposalDataProvider {
     public boolean saveProposalOnConfirm(ProposalHeader proposalHeader) {
 
         try {
-
             proposalHeader.setUpdatedBy(getUserId());
             String proposalJson = this.mapper.writeValueAsString(proposalHeader);
             LOG.debug("Proposal header json :" + proposalJson);
