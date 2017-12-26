@@ -268,6 +268,7 @@ public class ProductAndAddons extends Window
 
         DCCQTY.addValueChangeListener(this::deepCleaningchargesQuantityChanged);
         FPCQTY.addValueChangeListener(this::floorProtectionQuantityChanged);
+        PHCQTY.addValueChangeListener(this::ProjectHandlingChargesQuantityChanged);
 
         HorizontalLayout horizontalLayout5 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
@@ -658,7 +659,18 @@ public class ProductAndAddons extends Window
         }
 
         productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
-        projectHandlingCharges=productsTotalAfterDiscount * (projectHandlingChargesRate / 100);
+        LOG.info("Shilpa check this::"+this.proposalHeader.getProjectHandlingChargesApplied());
+        if(this.proposalHeader.getProjectHandlingChargesApplied().equalsIgnoreCase("True")) {
+            PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
+            PHCQTY.setReadOnly(true);
+        }else{
+//            PHCQTY.setValue("0.0");
+            PHCQTY.setReadOnly(false);
+        }
+
+        projectHandlingCharges=Double.parseDouble(this.PHCQTY.getValue() )* (projectHandlingChargesRate / 100);
+        PHCAmount.setValue(String.valueOf(projectHandlingCharges));
+
         deepClearingQty=Double.valueOf(DCCQTY.getValue());
         if(productsTotalAfterDiscount > 0 )
             deepClearingamount=deepClearingQty*deepCleaningChargesRate;
@@ -683,8 +695,8 @@ public class ProductAndAddons extends Window
         }else{
             miscellaneousPrice.setValue("0.0");
         }
-        PHCAmount.setValue(String.valueOf(projectHandlingCharges));
-        PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
+
+
         if (Objects.equals(proposalHeader.getPackageFlag(), "Yes")) {
             this.discountAmount.setReadOnly(false);
             this.discountAmount.setValue(String.valueOf(disAmount.intValue()) + " ");
@@ -2714,6 +2726,7 @@ public class ProductAndAddons extends Window
         verticalLayout.addComponent(FPCQTY);
         verticalLayout.setComponentAlignment(FPCQTY,Alignment.MIDDLE_LEFT);
 
+
         return verticalLayout;
     }
 
@@ -2760,6 +2773,15 @@ public class ProductAndAddons extends Window
     {
         DCCAmount.setValue(String.valueOf(Double.valueOf(DCCQTY.getValue()) * deepCleaningChargesRate));
         proposalVersion.setDeepClearingQty(Double.valueOf(DCCQTY.getValue()));
+        status="DP";
+        updatePrice();
+    }
+    private void ProjectHandlingChargesQuantityChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        LOG.info("this registerd");
+        LOG.info("projectHandlingChargesRate = "+projectHandlingChargesRate);
+        PHCAmount.setValue(String.valueOf(Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate));
+        proposalVersion.setProjectHandlingQty(Double.valueOf(PHCQTY.getValue()));
         status="DP";
         updatePrice();
     }
