@@ -661,6 +661,7 @@ public class ProductAndAddons extends Window
         productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
         LOG.info("Shilpa check this::"+this.proposalHeader.getProjectHandlingChargesApplied());
         if(this.proposalHeader.getProjectHandlingChargesApplied().equalsIgnoreCase("True")) {
+            PHCQTY.setReadOnly(false);
             PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
             PHCQTY.setReadOnly(true);
         }else{
