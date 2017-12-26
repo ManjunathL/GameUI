@@ -623,7 +623,7 @@ public class ProductAndAddons extends Window
 
     private void updatePrice()
     {
-        Double totalBeforeDiscount=0.0,totalAfterDiscount=0.0,productsTotal=0.0,addonsTotal=0.0,servicesTotal=0.0,disPercentage,disAmount=0.0,productTotalWOAccessories=0.0;
+        Double totalBeforeDiscount=0.0,totalAfterDiscount=0.0,productsTotal=0.0,addonsTotal=0.0,servicesTotal=0.0,disPercentage,disAmount=0.0,productTotalWOAccessories=0.0,deepClearingQty=0.0,deepClearingamount=0.0,floorProtectionQty=0.0,floorProtectionamount=0.0;
         Double projectHandlingCharges=0.0;
         disPercentage=proposalVersion.getDiscountPercentage();
         List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
@@ -654,8 +654,12 @@ public class ProductAndAddons extends Window
 
         productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
         projectHandlingCharges=productsTotalAfterDiscount * (projectHandlingChargesRate / 100);
+        deepClearingQty=Double.valueOf(DCCQTY.getValue());
+        deepClearingamount=deepClearingQty*deepCleaningChargesRate;
+        floorProtectionQty=Double.valueOf(FPCQTY.getValue());
+        floorProtectionamount=floorProtectionQty*floorProtectionChargesRate;
 
-        servicesTotal=projectHandlingCharges+proposalVersion.getDeepClearingAmount()+proposalVersion.getFloorProtectionAmount();
+        servicesTotal=projectHandlingCharges+floorProtectionamount+deepClearingamount;
         totalBeforeDiscount=productsTotal+addonsTotal+servicesTotal;
         totalAfterDiscount=totalBeforeDiscount-disAmount;
 
@@ -665,7 +669,8 @@ public class ProductAndAddons extends Window
         grandTotal.setValue(String.valueOf(totalBeforeDiscount));
         discountTotal.setValue(String.valueOf(totalAfterDiscount));
         miscellaneousPrice.setValue(String.valueOf(servicesTotal));
-
+        PHCAmount.setValue(String.valueOf(projectHandlingCharges));
+        PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
         if (Objects.equals(proposalHeader.getPackageFlag(), "Yes")) {
             this.discountAmount.setReadOnly(false);
             this.discountAmount.setValue(String.valueOf(disAmount.intValue()) + " ");
@@ -680,6 +685,8 @@ public class ProductAndAddons extends Window
         proposalVersion.setDiscountAmount(disAmount);
         proposalVersion.setAmount(totalBeforeDiscount);
         proposalVersion.setProjectHandlingAmount(projectHandlingCharges);
+        proposalVersion.setDeepClearingAmount(deepClearingamount);
+        proposalVersion.setFloorProtectionAmount(floorProtectionamount);
         proposalDataProvider.updateVersion(proposalVersion);
     }
 
@@ -2174,9 +2181,6 @@ public class ProductAndAddons extends Window
             proposalVersion.setDeepClearingAmount(Double.valueOf(DCCAmount.getValue()));
             proposalVersion.setFloorProtectionSqft(Double.valueOf(FPCQTY.getValue()));
             proposalVersion.setFloorProtectionAmount(Double.valueOf(FPCAmount.getValue()));
-            proposalVersion.setProjectHandlingChargesApplied(PHCcheck.getValue().toString());
-            proposalVersion.setDeepClearingChargesApplied(DCCcheck.getValue().toString());
-            proposalVersion.setFloorProtectionChargesApplied(FPCcheck.getValue().toString());
             proposalHeader.setStatus(proposalVersion.getStatus());
             proposalHeader.setVersion(String.valueOf(versionNum));
 
@@ -2191,8 +2195,8 @@ public class ProductAndAddons extends Window
 
             }
 
-            //proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
-            //NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+            proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
+            NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             close();
         } catch (Exception e) {
@@ -2674,7 +2678,7 @@ public class ProductAndAddons extends Window
         PHCQTY =new Label();
         PHCQTY.addStyleName("heighttext");
         PHCQTY.addStyleName("margin-label-style2");
-        PHCQTY.setValue(String.valueOf(proposalVersion.getAmount()));
+        PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));
         verticalLayout.addComponent(PHCQTY);
         verticalLayout.setComponentAlignment(PHCQTY,Alignment.MIDDLE_LEFT);
 
