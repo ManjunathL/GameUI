@@ -130,7 +130,7 @@ public class CreateProposalsView extends Panel implements View {
 
     int pid;
     String parameters;
-
+    CheckBox PHCcheck,DCCcheck,FPCcheck;
     public CreateProposalsView() {
     }
 
@@ -1845,10 +1845,46 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.addComponent(quote);*/
 
         offerField = getOfferCombo();
+
         binder.bind(offerField, OFFER_TYPE);
         offerField.setRequired(true);
         formLayoutRight.addComponent(offerField);
         offerField.addValueChangeListener(this::offerFieldValueChanged);
+
+        HorizontalLayout horizontalLayoutForCheckMiscellaneous=new HorizontalLayout();
+        PHCcheck=new CheckBox("PHC");
+        LOG.info("proposal header PHC " +proposalHeader.getProjectHandlingChargesApplied());
+        binder.bind(PHCcheck,PROJ_HANDLING_CHRAGES_APPLIED);
+        if(proposalHeader.getProjectHandlingChargesApplied()==null)
+        {
+            PHCcheck.setValue(true);
+            PHCcheck.setImmediate(true);
+        }
+
+        horizontalLayoutForCheckMiscellaneous.addComponent(PHCcheck);
+
+        DCCcheck=new CheckBox("DCC");
+        binder.bind(DCCcheck,DEEP_CLEANING_CHRAGES_APPLIED);
+        if(proposalHeader.getDeepClearingChargesApplied()==null)
+        {
+            DCCcheck.setValue(true);
+            DCCcheck.setImmediate(true);
+        }
+
+        horizontalLayoutForCheckMiscellaneous.addComponent(DCCcheck);
+
+        FPCcheck=new CheckBox("FPC");
+        binder.bind(FPCcheck,FLOOR_PROTECTION_CHRAGES_APPLIED);
+        if(proposalHeader.getFloorProtectionChargesApplied()==null)
+        {
+            FPCcheck.setValue(true);
+            FPCcheck.setImmediate(true);
+        }
+
+        horizontalLayoutForCheckMiscellaneous.addComponent(FPCcheck);
+
+
+        formLayoutRight.addComponent(horizontalLayoutForCheckMiscellaneous);
 
         return formLayoutRight;
     }
