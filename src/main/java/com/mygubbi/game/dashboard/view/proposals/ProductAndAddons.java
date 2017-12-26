@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -124,8 +125,9 @@ public class ProductAndAddons extends Window
     private Label totalPrice;
 
     Label PHCRate,DCCRate,FPCRate;
-    TextField DCCQTY,FPCQTY;
-    Label PHCQTY;
+    TextField DCCQTY;
+    TextField FPCQTY;
+    TextField PHCQTY;
     CheckBox PHCcheck,DCCcheck,FPCcheck;
     Label DCCAmount,FPCAmount;
     Label PHCAmount;
@@ -242,7 +244,7 @@ public class ProductAndAddons extends Window
         HorizontalLayout horizontalLayout2 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, true, false, true));
         horizontalLayout2.addStyleName("layout-with-border");
-        horizontalLayout2.setWidth("96%");
+        horizontalLayout2.setWidth("98%");
         horizontalLayout2.addComponent(buildServiceHeading());
         verticalLayout.addComponent(horizontalLayout2);
         verticalLayout.setComponentAlignment(horizontalLayout2,Alignment.TOP_CENTER);
@@ -250,7 +252,7 @@ public class ProductAndAddons extends Window
 
         HorizontalLayout horizontalLayout3 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
-        horizontalLayout3.setSizeFull();
+//        horizontalLayout3.setSizeFull();
         horizontalLayout2.addComponent(buildLayout2());
         verticalLayout.addComponent(horizontalLayout3);
         verticalLayout.setComponentAlignment(horizontalLayout3,Alignment.TOP_CENTER);
@@ -258,7 +260,7 @@ public class ProductAndAddons extends Window
 
         HorizontalLayout horizontalLayout4 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
-        horizontalLayout4.setSizeFull();
+//        horizontalLayout4.setSizeFull();
         horizontalLayout2.addComponent(buildLayout3());
         verticalLayout.addComponent(horizontalLayout4);
         verticalLayout.setComponentAlignment(horizontalLayout4,Alignment.TOP_CENTER);
@@ -535,7 +537,7 @@ public class ProductAndAddons extends Window
         FormLayout left = new FormLayout();
         Label maintotalWithoutDiscountLabel = new Label("Total Without Discount:");
         left.addComponent(maintotalWithoutDiscountLabel);
-        maintotalWithoutDiscountLabel.addStyleName("products-and-addons-label-text");
+        maintotalWithoutDiscountLabel.addStyleName("products-and-addons-summary-text");
         hLayout.addComponent(left);
         hLayout.setComponentAlignment(left,Alignment.MIDDLE_RIGHT);
 
@@ -545,7 +547,7 @@ public class ProductAndAddons extends Window
         this.grandTotal.setReadOnly(true);
         left1.addComponent(grandTotal);
         this.grandTotal.setValue(String.valueOf(proposalVersion.getAmount()));
-        grandTotal.addStyleName("products-and-addons-label-text");
+        grandTotal.addStyleName("products-and-addons-summary-text");
         hLayout.addComponent(left1);
         hLayout.setComponentAlignment(left1,Alignment.MIDDLE_RIGHT);
 
@@ -591,18 +593,21 @@ public class ProductAndAddons extends Window
         FormLayout left6 = new FormLayout();
         Label totalAfterDiscount = new Label("Total After Discount :");
         left6.addComponent(totalAfterDiscount);
-        totalAfterDiscount.addStyleName("products-and-addons-label-text");
+        totalAfterDiscount.addStyleName("products-and-addons-summary-text");
         hLayout.addComponent(left6);
         hLayout.setComponentAlignment(left6,Alignment.MIDDLE_RIGHT);
 
         FormLayout left7 = new FormLayout();
         this.discountTotal = new Label();
         this.discountTotal.setConverter(getAmountConverter());
-        this.discountTotal.setValue(String.valueOf(proposalVersion.getFinalAmount()));
+        LOG.info("BEFORE ROUNDING :: "+proposalVersion.getFinalAmount());
+        LOG.info("AFTER ROUNDING :: "+this.round(proposalVersion.getFinalAmount(),0));
+
+        this.discountTotal.setValue(String.valueOf(this.round(proposalVersion.getFinalAmount(),0)));
         //this.discountTotal.setValue(proposalVersion.getDiscountAmount());
         this.discountTotal.setReadOnly(true);
         left7.addComponent(discountTotal);
-        discountTotal.addStyleName("products-and-addons-label-text");
+        discountTotal.addStyleName("products-and-addons-summary-text");
         hLayout.addComponent(left7);
         hLayout.setComponentAlignment(left7,Alignment.MIDDLE_RIGHT);
 
@@ -643,7 +648,7 @@ public class ProductAndAddons extends Window
         java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
         java.util.Date currentDate = new Date(117, 3, 20, 0, 0, 00);
 
-        //calculate discount
+        //calculate discount/
         if (date.after(currentDate)) {
             //new proposal
             disAmount = productsTotal * (disPercentage / 100.0);
@@ -655,20 +660,29 @@ public class ProductAndAddons extends Window
         productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
         projectHandlingCharges=productsTotalAfterDiscount * (projectHandlingChargesRate / 100);
         deepClearingQty=Double.valueOf(DCCQTY.getValue());
-        deepClearingamount=deepClearingQty*deepCleaningChargesRate;
+        if(productsTotalAfterDiscount > 0 )
+            deepClearingamount=deepClearingQty*deepCleaningChargesRate;
         floorProtectionQty=Double.valueOf(FPCQTY.getValue());
         floorProtectionamount=floorProtectionQty*floorProtectionChargesRate;
 
         servicesTotal=projectHandlingCharges+floorProtectionamount+deepClearingamount;
         totalBeforeDiscount=productsTotal+addonsTotal+servicesTotal;
         totalAfterDiscount=totalBeforeDiscount-disAmount;
+        totalAfterDiscount = totalAfterDiscount - totalAfterDiscount % 10;
 
         productPrice.setValue(String.valueOf(productsTotal));
         productPriceAfterDiscount.setValue(String.valueOf(productsTotalAfterDiscount));
         addonPrice.setValue(String.valueOf(addonsTotal));
         grandTotal.setValue(String.valueOf(totalBeforeDiscount));
+
         discountTotal.setValue(String.valueOf(totalAfterDiscount));
-        miscellaneousPrice.setValue(String.valueOf(servicesTotal));
+
+        if(productsTotalAfterDiscount > 0) {
+            DCCAmount.setValue(String.valueOf(deepClearingamount));
+            miscellaneousPrice.setValue(String.valueOf(this.round(servicesTotal, 2)));
+        }else{
+            miscellaneousPrice.setValue("0.0");
+        }
         PHCAmount.setValue(String.valueOf(projectHandlingCharges));
         PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
         if (Objects.equals(proposalHeader.getPackageFlag(), "Yes")) {
@@ -679,7 +693,8 @@ public class ProductAndAddons extends Window
             this.discountAmount.setValue(String.valueOf(disAmount.intValue()) + " ");
         }
 
-        proposalVersion.setFinalAmount(totalAfterDiscount);
+        double res = totalAfterDiscount - totalAfterDiscount % 10;
+        proposalVersion.setFinalAmount(res);
         proposalVersion.setProjectHandlingQty(productsTotalAfterDiscount);
         proposalVersion.setDiscountPercentage(disPercentage);
         proposalVersion.setDiscountAmount(disAmount);
@@ -1323,44 +1338,45 @@ public class ProductAndAddons extends Window
 
     private Component buildProductSummaryComponents() {
         HorizontalLayout productSummaryLayout  = new HorizontalLayout();
+        productSummaryLayout.setSpacing(true);
+        productSummaryLayout.setSizeUndefined();
 
         Label productPricetitle = new Label("Total Product Price : ");
-        productPricetitle.setStyleName("products-and-addons-label-text");
+        productPricetitle.setStyleName("products-and-addons-summary-text");
         productSummaryLayout.addComponent(productPricetitle);
 
         this.productPrice = new Label();
         this.productPrice.setConverter(getAmountConverter());
-        productPrice.setStyleName("products-and-addons-label-text");
+        productPrice.setStyleName("products-and-addons-summary-text");
         productSummaryLayout.addComponent(productPrice);
 
         Label Discount = new Label("Discount % :");
-        Discount.addStyleName("products-and-addons-label-text");
+        Discount.addStyleName("products-and-addons-summary-text");
         productSummaryLayout.addComponent(Discount);
 
         this.discountPercentage = new TextField();
-        discountPercentage.addStyleName("products-and-addons-label-text");
+        discountPercentage.addStyleName("products-and-addons-summary-text");
         this.discountPercentage.setConverter(new StringToDoubleConverter());
         this.discountPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
         productSummaryLayout.addComponent(discountPercentage);
 
         Label DiscountAmount = new Label("Discount Amount :");
-        DiscountAmount.addStyleName("products-and-addons-label-text");
+        DiscountAmount.addStyleName("products-and-addons-summary-text");
         productSummaryLayout.addComponent(DiscountAmount);
 
         this.discountAmount = new TextField();
         this.discountAmount.setConverter(new StringToDoubleConverter());
         this.discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
-        discountAmount.addStyleName("products-and-addons-label-text");
+        discountAmount.addStyleName("products-and-addons-summary-text");
         productSummaryLayout.addComponent(discountAmount);
 
         Label productPriceAfterDiscounttitle = new Label("Total Product Price after Discount : ");
-        productPriceAfterDiscounttitle.setStyleName("products-and-addons-label-text");
+        productPriceAfterDiscounttitle.setStyleName("products-and-addons-summary-text");
         productSummaryLayout.addComponent(productPriceAfterDiscounttitle);
 
         this.productPriceAfterDiscount = new Label();
-        this.productPriceAfterDiscount.setStyleName("products-and-addons-label-text");
+        this.productPriceAfterDiscount.setStyleName("products-and-addons-summary-text");
         this.productPriceAfterDiscount.setConverter(getAmountConverter());
-        this.productPriceAfterDiscount.setStyleName("products-and-addons-label-text");
         productSummaryLayout.addComponent(productPriceAfterDiscount);
 
         return productSummaryLayout;
@@ -1432,13 +1448,13 @@ public class ProductAndAddons extends Window
         HorizontalLayout serviceSummaryLayout  = new HorizontalLayout();
         serviceSummaryLayout.setMargin(new MarginInfo(false,true,false,false));
         Label servicePricetitle = new Label("Total Services Price : ");
-        servicePricetitle.setStyleName("products-and-addons-label-text");
+        servicePricetitle.setStyleName("products-and-addons-summary-text");
         serviceSummaryLayout.addComponent(servicePricetitle);
         serviceSummaryLayout.setComponentAlignment(servicePricetitle, Alignment.MIDDLE_RIGHT);
 
         this.miscellaneousPrice = new Label();
         this.miscellaneousPrice.setConverter(getAmountConverter());
-        miscellaneousPrice.setStyleName("products-and-addons-label-text");
+        miscellaneousPrice.setStyleName("products-and-addons-summary-text");
         serviceSummaryLayout.addComponent(miscellaneousPrice);
         serviceSummaryLayout.setComponentAlignment(miscellaneousPrice, Alignment.MIDDLE_RIGHT);
 
@@ -1599,13 +1615,13 @@ public class ProductAndAddons extends Window
     private Component buildAddonSummaryComponents() {
         HorizontalLayout addonSummaryLayout  = new HorizontalLayout();
         Label addonPricetitle = new Label("Total Addon Price : ");
-        addonPricetitle.setStyleName("products-and-addons-label-text");
+        addonPricetitle.setStyleName("products-and-addons-summary-text");
         addonSummaryLayout.addComponent(addonPricetitle);
         addonSummaryLayout.setComponentAlignment(addonPricetitle, Alignment.TOP_LEFT);
 
         this.addonPrice = new Label();
         this.addonPrice.setConverter(getAmountConverter());
-        addonPrice.setStyleName("products-and-addons-label-text");
+        addonPrice.setStyleName("products-and-addons-summary-text");
         addonSummaryLayout.addComponent(addonPrice);
         addonSummaryLayout.setComponentAlignment(addonPrice, Alignment.TOP_LEFT);
 
@@ -2001,6 +2017,7 @@ public class ProductAndAddons extends Window
                 proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
                 proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",", "")));
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
+//                double res = totalAfterDiscount - totalAfterDiscount % 10;
                 proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
                 proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
                 proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
@@ -2200,6 +2217,7 @@ public class ProductAndAddons extends Window
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             close();
         } catch (Exception e) {
+            e.printStackTrace();
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             LOG.info("Exception :" + e.toString());
         }
@@ -2588,7 +2606,7 @@ public class ProductAndAddons extends Window
         verticalLayout.addComponent(projectHandlingLabel);
         verticalLayout.setComponentAlignment(projectHandlingLabel,Alignment.MIDDLE_LEFT);
 
-        Label deepClearingLabel=new Label("Deep Clearing Charges");
+        Label deepClearingLabel=new Label("Deep Cleaning Charges");
         deepClearingLabel.addStyleName("margin-label-style2");
         verticalLayout.addComponent(deepClearingLabel);
         verticalLayout.setComponentAlignment(deepClearingLabel,Alignment.MIDDLE_LEFT);
@@ -2675,7 +2693,7 @@ public class ProductAndAddons extends Window
         verticalLayout.addComponent(heading);
         verticalLayout.setComponentAlignment(heading,Alignment.MIDDLE_LEFT);
 
-        PHCQTY =new Label();
+        PHCQTY =new TextField();
         PHCQTY.addStyleName("heighttext");
         PHCQTY.addStyleName("margin-label-style2");
         PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));

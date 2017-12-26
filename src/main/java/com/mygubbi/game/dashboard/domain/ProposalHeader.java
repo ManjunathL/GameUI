@@ -59,6 +59,10 @@ public class ProposalHeader {
     public static final String FROM_VERSION="fromVersion";
     public static final String BOQ_STATUS = "boqStatus";
     public static final String BOQ_DRIVE_LINK = "boqDriveLink";
+    public static final String PROJ_HANDLING_CHRAGES_APPLIED = "projectHandlingChargesApplied";
+    public static final String DEEP_CLEANING_CHRAGES_APPLIED = "deepClearingChargesApplied";
+    public static final String FLOOR_PROTECTION_CHRAGES_APPLIED = "floorProtectionChargesApplied";
+
 
     private int id;
     private String quoteNoNew;
@@ -107,6 +111,9 @@ public class ProposalHeader {
     private String boqDriveLink;
     private int fromProposal;
     private String fromVersion;
+    private String projectHandlingChargesApplied;
+    private String deepClearingChargesApplied;
+    private String floorProtectionChargesApplied;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -491,6 +498,30 @@ public class ProposalHeader {
 
     public void setFromVersion(String fromVersion) {
         this.fromVersion = fromVersion;
+    }
+
+    public String getProjectHandlingChargesApplied() {
+        return projectHandlingChargesApplied;
+    }
+
+    public void setProjectHandlingChargesApplied(String projectHandlingChargesApplied) {
+        this.projectHandlingChargesApplied = projectHandlingChargesApplied;
+    }
+
+    public String getDeepClearingChargesApplied() {
+        return deepClearingChargesApplied;
+    }
+
+    public void setDeepClearingChargesApplied(String deepClearingChargesApplied) {
+        this.deepClearingChargesApplied = deepClearingChargesApplied;
+    }
+
+    public String getFloorProtectionChargesApplied() {
+        return floorProtectionChargesApplied;
+    }
+
+    public void setFloorProtectionChargesApplied(String floorProtectionChargesApplied) {
+        this.floorProtectionChargesApplied = floorProtectionChargesApplied;
     }
 
     @Override
