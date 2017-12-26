@@ -1880,12 +1880,12 @@ public class CreateProposalsView extends Panel implements View {
             FPCcheck.setValue(true);
             FPCcheck.setImmediate(true);
         }
-
         horizontalLayoutForCheckMiscellaneous.addComponent(FPCcheck);
-
-
         formLayoutRight.addComponent(horizontalLayoutForCheckMiscellaneous);
-
+        if(!(("admin").equals(role)) )
+        {
+            horizontalLayoutForCheckMiscellaneous.setVisible(false);
+        }
         return formLayoutRight;
     }
 
