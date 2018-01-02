@@ -1427,7 +1427,6 @@ public class CreateProposalsView extends Panel implements View {
 
         double res = totalAfterDiscount - totalAfterDiscount % 10;
         proposalVersion.setFinalAmount(res);
-        proposalVersion.setProjectHandlingQty(productsTotalAfterDiscount);
         proposalVersion.setDiscountPercentage(disPercentage);
         proposalVersion.setDiscountAmount(disAmount);
         proposalVersion.setAmount(totalBeforeDiscount);
