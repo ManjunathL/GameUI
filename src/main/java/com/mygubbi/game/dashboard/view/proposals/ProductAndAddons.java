@@ -664,10 +664,10 @@ public class ProductAndAddons extends Window
             PHCQTY.setReadOnly(false);
             PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
             PHCQTY.setReadOnly(true);
-        }else{
+        }/*else{
 //            PHCQTY.setValue("0.0");
             PHCQTY.setReadOnly(false);
-        }
+        }*/
 
         projectHandlingCharges=Double.parseDouble(this.PHCQTY.getValue() )* (projectHandlingChargesRate / 100);
         PHCAmount.setValue(String.valueOf(projectHandlingCharges));
@@ -2451,6 +2451,12 @@ public class ProductAndAddons extends Window
         if (Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
             addFromProductLibrary.setEnabled(false);
         }
+        PHCQTY.setReadOnly(true);
+        FPCQTY.setReadOnly(true);
+        DCCQTY.setReadOnly(true);
+        PHCAmount.setReadOnly(true);
+        FPCAmount.setReadOnly(true);
+        DCCAmount.setReadOnly(true);
     }
 
     @Subscribe
@@ -2725,9 +2731,19 @@ public class ProductAndAddons extends Window
         FPCQTY.addStyleName("heighttext");
         FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
         verticalLayout.addComponent(FPCQTY);
+        if(proposalHeader.getFloorProtectionChargesApplied().equals("false"))
+        {
+            FPCQTY.setReadOnly(true);
+        }
+        if(proposalHeader.getDeepClearingChargesApplied().equals("false"))
+        {
+            DCCQTY.setReadOnly(true);
+        }
+        if(proposalHeader.getProjectHandlingChargesApplied().equals("false"))
+        {
+            PHCQTY.setReadOnly(true);
+        }
         verticalLayout.setComponentAlignment(FPCQTY,Alignment.MIDDLE_LEFT);
-
-
         return verticalLayout;
     }
 
