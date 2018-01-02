@@ -2188,6 +2188,22 @@ public class ProductAndAddons extends Window
                 remarksTextArea.setValidationVisible(false);
                 return;
             }
+
+            if(proposalHeader.getDeepClearingChargesApplied().equals("true") && DCCQTY.getValue().equals("0.0"))
+            {
+                NotificationUtil.showNotification("Deep Cleaning Quantity should not be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+            if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && FPCQTY.getValue().equals("0.0"))
+            {
+                NotificationUtil.showNotification("Floor Protection Quantity should not be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+            if(proposalHeader.getProjectHandlingChargesApplied().equals("true") && PHCQTY.getValue().equals("0.0"))
+            {
+                NotificationUtil.showNotification("Project Handling Quantity should not be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
             saveProposalVersion();
         } else {
             NotificationUtil.showNotification("Discount should not exceed " + rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
