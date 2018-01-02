@@ -1248,6 +1248,7 @@ public class CreateProposalsView extends Panel implements View {
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
             proposalDataProvider.updatePriceForNewProposal(this.proposalHeader);
             proposalDataProvider.saveProposal(this.proposalHeader);
+
             if(proposalHeader.getMaxDiscountPercentage()==0 ) {
                 maxDiscountPercentage.setReadOnly(false);
                 maxDiscountPercentage.setValue(String.valueOf(rateForDiscount));
@@ -1260,6 +1261,7 @@ public class CreateProposalsView extends Panel implements View {
 
             cancelButton.setVisible(false);
             saveAndCloseButton.setVisible(true);
+
 
             if (success) {
 
@@ -1313,6 +1315,18 @@ public class CreateProposalsView extends Panel implements View {
             } catch (Exception e) {
                 LOG.info(e);
             }
+
+            LOG.info("PHC CHECK VAU" +PHCcheck.getValue().equals(false));
+            if(PHCcheck.getValue().equals(false) || FPCcheck.getValue().equals(false) || DCCcheck.getValue().equals(false))
+            {
+                LOG.info("inside check value ");
+                List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(this.proposalHeader.getId());
+                for(ProposalVersion proposalVersion:proposalVersionList)
+                {
+                    updatePrice(proposalVersion);
+                }
+            }
+
             setMaxDiscountPercentange();
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
             boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
@@ -1345,6 +1359,65 @@ public class CreateProposalsView extends Panel implements View {
 
         }
 
+    }
+
+    private void updatePrice(ProposalVersion proposalVersion)
+    {
+        Double totalBeforeDiscount=0.0,totalAfterDiscount=0.0,productsTotal=0.0,addonsTotal=0.0,servicesTotal=0.0,disPercentage,disAmount=0.0,productTotalWOAccessories=0.0,deepClearingQty=0.0,deepClearingamount=0.0,floorProtectionQty=0.0,floorProtectionamount=0.0;
+        Double projectHandlingCharges=0.0,productsTotalAfterDiscount=0.0;
+        disPercentage=proposalVersion.getDiscountPercentage();
+        List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
+        for (Product product : products) {
+            productsTotal+=product.getAmount();
+            productTotalWOAccessories += product.getCostWoAccessories();
+        }
+
+        List<AddonProduct> addons=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
+        for(AddonProduct addonProduct : addons)
+        {
+            addonsTotal=addonProduct.getAmount();
+        }
+
+        //check date to apply discount
+        ProposalHeader proposalHeaderCreateDate = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
+        java.util.Date date = proposalHeaderCreateDate.getCreatedOn();
+        java.util.Date currentDate = new Date(117, 3, 20, 0, 0, 00);
+
+        //calculate discount/
+        if (date.after(currentDate)) {
+            //new proposal
+            disAmount = productsTotal * (disPercentage / 100.0);
+        } else {
+            //old proposal
+            disAmount = productTotalWOAccessories * (disPercentage/ 100);
+        }
+
+        productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
+        proposalVersion.setProjectHandlingQty(0);
+        proposalVersion.setFloorProtectionSqft(0);
+        proposalVersion.setDeepClearingQty(0);
+        proposalVersion.setProjectHandlingAmount(0);
+        proposalVersion.setFloorProtectionAmount(0);
+        proposalVersion.setDeepClearingAmount(0);
+        projectHandlingCharges=0.0;
+        deepClearingamount=0.0;
+        floorProtectionamount=0.0;
+        servicesTotal=projectHandlingCharges+floorProtectionamount+deepClearingamount;
+        totalBeforeDiscount=productsTotal+addonsTotal+servicesTotal;
+        totalAfterDiscount=totalBeforeDiscount-disAmount;
+        totalAfterDiscount = totalAfterDiscount - totalAfterDiscount % 10;
+
+        double res = totalAfterDiscount - totalAfterDiscount % 10;
+        proposalVersion.setFinalAmount(res);
+        proposalVersion.setProjectHandlingQty(productsTotalAfterDiscount);
+        proposalVersion.setDiscountPercentage(disPercentage);
+        proposalVersion.setDiscountAmount(disAmount);
+        proposalVersion.setAmount(totalBeforeDiscount);
+        proposalVersion.setProjectHandlingAmount(projectHandlingCharges);
+        proposalVersion.setDeepClearingAmount(deepClearingamount);
+        proposalVersion.setFloorProtectionAmount(floorProtectionamount);
+        proposalDataProvider.updateVersion(proposalVersion);
+        DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
     }
 
     private void checkQuoteNoNew() {

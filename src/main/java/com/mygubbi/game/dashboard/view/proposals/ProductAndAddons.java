@@ -247,7 +247,7 @@ public class ProductAndAddons extends Window
         horizontalLayout2.setWidth("98%");
         horizontalLayout2.addComponent(buildServiceHeading());
         verticalLayout.addComponent(horizontalLayout2);
-        verticalLayout.setComponentAlignment(horizontalLayout2,Alignment.TOP_CENTER);
+        //verticalLayout.setComponentAlignment(horizontalLayout2,Alignment.TOP_CENTER);
 //        horizontalLayout2.setHeightUndefined();
 
         HorizontalLayout horizontalLayout3 = new HorizontalLayout();
@@ -255,7 +255,7 @@ public class ProductAndAddons extends Window
 //        horizontalLayout3.setSizeFull();
         horizontalLayout2.addComponent(buildLayout2());
         verticalLayout.addComponent(horizontalLayout3);
-        verticalLayout.setComponentAlignment(horizontalLayout3,Alignment.TOP_CENTER);
+        //verticalLayout.setComponentAlignment(horizontalLayout3,Alignment.TOP_CENTER);
 //        horizontalLayout2.setHeightUndefined();
 
         HorizontalLayout horizontalLayout4 = new HorizontalLayout();
@@ -263,7 +263,7 @@ public class ProductAndAddons extends Window
 //        horizontalLayout4.setSizeFull();
         horizontalLayout2.addComponent(buildLayout3());
         verticalLayout.addComponent(horizontalLayout4);
-        verticalLayout.setComponentAlignment(horizontalLayout4,Alignment.TOP_CENTER);
+        //verticalLayout.setComponentAlignment(horizontalLayout4,Alignment.TOP_CENTER);
 //        horizontalLayout2.setHeightUndefined();
 
         DCCQTY.addValueChangeListener(this::deepCleaningchargesQuantityChanged);
@@ -275,7 +275,7 @@ public class ProductAndAddons extends Window
 //        horizontalLayout5.setSizeFull();
         horizontalLayout2.addComponent(buildLayout4());
         verticalLayout.addComponent(horizontalLayout5);
-        verticalLayout.setComponentAlignment(horizontalLayout5,Alignment.TOP_CENTER);
+        //verticalLayout.setComponentAlignment(horizontalLayout5,Alignment.TOP_CENTER);
 //        horizontalLayout2.setHeightUndefined();
 
         return verticalLayout;
