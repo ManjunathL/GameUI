@@ -1393,15 +1393,33 @@ public class CreateProposalsView extends Panel implements View {
         }
 
         productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
-        proposalVersion.setProjectHandlingQty(0);
-        proposalVersion.setFloorProtectionSqft(0);
-        proposalVersion.setDeepClearingQty(0);
-        proposalVersion.setProjectHandlingAmount(0);
-        proposalVersion.setFloorProtectionAmount(0);
-        proposalVersion.setDeepClearingAmount(0);
-        projectHandlingCharges=0.0;
-        deepClearingamount=0.0;
-        floorProtectionamount=0.0;
+        if(PHCcheck.getValue().equals(false))
+        {
+            proposalVersion.setProjectHandlingQty(0);
+            proposalVersion.setProjectHandlingAmount(0);
+            projectHandlingCharges=0.0;
+        }else
+        {
+            projectHandlingCharges=proposalVersion.getProjectHandlingAmount();
+        }
+        if(FPCcheck.getValue().equals(false))
+        {
+            proposalVersion.setFloorProtectionSqft(0);
+            proposalVersion.setFloorProtectionAmount(0);
+            floorProtectionamount=0.0;
+        }else
+        {
+            floorProtectionamount=proposalVersion.getFloorProtectionAmount();
+        }
+        if(DCCcheck.getValue().equals(false))
+        {
+            proposalVersion.setDeepClearingQty(0);
+            proposalVersion.setDeepClearingAmount(0);
+            deepClearingamount=0.0;
+        }else {
+            deepClearingamount=proposalVersion.getDeepClearingAmount();
+        }
+
         servicesTotal=projectHandlingCharges+floorProtectionamount+deepClearingamount;
         totalBeforeDiscount=productsTotal+addonsTotal+servicesTotal;
         totalAfterDiscount=totalBeforeDiscount-disAmount;
