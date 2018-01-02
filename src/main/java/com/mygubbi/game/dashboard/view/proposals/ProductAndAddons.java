@@ -2804,6 +2804,10 @@ public class ProductAndAddons extends Window
 
     private void deepCleaningchargesQuantityChanged(Property.ValueChangeEvent valueChangeEvent)
     {
+        if(DCCQTY.getValue()==null || DCCQTY.getValue().length()==0)
+        {
+          DCCQTY.setValue("0.0");
+        }
         DCCAmount.setValue(String.valueOf(Double.valueOf(DCCQTY.getValue()) * deepCleaningChargesRate));
         proposalVersion.setDeepClearingQty(Double.valueOf(DCCQTY.getValue()));
         status="DP";
@@ -2811,8 +2815,10 @@ public class ProductAndAddons extends Window
     }
     private void ProjectHandlingChargesQuantityChanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        LOG.info("this registerd");
-        LOG.info("projectHandlingChargesRate = "+projectHandlingChargesRate);
+        if(PHCQTY.getValue()==null || PHCQTY.getValue().length()==0)
+        {
+            PHCQTY.setValue("0.0");
+        }
         PHCAmount.setValue(String.valueOf(Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate));
         proposalVersion.setProjectHandlingQty(Double.valueOf(PHCQTY.getValue()));
         status="DP";
@@ -2820,6 +2826,10 @@ public class ProductAndAddons extends Window
     }
     private void floorProtectionQuantityChanged(Property.ValueChangeEvent valueChangeEvent)
     {
+        if(FPCQTY.getValue()==null || FPCQTY.getValue().length()==0)
+        {
+            FPCQTY.setValue("0.0");
+        }
         FPCAmount.setValue(String.valueOf(Double.valueOf(FPCQTY.getValue()) * floorProtectionChargesRate));
         proposalVersion.setFloorProtectionSqft(Double.valueOf(FPCQTY.getValue()));
         status="DP";
