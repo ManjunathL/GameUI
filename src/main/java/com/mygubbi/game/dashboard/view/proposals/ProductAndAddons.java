@@ -722,7 +722,7 @@ public class ProductAndAddons extends Window
     private void calculateDiscount()
     {
         LOG.info("calculate discount ");
-        Double totalVersionPrice=0.0,productsTotal=0.0,addonsTotal=0.0,servicesTotal=0.0,disPercentage,disAmount=0.0,productTotalWOAccessories=0.0;
+        Double totalVersionPrice=0.0,productsTotal=0.0,addonsTotal=0.0,servicesTotal=0.0,disPercentage =0.0,disAmount=0.0,productTotalWOAccessories=0.0;
         Double projectHandlingCharges=0.0;
         disPercentage=proposalVersion.getDiscountPercentage();
         List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
@@ -952,7 +952,15 @@ public class ProductAndAddons extends Window
         } else if ("DA".equals(status)) {
             LOG.info("inside DA");
             disAmount = (Double) this.discountAmount.getConvertedValue();
-            disPercent = (disAmount / productsTotal) * 100;
+            if(disAmount != null)
+             disPercent = (disAmount / productsTotal) * 100;
+            else{
+                disAmount = 0.0;
+                disPercent = 0.0;
+                this.discountAmount.setValue("0.0");
+                this.discountPercentage.setValue("0.0");
+
+            }
             if (disPercent <= rateForDiscount) {
                 this.discountPercentage.setValue(String.valueOf(round(disPercent, 2)));
             } else {
