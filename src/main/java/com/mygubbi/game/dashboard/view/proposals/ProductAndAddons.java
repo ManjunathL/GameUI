@@ -258,6 +258,11 @@ public class ProductAndAddons extends Window
         //verticalLayout.setComponentAlignment(horizontalLayout3,Alignment.TOP_CENTER);
 //        horizontalLayout2.setHeightUndefined();
 
+        HorizontalLayout horizontalLayoutForUnit = new HorizontalLayout();
+        horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
+        horizontalLayout2.addComponent(buildLayoutForUnit());
+        verticalLayout.addComponent(horizontalLayoutForUnit);
+
         HorizontalLayout horizontalLayout4 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
 //        horizontalLayout4.setSizeFull();
@@ -942,7 +947,9 @@ public class ProductAndAddons extends Window
                     this.discountAmount.setValue(String.valueOf(disAmount.intValue()) + " ");
                     this.discountAmount.setReadOnly(true);
                 } else {
+                    LOG.info("discount amt " +String.valueOf(disAmount.intValue()) );
                     this.discountAmount.setValue(String.valueOf(disAmount.intValue()) + " ");
+                    LOG.info("discount amount textbox value " +discountAmount.getValue());
                 }
                 this.disAmount = disAmount.intValue();
             } else {
@@ -1422,7 +1429,7 @@ public class ProductAndAddons extends Window
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(new MarginInfo(false, true, false, true));
 
-        Label addonTitle = new Label("Miscellaneous");
+        Label addonTitle = new Label("Miscellaneous Charges");
         addonTitle.setStyleName("products-and-addons-label-text");
         verticalLayout.addComponent(addonTitle);
         verticalLayout.setComponentAlignment(addonTitle, Alignment.TOP_LEFT);
@@ -1476,7 +1483,7 @@ public class ProductAndAddons extends Window
     private Component buildServicesSummaryComponents() {
         HorizontalLayout serviceSummaryLayout  = new HorizontalLayout();
         serviceSummaryLayout.setMargin(new MarginInfo(false,true,false,false));
-        Label servicePricetitle = new Label("Total Services Price : ");
+        Label servicePricetitle = new Label("Total Miscellaneous Charges : ");
         servicePricetitle.setStyleName("products-and-addons-summary-text");
         serviceSummaryLayout.addComponent(servicePricetitle);
         serviceSummaryLayout.setComponentAlignment(servicePricetitle, Alignment.MIDDLE_RIGHT);
@@ -2207,7 +2214,7 @@ public class ProductAndAddons extends Window
 
             if(proposalHeader.getDeepClearingChargesApplied().equals("true") && DCCQTY.getValue().equals("0.0"))
             {
-                NotificationUtil.showNotification("Deep Cleaning Quantity should not be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("House Keeping Quantity should not be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
             if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && FPCQTY.getValue().equals("0.0"))
@@ -2646,7 +2653,7 @@ public class ProductAndAddons extends Window
         verticalLayout.setSpacing(true);
         verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
-        Label heading=new Label("Service Title");
+        Label heading=new Label("Title");
         heading.addStyleName("margin-label-style1");
         verticalLayout.addComponent(heading);
         verticalLayout.setComponentAlignment(heading,Alignment.MIDDLE_LEFT);
@@ -2657,19 +2664,51 @@ public class ProductAndAddons extends Window
         verticalLayout.addComponent(projectHandlingLabel);
         verticalLayout.setComponentAlignment(projectHandlingLabel,Alignment.MIDDLE_LEFT);
 
-        Label deepClearingLabel=new Label("Deep Cleaning Charges");
+        Label deepClearingLabel=new Label("House Keeping Charges");
         deepClearingLabel.addStyleName("margin-label-style2");
         verticalLayout.addComponent(deepClearingLabel);
         verticalLayout.setComponentAlignment(deepClearingLabel,Alignment.MIDDLE_LEFT);
 
-        Label floorProtectionLabel=new Label("Floor Protection Charges(per Sqft)");
+        Label floorProtectionLabel=new Label("Floor Protection Charges");
         floorProtectionLabel.addStyleName("margin-label-style2");
         verticalLayout.addComponent(floorProtectionLabel);
         verticalLayout.setComponentAlignment(floorProtectionLabel,Alignment.MIDDLE_LEFT);
 
         return verticalLayout;
     }
+    public Component buildLayoutForUnit()
+    {
+        VerticalLayout verticalLayout=new VerticalLayout();
+        verticalLayout.setSpacing(true);
+        verticalLayout.setMargin(new MarginInfo(false,true,false,true));
 
+        Label heading=new Label();
+        heading.addStyleName("margin-label-style");
+        heading.setValue("Unit");
+        verticalLayout.addComponent(heading);
+        verticalLayout.setComponentAlignment(heading,Alignment.MIDDLE_LEFT);
+
+        Label PHCUnit =new Label();
+        PHCUnit.addStyleName("margin-label-style2");
+        PHCUnit.setValue("%");
+        verticalLayout.addComponent(PHCUnit);
+        verticalLayout.setComponentAlignment(PHCUnit,Alignment.MIDDLE_LEFT);
+
+        Label DCCUnit =new Label();
+        DCCUnit.addStyleName("margin-label-style2");
+        DCCUnit.setValue("Rs");
+        verticalLayout.addComponent(DCCUnit);
+        verticalLayout.setComponentAlignment(DCCUnit,Alignment.MIDDLE_LEFT);
+
+        Label FPCUnit = new Label();
+        FPCUnit.addStyleName("margin-label-style2");
+        FPCUnit.setReadOnly(true);
+        FPCUnit.setValue("Rs per Sqft");
+        verticalLayout.addComponent(FPCUnit);
+        verticalLayout.setComponentAlignment(FPCUnit,Alignment.MIDDLE_LEFT);
+
+        return verticalLayout;
+    }
     public Component buildLayout2()
     {
         VerticalLayout verticalLayout=new VerticalLayout();
@@ -2837,7 +2876,7 @@ public class ProductAndAddons extends Window
         }
         PHCAmount.setValue(String.valueOf(Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate));
         proposalVersion.setProjectHandlingQty(Double.valueOf(PHCQTY.getValue()));
-        status="DP";
+        //status="DP";
         updatePrice();
     }
     private void floorProtectionQuantityChanged(Property.ValueChangeEvent valueChangeEvent)

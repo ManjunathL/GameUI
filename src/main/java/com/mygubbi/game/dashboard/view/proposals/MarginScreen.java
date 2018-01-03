@@ -29,6 +29,7 @@ import java.util.List;
  */
 public class MarginScreen extends Window
 {
+    public static final String PRODUCT_ADDON_MISCELLANEOUS = "Product,Addon & Miscellaneous Charges";
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private static final Logger LOG = LogManager.getLogger(MarginScreen.class);
 
@@ -194,8 +195,8 @@ public class MarginScreen extends Window
         horizontalLayout.setSizeFull();
 
         checkProduct=new OptionGroup();
-        checkProduct.addItems("Product","Addon","Product & Addon");
-        checkProduct.setValue("Product & Addon");
+        checkProduct.addItems("Product","Addon",PRODUCT_ADDON_MISCELLANEOUS);
+        checkProduct.setValue(PRODUCT_ADDON_MISCELLANEOUS);
         checkProduct.addStyleName("horizontal");
         checkProduct.addValueChangeListener(this::checkSelectedValue);
         horizontalLayout.addComponent(checkProduct);
@@ -287,7 +288,7 @@ public class MarginScreen extends Window
         horizontalLayout.addComponent(projectHandlingCharges);
 
         //addonsCost=new Label("Addons Price:   " +round(addonsTotal,2));
-        deepcleaningCharges=new Label("Deep Clearing Charges:   "+versionPriceHolder.getDeepClearingAmount());
+        deepcleaningCharges=new Label("House Keeping Charges:   "+versionPriceHolder.getDeepClearingAmount());
         deepcleaningCharges.addStyleName("margin-label-style1");
         horizontalLayout.addComponent(deepcleaningCharges);
 
@@ -512,7 +513,7 @@ public class MarginScreen extends Window
             manualInputMargin.setValue(String.valueOf(versionPriceHolder.getAddonMargin()));
             manualInputCost.setValue(String.valueOf(versionPriceHolder.getAddonCost()));
         }
-        else if(checkProduct.getValue()=="Product & Addon")
+        else if(checkProduct.getValue()== PRODUCT_ADDON_MISCELLANEOUS)
         {
             profitPercentage.setValue(String.valueOf(proposalVersion.getDiscountPercentage()));
             profitPercentageAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
@@ -651,7 +652,7 @@ public class MarginScreen extends Window
             manualInputMargin.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getAddonMargin()));
             manualInputCost.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getAddonCost()));
         }
-        else if(checkProduct.getValue()=="Product & Addon")
+        else if(checkProduct.getValue()==PRODUCT_ADDON_MISCELLANEOUS)
         {
             /*if("DP".equals(status))
             {
