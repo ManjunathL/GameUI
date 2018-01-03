@@ -658,9 +658,10 @@ public class ProductAndAddons extends Window
             disAmount = productTotalWOAccessories * (disPercentage/ 100);
         }
 
-        productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
+
         LOG.info("Shilpa check this::"+this.proposalHeader.getProjectHandlingChargesApplied());
         if(this.proposalHeader.getProjectHandlingChargesApplied().equalsIgnoreCase("True")) {
+            productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
             PHCQTY.setReadOnly(false);
             PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
             PHCQTY.setReadOnly(true);
