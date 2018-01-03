@@ -571,7 +571,12 @@ public class MarginScreen extends Window
         copyVersion.setAmount(proposalVersion.getAmount());
         copyVersion.setProposalId(proposalVersion.getProposalId());
         copyVersion.setBusinessDate(proposalVersion.getBusinessDate());
-
+        copyVersion.setProjectHandlingQty(proposalVersion.getProjectHandlingQty());
+        copyVersion.setProjectHandlingAmount(proposalVersion.getProjectHandlingAmount());
+        copyVersion.setFloorProtectionSqft(proposalVersion.getFloorProtectionSqft());
+        copyVersion.setFloorProtectionAmount(proposalVersion.getFloorProtectionAmount());
+        copyVersion.setDeepClearingQty(proposalVersion.getDeepClearingQty());
+        copyVersion.setDeepClearingAmount(proposalVersion.getDeepClearingAmount());
         java.util.Date date =proposalHeader.getCreatedOn();
         java.util.Date currentDate = new java.util.Date(117 ,3,20,0,0,00);
         // proposalVersion.setDiscountPercentage(Double.parseDouble(manualInputDiscountPercentage.getValue()));
