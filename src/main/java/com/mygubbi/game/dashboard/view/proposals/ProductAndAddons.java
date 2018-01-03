@@ -978,9 +978,16 @@ public class ProductAndAddons extends Window
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
 
         proposalVersion.setAmount(totalAmount.intValue());
+        proposalVersion.setDiscountAmount(disAmount);
+        proposalVersion.setDiscountPercentage(disPercent);
         proposalVersion.setFinalAmount(res);
-        proposalDataProvider.updateVersion(proposalVersion);
-        DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
+//        proposalDataProvider.updateVersion(proposalVersion);
+
+        this.PHCQTY.setReadOnly(false);
+        this.PHCQTY.setValue(String.valueOf(productsTotal-disAmount));
+        this.PHCQTY.setReadOnly(true);
+
+//       DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
 
     }
 
