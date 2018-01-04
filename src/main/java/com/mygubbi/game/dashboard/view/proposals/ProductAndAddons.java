@@ -666,12 +666,13 @@ public class ProductAndAddons extends Window
 
         LOG.info("Shilpa check this::"+this.proposalHeader.getProjectHandlingChargesApplied());
         productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
-        PHCQTY.setReadOnly(false);
-        if(proposalHeader.getProjectHandlingChargesApplied().equals("false"))
-        {
+        if(proposalHeader.getProjectHandlingChargesApplied().equalsIgnoreCase("true")) {
+            PHCQTY.setReadOnly(false);
             PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
+            PHCQTY.setReadOnly(true);
+        }else{
+            PHCQTY.setReadOnly(false);
         }
-        //PHCQTY.setReadOnly(true);
 
         projectHandlingCharges=Double.parseDouble(this.PHCQTY.getValue() )* (projectHandlingChargesRate / 100);
         PHCAmount.setValue(String.valueOf(projectHandlingCharges));
@@ -712,7 +713,7 @@ public class ProductAndAddons extends Window
 
         double res = totalAfterDiscount - totalAfterDiscount % 10;
         proposalVersion.setFinalAmount(res);
-        proposalVersion.setProjectHandlingQty(productsTotalAfterDiscount);
+        proposalVersion.setProjectHandlingQty(Double.valueOf(PHCQTY.getValue()));
         proposalVersion.setDiscountPercentage(disPercentage);
         proposalVersion.setDiscountAmount(disAmount);
         proposalVersion.setAmount(totalBeforeDiscount);
@@ -934,7 +935,15 @@ public class ProductAndAddons extends Window
         rateForDiscount = proposalHeader.getMaxDiscountPercentage();
         if ("DP".equals(status)) {
             LOG.info("inside DP ");
-            disPercent = Double.valueOf(discountPercentage.getValue());
+            if(discountPercentage.getValue() != null){
+                disPercent = Double.valueOf(discountPercentage.getValue());
+            } else{
+                disAmount = 0.0;
+                disPercent = 0.0;
+                this.discountAmount.setValue("0.0");
+                this.discountPercentage.setValue("0.0");
+
+            }
             if (disPercent <= rateForDiscount) {
                 if (disPercent == null) {
                     disPercent = 0.0;
@@ -994,7 +1003,7 @@ public class ProductAndAddons extends Window
         proposalVersion.setDiscountAmount(disAmount);
         proposalVersion.setDiscountPercentage(disPercent);
         proposalVersion.setFinalAmount(res);
-        this.PHCQTY.setValue(String.valueOf(productsTotal-disAmount));
+//        this.PHCQTY.setValue(String.valueOf(productsTotal-disAmount));
     }
 
 
@@ -2208,19 +2217,27 @@ public class ProductAndAddons extends Window
                 return;
             }
 
-            if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty <= 1)
+            if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
             {
                 NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
+            }else if(proposalHeader.getDeepClearingChargesApplied().equals("false") && deepCleaningQty < 0)
+            {
+                NotificationUtil.showNotification("House Keeping Quantity should be positive number", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
             }
-            else if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && floorProtectionQty <= 0)
+            else if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && floorProtectionQty < 1)
             {
                 NotificationUtil.showNotification("Floor Protection Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-            }
-            else if(proposalHeader.getProjectHandlingChargesApplied().equals("true") && projectHandlingQty <=0)
+            } else if(proposalHeader.getFloorProtectionChargesApplied().equals("false") && floorProtectionQty < 0)
             {
-                NotificationUtil.showNotification("Project Handling Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Floor Protection Quantity should be positive number", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+            else if(proposalHeader.getProjectHandlingChargesApplied().equals("false") && projectHandlingQty < 0)
+            {
+                NotificationUtil.showNotification("Project Handling Quantity should be positive number", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
             else
@@ -2783,7 +2800,7 @@ public class ProductAndAddons extends Window
         PHCQTY =new TextField();
         PHCQTY.addStyleName("heighttext");
         PHCQTY.addStyleName("margin-label-style2");
-        PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));
+        PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingQty()));
         verticalLayout.addComponent(PHCQTY);
         verticalLayout.setComponentAlignment(PHCQTY,Alignment.MIDDLE_LEFT);
 
@@ -2799,17 +2816,12 @@ public class ProductAndAddons extends Window
         FPCQTY.addStyleName("heighttext");
         FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
         verticalLayout.addComponent(FPCQTY);
-        /*if(proposalHeader.getFloorProtectionChargesApplied().equals("false"))
-        {
-            FPCQTY.setReadOnly(true);
-        }*/
-        if(proposalHeader.getDeepClearingChargesApplied().equals("false"))
-        {
-            DCCQTY.setReadOnly(true);
-        }
-        if(proposalHeader.getProjectHandlingChargesApplied().equals("false"))
+
+        if(proposalHeader.getProjectHandlingChargesApplied().equals("true"))
         {
             PHCQTY.setReadOnly(true);
+        }else {
+            PHCQTY.setReadOnly(false);
         }
         verticalLayout.setComponentAlignment(FPCQTY,Alignment.MIDDLE_LEFT);
         return verticalLayout;
@@ -2858,7 +2870,8 @@ public class ProductAndAddons extends Window
     {
         if(DCCQTY.getValue()==null || DCCQTY.getValue().length()==0)
         {
-            DCCQTY.setValue("0.0");
+            DCCQTY.setValue(String.valueOf(proposalVersion.getDeepClearingQty()));
+            DCCAmount.setValue(String.valueOf(proposalVersion.getDeepClearingAmount()));
         }
         else if(Double.valueOf(DCCQTY.getValue())< 0 )
         {
@@ -2878,7 +2891,8 @@ public class ProductAndAddons extends Window
     {
         if(PHCQTY.getValue()==null || PHCQTY.getValue().length()==0)
         {
-            PHCQTY.setValue("0.0");
+            PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingQty()));
+            PHCAmount.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));
         }else if(Double.valueOf(PHCQTY.getValue())<0)
         {
             NotificationUtil.showNotification("Project Handling quantity should be a positive number" , NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2898,7 +2912,8 @@ public class ProductAndAddons extends Window
     {
         if(FPCQTY.getValue()==null || FPCQTY.getValue().length()==0)
         {
-            FPCQTY.setValue("0.0");
+            FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
+            FPCAmount.setValue(String.valueOf(proposalVersion.getFloorProtectionAmount()));
         }else if(Double.valueOf(FPCQTY.getValue())<0)
         {
             FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
