@@ -1020,7 +1020,9 @@ public class ProductAndAddons extends Window
         proposalVersion.setDiscountAmount(disAmount);
         proposalVersion.setDiscountPercentage(disPercent);
         proposalVersion.setFinalAmount(res);
+        this.PHCQTY.setReadOnly(false);
         this.PHCQTY.setValue(String.valueOf(productsTotal-disAmount));
+       this.PHCQTY.setReadOnly(true);
     }
 
 
