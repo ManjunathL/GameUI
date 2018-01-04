@@ -685,7 +685,7 @@ public class ProductAndAddons extends Window
         productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
         if(proposalHeader.getProjectHandlingChargesApplied().equalsIgnoreCase("true")) {
             PHCQTY.setReadOnly(false);
-            PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
+            PHCQTY.setValue(String.valueOf(round(productsTotalAfterDiscount,2)));
             PHCQTY.setReadOnly(true);
         }else{
             PHCQTY.setReadOnly(false);
@@ -1021,7 +1021,7 @@ public class ProductAndAddons extends Window
         proposalVersion.setDiscountPercentage(disPercent);
         proposalVersion.setFinalAmount(res);
         this.PHCQTY.setReadOnly(false);
-        this.PHCQTY.setValue(String.valueOf(productsTotal-disAmount));
+        this.PHCQTY.setValue(String.valueOf(round(productsTotal-disAmount,2)));
        this.PHCQTY.setReadOnly(true);
     }
 
@@ -2819,7 +2819,7 @@ public class ProductAndAddons extends Window
         PHCQTY =new TextField();
         PHCQTY.addStyleName("heighttext");
         PHCQTY.addStyleName("margin-label-style2");
-        PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingQty()));
+        PHCQTY.setValue(String.valueOf(round(proposalVersion.getProjectHandlingQty(),2)));
         verticalLayout.addComponent(PHCQTY);
         verticalLayout.setComponentAlignment(PHCQTY,Alignment.MIDDLE_LEFT);
 
@@ -2910,12 +2910,12 @@ public class ProductAndAddons extends Window
     {
         if(PHCQTY.getValue()==null || PHCQTY.getValue().length()==0)
         {
-            PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingQty()));
+            PHCQTY.setValue(String.valueOf(round(proposalVersion.getProjectHandlingQty(),2)));
             PHCAmount.setValue(String.valueOf(round(proposalVersion.getProjectHandlingAmount(),2)));
         }else if(Double.valueOf(PHCQTY.getValue())<0)
         {
             NotificationUtil.showNotification("Project Handling quantity should be a positive number" , NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingQty()));
+            PHCQTY.setValue(String.valueOf(round(proposalVersion.getProjectHandlingQty(),2)));
             PHCAmount.setValue(String.valueOf(round(proposalVersion.getProjectHandlingAmount(),2)));
         }
         else
