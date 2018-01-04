@@ -646,7 +646,7 @@ public class ProductAndAddons extends Window
         List<AddonProduct> addons=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
         for(AddonProduct addonProduct : addons)
         {
-            addonsTotal=addonProduct.getAmount();
+            addonsTotal+=addonProduct.getAmount();
         }
 
         //check date to apply discount
@@ -738,7 +738,7 @@ public class ProductAndAddons extends Window
         List<AddonProduct> addons=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
         for(AddonProduct addonProduct : addons)
         {
-            addonsTotal=addonProduct.getAmount();
+            addonsTotal+=addonProduct.getAmount();
         }
 
         servicesTotal=proposalVersion.getProjectHandlingAmount()+proposalVersion.getFloorProtectionAmount()+proposalVersion.getDeepClearingAmount();
