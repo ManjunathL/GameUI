@@ -667,7 +667,10 @@ public class ProductAndAddons extends Window
         LOG.info("Shilpa check this::"+this.proposalHeader.getProjectHandlingChargesApplied());
         productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
         PHCQTY.setReadOnly(false);
-        PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
+        if(proposalHeader.getProjectHandlingChargesApplied().equals("false"))
+        {
+            PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
+        }
         //PHCQTY.setReadOnly(true);
 
         projectHandlingCharges=Double.parseDouble(this.PHCQTY.getValue() )* (projectHandlingChargesRate / 100);
@@ -2205,7 +2208,7 @@ public class ProductAndAddons extends Window
                 return;
             }
 
-            if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty >= 1)
+            if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty <= 1)
             {
                 NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
@@ -2899,7 +2902,7 @@ public class ProductAndAddons extends Window
         }else if(Double.valueOf(FPCQTY.getValue())<0)
         {
             FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
-            FPCAmount.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));
+            FPCAmount.setValue(String.valueOf(proposalVersion.getFloorProtectionAmount()));
             NotificationUtil.showNotification("Floor Protection quantity should be a positive number" , NotificationUtil.STYLE_BAR_ERROR_SMALL);
         }
         else
