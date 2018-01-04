@@ -163,7 +163,7 @@ public class CRMsearchWindow extends Window
                         defDaysFromWorkCompletion=((Double)discountpriceMaster.getSourcePrice()).intValue();
                         proposalHeader.setNoOfDaysForWorkCompletion(defDaysFromWorkCompletion);
                         proposalHeader.setProjectHandlingChargesApplied("true");
-                        proposalHeader.setFloorProtectionChargesApplied("true");
+                        proposalHeader.setFloorProtectionChargesApplied("false");
                         proposalHeader.setDeepClearingChargesApplied("true");
 
                         boolean success = proposalDataProvider.saveProposal(this.proposalHeader);

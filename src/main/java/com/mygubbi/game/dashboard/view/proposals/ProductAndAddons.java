@@ -665,15 +665,10 @@ public class ProductAndAddons extends Window
 
 
         LOG.info("Shilpa check this::"+this.proposalHeader.getProjectHandlingChargesApplied());
-        if(this.proposalHeader.getProjectHandlingChargesApplied().equalsIgnoreCase("True")) {
-            productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
-            PHCQTY.setReadOnly(false);
-            PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
-            PHCQTY.setReadOnly(true);
-        }/*else{
-//            PHCQTY.setValue("0.0");
-            PHCQTY.setReadOnly(false);
-        }*/
+        productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
+        PHCQTY.setReadOnly(false);
+        PHCQTY.setValue(String.valueOf(productsTotalAfterDiscount));
+        //PHCQTY.setReadOnly(true);
 
         projectHandlingCharges=Double.parseDouble(this.PHCQTY.getValue() )* (projectHandlingChargesRate / 100);
         PHCAmount.setValue(String.valueOf(projectHandlingCharges));
@@ -996,14 +991,7 @@ public class ProductAndAddons extends Window
         proposalVersion.setDiscountAmount(disAmount);
         proposalVersion.setDiscountPercentage(disPercent);
         proposalVersion.setFinalAmount(res);
-//        proposalDataProvider.updateVersion(proposalVersion);
-
-        this.PHCQTY.setReadOnly(false);
         this.PHCQTY.setValue(String.valueOf(productsTotal-disAmount));
-        this.PHCQTY.setReadOnly(true);
-
-//       DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
-
     }
 
 
@@ -2201,7 +2189,12 @@ public class ProductAndAddons extends Window
     }
 
 
-    private void save(Button.ClickEvent clickEvent) {
+    private void save(Button.ClickEvent clickEvent)
+    {
+        double projectHandlingQty=Double.valueOf(PHCQTY.getValue());
+        double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
+        double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
+        LOG.info("PHQ " +projectHandlingQty+ " DCC " +deepCleaningQty+ " FPC " +floorProtectionQty);
         if (proposalHeader.getMaxDiscountPercentage() >= Double.valueOf(discountPercentage.getValue())) {
             remarksTextArea.setValidationVisible(false);
             try {
@@ -2212,19 +2205,19 @@ public class ProductAndAddons extends Window
                 return;
             }
 
-            if(proposalHeader.getDeepClearingChargesApplied().equals("true") && DCCQTY.getValue().equals("0.0"))
+            if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty >= 1)
             {
-                NotificationUtil.showNotification("House Keeping Quantity should not be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-            if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && FPCQTY.getValue().equals("0.0"))
+            if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && floorProtectionQty >= 1)
             {
-                NotificationUtil.showNotification("Floor Protection Quantity should not be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Floor Protection Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-            if(proposalHeader.getProjectHandlingChargesApplied().equals("true") && PHCQTY.getValue().equals("0.0"))
+            if(proposalHeader.getProjectHandlingChargesApplied().equals("true") && projectHandlingQty >0)
             {
-                NotificationUtil.showNotification("Project Handling Quantity should not be 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Project Handling Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
             saveProposalVersion();
@@ -2802,15 +2795,16 @@ public class ProductAndAddons extends Window
         FPCQTY.addStyleName("heighttext");
         FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
         verticalLayout.addComponent(FPCQTY);
-        if(proposalHeader.getFloorProtectionChargesApplied().equals("false"))
+        LOG.info("proposalHeader.getFloorProtectionChargesApplied() " +proposalHeader.getFloorProtectionChargesApplied() + "\n proposalHeader.getDeepClearingChargesApplied() " +proposalHeader.getDeepClearingChargesApplied()+  "\n proposalHeader.getProjectHandlingChargesApplied() " +proposalHeader.getProjectHandlingChargesApplied());
+        if(proposalHeader.getFloorProtectionChargesApplied().equals("true"))
         {
             FPCQTY.setReadOnly(true);
         }
-        if(proposalHeader.getDeepClearingChargesApplied().equals("false"))
+        if(proposalHeader.getDeepClearingChargesApplied().equals("true"))
         {
             DCCQTY.setReadOnly(true);
         }
-        if(proposalHeader.getProjectHandlingChargesApplied().equals("false"))
+        if(proposalHeader.getProjectHandlingChargesApplied().equals("true"))
         {
             PHCQTY.setReadOnly(true);
         }
