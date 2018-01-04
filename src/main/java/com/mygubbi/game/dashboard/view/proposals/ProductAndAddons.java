@@ -2210,17 +2210,18 @@ public class ProductAndAddons extends Window
                 NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-            if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && floorProtectionQty >= 1)
+            else if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && floorProtectionQty >= 1)
             {
                 NotificationUtil.showNotification("Floor Protection Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-            if(proposalHeader.getProjectHandlingChargesApplied().equals("true") && projectHandlingQty >0)
+            else if(proposalHeader.getProjectHandlingChargesApplied().equals("true") && projectHandlingQty >0)
             {
                 NotificationUtil.showNotification("Project Handling Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-            saveProposalVersion();
+            else
+                 saveProposalVersion();
         } else {
             NotificationUtil.showNotification("Discount should not exceed " + rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
             discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()).replace(",", ""));
@@ -2795,16 +2796,15 @@ public class ProductAndAddons extends Window
         FPCQTY.addStyleName("heighttext");
         FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
         verticalLayout.addComponent(FPCQTY);
-        LOG.info("proposalHeader.getFloorProtectionChargesApplied() " +proposalHeader.getFloorProtectionChargesApplied() + "\n proposalHeader.getDeepClearingChargesApplied() " +proposalHeader.getDeepClearingChargesApplied()+  "\n proposalHeader.getProjectHandlingChargesApplied() " +proposalHeader.getProjectHandlingChargesApplied());
-        if(proposalHeader.getFloorProtectionChargesApplied().equals("true"))
+        if(proposalHeader.getFloorProtectionChargesApplied().equals("false"))
         {
             FPCQTY.setReadOnly(true);
         }
-        if(proposalHeader.getDeepClearingChargesApplied().equals("true"))
+        if(proposalHeader.getDeepClearingChargesApplied().equals("false"))
         {
             DCCQTY.setReadOnly(true);
         }
-        if(proposalHeader.getProjectHandlingChargesApplied().equals("true"))
+        if(proposalHeader.getProjectHandlingChargesApplied().equals("false"))
         {
             PHCQTY.setReadOnly(true);
         }
