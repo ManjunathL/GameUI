@@ -367,7 +367,7 @@ public class MarginScreen extends Window
 
         profitPercentageAmount =new Label();
         profitPercentageAmount.addStyleName("margin-label-style2");
-        profitPercentageAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
+        profitPercentageAmount.setValue(String.valueOf(((Double)proposalVersion.getDiscountAmount()).intValue()));
         verticalLayout.addComponent(profitPercentageAmount);
 
         discountedSalesPrice = new Label();
@@ -433,7 +433,7 @@ public class MarginScreen extends Window
         manualInputDiscountAmount =new TextField();
         manualInputDiscountAmount.addStyleName("margin-label-style2");
         manualInputDiscountAmount.addStyleName("heighttext");
-        manualInputDiscountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()));
+        manualInputDiscountAmount.setValue(String.valueOf(((Double)proposalVersion.getDiscountAmount()).intValue()));
         verticalLayout.addComponent(manualInputDiscountAmount);
 
         manualInputSalesPrice = new Label();
@@ -621,7 +621,7 @@ public class MarginScreen extends Window
                 manualInputDiscountPercentage.setValue(String.valueOf(round(discountPercentage,2)));
             }
             copyVersion.setDiscountPercentage(discountPercentage);
-            copyVersion.setDiscountAmount(discountAmount);
+            copyVersion.setDiscountAmount(round(discountAmount,2));
             //versionPriceHolderForDiscountOveride=new VersionPriceHolder();
             versionPriceHolderForDiscountOveride=proposalDataProvider.getVersionPrice(copyVersion);
             manualInputSalesPrice.setValue(String.valueOf(versionPriceHolderForDiscountOveride.getPrPriceAfterDiscount()));

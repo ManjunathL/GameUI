@@ -1020,9 +1020,13 @@ public class ProductAndAddons extends Window
         proposalVersion.setDiscountAmount(disAmount);
         proposalVersion.setDiscountPercentage(disPercent);
         proposalVersion.setFinalAmount(res);
-        this.PHCQTY.setReadOnly(false);
-        this.PHCQTY.setValue(String.valueOf(round(productsTotal-disAmount,2)));
-       this.PHCQTY.setReadOnly(true);
+       if(proposalHeader.getProjectHandlingChargesApplied().equalsIgnoreCase("true")) {
+           PHCQTY.setReadOnly(false);
+           PHCQTY.setValue(String.valueOf(round(productsTotal-disAmount,2)));
+           PHCQTY.setReadOnly(true);
+       }else{
+           PHCQTY.setReadOnly(false);
+       }
     }
 
 
