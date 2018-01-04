@@ -245,7 +245,10 @@ public class ProductAndAddons extends Window
         horizontalLayout2.setMargin(new MarginInfo(false, true, false, true));
         horizontalLayout2.addStyleName("layout-with-border");
         horizontalLayout2.setWidth("98%");
-        horizontalLayout2.addComponent(buildServiceHeading());
+
+        Component titleLayout = buildServiceHeading();
+        horizontalLayout2.addComponent(titleLayout);
+
         verticalLayout.addComponent(horizontalLayout2);
         //verticalLayout.setComponentAlignment(horizontalLayout2,Alignment.TOP_CENTER);
 //        horizontalLayout2.setHeightUndefined();
@@ -253,20 +256,24 @@ public class ProductAndAddons extends Window
         HorizontalLayout horizontalLayout3 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
 //        horizontalLayout3.setSizeFull();
-        horizontalLayout2.addComponent(buildLayout2());
+        Component rateLayout = buildLayout2();
+        horizontalLayout2.addComponent(rateLayout);
+
         verticalLayout.addComponent(horizontalLayout3);
         //verticalLayout.setComponentAlignment(horizontalLayout3,Alignment.TOP_CENTER);
 //        horizontalLayout2.setHeightUndefined();
 
         HorizontalLayout horizontalLayoutForUnit = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
-        horizontalLayout2.addComponent(buildLayoutForUnit());
+        Component unitLayout = buildLayoutForUnit();
+        horizontalLayout2.addComponent(unitLayout);
         verticalLayout.addComponent(horizontalLayoutForUnit);
 
         HorizontalLayout horizontalLayout4 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
 //        horizontalLayout4.setSizeFull();
-        horizontalLayout2.addComponent(buildLayout3());
+        Component quantityLayout = buildLayout3();
+        horizontalLayout2.addComponent(quantityLayout);
         verticalLayout.addComponent(horizontalLayout4);
         //verticalLayout.setComponentAlignment(horizontalLayout4,Alignment.TOP_CENTER);
 //        horizontalLayout2.setHeightUndefined();
@@ -278,8 +285,18 @@ public class ProductAndAddons extends Window
         HorizontalLayout horizontalLayout5 = new HorizontalLayout();
         horizontalLayout2.setMargin(new MarginInfo(false, false, false, false));
 //        horizontalLayout5.setSizeFull();
-        horizontalLayout2.addComponent(buildLayout4());
+        Component amountLayout = buildLayout4();
+        horizontalLayout2.addComponent(amountLayout);
+
+        horizontalLayout2.setExpandRatio(titleLayout,0.35f);
+        horizontalLayout2.setExpandRatio(rateLayout,0.15f);
+        horizontalLayout2.setExpandRatio(unitLayout,0.20f);
+        horizontalLayout2.setExpandRatio(quantityLayout,0.15f);
+        horizontalLayout2.setExpandRatio(amountLayout,0.15f);
+
+
         verticalLayout.addComponent(horizontalLayout5);
+
         //verticalLayout.setComponentAlignment(horizontalLayout5,Alignment.TOP_CENTER);
 //        horizontalLayout2.setHeightUndefined();
 
@@ -646,7 +663,7 @@ public class ProductAndAddons extends Window
         List<AddonProduct> addons=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
         for(AddonProduct addonProduct : addons)
         {
-            addonsTotal+=addonProduct.getAmount();
+            addonsTotal += addonProduct.getAmount();
         }
 
         //check date to apply discount
@@ -675,7 +692,7 @@ public class ProductAndAddons extends Window
         }
 
         projectHandlingCharges=Double.parseDouble(this.PHCQTY.getValue() )* (projectHandlingChargesRate / 100);
-        PHCAmount.setValue(String.valueOf(projectHandlingCharges));
+        PHCAmount.setValue(String.valueOf(round(projectHandlingCharges,2)));
 
         deepClearingQty=Double.valueOf(DCCQTY.getValue());
         if(productsTotalAfterDiscount > 0 )
@@ -691,7 +708,7 @@ public class ProductAndAddons extends Window
         productPrice.setValue(String.valueOf(productsTotal));
         productPriceAfterDiscount.setValue(String.valueOf(productsTotalAfterDiscount));
         addonPrice.setValue(String.valueOf(addonsTotal));
-        grandTotal.setValue(String.valueOf(totalBeforeDiscount));
+        grandTotal.setValue(String.valueOf(totalBeforeDiscount.intValue()));
 
         discountTotal.setValue(String.valueOf(totalAfterDiscount));
 
@@ -716,7 +733,7 @@ public class ProductAndAddons extends Window
         proposalVersion.setProjectHandlingQty(Double.valueOf(PHCQTY.getValue()));
         proposalVersion.setDiscountPercentage(disPercentage);
         proposalVersion.setDiscountAmount(disAmount);
-        proposalVersion.setAmount(totalBeforeDiscount);
+        proposalVersion.setAmount(totalBeforeDiscount.intValue());
         proposalVersion.setProjectHandlingAmount(projectHandlingCharges);
         proposalVersion.setDeepClearingAmount(deepClearingamount);
         proposalVersion.setFloorProtectionAmount(floorProtectionamount);
@@ -738,7 +755,7 @@ public class ProductAndAddons extends Window
         List<AddonProduct> addons=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
         for(AddonProduct addonProduct : addons)
         {
-            addonsTotal+=addonProduct.getAmount();
+            addonsTotal += addonProduct.getAmount();
         }
 
         servicesTotal=proposalVersion.getProjectHandlingAmount()+proposalVersion.getFloorProtectionAmount()+proposalVersion.getDeepClearingAmount();
@@ -1003,7 +1020,7 @@ public class ProductAndAddons extends Window
         proposalVersion.setDiscountAmount(disAmount);
         proposalVersion.setDiscountPercentage(disPercent);
         proposalVersion.setFinalAmount(res);
-//        this.PHCQTY.setValue(String.valueOf(productsTotal-disAmount));
+        this.PHCQTY.setValue(String.valueOf(productsTotal-disAmount));
     }
 
 
@@ -2843,7 +2860,7 @@ public class ProductAndAddons extends Window
         PHCAmount.addStyleName("heighttext");
         PHCAmount.addStyleName("margin-label-style2");
         //PHCAmount.setValue(String.valueOf(Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate));
-        PHCAmount.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));
+        PHCAmount.setValue(String.valueOf(round(proposalVersion.getProjectHandlingAmount(),2)));
         verticalLayout.addComponent(PHCAmount);
         verticalLayout.setComponentAlignment(PHCAmount,Alignment.MIDDLE_LEFT);
 
@@ -2892,16 +2909,16 @@ public class ProductAndAddons extends Window
         if(PHCQTY.getValue()==null || PHCQTY.getValue().length()==0)
         {
             PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingQty()));
-            PHCAmount.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));
+            PHCAmount.setValue(String.valueOf(round(proposalVersion.getProjectHandlingAmount(),2)));
         }else if(Double.valueOf(PHCQTY.getValue())<0)
         {
             NotificationUtil.showNotification("Project Handling quantity should be a positive number" , NotificationUtil.STYLE_BAR_ERROR_SMALL);
             PHCQTY.setValue(String.valueOf(proposalVersion.getProjectHandlingQty()));
-            PHCAmount.setValue(String.valueOf(proposalVersion.getProjectHandlingAmount()));
+            PHCAmount.setValue(String.valueOf(round(proposalVersion.getProjectHandlingAmount(),2)));
         }
         else
         {
-            PHCAmount.setValue(String.valueOf(Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate));
+            PHCAmount.setValue(String.valueOf(round((Double.valueOf(PHCQTY.getValue()) * projectHandlingChargesRate),2)));
             proposalVersion.setProjectHandlingQty(Double.valueOf(PHCQTY.getValue()));
             //status="DP";
             updatePrice();
