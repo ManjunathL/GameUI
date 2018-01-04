@@ -706,7 +706,7 @@ public class ProductAndAddons extends Window
         totalAfterDiscount = totalAfterDiscount - totalAfterDiscount % 10;
 
         productPrice.setValue(String.valueOf(productsTotal));
-        productPriceAfterDiscount.setValue(String.valueOf(productsTotalAfterDiscount));
+        productPriceAfterDiscount.setValue(String.valueOf(round(productsTotalAfterDiscount,2)));
         addonPrice.setValue(String.valueOf(addonsTotal));
         grandTotal.setValue(String.valueOf(totalBeforeDiscount.intValue()));
 
@@ -1004,7 +1004,7 @@ public class ProductAndAddons extends Window
         Double grandTotal = totalAfterDiscount + addonsTotal + serviceTotal;
         double res = grandTotal - grandTotal % 10;
 
-        this.productPriceAfterDiscount.setValue(String.valueOf(productsTotal-disAmount));
+        this.productPriceAfterDiscount.setValue(String.valueOf(round(productsTotal-disAmount,2)));
 
         this.discountTotal.setReadOnly(false);
         this.discountTotal.setValue(String.valueOf(res));
@@ -1070,7 +1070,7 @@ public class ProductAndAddons extends Window
         Double grandTotal = totalAfterDiscount + costOfAccessories + addonsTotal +servicesTotal;
         double res = grandTotal - grandTotal % 10;
 
-        this.productPriceAfterDiscount.setValue(String.valueOf((totalWoAccessories+costOfAccessories)-discountAmount));
+        this.productPriceAfterDiscount.setValue(String.valueOf(round((totalWoAccessories+costOfAccessories)-discountAmount,2)));
         this.discountTotal.setReadOnly(false);
         this.discountTotal.setValue(String.valueOf(res));
 
@@ -2281,7 +2281,6 @@ public class ProductAndAddons extends Window
             proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
             proposalVersion.setRemarks(remarksTextArea.getValue());
             proposalVersion.setTitle(this.ttitle.getValue());
-            proposalVersion.setDeepClearingQty(Double.valueOf(productPriceAfterDiscount.getValue()));
             proposalVersion.setProjectHandlingAmount(Double.valueOf(PHCAmount.getValue()));
             proposalVersion.setDeepClearingQty(Double.valueOf(DCCQTY.getValue()));
             proposalVersion.setDeepClearingAmount(Double.valueOf(DCCAmount.getValue()));
