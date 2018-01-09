@@ -738,6 +738,12 @@ public class ProductAndAddons extends Window
         proposalVersion.setDeepClearingAmount(deepClearingamount);
         proposalVersion.setFloorProtectionAmount(floorProtectionamount);
         proposalDataProvider.updateVersion(proposalVersion);
+
+        ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
+        proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
+        proposalHeader.setVersion(proposalVersionLatest.getVersion());
+        proposalHeader.setStatus(proposalVersionLatest.getStatus());
+        proposalDataProvider.saveProposal(proposalHeader);
     }
 
     private void calculateDiscount()
@@ -1027,6 +1033,12 @@ public class ProductAndAddons extends Window
        }else{
            PHCQTY.setReadOnly(false);
        }
+
+       ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
+       proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
+       proposalHeader.setVersion(proposalVersionLatest.getVersion());
+       proposalHeader.setStatus(proposalVersionLatest.getStatus());
+       proposalDataProvider.saveProposal(proposalHeader);
     }
 
 
@@ -1081,6 +1093,12 @@ public class ProductAndAddons extends Window
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
         proposalDataProvider.updateVersion(proposalVersion);
+
+        ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
+        proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
+        proposalHeader.setVersion(proposalVersionLatest.getVersion());
+        proposalHeader.setStatus(proposalVersionLatest.getStatus());
+        proposalDataProvider.saveProposal(proposalHeader);
     }
 
     private void onDiscountAmountValueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -1911,15 +1929,17 @@ public class ProductAndAddons extends Window
                 }
 
                 String disAmount = discountAmount.getValue();
-                proposalHeader.setStatus(proposalVersion.getStatus());
-                proposalHeader.setVersion(versionNum.getValue());
-                proposalDataProvider.saveProposal(proposalHeader);
                 proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",", "")));
                 proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
                 LocalDateTime localDate = LocalDateTime.now();
                 proposalVersion.setBusinessDate(dtf.format(localDate));
                 response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId(),proposalVersion.getBusinessDate().toString());
+                ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
+                proposalHeader.setStatus(proposalVersionLatest.getStatus());
+                proposalHeader.setVersion(proposalVersionLatest.getVersion());
+                proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
+                proposalDataProvider.saveProposal(proposalHeader);
 
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2083,8 +2103,10 @@ public class ProductAndAddons extends Window
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
                 LocalDateTime localDate = LocalDateTime.now();
                 proposalVersion.setBusinessDate(dtf.format(localDate));
-                proposalHeader.setStatus(proposalVersion.getStatus());
-                proposalHeader.setVersion(proposalVersion.getVersion());
+                ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
+                proposalHeader.setStatus(proposalVersionLatest.getStatus());
+                proposalHeader.setVersion(proposalVersionLatest.getVersion());
+                proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
                 boolean success = proposalDataProvider.saveProposal(proposalHeader);
                 if (success) {
                     boolean mapped = true;
@@ -2108,6 +2130,7 @@ public class ProductAndAddons extends Window
                             proposalVersion.setBusinessDate(dtf.format(localDate));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             proposalHeader.setVersion(proposalVersion.getVersion());
+                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
                             proposalDataProvider.saveProposalOnConfirm(proposalHeader);
                             proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(), "1.0");
                             proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
@@ -2116,6 +2139,7 @@ public class ProductAndAddons extends Window
                             proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                             proposalDataProvider.updateVersion(proposalVersion);
                             proposalHeader.setVersion(proposalVersion.getVersion());
+                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
                             SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
                             proposalDataProvider.updateCrmPrice(sendToCRM);
                             proposalDataProvider.saveProposal(proposalHeader);
@@ -2128,6 +2152,7 @@ public class ProductAndAddons extends Window
                             proposalVersion.setBusinessDate(dtf.format(localDate));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             proposalHeader.setVersion(proposalVersion.getVersion());
+                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
                             proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(), "2.0");
                             boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                             proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
@@ -2138,6 +2163,7 @@ public class ProductAndAddons extends Window
                             proposalHeader.setVersion(proposalVersion.getVersion());
                             SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
                             proposalDataProvider.updateCrmPrice(sendToCRM);
+                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
                             proposalDataProvider.saveProposal(proposalHeader);
 
 
@@ -2150,6 +2176,7 @@ public class ProductAndAddons extends Window
                             proposalVersion.setBusinessDate(dtf.format(localDate));
                             proposalHeader.setStatus(proposalVersion.getStatus());
                             proposalHeader.setVersion(proposalVersion.getVersion());
+                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
                             boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
                             proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
                             success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion(),proposalVersion.getBusinessDate().toString());
@@ -2157,7 +2184,7 @@ public class ProductAndAddons extends Window
                             proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
                             proposalDataProvider.updateVersion(proposalVersion);
                             proposalHeader.setVersion(proposalVersion.getVersion());
-
+                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
                             if (versionNew.equals("2.0")) {
                                 SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
                                 proposalDataProvider.updateCrmPrice(sendToCRM);
@@ -2286,17 +2313,19 @@ public class ProductAndAddons extends Window
             proposalVersion.setDeepClearingAmount(Double.valueOf(DCCAmount.getValue()));
             proposalVersion.setFloorProtectionSqft(Double.valueOf(FPCQTY.getValue()));
             proposalVersion.setFloorProtectionAmount(Double.valueOf(FPCAmount.getValue()));
-            proposalHeader.setStatus(proposalVersion.getStatus());
-            proposalHeader.setVersion(String.valueOf(versionNum));
 
+            ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
+            proposalHeader.setStatus(proposalVersionLatest.getStatus());
+            proposalHeader.setVersion(proposalVersionLatest.getVersion());
+            proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
             boolean success = proposalDataProvider.saveProposal(proposalHeader);
+
             if (success) {
                 NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
 
             } else {
                 NotificationUtil.showNotification("Cannot Save Proposal!!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-
 
             }
 

@@ -6,12 +6,15 @@ import com.mygubbi.game.dashboard.domain.*;
 import com.mygubbi.game.dashboard.domain.JsonPojo.LookupItem;
 import com.mygubbi.game.dashboard.event.DashboardEvent;
 import com.mygubbi.game.dashboard.event.DashboardEventBus;
+import com.mygubbi.game.dashboard.view.NotificationUtil;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.GeneratedPropertyContainer;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Authentication;
@@ -32,6 +35,9 @@ public class CRMsearchWindow extends Window
     Integer defDaysFromWorkCompletion;    //ArrayList<Profile> profiles=new List<Profile>();
     ArrayList<Profile> profiles=new ArrayList<Profile>();
     ProposalHeader proposalHeader;
+    String role;
+    List<LookupItem> collectionList;
+    List<String> crmArray=new ArrayList<>();
     private CRMsearchWindow(ProposalHeader proposalHeader)
     {
         this.proposalHeader=proposalHeader;
@@ -45,6 +51,15 @@ public class CRMsearchWindow extends Window
         VerticalLayout verticalLayout = new VerticalLayout();
         setSizeFull();
         setContent(verticalLayout);
+
+        role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+        collectionList =proposalDataProvider.getLookupItems(proposalDataProvider.CRMID_LOOKUP);
+        for(LookupItem list1:collectionList)
+        {
+            crmArray.add(list1.getTitle());
+        }
+        LOG.info("collectionList" +collectionList.size());
+        LOG.info("crmArray" +crmArray.size());
 
         Component componentheading=buildHeading();
         verticalLayout.addComponent(componentheading);
@@ -95,8 +110,15 @@ public class CRMsearchWindow extends Window
                 List<UserProfile> profileInformation=proposalDataProvider.getUserProfileDetailsonCRMId(Id);
                 for(UserProfile profile:profileInformation)
                 {
+
                     for(Profile profile1:profile.getProfile())
                     {
+                        LOG.info("cmrid contains " +crmArray.contains(profile1.getOpportunityId()));
+                        if(crmArray.contains(profile1.getOpportunityId()) && !("admin").equals(role))
+                        {
+                            NotificationUtil.showNotification("You are not authorized to create the quote with this Opportunity Id", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            return;
+                        }
                         proposalHeader.setCrmId(profile1.getOpportunityId());
                         proposalHeader.setTitle(profile1.getDisplayName());
                         proposalHeader.setCemail(profile1.getEmail());
@@ -245,5 +267,9 @@ public class CRMsearchWindow extends Window
         CRMsearchWindow w=new CRMsearchWindow(proposalHeader);
         UI.getCurrent().addWindow(w);
         w.focus();
+    }
+
+    public static boolean useList(String[] arr, String targetValue) {
+        return Arrays.asList(arr).contains(targetValue);
     }
 }

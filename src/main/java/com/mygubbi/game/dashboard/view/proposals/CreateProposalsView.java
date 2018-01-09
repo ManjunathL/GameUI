@@ -318,7 +318,7 @@ public class CreateProposalsView extends Panel implements View {
         GeneratedPropertyContainer genContainer = createGeneratedVersionPropertyContainer();
         versionsGrid = new Grid(genContainer);
         versionsGrid.setSizeFull();
-        versionsGrid.setColumns(ProposalVersion.VERSION, ProposalVersion.FROM_VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,
+        versionsGrid.setColumns(ProposalVersion.VERSION, ProposalVersion.FROM_VERSION, ProposalVersion.TITLE, ProposalVersion.FINAL_AMOUNT, ProposalVersion.STATUS, ProposalVersion.DATE,ProposalVersion.UPDATED_ON,
                 ProposalVersion.REMARKS, "actions","CNC");
 
         versionContainer.removeAllItems();
@@ -340,6 +340,7 @@ public class CreateProposalsView extends Panel implements View {
         columns.get(idx++).setHeaderCaption("Final Amount");
         columns.get(idx++).setHeaderCaption("Status");
         columns.get(idx++).setHeaderCaption("Date");
+        columns.get(idx++).setHeaderCaption("Updated On");
         columns.get(idx++).setHeaderCaption("Remarks");
         columns.get(idx++).setHeaderCaption("Actions").setRenderer(new ViewEditButtonValueRenderer(new ViewEditButtonValueRenderer.ViewEditButtonClickListener() {
 
@@ -1288,6 +1289,7 @@ public class CreateProposalsView extends Panel implements View {
             ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
             this.proposalHeader.setStatus(proposalVersionLatest.getStatus());
             this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
+            this.proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
 
             checkQuoteNoNew();
