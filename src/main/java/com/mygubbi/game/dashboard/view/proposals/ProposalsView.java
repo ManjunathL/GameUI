@@ -76,7 +76,7 @@ public final class ProposalsView extends TabSheet implements View {
         grid.setHeightByRows(11);
         grid.setHeightMode(HeightMode.ROW);
         grid.setColumnReorderingAllowed(true);
-        grid.setColumns(ProposalHeader.QUOTE_NO_NEW,ProposalHeader.CRM_ID, ProposalHeader.VERSION,ProposalHeader.AMOUNT,ProposalHeader.TITLE, ProposalHeader.STATUS,
+        grid.setColumns(ProposalHeader.QUOTE_NO_NEW,ProposalHeader.CRM_ID, ProposalHeader.VERSION,ProposalHeader.TITLE, ProposalHeader.STATUS,ProposalHeader.AMOUNT,
                 ProposalHeader.SALES_NAME, ProposalHeader.DESIGNER_NAME, ProposalHeader.DESIGN_PARTNER_NAME, ProposalHeader.CREATED_ON,
                 ProposalHeader.CREATED_BY);
 
@@ -86,9 +86,9 @@ public final class ProposalsView extends TabSheet implements View {
         //columns.get(idx++).setHeaderCaption("Quotation # (old)");
         columns.get(idx++).setHeaderCaption("CRM #");
         columns.get(idx++).setHeaderCaption("Version No");
-        columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Title");
         columns.get(idx++).setHeaderCaption("Status");
+        columns.get(idx++).setHeaderCaption("Amount");
         columns.get(idx++).setHeaderCaption("Sales");
         columns.get(idx++).setHeaderCaption("Designer");
         columns.get(idx++).setHeaderCaption("DesignPartner");
