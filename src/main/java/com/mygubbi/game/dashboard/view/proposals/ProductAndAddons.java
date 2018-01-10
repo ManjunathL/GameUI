@@ -341,9 +341,6 @@ public class ProductAndAddons extends Window
     }
 
     private Component buildHeadingButtons() {
-        double projectHandlingQty=Double.valueOf(PHCQTY.getValue());
-        double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
-        double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setMargin(new MarginInfo(false, true, false, true));
@@ -363,6 +360,10 @@ public class ProductAndAddons extends Window
         right.setComponentAlignment(pdfQuotation, Alignment.MIDDLE_RIGHT);
         pdfQuotation.addClickListener(
                 clickEvent -> {
+                    double projectHandlingQty=Double.valueOf(PHCQTY.getValue());
+                    double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
+                    double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
+
                     if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
                     {
                         NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
