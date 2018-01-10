@@ -131,6 +131,7 @@ public class ProductAndAddons extends Window
     CheckBox PHCcheck,DCCcheck,FPCcheck;
     Label DCCAmount,FPCAmount;
     Label PHCAmount;
+    //String customAddonCheck="No";
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
@@ -231,6 +232,7 @@ public class ProductAndAddons extends Window
         verticalLayout.addComponent(componentactionbutton);
 
         updatePrice();
+       // addonCheck();
         handleState();
         handlepackage();
         if(viewOnlyValue.equalsIgnoreCase("Yes")) {
@@ -339,6 +341,10 @@ public class ProductAndAddons extends Window
     }
 
     private Component buildHeadingButtons() {
+        double projectHandlingQty=Double.valueOf(PHCQTY.getValue());
+        double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
+        double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
+
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setMargin(new MarginInfo(false, true, false, true));
         horizontalLayout.setSizeFull();
@@ -357,6 +363,29 @@ public class ProductAndAddons extends Window
         right.setComponentAlignment(pdfQuotation, Alignment.MIDDLE_RIGHT);
         pdfQuotation.addClickListener(
                 clickEvent -> {
+                    if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
+                    {
+                        NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }else if(proposalHeader.getDeepClearingChargesApplied().equals("false") && deepCleaningQty < 0)
+                    {
+                        NotificationUtil.showNotification("House Keeping Quantity should be positive number", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                    else if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && floorProtectionQty < 1)
+                    {
+                        NotificationUtil.showNotification("Floor Protection Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    } else if(proposalHeader.getFloorProtectionChargesApplied().equals("false") && floorProtectionQty < 0)
+                    {
+                        NotificationUtil.showNotification("Floor Protection Quantity should be positive number", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+                    else if(proposalHeader.getProjectHandlingChargesApplied().equals("false") && projectHandlingQty < 0)
+                    {
+                        NotificationUtil.showNotification("Project Handling Quantity should be positive number", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
                     Download_quotation.open(proposalHeader,proposal,proposalVersion);
                 }
         );
@@ -648,6 +677,18 @@ public class ProductAndAddons extends Window
         LOG.info("DA focused");
         status = "DA";
     }
+
+    /*private void addonCheck()
+    {
+        List<AddonProduct> addons=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
+        for(AddonProduct addonProduct : addons)
+        {
+            if(addonProduct.getCategoryCode().equals("Custom Addon") && (addonProduct.getCustomAddonCategory().equals("Accessories") || addonProduct.getCustomAddonCategory().equals("Appliances")))
+            {
+                customAddonCheck="Yes";
+            }
+        }
+    }*/
 
     private void updatePrice()
     {
@@ -1909,7 +1950,9 @@ public class ProductAndAddons extends Window
 
 
     private void submit(Button.ClickEvent clickEvent) {
-
+        double projectHandlingQty=Double.valueOf(PHCQTY.getValue());
+        double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
+        double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
         JSONObject response = null;
         if (proposalHeader.getMaxDiscountPercentage() >= Double.valueOf(discountPercentage.getValue())) {
             try {
@@ -1917,6 +1960,31 @@ public class ProductAndAddons extends Window
                     NotificationUtil.showNotification("Total amount is zero,Cannot publish", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
+
+                if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
+                {
+                    NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }else if(proposalHeader.getDeepClearingChargesApplied().equals("false") && deepCleaningQty < 0)
+                {
+                    NotificationUtil.showNotification("House Keeping Quantity should be positive number", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+                else if(proposalHeader.getFloorProtectionChargesApplied().equals("true") && floorProtectionQty < 1)
+                {
+                    NotificationUtil.showNotification("Floor Protection Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                } else if(proposalHeader.getFloorProtectionChargesApplied().equals("false") && floorProtectionQty < 0)
+                {
+                    NotificationUtil.showNotification("Floor Protection Quantity should be positive number", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+                else if(proposalHeader.getProjectHandlingChargesApplied().equals("false") && projectHandlingQty < 0)
+                {
+                    NotificationUtil.showNotification("Project Handling Quantity should be positive number", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+
                 binder.commit();
 
                 //  LOG.info("value in submit" + totalWithoutDiscount.getValue());
@@ -1945,8 +2013,6 @@ public class ProductAndAddons extends Window
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
             proposalDataProvider.updateVersion(proposalVersion);
-
-
             publishVersionMessage(response, proposalVersion.getProposalId(), proposalVersion.getVersion());
 
         } else {
@@ -2267,6 +2333,13 @@ public class ProductAndAddons extends Window
                 return;
             }
 
+            /*if(customAddonCheck.equalsIgnoreCase("Yes"))
+            {
+                LOG.info("Custom addon added ");
+                Notification.show("Custom addon added");
+                //NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+
+            }*/
             if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
             {
                 NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2924,7 +2997,7 @@ public class ProductAndAddons extends Window
             DCCQTY.setValue(String.valueOf(proposalVersion.getDeepClearingQty()));
             DCCAmount.setValue(String.valueOf(proposalVersion.getDeepClearingAmount()));
         }
-        else if(Double.valueOf(DCCQTY.getValue())< 0 )
+        else if(Double.valueOf(DCCQTY.getValue())<= 0 )
         {
             DCCQTY.setValue(String.valueOf(proposalVersion.getDeepClearingQty()));
             DCCAmount.setValue(String.valueOf(proposalVersion.getDeepClearingAmount()));
@@ -2944,7 +3017,7 @@ public class ProductAndAddons extends Window
         {
             PHCQTY.setValue(String.valueOf(round(proposalVersion.getProjectHandlingQty(),2)));
             PHCAmount.setValue(String.valueOf(round(proposalVersion.getProjectHandlingAmount(),2)));
-        }else if(Double.valueOf(PHCQTY.getValue())<0)
+        }else if(Double.valueOf(PHCQTY.getValue())<=0)
         {
             NotificationUtil.showNotification("Project Handling quantity should be a positive number" , NotificationUtil.STYLE_BAR_ERROR_SMALL);
             PHCQTY.setValue(String.valueOf(round(proposalVersion.getProjectHandlingQty(),2)));
@@ -2965,7 +3038,7 @@ public class ProductAndAddons extends Window
         {
             FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
             FPCAmount.setValue(String.valueOf(proposalVersion.getFloorProtectionAmount()));
-        }else if(Double.valueOf(FPCQTY.getValue())<0)
+        }else if(Double.valueOf(FPCQTY.getValue())<=0)
         {
             FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
             FPCAmount.setValue(String.valueOf(proposalVersion.getFloorProtectionAmount()));
