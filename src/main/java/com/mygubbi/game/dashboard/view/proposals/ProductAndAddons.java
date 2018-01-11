@@ -2998,7 +2998,7 @@ public class ProductAndAddons extends Window
             DCCQTY.setValue(String.valueOf(proposalVersion.getDeepClearingQty()));
             DCCAmount.setValue(String.valueOf(proposalVersion.getDeepClearingAmount()));
         }
-        else if(Double.valueOf(DCCQTY.getValue())<= 0 )
+        else if(Double.valueOf(DCCQTY.getValue())< 0 )
         {
             DCCQTY.setValue(String.valueOf(proposalVersion.getDeepClearingQty()));
             DCCAmount.setValue(String.valueOf(proposalVersion.getDeepClearingAmount()));
