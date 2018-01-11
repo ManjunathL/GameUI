@@ -131,7 +131,7 @@ public class ProductAndAddons extends Window
     CheckBox PHCcheck,DCCcheck,FPCcheck;
     Label DCCAmount,FPCAmount;
     Label PHCAmount;
-    //String customAddonCheck="No";
+    String customAddonCheck="No";
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
@@ -232,7 +232,7 @@ public class ProductAndAddons extends Window
         verticalLayout.addComponent(componentactionbutton);
 
         updatePrice();
-       // addonCheck();
+        addonCheck();
         handleState();
         handlepackage();
         if(viewOnlyValue.equalsIgnoreCase("Yes")) {
@@ -679,7 +679,7 @@ public class ProductAndAddons extends Window
         status = "DA";
     }
 
-    /*private void addonCheck()
+    private void addonCheck()
     {
         List<AddonProduct> addons=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
         for(AddonProduct addonProduct : addons)
@@ -689,7 +689,7 @@ public class ProductAndAddons extends Window
                 customAddonCheck="Yes";
             }
         }
-    }*/
+    }
 
     private void updatePrice()
     {
@@ -1954,6 +1954,7 @@ public class ProductAndAddons extends Window
         double projectHandlingQty=Double.valueOf(PHCQTY.getValue());
         double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
         double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
+        double versionNo=Double.valueOf(versionNum.getValue());
         JSONObject response = null;
         if (proposalHeader.getMaxDiscountPercentage() >= Double.valueOf(discountPercentage.getValue())) {
             try {
@@ -1961,7 +1962,11 @@ public class ProductAndAddons extends Window
                     NotificationUtil.showNotification("Total amount is zero,Cannot publish", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
-
+                if(versionNo >1.0 && customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
+                {
+                        NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                }
                 if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
                 {
                     NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2334,13 +2339,12 @@ public class ProductAndAddons extends Window
                 return;
             }
 
-            /*if(customAddonCheck.equalsIgnoreCase("Yes"))
+            if(customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
             {
                 LOG.info("Custom addon added ");
                 Notification.show("Custom addon added");
                 //NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-
-            }*/
+            }
             if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
             {
                 NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);

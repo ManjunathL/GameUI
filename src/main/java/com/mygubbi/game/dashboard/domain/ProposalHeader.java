@@ -62,6 +62,7 @@ public class ProposalHeader {
     public static final String PROJ_HANDLING_CHRAGES_APPLIED = "projectHandlingChargesApplied";
     public static final String DEEP_CLEANING_CHRAGES_APPLIED = "deepClearingChargesApplied";
     public static final String FLOOR_PROTECTION_CHRAGES_APPLIED = "floorProtectionChargesApplied";
+    public static final String  CUSTOM_ADDON_CHECK= "customAddonCheck";
 
 
     private int id;
@@ -114,6 +115,7 @@ public class ProposalHeader {
     private String projectHandlingChargesApplied;
     private String deepClearingChargesApplied;
     private String floorProtectionChargesApplied;
+    private String customAddonCheck;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -522,6 +524,14 @@ public class ProposalHeader {
 
     public void setFloorProtectionChargesApplied(String floorProtectionChargesApplied) {
         this.floorProtectionChargesApplied = floorProtectionChargesApplied;
+    }
+
+    public String getCustomAddonCheck() {
+        return customAddonCheck;
+    }
+
+    public void setCustomAddonCheck(String customAddonCheck) {
+        this.customAddonCheck = customAddonCheck;
     }
 
     @Override
