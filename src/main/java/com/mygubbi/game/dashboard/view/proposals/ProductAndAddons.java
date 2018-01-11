@@ -3018,7 +3018,7 @@ public class ProductAndAddons extends Window
         {
             PHCQTY.setValue(String.valueOf(round(proposalVersion.getProjectHandlingQty(),2)));
             PHCAmount.setValue(String.valueOf(round(proposalVersion.getProjectHandlingAmount(),2)));
-        }else if(Double.valueOf(PHCQTY.getValue())<=0)
+        }else if(Double.valueOf(PHCQTY.getValue())<0)
         {
             NotificationUtil.showNotification("Project Handling quantity should be a positive number" , NotificationUtil.STYLE_BAR_ERROR_SMALL);
             PHCQTY.setValue(String.valueOf(round(proposalVersion.getProjectHandlingQty(),2)));
@@ -3039,7 +3039,7 @@ public class ProductAndAddons extends Window
         {
             FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
             FPCAmount.setValue(String.valueOf(proposalVersion.getFloorProtectionAmount()));
-        }else if(Double.valueOf(FPCQTY.getValue())<=0)
+        }else if(Double.valueOf(FPCQTY.getValue())<0)
         {
             FPCQTY.setValue(String.valueOf(proposalVersion.getFloorProtectionSqft()));
             FPCAmount.setValue(String.valueOf(proposalVersion.getFloorProtectionAmount()));
