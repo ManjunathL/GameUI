@@ -132,6 +132,7 @@ public class ProductAndAddons extends Window
     Label DCCAmount,FPCAmount;
     Label PHCAmount;
     String customAddonCheck="No";
+    String quickProductCheck="No";
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
@@ -235,6 +236,7 @@ public class ProductAndAddons extends Window
         addonCheck();
         handleState();
         handlepackage();
+        handleQuickProducts();
         if(viewOnlyValue.equalsIgnoreCase("Yes")) {
             setReadOnlyForUser();
         }
@@ -363,6 +365,13 @@ public class ProductAndAddons extends Window
                     double projectHandlingQty=Double.valueOf(PHCQTY.getValue());
                     double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
                     double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
+                    double versionNo=Double.valueOf(proposalVersion.getVersion());
+
+                    if(quickProductCheck.equalsIgnoreCase("Yes") && versionNo>1.0)
+                    {
+                        NotificationUtil.showNotification("quick product has been added , Please delete the quick product", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
 
                     if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
                     {
@@ -691,8 +700,23 @@ public class ProductAndAddons extends Window
         }
     }
 
+    private void handleQuickProducts()
+    {
+        List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
+        for (Product product : products) {
+            LOG.info("product get category code " +product.getProductCategoryCode());
+            if(product.getProductCategoryCode().startsWith("a"))
+            {
+                LOG.info("Quick code ");
+                quickProductCheck="Yes";
+            }
+        }
+    }
+
     private void updatePrice()
     {
+        customAddonCheck="No";
+        quickProductCheck="No";
         Double totalBeforeDiscount=0.0,totalAfterDiscount=0.0,productsTotal=0.0,addonsTotal=0.0,servicesTotal=0.0,disPercentage,disAmount=0.0,productTotalWOAccessories=0.0,deepClearingQty=0.0,deepClearingamount=0.0,floorProtectionQty=0.0,floorProtectionamount=0.0;
         Double projectHandlingCharges=0.0;
         disPercentage=proposalVersion.getDiscountPercentage();
@@ -786,6 +810,9 @@ public class ProductAndAddons extends Window
         proposalHeader.setVersion(proposalVersionLatest.getVersion());
         proposalHeader.setStatus(proposalVersionLatest.getStatus());
         proposalDataProvider.saveProposal(proposalHeader);
+
+        addonCheck();
+        handleQuickProducts();
     }
 
     private void calculateDiscount()
@@ -1967,6 +1994,13 @@ public class ProductAndAddons extends Window
                         NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                 }
+
+                if(quickProductCheck.equalsIgnoreCase("Yes") && versionNo>1.0)
+                {
+                    NotificationUtil.showNotification("quick product has been added , Please delete the quick product", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+
                 if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
                 {
                     NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2328,6 +2362,7 @@ public class ProductAndAddons extends Window
         double projectHandlingQty=Double.valueOf(PHCQTY.getValue());
         double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
         double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
+        double versionNum=Double.valueOf(proposalVersion.getVersion());
         LOG.info("PHQ " +projectHandlingQty+ " DCC " +deepCleaningQty+ " FPC " +floorProtectionQty);
         if (proposalHeader.getMaxDiscountPercentage() >= Double.valueOf(discountPercentage.getValue())) {
             remarksTextArea.setValidationVisible(false);
@@ -2345,6 +2380,13 @@ public class ProductAndAddons extends Window
                 Notification.show("Custom addon added");
                 //NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
+
+            if(quickProductCheck.equalsIgnoreCase("Yes") && versionNum>1.0)
+            {
+                NotificationUtil.showNotification("quick product has been added , Please delete the quick product", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+
             if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
             {
                 NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
