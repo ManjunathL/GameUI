@@ -367,6 +367,12 @@ public class ProductAndAddons extends Window
                     double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
                     double versionNo=Double.valueOf(proposalVersion.getVersion());
 
+                    if(versionNo >1.0 && customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
+                    {
+                        NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
+
                     if(quickProductCheck.equalsIgnoreCase("Yes") && versionNo>1.0)
                     {
                         NotificationUtil.showNotification("quick product has been added , Please delete the quick product", NotificationUtil.STYLE_BAR_ERROR_SMALL);
