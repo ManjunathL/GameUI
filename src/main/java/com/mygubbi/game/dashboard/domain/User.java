@@ -7,7 +7,6 @@ public final class User {
     public static final String EMAIL = "email";
     public static final String PHONE = "phone";
     public static final String ADMIN_ROLE = "admin";
-    public static final String IS_VIEW_ONLY = "isViewOnly";
 
     private String name;
     private String role;
@@ -44,6 +43,7 @@ public final class User {
 
     public void setRole(final String role) {
         this.role = role;
+        setIsViewOnly();
     }
 
     public String getPhone() {
@@ -90,8 +90,15 @@ public final class User {
         return isViewOnly;
     }
 
-    public void setIsViewOnly(String isViewOnly) {
-        this.isViewOnly = isViewOnly;
+    public void setIsViewOnly() {
+
+        String yes = "Yes";
+        String no = "No";
+        if(this.getRole().equalsIgnoreCase("purchasemanager") || this.getRole().equalsIgnoreCase("operations")
+                || this.getRole().equalsIgnoreCase("crm") || this.getRole().equalsIgnoreCase("operations"))
+            this.isViewOnly = yes;
+        else
+            this.isViewOnly = no;
     }
 
     @Override
