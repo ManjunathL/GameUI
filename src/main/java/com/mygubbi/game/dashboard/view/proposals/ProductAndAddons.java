@@ -2755,6 +2755,9 @@ public class ProductAndAddons extends Window
             addFromCatalogueButton.setEnabled(false);
             discountAmount.setReadOnly(true);
             discountPercentage.setReadOnly(true);
+            PHCQTY.setReadOnly(true);
+            FPCQTY.setReadOnly(true);
+            DCCQTY.setReadOnly(true);
 
             String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
             if (Objects.equals(proposalHeader.getAdminPackageFlag(), "Yes") && !("admin").equals(role)) {
@@ -2826,6 +2829,9 @@ public class ProductAndAddons extends Window
         discountPercentage.setReadOnly(true);
         remarksTextArea.setReadOnly(true);
         ttitle.setReadOnly(true);
+        PHCQTY.setReadOnly(true);
+        FPCQTY.setReadOnly(true);
+        DCCQTY.setReadOnly(true);
         if (Objects.equals(proposalHeader.getBeforeProductionSpecification(), "yes")) {
             addFromProductLibrary.setEnabled(false);
 
