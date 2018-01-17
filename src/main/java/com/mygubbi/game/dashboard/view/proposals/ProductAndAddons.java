@@ -367,6 +367,11 @@ public class ProductAndAddons extends Window
                     double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
                     double versionNo=Double.valueOf(proposalVersion.getVersion());
 
+                    if(ttitle.getValue().equalsIgnoreCase("provide option description"))
+                    {
+                        NotificationUtil.showNotification("Please change the Version Title", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        return;
+                    }
                     if(versionNo >1.0 && customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
                     {
                         NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -1995,9 +2000,14 @@ public class ProductAndAddons extends Window
                     NotificationUtil.showNotification("Total amount is zero,Cannot publish", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
+                if(ttitle.getValue().equalsIgnoreCase("provide option description"))
+                {
+                    NotificationUtil.showNotification("Please change the Version Title", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
                 if(versionNo >1.0 && customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
                 {
-                        NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        NotificationUtil.showNotification("Please ensure there are NO custom addon of category \"Appliances\" and \"Accessories\"", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                 }
 
@@ -2379,21 +2389,27 @@ public class ProductAndAddons extends Window
                 remarksTextArea.setValidationVisible(false);
                 return;
             }
-
+            if(ttitle.getValue().equalsIgnoreCase("provide option description"))
+            {
+                NotificationUtil.showNotification("Please change the Version Title", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
             if(customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
             {
-                LOG.info("Custom addon added ");
-                Notification.show("Custom addon added");
-                //NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            }
-
-            if(quickProductCheck.equalsIgnoreCase("Yes") && versionNum>1.0)
+                ConfirmDialog.show(UI.getCurrent(), "", "Please ensure there are NO custom addon of category \"Appliances\" and \"Accessories\"",
+                        "Save", "Close", dialog -> {
+                            if (!dialog.isCanceled()) {
+                                DashboardEventBus.unregister(this);
+                                close();
+                            }
+                        });
+                /*LOG.info("Custom addon added ");
+                Notification.show("Custom addon added");*/
+            }else if(quickProductCheck.equalsIgnoreCase("Yes") && versionNum>1.0)
             {
                 NotificationUtil.showNotification("quick product has been added , Please delete the quick product", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-            }
-
-            if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
+            }else if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
             {
                 NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
