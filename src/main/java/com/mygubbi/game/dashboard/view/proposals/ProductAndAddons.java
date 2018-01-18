@@ -704,7 +704,7 @@ public class ProductAndAddons extends Window
         List<AddonProduct> addons=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
         for(AddonProduct addonProduct : addons)
         {
-            if(addonProduct.getCategoryCode().equals("Custom Addon") && (addonProduct.getCustomAddonCategory().equals("Accessories") || addonProduct.getCustomAddonCategory().equals("Appliances")))
+            if(addonProduct.getCategoryCode().equals("Custom Addon") && (addonProduct.getCustomAddonCategory().equals("Accessories") || addonProduct.getCustomAddonCategory().equals("Appliances") || addonProduct.getCustomAddonCategory().equalsIgnoreCase("Chimney") || addonProduct.getCustomAddonCategory().equalsIgnoreCase("Hob") || addonProduct.getCustomAddonCategory().equalsIgnoreCase("Sink")))
             {
                 customAddonCheck="Yes";
             }
