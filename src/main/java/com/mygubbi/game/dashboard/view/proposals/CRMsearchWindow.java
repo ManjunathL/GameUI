@@ -58,9 +58,6 @@ public class CRMsearchWindow extends Window
         {
             crmArray.add(list1.getTitle());
         }
-        LOG.info("collectionList" +collectionList.size());
-        LOG.info("crmArray" +crmArray.size());
-
         Component componentheading=buildHeading();
         verticalLayout.addComponent(componentheading);
 
@@ -113,7 +110,6 @@ public class CRMsearchWindow extends Window
 
                     for(Profile profile1:profile.getProfile())
                     {
-                        LOG.info("cmrid contains " +crmArray.contains(profile1.getOpportunityId()));
                         if(crmArray.contains(profile1.getOpportunityId()) && !("admin").equals(role))
                         {
                             NotificationUtil.showNotification("You are not authorized to create the quote with this Opportunity Id", NotificationUtil.STYLE_BAR_ERROR_SMALL);

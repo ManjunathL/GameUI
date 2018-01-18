@@ -345,7 +345,7 @@ public class AddonDetailsWindow extends Window {
         this.productTypeBeanContainer.addAll(list);
         for (AddonProductType addonProductType : list)
         {
-            LOG.debug("Addon ProductType :" + addonProductType.toString());
+            //LOG.debug("Addon ProductType :" + addonProductType.toString());
         }
         Object next = this.productType.getItemIds().iterator().next();
         productType.setValue(next);
@@ -391,17 +391,14 @@ public class AddonDetailsWindow extends Window {
         List<AddonProductSubtype> list = proposalDataProvider.getAddonProductSubTypes( (String) this.category.getValue(),(String) this.productType.getValue());
         for (AddonProductSubtype addonProductSubtype : list)
         {
-            LOG.debug("product subtype :" + addonProductSubtype.toString());
+           // LOG.debug("product subtype :" + addonProductSubtype.toString());
         }
 
         this.productSubtypeBeanContainer.removeAllItems();
         this.productSubtypeBeanContainer.addAll(list);
         Object next = this.productSubtype.getItemIds().iterator().next();
         this.productSubtype.setValue(next);
-        LOG.debug("Product type value set");
-
         if (next.equals(prevCode)) {
-            LOG.debug("hey");
             this.productSubtypeChanged(null);
         }
 
@@ -417,7 +414,7 @@ public class AddonDetailsWindow extends Window {
         List<AddonBrand> list = proposalDataProvider.getAddonBrands((String) this.category.getValue(), (String) this.productSubtype.getValue(), (String) this.productType.getValue());
         for (AddonBrand addonBrand : list)
         {
-            LOG.debug("Addon brands :" + addonBrand.getBrandCode());
+            //LOG.debug("Addon brands :" + addonBrand.getBrandCode());
         }
         this.brandBeanContainer.removeAllItems();
         this.brandBeanContainer.addAll(list);
@@ -437,7 +434,6 @@ public class AddonDetailsWindow extends Window {
         String prevCode = (String) this.product.getValue();
 
         List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.category.getValue(), (String) this.productType.getValue(),(String) this.productSubtype.getValue(), (String) this.brand.getValue());
-        LOG.debug("List :" + list.size() + "|" + list.toString());
         this.productCodeBeanContainer.removeAllItems();
         this.productCodeBeanContainer.addAll(list);
         Object next = this.product.getItemIds().iterator().next();
@@ -454,8 +450,6 @@ public class AddonDetailsWindow extends Window {
     private void productCodeChanged(Property.ValueChangeEvent valueChangeEvent) {
 
         AddonProductItem addonProductItem = ((BeanItem<AddonProductItem>) this.product.getItem(product.getValue())).getBean();
-
-        LOG.debug("Addon product item : " + addonProductItem.toString());
 
         this.uom.setReadOnly(false);
         this.uom.setValue(addonProductItem.getUom());
@@ -650,8 +644,6 @@ public class AddonDetailsWindow extends Window {
                     addonProduct.setBrand(this.brandBeanContainer.getItem(this.brand.getValue()).getBean().getBrandCode());
                     addonProduct.setCode(this.productCodeBeanContainer.getItem(this.product.getValue()).getBean().getCode());
                     addonProduct.setRemarks(this.remarks.getValue());
-
-                    LOG.debug("Addon product Class :" + addonProduct.toString());
 
                     ModuleForPrice moduleForPrice = new ModuleForPrice();
                     moduleForPrice.setCity(proposalHeader.getPcity());

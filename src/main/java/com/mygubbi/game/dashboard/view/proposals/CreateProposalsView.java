@@ -417,7 +417,7 @@ public class CreateProposalsView extends Panel implements View {
                     versionNew = Float.valueOf(str);
                 }
                 else if (pVersion.getVersion().startsWith("3.")) {
-                    LOG.info("inside 3 ");
+
                     //String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
                     if (!(("planning").equals(role) || ("admin").equals(role)))
@@ -432,7 +432,6 @@ public class CreateProposalsView extends Panel implements View {
                         NotificationUtil.showNotification("Cannot exceed more than 9 versions", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                     }
-                    LOG.info("size" + size);
                     String str = ("3." + (size));
                     versionNew = Float.valueOf(str);
                 }
@@ -531,7 +530,6 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeaderNew = proposalDataProvider.createProposal();
             proposalHeaderNew.setFromProposal(proposalHeader.getId());
             proposalHeaderNew.setFromVersion(pVersion.getVersion());
-            LOG.info("proposal header " +proposalHeader.getId());
             proposalDataProvider.saveProposal(proposalHeaderNew);
             if("Yes".equals(proposalHeader.getPackageFlag()))
             {
@@ -1239,7 +1237,6 @@ public class CreateProposalsView extends Panel implements View {
                             proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
                         }
                     }
-                    LOG.info("success");
                 }
             } catch (Exception e) {
                 LOG.info(e);
@@ -1312,7 +1309,6 @@ public class CreateProposalsView extends Panel implements View {
                             proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
                         }
                     }
-                    LOG.info("success");
                 }
             } catch (Exception e) {
                 LOG.info(e);
@@ -1403,7 +1399,6 @@ public class CreateProposalsView extends Panel implements View {
                         proposalDataProvider.createCity(cityCode, month, this.proposalHeader.getId(), quotenew.getValue());
                     }
                 }
-                LOG.info("success");
             }
         } catch (Exception e) {
             LOG.info(e);
@@ -1676,7 +1671,6 @@ public class CreateProposalsView extends Panel implements View {
 
     private void offerFieldValueChanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        LOG.info("offer value changed " +valueChangeEvent.getProperty().getValue().toString());
         proposalHeader.setOfferType(valueChangeEvent.getProperty().getValue().toString());
     }
 
@@ -1859,7 +1853,6 @@ public class CreateProposalsView extends Panel implements View {
 
         HorizontalLayout horizontalLayoutForCheckMiscellaneous=new HorizontalLayout();
         PHCcheck=new CheckBox("PHC");
-        LOG.info("proposal header PHC " +proposalHeader.getProjectHandlingChargesApplied());
         binder.bind(PHCcheck,PROJ_HANDLING_CHRAGES_APPLIED);
         if(proposalHeader.getProjectHandlingChargesApplied()==null)
         {

@@ -673,8 +673,6 @@ public class ProductAndAddons extends Window
         FormLayout left7 = new FormLayout();
         this.discountTotal = new Label();
         this.discountTotal.setConverter(getAmountConverter());
-        LOG.info("BEFORE ROUNDING :: "+proposalVersion.getFinalAmount());
-        LOG.info("AFTER ROUNDING :: "+this.round(proposalVersion.getFinalAmount(),0));
 
         this.discountTotal.setValue(String.valueOf(this.round(proposalVersion.getFinalAmount(),0)));
         //this.discountTotal.setValue(proposalVersion.getDiscountAmount());
@@ -690,12 +688,10 @@ public class ProductAndAddons extends Window
 
 
     private void onFocusToDiscountPercentage(FieldEvents.FocusEvent event) {
-        LOG.info("DP focused");
         status = "DP";
     }
 
     private void onFocusToDiscountAmount(FieldEvents.FocusEvent event) {
-        LOG.info("DA focused");
         status = "DA";
     }
 
@@ -715,10 +711,8 @@ public class ProductAndAddons extends Window
     {
         List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (Product product : products) {
-            LOG.info("product get category code " +product.getProductCategoryCode());
             if(product.getProductCategoryCode().startsWith("a"))
             {
-                LOG.info("Quick code ");
                 quickProductCheck="Yes";
             }
         }
@@ -757,8 +751,6 @@ public class ProductAndAddons extends Window
             disAmount = productTotalWOAccessories * (disPercentage/ 100);
         }
 
-
-        LOG.info("Shilpa check this::"+this.proposalHeader.getProjectHandlingChargesApplied());
         productsTotalAfterDiscount = this.round((productsTotal - disAmount), 0);
         if(proposalHeader.getProjectHandlingChargesApplied().equalsIgnoreCase("true")) {
             PHCQTY.setReadOnly(false);
@@ -828,7 +820,6 @@ public class ProductAndAddons extends Window
 
     private void calculateDiscount()
     {
-        LOG.info("calculate discount ");
         Double totalVersionPrice=0.0,productsTotal=0.0,addonsTotal=0.0,servicesTotal=0.0,disPercentage =0.0,disAmount=0.0,productTotalWOAccessories=0.0;
         Double projectHandlingCharges=0.0;
         disPercentage=proposalVersion.getDiscountPercentage();
@@ -1037,7 +1028,6 @@ public class ProductAndAddons extends Window
         Double disPercent = 0.0, disAmount = 0.0;
         rateForDiscount = proposalHeader.getMaxDiscountPercentage();
         if ("DP".equals(status)) {
-            LOG.info("inside DP ");
             if(discountPercentage.getValue() != null){
                 disPercent = Double.valueOf(discountPercentage.getValue());
             } else{
@@ -1057,9 +1047,7 @@ public class ProductAndAddons extends Window
                     this.discountAmount.setValue(String.valueOf(disAmount.intValue()) + " ");
                     this.discountAmount.setReadOnly(true);
                 } else {
-                    LOG.info("discount amt " +String.valueOf(disAmount.intValue()) );
                     this.discountAmount.setValue(String.valueOf(disAmount.intValue()) + " ");
-                    LOG.info("discount amount textbox value " +discountAmount.getValue());
                 }
                 this.disAmount = disAmount.intValue();
             } else {
@@ -1067,7 +1055,6 @@ public class ProductAndAddons extends Window
                 return;
             }
         } else if ("DA".equals(status)) {
-            LOG.info("inside DA");
             disAmount = (Double) this.discountAmount.getConvertedValue();
             if(disAmount != null)
              disPercent = (disAmount / productsTotal) * 100;
@@ -1085,7 +1072,6 @@ public class ProductAndAddons extends Window
                 return;
             }
         }
-        LOG.info("discount amount " +disAmount+ "discount Percentage " +disPercent);
         Double totalAfterDiscount = this.round((productsTotal - disAmount), 0);
         Double grandTotal = totalAfterDiscount + addonsTotal + serviceTotal;
         double res = grandTotal - grandTotal % 10;
@@ -1414,7 +1400,6 @@ public class ProductAndAddons extends Window
                         List<FileAttachment> productAttachments = proposalDataProvider.getProposalProductDocuments(product.getId());
                         product.setFileAttachmentList(productAttachments);
                     }
-                    //   LOG.info("product details " +product);
                     CustomizedProductDetailsWindow.open(proposal, product, proposalVersion, proposalHeader);
                 } else {
                     CatalogueProduct catalogueProduct = new CatalogueProduct();
@@ -1858,7 +1843,6 @@ public class ProductAndAddons extends Window
     }
 
     private void checkProductsAndAddonsAvailable1(Button.ClickEvent clickEvent) {
-        LOG.info("inside checkproducts and addons avaialble1");
         if (proposal.getProducts().isEmpty() && proposal.getAddons().isEmpty()) {
             NotificationUtil.showNotification("No products found. Please add product(s) first to generate the Quote.", NotificationUtil.STYLE_BAR_WARNING_SMALL);
         }
@@ -1910,9 +1894,7 @@ public class ProductAndAddons extends Window
     }
 
     private StreamResource createQuoteResourcePdf() {
-        LOG.info("stream resoutrce " );
         StreamResource.StreamSource source = () -> {
-            LOG.info("inside stream resource");
             return getInputStreamPdf();
             /*if (!proposal.getProducts().isEmpty()) {
               //  LOG.info("header value" + proposalVersion.getDiscountAmount() + "discount amount" + discountAmount.getValue());
@@ -2042,8 +2024,6 @@ public class ProductAndAddons extends Window
                 }
 
                 binder.commit();
-
-                //  LOG.info("value in submit" + totalWithoutDiscount.getValue());
                 if (remarksTextArea == null || remarksTextArea.isEmpty()) {
                     NotificationUtil.showNotification("Remarks cannot be empty", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -2133,7 +2113,6 @@ public class ProductAndAddons extends Window
         }
         sendToCRM.setEstimated_project_cost_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
-        LOG.info("CRM JSON ON PUBLISH " + sendToCRM.toString());
         return sendToCRM;
     }
 
@@ -2165,7 +2144,6 @@ public class ProductAndAddons extends Window
                     if (!proposalVersion.getInternalStatus().equals("Locked")) {
 
                         if (proposalVersion.getUpdatedOn().after(date) || proposalVersion.getUpdatedOn().equals(date)) {
-                            //LOG.info("DSO Value" + proposalVersion.getProposalId() + " " + proposalVersion.getVersion() + " " +proposalVersion.getFinalAmount());
                             proposalVersionTobeConsidered = proposalVersion;
                         }
                     }
@@ -2178,12 +2156,9 @@ public class ProductAndAddons extends Window
             if (proposalVersionListDSO.size() != 0) {
                 Date date = proposalVersionListDSO.get(0).getUpdatedOn();
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionListDSO.get(0);
-                //LOG.info("DSO list size " +proposalVersionListDSO.size());
                 for (ProposalVersion proposalVersion : proposalVersionListDSO) {
                     if (!proposalVersion.getInternalStatus().equals("Locked")) {
-                        //LOG.info("1st if in dso");
                         if (proposalVersion.getUpdatedOn().after(date) || proposalVersion.getUpdatedOn().equals(date)) {
-                            //LOG.info("2nd if in dso" + proposalVersion.getProposalId() + " " + proposalVersion.getVersion() + proposalVersionTobeConsidered.getFinalAmount());
                             proposalVersionTobeConsidered = proposalVersion;
                         }
                     }
@@ -2198,8 +2173,6 @@ public class ProductAndAddons extends Window
         sendToCRM.setFinal_proposal_amount_c(DSOAmount);
         sendToCRM.setBooking_order_value_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
-        LOG.debug("Send to CRM on confirm### : " + sendToCRM.toString());
-
         return sendToCRM;
     }
 
@@ -2379,7 +2352,6 @@ public class ProductAndAddons extends Window
         double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
         double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
         double versionNum=Double.valueOf(proposalVersion.getVersion());
-        LOG.info("PHQ " +projectHandlingQty+ " DCC " +deepCleaningQty+ " FPC " +floorProtectionQty);
         if (proposalHeader.getMaxDiscountPercentage() >= Double.valueOf(discountPercentage.getValue())) {
             remarksTextArea.setValidationVisible(false);
             try {
@@ -2403,8 +2375,6 @@ public class ProductAndAddons extends Window
                                 close();
                             }
                         });
-                /*LOG.info("Custom addon added ");
-                Notification.show("Custom addon added");*/
             }else if(quickProductCheck.equalsIgnoreCase("Yes") && versionNum>1.0)
             {
                 NotificationUtil.showNotification("quick product has been added , Please delete the quick product", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2820,7 +2790,6 @@ public class ProductAndAddons extends Window
                 DashboardEventBus.unregister(this);
                 close();
             } else {
-                LOG.info("elase part ***");
                 JSONObject textValues = new JSONObject();
                 textValues.put("discountAmount", discountAmount.getValue());
                 textValues.put("grandTotal", Double.parseDouble(grandTotal.getValue()));

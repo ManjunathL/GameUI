@@ -157,7 +157,6 @@ public class ModuleDetailsWindow extends Window {
         initModule();
         this.binder.setItemDataSource(this.module);
 
-        LOG.info("Module in constructor " +module);
         setModal(true);
         setSizeFull();
         setResizable(false);
@@ -624,11 +623,8 @@ public class ModuleDetailsWindow extends Window {
             formLayout.addComponent(this.moduleCategory);
             moduleCategory.addValueChangeListener(valueChangeEvent -> {
                 String code = (String) valueChangeEvent.getProperty().getValue();
-                LOG.info("code value" +code);
                 String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
                 module.setModuleCategory(title);
-                LOG.debug("After combo box updated:" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
-
                 mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
                 if (this.moduleSelection != null) {
                     this.moduleSelection.getContainerDataSource().removeAllItems();
@@ -641,9 +637,6 @@ public class ModuleDetailsWindow extends Window {
                 String code = StringUtils.isNotEmpty(module.getModuleCategory()) ? module.getModuleCategory() : (String) moduleCategory.getItemIds().iterator().next();
                 moduleCategory.setValue(code);
             }
-
-            LOG.debug("product category :" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
-
             mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
             moduleSelection = getModulesCombo("Module", mgModules, null);
             binder.bind(moduleSelection, Module.MG_MODULE_CODE);
@@ -733,8 +726,6 @@ public class ModuleDetailsWindow extends Window {
                 String code = (String) valueChangeEvent.getProperty().getValue();
                 String title = (String) ((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code).getItemProperty("title").getValue();
                 module.setModuleCategory(title);
-                LOG.debug("After combo box updated:" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
-
                 mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
                 if (this.moduleSelection != null) {
                     this.moduleSelection.getContainerDataSource().removeAllItems();
@@ -748,9 +739,6 @@ public class ModuleDetailsWindow extends Window {
                 String code = StringUtils.isNotEmpty(module.getModuleCategory()) ? module.getModuleCategory() : (String) moduleCategory.getItemIds().iterator().next();
                 moduleCategory.setValue(code);
             }
-
-            LOG.debug("product category :" + module.getProductCategory() + " | module category :" + module.getModuleCategory());
-
             mgModules = proposalDataProvider.getModules(module.getProductCategory(), module.getModuleCategory());
             moduleSelection = getModulesCombo("Module", mgModules, null);
             binder.bind(moduleSelection, Module.MG_MODULE_CODE);
@@ -811,8 +799,6 @@ public class ModuleDetailsWindow extends Window {
         MGModule mgModule = ((BeanContainer<String, MGModule>) this.moduleSelection.getContainerDataSource()).getItem(code).getBean();
         //((ComboBox) ((Field.ValueChangeEvent) valueChangeEvent).getSource()).getContainerDataSource().getItem(code);
 
-        LOG.debug("MG module - " + mgModule.toString());
-
         module.setMgCode(mgModule.getCode());
         module.setHeight(mgModule.getHeight());
         module.setDepth(mgModule.getDepth());
@@ -856,20 +842,15 @@ public class ModuleDetailsWindow extends Window {
         module.setImportStatus(Module.ImportStatusType.m.name());
         module.setUnitType(mgModule.getUnitType());
         List<MGModule> value=proposalDataProvider.checksqftCalculation(mgModule.getCode());
-        LOG.info("Mg code to check handle present or not " +mgModule.getCode());
         for(MGModule m:value)
         {
-            LOG.info("handle present" +m.getHandleMandatory() +lockhandles);
             if(m.getHandleMandatory().equals("Yes"))
             {
-                LOG.info("inside if to set value");
                 lockhandles = true;
             }
-            LOG.info("lock handle value after check" +lockhandles);
         }
 
         this.allowDimensionChangesForModule();
-        LOG.debug("Module b4 price calc :" + module.toString());
         this.dontCalculatePriceNow = false;
         refreshPrice();
         refreshAccPacks();
@@ -924,11 +905,10 @@ public class ModuleDetailsWindow extends Window {
         this.handleType.getContainerDataSource().removeAllItems();
         if(lockhandles==true)
         {
-            LOG.info("value true");
             List<HandleMaster> handle=proposalDataProvider.getHandleTitle("Handle");
             for(HandleMaster handles:handle)
             {
-                LOG.info("handle title" +handles);
+
             }
             final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
             container.setBeanIdProperty(HandleMaster.TITLE);
@@ -1230,7 +1210,6 @@ public class ModuleDetailsWindow extends Window {
 
     private void addImageToAccessoryPanel(String imagePath, String title) {
         File sourceFile = new File(basePath + imagePath);
-        LOG.info("image path : " + sourceFile);
         if (sourceFile.exists()) {
             VerticalLayout verticalLayout=new VerticalLayout();
             Image img = new Image("", new FileResource(sourceFile));
@@ -1266,7 +1245,6 @@ public class ModuleDetailsWindow extends Window {
 
         ModulePrice modulePrice = this.recalculatePriceForModule();
 
-        LOG.info("module price in Module Details Window " +modulePrice);
         if (modulePrice != null)
         {
             totalAmount.setReadOnly(false);
@@ -1359,7 +1337,6 @@ public class ModuleDetailsWindow extends Window {
             return null;
         }
 
-        LOG.info("Asking for module price - " + this.module.toString());
         try
         {
             return proposalDataProvider.getModulePrice(moduleForPrice);
@@ -1394,14 +1371,12 @@ public class ModuleDetailsWindow extends Window {
 
     private ModuleAccessoryPack getModuleAccessoryPack(ComboBox accPackCombo, ComboBox addon1Combo, ComboBox addons2Combo, ComboBox addons3Combo) {
         String value = (String) accPackCombo.getValue();
-        LOG.info("Pack Value" +value);
-
         if (StringUtils.isEmpty(value)) {
             return null;
         }
         ModuleAccessoryPack accPack = new ModuleAccessoryPack();
         accPack.setCode(value);
-        LOG.info("caption" +accPackCombo.getItemCaptionPropertyId().toString());
+
        //accPack.setPacktitle();
 
         List<String> addons = new ArrayList<>();
@@ -1635,8 +1610,6 @@ public class ModuleDetailsWindow extends Window {
             module.setKnobType(knobType.getValue().toString());
             module.setKnobThickness(knobthickness.getValue().toString());*/
             List<ModuleAccessoryPack> accessoryPacks=getModuleAccessoryPacks();
-            LOG.info("Accessory pack" +accessoryPacks);
-            LOG.info("acc pack size" +accessoryPacks.size());
             if(accessoryPacks.size()!=0)
             {
                 module.setAccessoryflag("Y");
@@ -1682,19 +1655,13 @@ public class ModuleDetailsWindow extends Window {
                 module.setAccessoryCost(this.accessoryCost);
                 module.setLabourCost(this.labourCost);
             }
-
-            LOG.debug("this.calculatedArea:" + this.calculatedArea + " | this.calculatedAmountWOAccessories:" + this.calculatedAmountWOAccessories + " | WoodworkCost: " +this.woodworkCost+ " | HardwareCost: " +this.hardwareCost+ " | carcasscost " +this.carcassCost + " | Accessory Cost: " +this.accessoryCost+ " | Labour Cost: " +this.accessoryCost);
-
             if (module.getAmount() == 0)
             {
                 NotificationUtil.showNotification("Module Price cannot be zero", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
-
-            LOG.debug("Module being updated:" + this.module.toString());
             finishTypeSelection.removeValueChangeListener(this::finishTypeChanged);
             close();
-            LOG.info("module save " +module);
             ProposalEvent.ModuleUpdated event1 = new ProposalEvent.ModuleUpdated(module, loadNext, loadPrevious, moduleIndex, this);
             DashboardEventBus.post(event1);
 /*
@@ -1954,7 +1921,6 @@ public class ModuleDetailsWindow extends Window {
     private void handletypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
         String title=valueChangeEvent.getProperty().getValue().toString();
-        LOG.info("value change in handle type " +valueChangeEvent.getProperty().getValue());
         handlefinish=proposalDataProvider.getHandleFinish(title,"Handle");
         final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
         container.setBeanIdProperty(HandleMaster.FINISH);
@@ -1964,7 +1930,6 @@ public class ModuleDetailsWindow extends Window {
     private void knobtypechanged(Property.ValueChangeEvent valueChangeEvent)
     {
         String title=valueChangeEvent.getProperty().getValue().toString();
-        LOG.info("knob type changed" +valueChangeEvent.getProperty().getValue());
         knobfinsh=proposalDataProvider.getHandleFinish(title,"knob");
         final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
         container.setBeanIdProperty(HandleMaster.FINISH);
@@ -1974,7 +1939,6 @@ public class ModuleDetailsWindow extends Window {
     private void  handlefinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
         String title=valueChangeEvent.getProperty().getValue().toString();
-        LOG.info("handle finish change" +valueChangeEvent.getProperty().getValue() + "type " +handleType.getValue().toString());
         handlethickness=proposalDataProvider.getHandleThickness(handleType.getValue().toString(),title,"Handle");
         final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
         container.setBeanIdProperty(HandleMaster.THICKNESS);
@@ -1984,7 +1948,6 @@ public class ModuleDetailsWindow extends Window {
     private void knobfinishchanged(Property.ValueChangeEvent valueChangeEvent)
     {
         String title=valueChangeEvent.getProperty().getValue().toString();
-        LOG.info("handle finish change" +valueChangeEvent.getProperty().getValue());
         Knobthickness=proposalDataProvider.getHandleThickness(knobType.getValue().toString(),title,"Knob");
         final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);
         container.setBeanIdProperty(HandleMaster.THICKNESS);
@@ -2026,7 +1989,7 @@ public class ModuleDetailsWindow extends Window {
         List<HandleMaster> handle=proposalDataProvider.getHandleTitle("knob");
         for(HandleMaster handles:handle)
         {
-            LOG.info("handle title" +handles);
+
         }
 
         final BeanContainer<String, HandleMaster> container = new BeanContainer<>(HandleMaster.class);

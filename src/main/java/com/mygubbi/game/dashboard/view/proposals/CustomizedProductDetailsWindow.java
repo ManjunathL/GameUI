@@ -1058,7 +1058,6 @@ public class CustomizedProductDetailsWindow extends Window {
                     product.setProductCategoryLocked("Yes");
                     productSelection.setReadOnly(true);
                     productlocked="Yes";
-                    LOG.info("product locked value assigned " +productlocked);
                     if (product.getSource() == null) {
                         product.setSource("GAME");
                     }

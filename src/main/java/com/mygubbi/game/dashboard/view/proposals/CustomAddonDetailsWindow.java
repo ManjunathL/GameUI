@@ -358,7 +358,7 @@ public class CustomAddonDetailsWindow extends Window {
                     //LOG.debug("Addon product Class :" + addonProduct.toString());
                     addonProduct.setProposalId(proposalVersion.getProposalId());
 
-                    LOG.info("Inserting addonPRoduct :: "+addonProduct);
+                    //LOG.info("Inserting addonPRoduct :: "+addonProduct);
                         if (isProposalAddon) {
                             DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));
                         } else {

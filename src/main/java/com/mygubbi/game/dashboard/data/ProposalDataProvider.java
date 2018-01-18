@@ -345,7 +345,6 @@ public class ProposalDataProvider {
         try {
 
             JSONObject jsonObject = dataProviderMode.postResource("proposal/create", "{\"createdBy\": \"" + getUserId() + "\"}");
-            LOG.debug("Create Proposal OP :" + jsonObject.toString());
             return this.mapper.readValue(jsonObject.toString(), ProposalHeader.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't create proposal", e);
@@ -381,7 +380,6 @@ public class ProposalDataProvider {
 
             proposalHeader.setUpdatedBy(getUserId());
             String proposalJson = this.mapper.writeValueAsString(proposalHeader);
-            LOG.debug("Proposal header json :" + proposalJson);
             JSONObject jsonObject = dataProviderMode.postResource("proposal/update", proposalJson);
             return !jsonObject.has("error");
         } catch (JsonProcessingException e) {
@@ -395,7 +393,6 @@ public class ProposalDataProvider {
         try {
             proposalHeader.setUpdatedBy(getUserId());
             String proposalJson = this.mapper.writeValueAsString(proposalHeader);
-            LOG.debug("Proposal header json :" + proposalJson);
             JSONObject jsonObject = dataProviderMode.postResource("proposal/updateonconfirm", proposalJson);
             return !jsonObject.has("error");
         } catch (JsonProcessingException e) {
@@ -426,7 +423,6 @@ public class ProposalDataProvider {
 
     public boolean versionProductionSignOff(String version, int proposalId, String fromVersion, String toVersion,String date) {
         JSONObject jsonObject = dataProviderMode.postResource("proposal/version/productionsignoff", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"fromVersion\": " + fromVersion + "," + "\"toVersion\": " + toVersion + "," + "\"businessDate\": " +"\""+date+"\""+ "}");
-        LOG.debug("JSON OBJECT :" + jsonObject.toString());
         return !jsonObject.has("error");
     }
 
@@ -963,7 +959,6 @@ public class ProposalDataProvider {
         try {
             product.setUpdatedBy(getUserId());
             String productJson = this.mapper.writeValueAsString(product);
-            LOG.debug("Product json:" + productJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/update", productJson);
             if (!jsonObject.has("error")) {
@@ -981,7 +976,6 @@ public class ProposalDataProvider {
         try {
             product.setUpdatedBy(getUserId());
             String productJson = this.mapper.writeValueAsString(product);
-            LOG.debug("Product json:" + productJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/updaterefreshedprice", productJson);
             if (!jsonObject.has("error")) {
@@ -1278,7 +1272,6 @@ public class ProposalDataProvider {
         try {
 
             String versionJson = this.mapper.writeValueAsString(proposalversion);
-            LOG.debug("Version json :" + versionJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "proposal/version/createversion", versionJson);
 
@@ -1665,7 +1658,6 @@ public class ProposalDataProvider {
         try {
             product.setUpdatedBy(getUserId());
             String productJson = this.mapper.writeValueAsString(product);
-            LOG.debug("Product json:" + productJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/insertproductlibray", productJson);
             if (!jsonObject.has("error")) {
@@ -1683,7 +1675,6 @@ public class ProposalDataProvider {
         try {
             product.setUpdatedBy(getUserId());
             String productJson = this.mapper.writeValueAsString(product);
-            LOG.debug("Product json:" + productJson);
             JSONObject jsonObject = dataProviderMode.postResource(
                     "product/updateproductlibray", productJson);
             if (!jsonObject.has("error")) {
@@ -1830,7 +1821,6 @@ public class ProposalDataProvider {
             String final_amount = String.valueOf(sendToCRM.getFinal_proposal_amount_c());
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
             String booking_order_value_cost=String.valueOf(sendToCRM.getBooking_order_value_c());
-            LOG.debug("Json Object : "+ final_amount  + " he he " + estimated_project_cost);
 
         /*
                     JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
@@ -1859,7 +1849,6 @@ public class ProposalDataProvider {
         */
             //LOG.info("sendToCRM.getOpportunity_name()" +sendToCRM.getOpportunity_name()+ "estimated_project_cost" +estimated_project_cost+ "sendToCRM.getQuotation_number_c()" +sendToCRM.getQuotation_number_c());
             JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrmOnPublish(baseCrmUrl, sendToCRM.getOpportunity_name(),estimated_project_cost,sendToCRM.getQuotation_number_c());
-            LOG.debug("Json Object : "+ jsonObject);
 //            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
             return true;
         } catch (Exception e) {
@@ -2209,7 +2198,6 @@ public class ProposalDataProvider {
     }
     public List<ModuleHingeMap> getCodeLookup(String moduleCode,String type)
     {
-        LOG.debug("hinges inside proposal data provider : " + moduleCode  +" :" + type);
         try {
             JSONArray jsonArray = dataProviderMode.getResourceArray("module/selecthingedata", new HashMap<String, String>() {
                 {
