@@ -96,8 +96,7 @@ public final class User {
         String no = "No";
         // -- crm,finance,operations,purchasemanager,departmenthead
         if(this.getRole().equalsIgnoreCase("purchasemanager") || this.getRole().equalsIgnoreCase("operations")
-                || this.getRole().equalsIgnoreCase("crm") || this.getRole().equalsIgnoreCase("finance")||
-                this.getRole().equalsIgnoreCase("departmenthead"))
+                || this.getRole().equalsIgnoreCase("crm") || this.getRole().equalsIgnoreCase("finance"))
             this.isViewOnly = yes;
         else
             this.isViewOnly = no;
