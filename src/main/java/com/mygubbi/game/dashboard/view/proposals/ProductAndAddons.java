@@ -2200,6 +2200,7 @@ public class ProductAndAddons extends Window
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
                 LocalDateTime localDate = LocalDateTime.now();
                 proposalVersionCopy.setBusinessDate(dtf.format(localDate));
+                proposalVersionCopy.setTitle(this.ttitle.getValue());
 
                 ProposalVersion proposalVersionResponse = proposalDataProvider.saveProposalOnConfirm(proposalVersionCopy);
                 {
