@@ -2201,6 +2201,7 @@ public class ProductAndAddons extends Window
                 LocalDateTime localDate = LocalDateTime.now();
                 proposalVersionCopy.setBusinessDate(dtf.format(localDate));
                 proposalVersionCopy.setTitle(this.ttitle.getValue());
+                proposalVersionCopy.setRemarks(this.remarksTextArea.getValue());
 
                 ProposalVersion proposalVersionResponse = proposalDataProvider.saveProposalOnConfirm(proposalVersionCopy);
                 {
