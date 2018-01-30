@@ -66,4 +66,14 @@ public class LookupItem {
     public void setLookupType(String lookupType) {
         this.lookupType = lookupType;
     }
+
+    @Override
+    public String toString() {
+        return "LookupItem{" +
+                "code='" + code + '\'' +
+                ", title='" + title + '\'' +
+                ", additionalType='" + additionalType + '\'' +
+                ", lookupType='" + lookupType + '\'' +
+                '}';
+    }
 }

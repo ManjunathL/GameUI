@@ -76,6 +76,8 @@ public class ProposalVersion implements Cloneable {
     private String deepClearingChargesApplied;
     private String floorProtectionChargesApplied;
     private double projectHandlingQty;
+    private boolean confirmedStatus;
+    private String responseMessage;
 
     @Override
     public Object clone()  {
@@ -369,6 +371,22 @@ public class ProposalVersion implements Cloneable {
 
     public void setProjectHandlingQty(double projectHandlingQty) {
         this.projectHandlingQty = projectHandlingQty;
+    }
+
+    public boolean isConfirmedStatus() {
+        return confirmedStatus;
+    }
+
+    public void setConfirmedStatus(boolean confirmedStatus) {
+        this.confirmedStatus = confirmedStatus;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public void setResponseMessage(String sowResponseMessage) {
+        this.responseMessage = sowResponseMessage;
     }
 
     @Override

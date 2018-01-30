@@ -2038,7 +2038,7 @@ public class ProductAndAddons extends Window
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
                 LocalDateTime localDate = LocalDateTime.now();
                 proposalVersion.setBusinessDate(dtf.format(localDate));
-                response = proposalDataProvider.publishVersion(proposalVersion.getVersion(), proposalHeader.getId(),proposalVersion.getBusinessDate().toString());
+                response = proposalDataProvider.publishVersionOverride(proposalVersion, proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getBusinessDate());
                 ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
                 proposalHeader.setStatus(proposalVersionLatest.getStatus());
                 proposalHeader.setVersion(proposalVersionLatest.getVersion());
@@ -2187,135 +2187,38 @@ public class ProductAndAddons extends Window
                     NotificationUtil.showNotification("Please add products", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
                 }
+
+                ProposalVersion proposalVersionCopy = new ProposalVersion();
                 String disAmount = discountAmount.getValue();
-                proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
-                proposalVersion.setDiscountAmount(Double.parseDouble(disAmount.replace(",", "")));
-                proposalVersion.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
-//                double res = totalAfterDiscount - totalAfterDiscount % 10;
-                proposalVersion.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
-                proposalVersion.setStatus(ProposalVersion.ProposalStage.Confirmed.name());
-                proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Confirmed.name());
+                proposalVersionCopy.setProposalId(proposalVersion.getProposalId());
+                proposalVersionCopy.setVersion(proposalVersion.getVersion());
+                proposalVersionCopy.setFromVersion(proposalVersion.getFromVersion());
+                proposalVersionCopy.setAmount(Double.parseDouble(grandTotal.getValue()));
+                proposalVersionCopy.setDiscountAmount(Double.parseDouble(disAmount.replace(",", "")));
+                proposalVersionCopy.setDiscountPercentage(Double.parseDouble(discountPercentage.getValue()));
+                proposalVersionCopy.setFinalAmount(Double.parseDouble(discountTotal.getValue()));
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
                 LocalDateTime localDate = LocalDateTime.now();
-                proposalVersion.setBusinessDate(dtf.format(localDate));
-                ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
-                proposalHeader.setStatus(proposalVersionLatest.getStatus());
-                proposalHeader.setVersion(proposalVersionLatest.getVersion());
-                proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
-                boolean success = proposalDataProvider.saveProposal(proposalHeader);
-                if (success) {
-                    boolean mapped = true;
-                    for (Product product : proposal.getProducts()) {
-                        Product populatedProduct = proposalDataProvider.getProposalProductDetails(product.getId(), product.getFromVersion());
-                        mapped = populatedProduct.getType().equals(Product.TYPES.CATALOGUE.name()) || (!populatedProduct.getModules().isEmpty());
-                        if (!mapped) {
-                            break;
-                        }
-                    }
+                proposalVersionCopy.setBusinessDate(dtf.format(localDate));
 
-                    if (!mapped) {
-                        NotificationUtil.showNotification("Couldn't Submit. Please ensure all Products have mapped Modules.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                ProposalVersion proposalVersionResponse = proposalDataProvider.saveProposalOnConfirm(proposalVersionCopy);
+                {
+                    if (proposalVersionResponse.isConfirmedStatus()) {
+                        proposalVersion = proposalVersionResponse;
+                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
+                        proposalDataProvider.updateCrmPrice(sendToCRM);
+                        ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
+                        DashboardEventBus.post(event1);
+                        close();
                     } else {
-
-                        String versionNew = String.valueOf(proposalVersion.getVersion());
-                        if (versionNew.startsWith("0.")) {
-                            proposalVersion.setFromVersion(proposalVersion.getVersion());
-                            proposalVersion.setToVersion(proposalVersion.getVersion());
-                            proposalVersion.setVersion("1.0");
-                            proposalVersion.setBusinessDate(dtf.format(localDate));
-                            proposalHeader.setStatus(proposalVersion.getStatus());
-                            proposalHeader.setVersion(proposalVersion.getVersion());
-                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
-                            proposalDataProvider.saveProposalOnConfirm(proposalHeader);
-                            proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(), "1.0");
-                            proposalDataProvider.lockAllPreSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
-                            success = proposalDataProvider.confirmVersion(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion(),proposalVersion.getBusinessDate().toString());
-                            proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
-                            proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
-                            proposalDataProvider.updateVersion(proposalVersion);
-                            proposalHeader.setVersion(proposalVersion.getVersion());
-                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
-                            SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
-                            proposalDataProvider.updateCrmPrice(sendToCRM);
-                            proposalDataProvider.saveProposal(proposalHeader);
-                        } else if (versionNew.startsWith("1.")) {
-                            proposalVersion.setFromVersion(proposalVersion.getVersion());
-                            proposalVersion.setToVersion(proposalVersion.getVersion());
-                            proposalVersion.setVersion("2.0");
-                            proposalVersion.setStatus(ProposalVersion.ProposalStage.DSO.name());
-                            proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.DSO.name());
-                            proposalVersion.setBusinessDate(dtf.format(localDate));
-                            proposalHeader.setStatus(proposalVersion.getStatus());
-                            proposalHeader.setVersion(proposalVersion.getVersion());
-                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
-                            proposalDataProvider.copyProposalSowLineItems(proposalHeader.getId(), "2.0");
-                            boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
-                            proposalDataProvider.lockAllPostSalesVersions(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
-                            success = proposalDataProvider.versionDesignSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion(),proposalVersion.getBusinessDate().toString());
-                            proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
-                            proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
-                            proposalDataProvider.updateVersion(proposalVersion);
-                            proposalHeader.setVersion(proposalVersion.getVersion());
-                            SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
-                            proposalDataProvider.updateCrmPrice(sendToCRM);
-                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
-                            proposalDataProvider.saveProposal(proposalHeader);
-
-
-                        } else if (versionNew.startsWith("2.")) {
-                            proposalVersion.setFromVersion(proposalVersion.getVersion());
-                            proposalVersion.setToVersion(proposalVersion.getVersion());
-                            proposalVersion.setVersion("3.0");
-                            proposalVersion.setStatus(ProposalVersion.ProposalStage.PSO.name());
-                            proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.PSO.name());
-                            proposalVersion.setBusinessDate(dtf.format(localDate));
-                            proposalHeader.setStatus(proposalVersion.getStatus());
-                            proposalHeader.setVersion(proposalVersion.getVersion());
-                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
-                            boolean success1 = proposalDataProvider.saveProposal(proposalHeader);
-                            proposalDataProvider.lockAllVersionsExceptPSO(ProposalVersion.ProposalStage.Locked.name(), proposalHeader.getId());
-                            success = proposalDataProvider.versionProductionSignOff(proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getFromVersion(), proposalVersion.getToVersion(),proposalVersion.getBusinessDate().toString());
-                            proposalDataProvider.updateProposalProductOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
-                            proposalDataProvider.updateProposalAddonOnConfirm(proposalVersion.getVersion(), proposalVersion.getProposalId(), proposalVersion.getFromVersion());
-                            proposalDataProvider.updateVersion(proposalVersion);
-                            proposalHeader.setVersion(proposalVersion.getVersion());
-                            proposalHeader.setAmount(proposalVersion.getFinalAmount());
-                            if (versionNew.equals("2.0")) {
-                                SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
-                                proposalDataProvider.updateCrmPrice(sendToCRM);
-                            }
-                            proposalDataProvider.saveProposal(proposalHeader);
-                        }
-
-
-                        if (success) {
-                            saveButton.setVisible(false);
-                            try {
-                                JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(), Double.parseDouble(proposalVersion.getVersion()), "yes");
-                                if (quoteFile.getString("status").equalsIgnoreCase("failure")) {
-                                    NotificationUtil.showNotification("Couldn't create SOW file. Please click on the button to generate the sheet again", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                                    return;
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                LOG.error("Couldnt create Sow File :" + e.getMessage());
-                            }
-                            NotificationUtil.showNotification("Confirmed successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                            handleState();
-                        } else {
-                            NotificationUtil.showNotification("Couldn't Publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-                        }
+                        VersionConfirmOrDiscardPopUpWindow.open(proposalVersion, productAndAddonSelection, proposalHeader);
                     }
-                } else {
-                    NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }
+
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
 
-            ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
-            DashboardEventBus.post(event1);
-            close();
         } else {
             NotificationUtil.showNotification("Discount should not exceed " + rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
             discountAmount.setValue(String.valueOf(proposalVersion.getDiscountAmount()).replace(",", ""));
@@ -2790,17 +2693,7 @@ public class ProductAndAddons extends Window
                 DashboardEventBus.unregister(this);
                 close();
             } else {
-                JSONObject textValues = new JSONObject();
-                textValues.put("discountAmount", discountAmount.getValue());
-                textValues.put("grandTotal", Double.parseDouble(grandTotal.getValue()));
-                textValues.put("discountTotal", Double.parseDouble(discountTotal.getValue()));
-                textValues.put("discountPercentage", Double.parseDouble(discountPercentage.getValue()));
-                /*textValues.put("remarksTextArea", remarksTextArea.getValue());*/
-                textValues.put("ttitle", this.ttitle.getValue());
-                textValues.put("versionNum", String.valueOf(versionNum));
-                VersionPublishOrDiscardPopUpWindow.open(response, proposalId, version, this.proposal, proposalVersion, productAndAddonSelection, proposalHeader, textValues);
-
-
+                NotificationUtil.showNotification("Couldn't Publish Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
         } catch (JSONException e) {
             e.printStackTrace();

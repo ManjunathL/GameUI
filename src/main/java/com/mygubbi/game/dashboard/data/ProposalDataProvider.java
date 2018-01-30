@@ -388,17 +388,17 @@ public class ProposalDataProvider {
         }
     }
 
-    public boolean saveProposalOnConfirm(ProposalHeader proposalHeader) {
+    public ProposalVersion saveProposalOnConfirm(ProposalVersion proposalVersion) {
 
         try {
-            proposalHeader.setUpdatedBy(getUserId());
-            String proposalJson = this.mapper.writeValueAsString(proposalHeader);
-            JSONObject jsonObject = dataProviderMode.postResource("proposal/updateonconfirm", proposalJson);
-            return !jsonObject.has("error");
-        } catch (JsonProcessingException e) {
+            proposalVersion.setUpdatedBy(getUserId());
+            String versionJson = this.mapper.writeValueAsString(proposalVersion);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/updateonconfirm", versionJson);
+            return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
+        } catch (IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("Couldn't save proposal", e);
         }
+        return null;
     }
 
     public JSONObject publishVersion(String version, int proposalId,String date) {
@@ -406,8 +406,8 @@ public class ProposalDataProvider {
         return jsonObject;
     }
 
-    public JSONObject publishVersionOverride(String version, int proposalId) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publishoverride", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "}");
+    public JSONObject publishVersionOverride(ProposalVersion proposalVersion, String version, int proposalId, String date) {
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publishoverride", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"businessDate\": " + "\"" + date + "\"" + "}");
         return jsonObject;
     }
 
