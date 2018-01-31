@@ -42,6 +42,7 @@ public class ProposalVersion implements Cloneable {
     public static final String PROJECT_HANDLING_APPLIED="projectHandlingChargesApplied";
     public static final String DEEP_CLEARING_APPLIED="deepClearingChargesApplied";
     public static final String FLOOR_PROTECTION_APPLIED="floorProtectionChargesApplied";
+    public static final String RESPONSE_MESSAGE="responseMessage";
 
     private String version;
     private int proposalId;
@@ -425,6 +426,8 @@ public class ProposalVersion implements Cloneable {
                 ", deepClearingChargesApplied='" + deepClearingChargesApplied + '\'' +
                 ", floorProtectionChargesApplied='" + floorProtectionChargesApplied + '\'' +
                 ", projectHandlingQty=" + projectHandlingQty +
+                ", confirmedStatus=" + confirmedStatus +
+                ", responseMessage='" + responseMessage + '\'' +
                 '}';
     }
 }

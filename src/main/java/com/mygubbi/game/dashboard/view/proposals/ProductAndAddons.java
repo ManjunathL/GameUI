@@ -2203,9 +2203,15 @@ public class ProductAndAddons extends Window
                 proposalVersionCopy.setTitle(this.ttitle.getValue());
                 proposalVersionCopy.setRemarks(this.remarksTextArea.getValue());
 
+                proposalVersionCopy.setProjectHandlingQty(proposalVersion.getProjectHandlingQty());
+                proposalVersionCopy.setProjectHandlingAmount(proposalVersion.getProjectHandlingAmount());
+                proposalVersionCopy.setDeepClearingAmount(proposalVersion.getDeepClearingAmount());
+                proposalVersionCopy.setDeepClearingQty(proposalVersion.getDeepClearingQty());
+                proposalVersionCopy.setFloorProtectionSqft(proposalVersion.getFloorProtectionSqft());
+                proposalVersionCopy.setFloorProtectionAmount(proposalVersion.getFloorProtectionAmount());
+
                 ProposalVersion proposalVersionResponse = proposalDataProvider.saveProposalOnConfirm(proposalVersionCopy);
-                {
-                    if (proposalVersionResponse.isConfirmedStatus()) {
+                if (proposalVersionResponse.isConfirmedStatus()) {
                         proposalVersion = proposalVersionResponse;
                         SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
                         proposalDataProvider.updateCrmPrice(sendToCRM);
@@ -2213,9 +2219,8 @@ public class ProductAndAddons extends Window
                         DashboardEventBus.post(event1);
                         close();
                     } else {
-                        VersionConfirmOrDiscardPopUpWindow.open(proposalVersion, productAndAddonSelection, proposalHeader);
+                        VersionConfirmOrDiscardPopUpWindow.open(proposalVersionResponse, productAndAddonSelection, proposalHeader);
                     }
-                }
 
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
