@@ -374,7 +374,7 @@ public class ProductAndAddons extends Window
                     }
                     if(versionNo >1.0 && customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
                     {
-                        NotificationUtil.showNotification("Custom Addon Added", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        NotificationUtil.showNotification("Please ensure there are NO custom addon of category \"Appliances\" and \"Accessories\"", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                     }
 
@@ -413,7 +413,7 @@ public class ProductAndAddons extends Window
 
         String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
 
-        if (("admin").equals(role) || ("planning").equals(role)) {
+        if (("admin").equals(role) || ("planning").equals(role) || ("crm").equals(role)) {
             Button downloadButton = new Button("SOW &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             downloadButton.setCaptionAsHtml(true);
             downloadButton.setIcon(FontAwesome.DOWNLOAD);

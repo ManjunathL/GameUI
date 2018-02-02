@@ -677,8 +677,8 @@ public class ProposalDataProvider {
         try {
         JSONArray array = dataProviderMode.getResourceArray("module/accpacks", new HashMap<String, String>() {
             {
-                put("mgCode", mgCode);
-                //put("mgCode", URLEncoder.encode(mgCode, "UTF-8"));
+                //put("mgCode", mgCode);
+                put("mgCode", URLEncoder.encode(mgCode, "UTF-8"));
             }
         });
 
