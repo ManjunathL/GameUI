@@ -374,7 +374,7 @@ public class ProductAndAddons extends Window
                     }
                     if(versionNo >1.0 && customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
                     {
-                        NotificationUtil.showNotification("Please ensure there are NO custom addon of category \"Appliances\" and \"Accessories\"", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        NotificationUtil.showNotification("Please ensure there are NO custom addon of category \"Appliances\" and \"Accessories\" post 1.0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                     }
 
@@ -1989,7 +1989,7 @@ public class ProductAndAddons extends Window
                 }
                 if(versionNo >1.0 && customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
                 {
-                        NotificationUtil.showNotification("Please ensure there are NO custom addon of category \"Appliances\" and \"Accessories\"", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                        NotificationUtil.showNotification("Please ensure there are NO custom addon of category \"Appliances\" and \"Accessories\" post 1.0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
                 }
 
@@ -2278,7 +2278,7 @@ public class ProductAndAddons extends Window
             }
             if(customAddonCheck.equalsIgnoreCase("Yes") && proposalHeader.getCustomAddonCheck().equalsIgnoreCase("yes"))
             {
-                ConfirmDialog.show(UI.getCurrent(), "", "Please ensure there are NO custom addon of category \"Appliances\" and \"Accessories\"",
+                ConfirmDialog.show(UI.getCurrent(), "", "Please ensure there are NO custom addon of category \"Appliances\" and \"Accessories\" post 1.0",
                         "Save", "Close", dialog -> {
                             if (!dialog.isCanceled()) {
                                 saveProposalVersion();
