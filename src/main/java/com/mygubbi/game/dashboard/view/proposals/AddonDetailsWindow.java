@@ -36,6 +36,7 @@ import static java.lang.StrictMath.round;
 public class AddonDetailsWindow extends Window {
 
     private static final String BLANK_ROOM_CODE = "";
+    private static final String REGULAR_ADDON = "Regular Addon";
     private final boolean isProposalAddon;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
     private final AddonProduct addonProduct;
@@ -169,6 +170,7 @@ public class AddonDetailsWindow extends Window {
         quantity.setReadOnly(true);
         rate.setReadOnly(true);
         amount.setReadOnly(true);
+        applyButton.setVisible(false);
     }
     private void handlePackage() {
         String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
@@ -637,6 +639,7 @@ public class AddonDetailsWindow extends Window {
                         return;
                     }
                     addonProduct.setFromVersion(proposalVersion.getVersion());
+                    addonProduct.setAddonType(REGULAR_ADDON);
                     addonProduct.setCategory(this.categoryBeanContainer.getItem(this.category.getValue()).getBean().getCategoryCode());
                     addonProduct.setProductTypeCode(this.productTypeBeanContainer.getItem(this.productType.getValue()).getBean().getProductTypeCode());
                     addonProduct.setProductSubtypeCode(this.productSubtypeBeanContainer.getItem(this.productSubtype.getValue()).getBean().getProductSubtypeCode());

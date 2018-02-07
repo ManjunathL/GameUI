@@ -347,7 +347,9 @@ public class CustomAddonDetailsWindow extends Window {
                         addonProduct.setSeq(seq);
                     }
                     addonProduct.setFromVersion(proposalVersion.getVersion());
-                    addonProduct.setCategoryCode("Custom Addon");
+                    String addonType = "Custom Addon";
+                    addonProduct.setAddonType(addonType);
+                    addonProduct.setCategoryCode(addonType);
                     addonProduct.setProductTypeCode("NA");
                     addonProduct.setProductSubtypeCode("NA");
                     addonProduct.setBrandCode("NA");

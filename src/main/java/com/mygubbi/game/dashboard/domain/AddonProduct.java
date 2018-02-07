@@ -37,6 +37,7 @@ public class AddonProduct implements Cloneable {
     public static final String ROOM_CODE="roomcode";
     public static final String CUSTOM_ADDON_CATEGORY="customAddonCategory";
     public static final String SCOPEDISPLAYFLAG = "scopeDisplayFlag";
+    public static final String ADDON_TYPE = "addonType";
 
     private int seq;
     private int id;
@@ -65,6 +66,7 @@ public class AddonProduct implements Cloneable {
     private String spaceType;
     private String roomcode;
     private String scopeDisplayFlag;
+    private String addonType;
 
     private boolean add = false;
 
@@ -300,6 +302,14 @@ public class AddonProduct implements Cloneable {
 
     public void setRoomcode(String roomcode) {
         this.roomcode = roomcode;
+    }
+
+    public String getAddonType() {
+        return addonType;
+    }
+
+    public void setAddonType(String addonType) {
+        this.addonType = addonType;
     }
 
     @Override

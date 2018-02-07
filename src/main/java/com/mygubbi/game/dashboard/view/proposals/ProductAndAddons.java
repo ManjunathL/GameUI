@@ -1657,7 +1657,7 @@ public class ProductAndAddons extends Window
         /*addonsGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         addonsGrid.addSelectionListener(this::updateTotal);*/
         addonsGrid.setColumnReorderingAllowed(true);
-        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_SPACE_TYPE, AddonProduct.ROOM_CODE, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.PRODUCT_SUBTYPE_CODE, AddonProduct.BRAND_CODE,
+        addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_SPACE_TYPE, AddonProduct.ROOM_CODE, AddonProduct.ADDON_TYPE, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.PRODUCT_SUBTYPE_CODE, AddonProduct.BRAND_CODE,
                 AddonProduct.PRODUCT, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
 
         List<Grid.Column> columns = addonsGrid.getColumns();
@@ -1665,6 +1665,7 @@ public class ProductAndAddons extends Window
         columns.get(idx++).setHeaderCaption("#");
         columns.get(idx++).setHeaderCaption("Space Type");
         columns.get(idx++).setHeaderCaption("Room");
+        columns.get(idx++).setHeaderCaption("Addon Type");
         columns.get(idx++).setHeaderCaption("Category");
         columns.get(idx++).setHeaderCaption("Product Type");
         columns.get(idx++).setHeaderCaption("Product Sub-Type");
@@ -1682,7 +1683,7 @@ public class ProductAndAddons extends Window
                 AddonProduct addon = (AddonProduct) rendererClickEvent.getItemId();
                 addon.setAdd(false);
 
-                if (("Custom Addon").equals(addon.getCategoryCode())) {
+                if (("Custom Addon").equals(addon.getAddonType())) {
                     CustomAddonDetailsWindow.open(addon, "Edit Addon", true, proposalVersion, proposalHeader);
                 } else {
                     AddonDetailsWindow.open(addon, "Edit Addon", true, proposalVersion, proposalHeader);
@@ -1746,6 +1747,12 @@ public class ProductAndAddons extends Window
        List<AddonProduct> existingAddons = proposal.getAddons();
         int seq = 0;
         for (AddonProduct existingAddon : existingAddons) {
+            if (existingAddon.getCategoryCode().equals("Custom Addon")) {
+                existingAddon.setAddonType("Custom Addon");
+                existingAddon.setCategoryCode(existingAddon.getCustomAddonCategory());
+            } else {
+                existingAddon.setAddonType("Regular Addon");
+            }
             existingAddon.setSeq(++seq);
         }
         addonsContainer.addAll(existingAddons);
@@ -2637,6 +2644,15 @@ public class ProductAndAddons extends Window
         // LOG.info("Product :"  + eventAddonProduct.toString());
         persistAddon(eventAddonProduct);
         List<AddonProduct> addons = proposalDataProvider.getVersionAddons(proposalHeader.getId(), proposalVersion.getVersion());
+        for (AddonProduct addonProduct : addons)
+        {
+            if (addonProduct.getCategoryCode().equals("Custom Addon")) {
+                addonProduct.setAddonType("Custom Addon");
+                addonProduct.setCategoryCode(addonProduct.getCustomAddonCategory());
+            } else {
+                addonProduct.setAddonType("Regular Addon");
+            }
+        }
         addonsContainer.removeAllItems();
         addonsContainer.addAll(addons);
         addonsGrid.setContainerDataSource(createGeneratedAddonsPropertyContainer());
