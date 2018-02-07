@@ -2336,9 +2336,9 @@ public class ProductAndAddons extends Window
             proposalVersion.setDeepClearingAmount(Double.valueOf(DCCAmount.getValue()));
             proposalVersion.setFloorProtectionSqft(Double.valueOf(FPCQTY.getValue()));
             proposalVersion.setFloorProtectionAmount(Double.valueOf(FPCAmount.getValue()));
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+            /*DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
             LocalDateTime localDate = LocalDateTime.now();
-            proposalVersion.setBusinessDate(dtf.format(localDate));
+            proposalVersion.setBusinessDate(dtf.format(localDate));*/
 
             ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
             proposalHeader.setStatus(proposalVersionLatest.getStatus());
