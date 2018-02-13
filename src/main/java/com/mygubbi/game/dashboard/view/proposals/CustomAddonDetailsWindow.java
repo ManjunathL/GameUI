@@ -360,12 +360,11 @@ public class CustomAddonDetailsWindow extends Window {
                     //LOG.debug("Addon product Class :" + addonProduct.toString());
                     addonProduct.setProposalId(proposalVersion.getProposalId());
 
-                    //LOG.info("Inserting addonPRoduct :: "+addonProduct);
-                        if (isProposalAddon) {
+//                   if (isProposalAddon) {
                             DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));
-                        } else {
-                            DashboardEventBus.post(new ProposalEvent.AddonUpdated(addonProduct));
-                        }
+//                        } else {
+//                            DashboardEventBus.post(new ProposalEvent.AddonUpdated(addonProduct));
+//                        }
                     close();
                 } catch (FieldGroup.CommitException e) {
                     e.printStackTrace();
