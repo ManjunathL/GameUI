@@ -188,6 +188,20 @@ public class AddonDetailsWindow extends Window {
             rate.setReadOnly(true);
             amount.setReadOnly(true);
         }
+        if (Objects.equals(proposalHeader.getPackageFlag(), "Yes")) {
+            category.setReadOnly(true);
+            spaceType.setReadOnly(true);
+            roomText.setReadOnly(true);
+            productType.setReadOnly(true);
+            productSubtype.setReadOnly(true);
+            brand.setReadOnly(true);
+            product.setReadOnly(true);
+            title.setReadOnly(true);
+            uom.setReadOnly(true);
+            quantity.setReadOnly(true);
+            rate.setReadOnly(true);
+            amount.setReadOnly(true);
+        }
     }
     private Component buildAddonSelectionsComponent() {
 

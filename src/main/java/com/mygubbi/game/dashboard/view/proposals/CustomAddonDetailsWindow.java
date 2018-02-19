@@ -173,6 +173,17 @@ public class CustomAddonDetailsWindow extends Window {
             amount.setReadOnly(true);
             category.setReadOnly(true);
         }
+        if(Objects.equals(proposalHeader.getPackageFlag(),"Yes") )
+        {
+            spaceType.setReadOnly(true);
+            roomText.setReadOnly(true);
+            title.setReadOnly(true);
+            uom.setReadOnly(true);
+            quantity.setReadOnly(true);
+            rate.setReadOnly(true);
+            amount.setReadOnly(true);
+            category.setReadOnly(true);
+        }
     }
     private Component buildAddonSelectionsComponent() {
 
