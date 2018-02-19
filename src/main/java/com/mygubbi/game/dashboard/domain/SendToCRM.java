@@ -13,12 +13,14 @@ public class SendToCRM {
     public static final String ESTIMATED_PROJECT_COST = "estimated_project_cost_c";
     public static final String QUOTE_NO = "quotation_number_c";
     public static final String BOOKING_ORDER_VALUE="booking_order_value_c";
+    public static final String QUOTE_LINK="quoteLink";
 
     private String opportunity_name;
     private double final_proposal_amount_c;
     private double estimated_project_cost_c;
     private String quotation_number_c;
     private double booking_order_value_c;
+    private String quoteLink;
 
     public String getOpportunity_name() {
         return opportunity_name;
@@ -60,6 +62,14 @@ public class SendToCRM {
         this.booking_order_value_c = booking_order_value_c;
     }
 
+    public String getQuoteLink() {
+        return quoteLink;
+    }
+
+    public void setQuoteLink(String quoteLink) {
+        this.quoteLink = quoteLink;
+    }
+
     @Override
     public String toString() {
         return "SendToCRM{" +
@@ -68,6 +78,7 @@ public class SendToCRM {
                 ", estimated_project_cost_c=" + estimated_project_cost_c +
                 ", quotation_number_c='" + quotation_number_c + '\'' +
                 ", booking_order_value_c=" + booking_order_value_c +
+                ", quoteLink='" + quoteLink + '\'' +
                 '}';
     }
 }

@@ -131,7 +131,7 @@ public class VersionConfirmOrDiscardPopUpWindow extends Window {
 
 
         LOG.debug("Version to be considered : " + versionToBeConsidered);
-        productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+        productAndAddonSelection.setToVersion(String.valueOf(versionToBeConsidered));
 
 
         JSONObject quoteFile = null;

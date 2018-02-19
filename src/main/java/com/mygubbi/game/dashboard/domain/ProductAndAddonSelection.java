@@ -12,7 +12,7 @@ public class ProductAndAddonSelection {
     private List<Integer> addonIds = new ArrayList<>();
     private double discountAmount;
     private double discountPercentage;
-    private String fromVersion;
+    private String toVersion;
     private String userId;
     private String bookingFormFlag;
     private String worksContractFlag;
@@ -30,12 +30,12 @@ public class ProductAndAddonSelection {
 
     public void setUserId(String userId) {this.userId = userId;}
 
-    public String getFromVersion() {
-        return fromVersion;
+    public String getToVersion() {
+        return toVersion;
     }
 
-    public void setFromVersion(String fromVersion) {
-        this.fromVersion = fromVersion;
+    public void setToVersion(String toVersion) {
+        this.toVersion = toVersion;
     }
 
     public int getProposalId() {
@@ -102,7 +102,7 @@ public class ProductAndAddonSelection {
                 ", addonIds=" + addonIds +
                 ", discountAmount=" + discountAmount +
                 ", discountPercentage=" + discountPercentage +
-                ", fromVersion='" + fromVersion + '\'' +
+                ", toVersion='" + toVersion + '\'' +
                 ", userId='" + userId + '\'' +
                 ", bookingFormFlag='" + bookingFormFlag + '\'' +
                 ", worksContractFlag='" + worksContractFlag + '\'' +

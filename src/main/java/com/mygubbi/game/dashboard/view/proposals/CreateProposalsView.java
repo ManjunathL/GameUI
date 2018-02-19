@@ -534,6 +534,7 @@ public class CreateProposalsView extends Panel implements View {
             if("Yes".equals(proposalHeader.getPackageFlag()))
             {
                 proposalHeaderNew.setPackageFlag(proposalHeader.getPackageFlag());
+                proposalHeaderNew.setPackageFlag("No");
                 proposalHeaderNew.setMaxDiscountPercentage(proposalHeader.getMaxDiscountPercentage());
                 proposalDataProvider.saveProposal(proposalHeaderNew);
             }
@@ -691,7 +692,7 @@ public class CreateProposalsView extends Panel implements View {
         scope_of_work_1.addStyleName(ValoTheme.BUTTON_PRIMARY);
         scope_of_work_1.setCaptionAsHtml(true);
         scope_of_work_1.setIcon(FontAwesome.BINOCULARS);
-        productAndAddonSelection.setFromVersion("0.0");
+        productAndAddonSelection.setToVersion("0.0");
 
 
 
@@ -759,7 +760,7 @@ public class CreateProposalsView extends Panel implements View {
 
                 }
                 NotificationUtil.showNotification("Generating the Scope of services sheet v2.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+                productAndAddonSelection.setToVersion(String.valueOf(versionToBeConsidered));
 
                 JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readonlyFlag);
                 LOG.debug("Quote file :" + quoteFile);
@@ -828,7 +829,7 @@ public class CreateProposalsView extends Panel implements View {
 
                 }
                 NotificationUtil.showNotification("Generating the Scope of services sheet v3.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
-                productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+                productAndAddonSelection.setToVersion(String.valueOf(versionToBeConsidered));
 
                 JSONObject quoteFile = proposalDataProvider.updateSowLineItems(proposalHeader.getId(),versionToBeConsidered,readonlyFlag);
                 LOG.debug("Quote file :" + quoteFile);
@@ -897,7 +898,7 @@ public class CreateProposalsView extends Panel implements View {
             }
         }
         LOG.debug("Version to be considered : " + versionToBeConsidered);
-        productAndAddonSelection.setFromVersion(String.valueOf(versionToBeConsidered));
+        productAndAddonSelection.setToVersion(String.valueOf(versionToBeConsidered));
 
         NotificationUtil.showNotification("Generating the Scope of services sheet v1.0",NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
 
@@ -958,7 +959,7 @@ public class CreateProposalsView extends Panel implements View {
                     return;
                 }
 
-                productAndAddonSelection.setFromVersion("3.0");
+                productAndAddonSelection.setToVersion("3.0");
 
                 NotificationUtil.showNotification("Generating the BOQ sheet", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
 
@@ -2159,7 +2160,7 @@ public class CreateProposalsView extends Panel implements View {
     private void packageselectionchanged(Property.ValueChangeEvent valueChangeEvent)
     {
         proposalHeader.setPackageFlag(valueChangeEvent.getProperty().getValue().toString());
-        proposalHeader.setAdminPackageFlag(valueChangeEvent.getProperty().getValue().toString());
+        /*proposalHeader.setAdminPackageFlag(valueChangeEvent.getProperty().getValue().toString());*/
     }
 
    /* private boolean validateAddonsAgainstSOW(int proposalId, String version)

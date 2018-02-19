@@ -174,7 +174,7 @@ public class ProductAndAddons extends Window
         this.proposal.setAddons(this.addons);
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
-        this.productAndAddonSelection.setFromVersion(this.proposalVersion.getVersion());
+        this.productAndAddonSelection.setToVersion(this.proposalVersion.getVersion());
         DashboardEventBus.register(this);
         setModal(true);
         setSizeFull();
@@ -2045,18 +2045,30 @@ public class ProductAndAddons extends Window
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
                 LocalDateTime localDate = LocalDateTime.now();
                 proposalVersion.setBusinessDate(dtf.format(localDate));
-                response = proposalDataProvider.publishVersionOverride(proposalVersion, proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getBusinessDate());
+
+
+                response = proposalDataProvider.publishVersionOverride(proposalVersion, proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getBusinessDate(),proposalVersion.getDiscountPercentage(),proposalVersion.getDiscountAmount(),proposalHeader.getPcity(),proposalHeader.getQuoteNoNew());
+                LOG.info("response " +response);
                 ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
                 proposalHeader.setStatus(proposalVersionLatest.getStatus());
                 proposalHeader.setVersion(proposalVersionLatest.getVersion());
                 proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
                 proposalDataProvider.saveProposal(proposalHeader);
 
+
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
-            proposalDataProvider.updateVersion(proposalVersion);
-            publishVersionMessage(response, proposalVersion.getProposalId(), proposalVersion.getVersion());
+            try
+            {
+                proposalDataProvider.updateVersion(proposalVersion);
+                publishVersionMessage(response, proposalVersion.getProposalId(), proposalVersion.getVersion(),response.getString("quoteFile"));
+            }
+            catch (Exception e)
+            {
+                LOG.info("exception  "+e);
+            }
+
 
         } else {
             NotificationUtil.showNotification("Discount should not exceed " + rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2123,10 +2135,11 @@ public class ProductAndAddons extends Window
         return sendToCRM;
     }
 
-    private SendToCRM updatePriceInCRMOnConfirm() {
+    private SendToCRM updatePriceInCRMOnConfirm(String quoteLink) {
         Double amount = 0.0;
         Double DSOAmount=0.0;
-        String quoteNumberCRM = "";
+        List<String> quoteNumberCRMList = new ArrayList<>();
+        /*String quoteNumberCRM="";*/
         SendToCRM sendToCRM = new SendToCRM();
         sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
         List<ProposalVersion> proposalVersionList = new ArrayList<>();
@@ -2144,6 +2157,7 @@ public class ProductAndAddons extends Window
                     proposalVersionList.add(version);
                 }
             }
+            LOG.info("list 1" +proposalVersionList.size() + "list 2 " +proposalVersionListDSO.size());
             if (proposalVersionList.size() != 0) {
                 Date date = proposalVersionList.get(0).getUpdatedOn();
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
@@ -2157,7 +2171,7 @@ public class ProductAndAddons extends Window
 
                 }
                 amount += proposalVersionTobeConsidered.getFinalAmount();
-                quoteNumberCRM += p.getQuoteNoNew();
+                quoteNumberCRMList.add(p.getQuoteNoNew());
             }
 
             if (proposalVersionListDSO.size() != 0) {
@@ -2171,19 +2185,29 @@ public class ProductAndAddons extends Window
                     }
                 }
                 DSOAmount += proposalVersionTobeConsidered.getFinalAmount();
-                quoteNumberCRM += p.getQuoteNoNew();
+                quoteNumberCRMList.add(p.getQuoteNoNew());
             }
         }
+        Set<String> s = new LinkedHashSet<String>(quoteNumberCRMList);
+        String quoteNumberCRM=StringUtils.join(s,",");
+        /*for(String s1:s)
+        {
+            quoteNumberCRM=quoteNumberCRM+s1+",";
+        }*/
+        LOG.info("quoteNumberCRM " +quoteNumberCRM);
         PublishOnCRM publishOnCRM = new PublishOnCRM(proposalHeader);
-        SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
+        SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish(quoteLink);
         sendToCRM.setEstimated_project_cost_c(sendToCRMOnPublish.getEstimated_project_cost_c());
         sendToCRM.setFinal_proposal_amount_c(DSOAmount);
         sendToCRM.setBooking_order_value_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
+        sendToCRM.setQuoteLink(quoteLink);
         return sendToCRM;
     }
 
     private void confirm(Button.ClickEvent clickEvent) {
+        LOG.info("Click event button" +clickEvent.getButton().getCaption() );
+
         if (proposalHeader.getMaxDiscountPercentage() >= Double.valueOf(discountPercentage.getValue())) {
             try {
                 binder.commit();
@@ -2216,11 +2240,25 @@ public class ProductAndAddons extends Window
                 proposalVersionCopy.setDeepClearingQty(proposalVersion.getDeepClearingQty());
                 proposalVersionCopy.setFloorProtectionSqft(proposalVersion.getFloorProtectionSqft());
                 proposalVersionCopy.setFloorProtectionAmount(proposalVersion.getFloorProtectionAmount());
-
+                if(clickEvent.getButton().getCaption().equals("Confirm"))
+                {
+                    proposalVersionCopy.setBookingFormFlag("Yes");
+                    proposalVersionCopy.setWorksContractFlag("No");
+                    proposalVersionCopy.setToVersion("1.0");
+                }
+                if(clickEvent.getButton().getCaption().equals("Design Sign off"))
+                {
+                    proposalVersionCopy.setBookingFormFlag("No");
+                    proposalVersionCopy.setWorksContractFlag("Yes");
+                    proposalVersionCopy.setToVersion("2.0");
+                }
+                proposalVersionCopy.setCity(proposalHeader.getPcity());
+                proposalVersionCopy.setQuoteNo(proposalHeader.getQuoteNoNew());
                 ProposalVersion proposalVersionResponse = proposalDataProvider.saveProposalOnConfirm(proposalVersionCopy);
+                LOG.info("product and addon version response " +proposalVersionResponse.isConfirmedStatus());
                 if (proposalVersionResponse.isConfirmedStatus()) {
                         proposalVersion = proposalVersionResponse;
-                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm();
+                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm(proposalVersionResponse.getQuoteFile());
                         proposalDataProvider.updateCrmPrice(sendToCRM);
                         ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
                         DashboardEventBus.post(event1);
@@ -2269,6 +2307,7 @@ public class ProductAndAddons extends Window
         double deepCleaningQty=Double.valueOf(DCCQTY.getValue());
         double floorProtectionQty=Double.valueOf(FPCQTY.getValue());
         double versionNum=Double.valueOf(proposalVersion.getVersion());
+
         if (proposalHeader.getMaxDiscountPercentage() >= Double.valueOf(discountPercentage.getValue())) {
             remarksTextArea.setValidationVisible(false);
             try {
@@ -2677,28 +2716,40 @@ public class ProductAndAddons extends Window
             addFromCatalogueButton.setEnabled(false);
             discountAmount.setReadOnly(true);
             discountPercentage.setReadOnly(true);
+            addonAddButton.setEnabled(false);
+            customAddonAddButton.setEnabled(false);
             PHCQTY.setReadOnly(true);
             FPCQTY.setReadOnly(true);
             DCCQTY.setReadOnly(true);
 
             String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-            if (Objects.equals(proposalHeader.getAdminPackageFlag(), "Yes") && !("admin").equals(role)) {
+            if (Objects.equals(proposalHeader.getAdminPackageFlag(), "Yes")) {
                 confirmButton.setEnabled(false);
                 submitButton.setEnabled(false);
                 designSignOffButton.setEnabled(false);
                 productionSignOffButton.setEnabled(false);
                 addonAddButton.setEnabled(false);
                 customAddonAddButton.setEnabled(false);
+                addKitchenOrWardrobeButton.setEnabled(false);
+                addFromProductLibrary.setEnabled(false);
+                addFromCatalogueButton.setEnabled(false);
+                addonAddButton.setEnabled(false);
+                customAddonAddButton.setEnabled(false);
             }
         }
     }
 
-    private void publishVersionMessage(JSONObject response, int proposalId, String version) {
+    private void publishVersionMessage(JSONObject response, int proposalId, String version,String quoteLink) {
+        LOG.info("response in publish version message " +response);
         try {
             if (response.getString("status").equalsIgnoreCase("success")) {
                 String disAmount = String.valueOf(discountAmount);
 
                 NotificationUtil.showNotification("Version published successfully", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+                /*String quotePdfpath = createQuoteResourcePdfForCRM();
+                LOG.info("quote pdf path " +quotePdfpath);
+                String filePath=proposalDataProvider.getQuotationLinkFromS3Bucket(quotePdfpath);
+                LOG.info("file path response " +filePath);*/
                 proposalVersion.setStatus(ProposalVersion.ProposalStage.Published.name());
                 proposalVersion.setInternalStatus(ProposalVersion.ProposalStage.Published.name());
                 proposalVersion.setAmount(Double.parseDouble(grandTotal.getValue()));
@@ -2713,9 +2764,37 @@ public class ProductAndAddons extends Window
                 /*if (!(proposalVersion.getVersion().startsWith("2.")))
                 {*/
                 PublishOnCRM publishOnCRM = new PublishOnCRM(proposalHeader);
-                SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish();
+                SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish(quoteLink);
                 proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
-                //}
+
+                /*EmailQuoteToLeadSquare emailQuoteToLeadSquare=new EmailQuoteToLeadSquare();
+                emailQuoteToLeadSquare.setSenderType("UserEmailAddress");
+                emailQuoteToLeadSquare.setSender("admin@mygubbi.com");
+                emailQuoteToLeadSquare.setRecipientType("LeadEmailAddress");
+                emailQuoteToLeadSquare.setRecipientEmailFields("");
+                emailQuoteToLeadSquare.setRecipient("shruthi.r@mygubbi.com");
+                emailQuoteToLeadSquare.setEmailType("Html");
+                emailQuoteToLeadSquare.setEmailLibraryName("");
+                emailQuoteToLeadSquare.setContentHTML("<h1>Welcome John</h1>");
+                emailQuoteToLeadSquare.setContentText("Welcome JOHN");
+                emailQuoteToLeadSquare.setSubject("Example Subject");
+                emailQuoteToLeadSquare.setIncludeEmailFooter("true");*/
+                /*JSONObject obj = new JSONObject();
+                obj.put("SenderType","UserEmailAddress");
+                obj.put("Sender","admin@mygubbi.com");
+                obj.put("RecipientType","LeadEmailAddress");
+                obj.put("RecipientEmailFields","");
+                obj.put("Recipient","shruthi.r@mygubbi.com");
+                obj.put("EmailType","Html");
+                obj.put("EmailLibraryName","");
+                obj.put("ContentHTML","<h1>This is the test Email </h1> <p>click the link <href>" +quoteLink +" </href></p>" );
+                obj.put("Subject","GAME Quote");
+                obj.put("IncludeEmailFooter","true");
+                obj.put("Schedule","");
+                obj.put("EmailCategory","");
+                obj.put("ContentText","GAME Quote");
+                proposalDataProvider.sendquoteLinkToLeadSquare(obj);
+*/                //}
 
                 DashboardEventBus.unregister(this);
                 close();
@@ -3015,6 +3094,28 @@ public class ProductAndAddons extends Window
             status="DP";
             updatePrice();
         }
+
+    }
+
+    private String createQuoteResourcePdfForCRM() {
+
+            productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
+            productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
+            productAndAddonSelection.setBookingFormFlag("No");
+            productAndAddonSelection.setWorksContractFlag("No");
+
+            if(proposalVersion.getVersion().startsWith("0.") || proposalVersion.getVersion().equals("1.0"))
+            {
+                productAndAddonSelection.setBookingFormFlag("Yes");
+            }
+            else
+            {
+                productAndAddonSelection.setWorksContractFlag("Yes");
+
+            }
+            productAndAddonSelection.setCity(proposalHeader.getPcity());
+            String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
+            return quoteFile;
 
     }
 }

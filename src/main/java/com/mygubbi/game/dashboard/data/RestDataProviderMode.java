@@ -1,6 +1,9 @@
 package com.mygubbi.game.dashboard.data;
 
 import com.mygubbi.game.dashboard.config.ConfigHolder;
+import jdk.nashorn.internal.runtime.logging.Loggable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
@@ -13,15 +16,13 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static us.monoid.web.Resty.content;
-import static us.monoid.web.Resty.data;
-import static us.monoid.web.Resty.form;
+import static us.monoid.web.Resty.*;
 
 /**
  * Created by nitinpuri on 05-04-2016.
  */
 public class RestDataProviderMode implements DataProviderMode {
-
+    private static final Logger LOG = LogManager.getLogger(RestDataProviderMode.class);
     private final Resty resty = new Resty();
 
     @Override
@@ -129,7 +130,45 @@ public class RestDataProviderMode implements DataProviderMode {
         return ConfigHolder.getInstance().getStringValue("restUrl", "");
     }
 
+    private String getBaseURLforLdSqr()
+    {
+        LOG.info("base url " +ConfigHolder.getInstance().getStringValue("baseLdSqrUrl", ""));
+        String baseLdSqrUrl = ConfigHolder.getInstance().getStringValue("baseLdSqrUrl", "") + "?accessKey=" + ConfigHolder.getInstance().getStringValue("ldSqrAccessKey", "") + "&secretKey=" + ConfigHolder.getInstance().getStringValue("ldSqrSecretKey", "");
+        return baseLdSqrUrl;
+    }
+
     private String queryParams(Map<String, String> params) {
         return params.entrySet().stream().map(entry -> (entry.getKey() + "=" + entry.getValue())).collect(Collectors.joining("&"));
+    }
+
+    @Override
+    public JSONObject postResourceWithUrlForLdSuare( JSONObject jsonParams) {
+        try
+        {
+            LOG.info("json paramater " +jsonParams);
+            //return new Resty().text(getBaseURLforLdSqr(),content(jsonParams)).toString();
+//
+            /*JSONObject obj = new JSONObject();
+            obj.put("SenderType","UserEmailAddress");
+            obj.put("Sender","admin@mygubbi.com");
+            obj.put("RecipientType","LeadEmailAddress");
+            obj.put("RecipientEmailFields","");
+            obj.put("Recipient","shruthi.r@mygubbi.com");
+            obj.put("EmailType","Html");
+            obj.put("EmailLibraryName","");
+            obj.put("ContentHTML","<h1>Welcome John</h1>");
+            obj.put("Subject","Example Subject");
+            obj.put("IncludeEmailFooter","true");
+            obj.put("Schedule","");
+            obj.put("EmailCategory","");
+            obj.put("ContentText","Welcome JOHN");*/
+           JSONResource resource =  new Resty().json(getBaseURLforLdSqr(),content(jsonParams));
+           return  resource.toObject(); }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException("Error querying - " + getBaseURLforLdSqr(), e);
+        }
+
     }
 }

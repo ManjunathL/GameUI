@@ -77,7 +77,7 @@ public class BoqPopupWindow extends Window {
         Button open_sheet = new Button();
         open_sheet.setCaption("Open Sheet");
         open_sheet.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        productAndAddonSelection.setFromVersion("2.0");
+        productAndAddonSelection.setToVersion("2.0");
 
         open_sheet.addClickListener(new Button.ClickListener() {
             @Override

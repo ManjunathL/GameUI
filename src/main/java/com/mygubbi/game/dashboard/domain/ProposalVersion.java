@@ -1,12 +1,15 @@
 package com.mygubbi.game.dashboard.domain;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Date;
 
 /**
  * Created by Chirag on 06-12-2016.
  */
 public class ProposalVersion implements Cloneable {
-
+    private static final Logger LOG = LogManager.getLogger(ProposalVersion.class);
     public enum ProposalStage {Draft, Published, Confirmed, Locked, DSO, PSO}
 
     public static final String VERSION = "version";
@@ -43,6 +46,12 @@ public class ProposalVersion implements Cloneable {
     public static final String DEEP_CLEARING_APPLIED="deepClearingChargesApplied";
     public static final String FLOOR_PROTECTION_APPLIED="floorProtectionChargesApplied";
     public static final String RESPONSE_MESSAGE="responseMessage";
+    public static final String BOOKINGFORM_FLAG="bookingFormFlag";
+    public static final String WORKSCONTTRACT_FLAG="worksContractFlag";
+    public static final String CITY="city";
+    public static final String TO_VERSION="toVersion";
+    public static final String QUOTE_FILE="quoteFile";
+    public static final String QUOTE_NO="quoteNo";
 
     private String version;
     private int proposalId;
@@ -79,6 +88,11 @@ public class ProposalVersion implements Cloneable {
     private double projectHandlingQty;
     private boolean confirmedStatus;
     private String responseMessage;
+    private String bookingFormFlag;
+    private String worksContractFlag;
+    private String city;
+    private String quoteFile;
+    private String quoteNo;
 
     @Override
     public Object clone()  {
@@ -109,6 +123,13 @@ public class ProposalVersion implements Cloneable {
         return result;
     }
 
+    public String getQuoteNo() {
+        return quoteNo;
+    }
+
+    public void setQuoteNo(String quoteNo) {
+        this.quoteNo = quoteNo;
+    }
 
     public String getVersion() {
         return version;
@@ -390,6 +411,39 @@ public class ProposalVersion implements Cloneable {
         this.responseMessage = sowResponseMessage;
     }
 
+    public String getBookingFormFlag() {
+        return bookingFormFlag;
+    }
+
+    public void setBookingFormFlag(String bookingFormFlag) {
+        this.bookingFormFlag = bookingFormFlag;
+    }
+
+    public String getWorksContractFlag() {
+        return worksContractFlag;
+    }
+
+    public void setWorksContractFlag(String worksContractFlag) {
+        this.worksContractFlag = worksContractFlag;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getQuoteFile()
+    {
+        return quoteFile;
+    }
+    public void setQuoteFile(String quoteFile)
+    {
+        this.quoteFile=quoteFile;
+    }
+
     @Override
     public String toString() {
         return "ProposalVersion{" +
@@ -428,6 +482,10 @@ public class ProposalVersion implements Cloneable {
                 ", projectHandlingQty=" + projectHandlingQty +
                 ", confirmedStatus=" + confirmedStatus +
                 ", responseMessage='" + responseMessage + '\'' +
+                ", bookingFormFlag='" + bookingFormFlag + '\'' +
+                ", worksContractFlag='" + worksContractFlag + '\'' +
+                ", city='" + city + '\'' +
+                ", quoteFile='" + quoteFile + '\'' +
                 '}';
     }
 }

@@ -9,10 +9,12 @@ public class SendToCRMOnPublish {
     public static final String CRM_ID= "opportunity_name";
     public static final String ESTIMATED_PROJECT_COST = "estimated_project_cost_c";
     public static final String QUOTE_NO = "quotation_number_c";
+    public static final String QUOTE_LINK = "quotelink";
 
     private String opportunity_name;
     private double estimated_project_cost_c;
     private String quotation_number_c;
+    private String quotelink;
 
     public String getOpportunity_name() {
         return opportunity_name;
@@ -38,13 +40,21 @@ public class SendToCRMOnPublish {
         this.quotation_number_c = quotation_number_c;
     }
 
+    public String getQuotelink() {
+        return quotelink;
+    }
+
+    public void setQuotelink(String quotelink) {
+        this.quotelink = quotelink;
+    }
 
     @Override
     public String toString() {
-        return "SendToCRM{" +
+        return "SendToCRMOnPublish{" +
                 "opportunity_name='" + opportunity_name + '\'' +
                 ", estimated_project_cost_c=" + estimated_project_cost_c +
                 ", quotation_number_c='" + quotation_number_c + '\'' +
+                ", quotelink='" + quotelink + '\'' +
                 '}';
     }
 }

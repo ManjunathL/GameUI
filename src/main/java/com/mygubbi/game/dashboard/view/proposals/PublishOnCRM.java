@@ -25,7 +25,7 @@ public class PublishOnCRM
     {
         this.proposalHeader=proposalHeader;
     }
-    public SendToCRMOnPublish updatePriceInCRMOnPublish() {
+    public SendToCRMOnPublish updatePriceInCRMOnPublish(String quoteLink) {
         Double amount=0.0;
         String quoteNumberCRM="";
         SendToCRMOnPublish sendToCRM = new SendToCRMOnPublish();
@@ -81,6 +81,7 @@ public class PublishOnCRM
         }
         sendToCRM.setEstimated_project_cost_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
+        sendToCRM.setQuotelink(quoteLink);
         LOG.info("CRM JSON ON PUBLISH " +sendToCRM.toString());
         return sendToCRM;
     }

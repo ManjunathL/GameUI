@@ -50,7 +50,7 @@ public class Download_quotation extends Window
         this.proposal.setAddons(this.addons);
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
-        this.productAndAddonSelection.setFromVersion(this.proposalVersion.getVersion());
+        this.productAndAddonSelection.setToVersion(this.proposalVersion.getVersion());
         this.productAndAddonSelection.setCity(proposalHeader.getPcity());
         DashboardEventBus.register(this);
         setModal(true);
@@ -253,26 +253,10 @@ public class Download_quotation extends Window
     private InputStream getInputStreamPdfWoBookingForm() {
         productAndAddonSelection.setDiscountPercentage(proposalVersion.getDiscountPercentage());
         productAndAddonSelection.setDiscountAmount(proposalVersion.getDiscountAmount());
-        /*if(proposalVersion.getVersion().startsWith("0.") || proposalVersion.getVersion().equals("1.0"))
-        {
-        */    productAndAddonSelection.setBookingFormFlag("No");
+        productAndAddonSelection.setBookingFormFlag("No");
         productAndAddonSelection.setWorksContractFlag("No");
-        /*}
-        else
-        {
-            productAndAddonSelection.setBookingFormFlag("Yes");
-        }*/
-        /*if(!(proposalVersion.getVersion().equals("1.0")) && (proposalVersion.getVersion().startsWith("1.") || proposalVersion.getVersion().equals("2.0")))
-        {
-            productAndAddonSelection.setWorksContractFlag("No");
-        }
-        else
-        {
-            productAndAddonSelection.setWorksContractFlag("Yes");
-        }*/
         productAndAddonSelection.setCity(proposalHeader.getPcity());
         String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
-
         InputStream input = null;
         try {
             input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));

@@ -1449,13 +1449,17 @@ public class CustomizedProductDetailsWindow extends Window {
                     Notification.show("Cannot copy on Published, Confirmed amd Locked versions");
                     return;
                 }
-
-                if(("Yes").equals(proposalHeader.getPackageFlag()))
+                String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
+                if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
                 {
-                    Notification.show("Cannot copy modules");
+                    Notification.show("Cannot copy the modules");
                     return;
                 }
-
+                if(Objects.equals(proposalHeader.getPackageFlag(),"Yes") && !("admin").equals(role))
+                {
+                    Notification.show("Cannot delete modules");
+                    return;
+                }
                 if(viewOnlyValue.equals("Yes"))
                 {
                     Notification.show("Cannot copy module");
@@ -1577,7 +1581,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     return;
                 }
                 String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
-                if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role) )
+                if(Objects.equals(proposalHeader.getAdminPackageFlag(),"Yes") && !("admin").equals(role))
                 {
                     Notification.show("Cannot delete modules");
                     return;
@@ -2107,7 +2111,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(proposalVersion.getProposalId());
         this.productAndAddonSelection.getProductIds().add(product.getId());
-        this.productAndAddonSelection.setFromVersion(proposalVersion.getVersion());
+        this.productAndAddonSelection.setToVersion(proposalVersion.getVersion());
     }
 
     public static void closeWindow() {

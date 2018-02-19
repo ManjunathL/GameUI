@@ -72,4 +72,8 @@ public class FileDataProviderMode implements DataProviderMode {
         return urlFrag.replaceAll("/", "_");
     }
 
+    @Override
+    public JSONObject postResourceWithUrlForLdSuare( JSONObject json) {
+        return null;
+    }
 }

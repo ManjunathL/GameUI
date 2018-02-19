@@ -395,7 +395,7 @@ public class ProposalDataProvider {
             String versionJson = this.mapper.writeValueAsString(proposalVersion);
             JSONObject jsonObject = dataProviderMode.postResource("proposal/updateonconfirm", versionJson);
             return this.mapper.readValue(jsonObject.toString(), ProposalVersion.class);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -406,8 +406,18 @@ public class ProposalDataProvider {
         return jsonObject;
     }
 
-    public JSONObject publishVersionOverride(ProposalVersion proposalVersion, String version, int proposalId, String date) {
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publishoverride", "{\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"businessDate\": " + "\"" + date + "\"" + "}");
+    public JSONObject publishVersionOverride(ProposalVersion proposalVersion, String version, int proposalId, String date,double discountPercentage,double discountAmount,String pcity,String QuoteNo) {
+        String bookingFormFlag,worksContractFlag;
+        if(version.startsWith("0."))
+        {
+            bookingFormFlag="Yes";
+            worksContractFlag="No";
+        }else
+        {
+            bookingFormFlag="No";
+            worksContractFlag="Yes";
+        }
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publishoverride", "{\"toVersion\": " +"\"" + version + "\""+ "," + "\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"businessDate\": " + "\"" + date + "\"" + ","+  "\"discountPercentage\": "  +discountPercentage + "," + "\"discountAmount\" :" + discountAmount +"," +"\"worksContractFlag\" : " +"\"" +worksContractFlag + "\""+ "," + "\"bookingFormFlag\" :" +"\"" + bookingFormFlag + "\"" + ","+  "\"city\" :" +"\""  +pcity+ "\"" + ","+ "\"quoteNo\" :" +"\"" + QuoteNo + "\"" + "}");
         return jsonObject;
     }
 
@@ -1838,6 +1848,7 @@ public class ProposalDataProvider {
 
     public boolean updateCrmPriceOnPublish(SendToCRMOnPublish sendToCRM)
     {
+        LOG.info("update price in crm on publish " +sendToCRM.toString());
         try {
             /*String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
           //  String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
@@ -1858,7 +1869,20 @@ public class ProposalDataProvider {
             return false;
         }
     }
-
+    public JSONObject sendquoteLinkToLeadSquare(JSONObject emailQuoteToLeadSquare)
+    {
+        LOG.info("Email quote to lead square " +emailQuoteToLeadSquare);
+        try {
+            JSONObject jsonObject = dataProviderMode.postResourceWithUrlForLdSuare(emailQuoteToLeadSquare);
+            LOG.info("Json object in email quote to lead " +jsonObject.toString());
+            return jsonObject;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException("error in send email link to lead square", e);
+        }
+    }
     public static void main(String[] args)
     {
         ProposalDataProvider proposalDataProvider = new ProposalDataProvider(new RestDataProviderMode());
@@ -2493,6 +2517,20 @@ public class ProposalDataProvider {
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+    public String getQuotationLinkFromS3Bucket(String quotePath) {
+        JSONArray jsonArray = dataProviderMode.getResourceArray("fileupload", new HashMap<String, String>() {
+            {
+                put("quotePath",quotePath);
+            }
+        });
+        try {
+            return this.mapper.readValue(jsonArray.toString(), new TypeReference<List<UserProfile>>() {
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

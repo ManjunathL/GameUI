@@ -27,5 +27,7 @@ public interface DataProviderMode {
 
     JSONArray postResourceGetMultiple(String urlFrag, String jsonParams);
 
+    JSONObject postResourceWithUrlForLdSuare(JSONObject json);
+
 
 }

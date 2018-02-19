@@ -9,5 +9,9 @@
   "dataProviderMode": "com.mygubbi.game.dashboard.data.RestDataProviderMode",
   "crmUrl": "http://52.66.176.254/mygubbi_crm/service/v4_1/rest.php?method=__METHOD__&input_type=json&response_type=json&rest_data=",
   "useCrmAuth": "false",
-  "baseCrmUrl":"https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php"
+  "baseCrmUrl":"https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php",
+  "baseLdSqrUrl":"https://api.leadsquared.com/v2/EmailMarketing.svc/SendEmailToLead",
+  "ldSqrAccessKey":"u$r1c221f1db494ffe457d25c16814685ce",
+  "ldSqrSecretKey":"894f1e8cbdc36c967504b9dc912905f1fc77c012",
+  "SenderEmail":"admin@mygubbi.com"
 }
