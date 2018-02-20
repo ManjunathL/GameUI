@@ -14,6 +14,8 @@ public class SendToCRM {
     public static final String QUOTE_NO = "quotation_number_c";
     public static final String BOOKING_ORDER_VALUE="booking_order_value_c";
     public static final String QUOTE_LINK="quoteLink";
+    public static final String DESIGNER_NAME = "designer_name";
+    public static final String DESIGNER_EMAIL = "designer_email";
 
     private String opportunity_name;
     private double final_proposal_amount_c;
@@ -21,6 +23,8 @@ public class SendToCRM {
     private String quotation_number_c;
     private double booking_order_value_c;
     private String quoteLink;
+    private String designer_name;
+    private String designer_email;
 
     public String getOpportunity_name() {
         return opportunity_name;
@@ -70,6 +74,22 @@ public class SendToCRM {
         this.quoteLink = quoteLink;
     }
 
+    public String getDesigner_name() {
+        return designer_name;
+    }
+
+    public void setDesigner_name(String designer_name) {
+        this.designer_name = designer_name;
+    }
+
+    public String getDesigner_email() {
+        return designer_email;
+    }
+
+    public void setDesigner_email(String designer_email) {
+        this.designer_email = designer_email;
+    }
+
     @Override
     public String toString() {
         return "SendToCRM{" +
@@ -79,6 +99,8 @@ public class SendToCRM {
                 ", quotation_number_c='" + quotation_number_c + '\'' +
                 ", booking_order_value_c=" + booking_order_value_c +
                 ", quoteLink='" + quoteLink + '\'' +
+                ", designer_name='" + designer_name + '\'' +
+                ", designer_email='" + designer_email + '\'' +
                 '}';
     }
 }

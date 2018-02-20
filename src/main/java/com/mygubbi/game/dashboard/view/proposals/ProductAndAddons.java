@@ -2202,6 +2202,8 @@ public class ProductAndAddons extends Window
         sendToCRM.setBooking_order_value_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
         sendToCRM.setQuoteLink(quoteLink);
+        sendToCRM.setDesigner_email(proposalHeader.getDesignerEmail());
+        sendToCRM.setDesigner_name(proposalHeader.getDesignerName());
         return sendToCRM;
     }
 
