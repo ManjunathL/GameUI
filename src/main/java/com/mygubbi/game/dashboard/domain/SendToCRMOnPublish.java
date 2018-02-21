@@ -9,16 +9,16 @@ public class SendToCRMOnPublish {
     public static final String CRM_ID= "opportunity_name";
     public static final String ESTIMATED_PROJECT_COST = "estimated_project_cost_c";
     public static final String QUOTE_NO = "quotation_number_c";
-    public static final String QUOTE_LINK = "quotelink";
-    public static final String DESIGNER_NAME = "designer_name";
-    public static final String DESIGNER_EMAIL = "designer_email";
+    public static final String PROPOSAL_LINK_C="proposal_link_c";
+    public static final String PRESALES_USER_EMAIL="presales_user_email";
+
 
     private String opportunity_name;
     private double estimated_project_cost_c;
     private String quotation_number_c;
-    private String quotelink;
-    private String designer_name;
-    private String designer_email;
+    private String proposal_link_c;
+    private String presales_user_email;
+
 
     public String getOpportunity_name() {
         return opportunity_name;
@@ -44,28 +44,20 @@ public class SendToCRMOnPublish {
         this.quotation_number_c = quotation_number_c;
     }
 
-    public String getQuotelink() {
-        return quotelink;
+    public String getProposal_link_c() {
+        return proposal_link_c;
     }
 
-    public void setQuotelink(String quotelink) {
-        this.quotelink = quotelink;
+    public void setProposal_link_c(String proposal_link_c) {
+        this.proposal_link_c = proposal_link_c;
     }
 
-    public String getDesigner_name() {
-        return designer_name;
+    public String getPresales_user_email() {
+        return presales_user_email;
     }
 
-    public void setDesigner_name(String designer_name) {
-        this.designer_name = designer_name;
-    }
-
-    public String getDesigner_email() {
-        return designer_email;
-    }
-
-    public void setDesigner_email(String designer_email) {
-        this.designer_email = designer_email;
+    public void setPresales_user_email(String presales_user_email) {
+        this.presales_user_email = presales_user_email;
     }
 
     @Override
@@ -74,9 +66,8 @@ public class SendToCRMOnPublish {
                 "opportunity_name='" + opportunity_name + '\'' +
                 ", estimated_project_cost_c=" + estimated_project_cost_c +
                 ", quotation_number_c='" + quotation_number_c + '\'' +
-                ", quotelink='" + quotelink + '\'' +
-                ", designer_name='" + designer_name + '\'' +
-                ", designer_email='" + designer_email + '\'' +
+                ", proposal_link_c='" + proposal_link_c + '\'' +
+                ", presales_user_email='" + presales_user_email + '\'' +
                 '}';
     }
 }

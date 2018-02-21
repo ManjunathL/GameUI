@@ -81,9 +81,8 @@ public class PublishOnCRM
         }
         sendToCRM.setEstimated_project_cost_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
-        sendToCRM.setQuotelink(quoteLink);
-        sendToCRM.setDesigner_name(proposalHeader.getDesignerName());
-        sendToCRM.setDesigner_email(proposalHeader.getDesignerEmail());
+        sendToCRM.setProposal_link_c(quoteLink);
+        sendToCRM.setPresales_user_email(proposalHeader.getDesignerEmail());
         LOG.info("CRM JSON ON PUBLISH " +sendToCRM.toString());
         return sendToCRM;
     }

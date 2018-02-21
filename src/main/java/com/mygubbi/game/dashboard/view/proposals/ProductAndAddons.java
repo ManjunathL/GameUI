@@ -2201,9 +2201,8 @@ public class ProductAndAddons extends Window
         sendToCRM.setFinal_proposal_amount_c(DSOAmount);
         sendToCRM.setBooking_order_value_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
-        sendToCRM.setQuoteLink(quoteLink);
-        sendToCRM.setDesigner_email(proposalHeader.getDesignerEmail());
-        sendToCRM.setDesigner_name(proposalHeader.getDesignerName());
+        sendToCRM.setProposal_link_c(quoteLink);
+        sendToCRM.setPresales_user_email(proposalHeader.getDesignerEmail());
         return sendToCRM;
     }
 
@@ -2767,7 +2766,7 @@ public class ProductAndAddons extends Window
                 {*/
                 PublishOnCRM publishOnCRM = new PublishOnCRM(proposalHeader);
                 SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish(quoteLink);
-                proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
+                Boolean responseFromCRM=proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
 
                 /*EmailQuoteToLeadSquare emailQuoteToLeadSquare=new EmailQuoteToLeadSquare();
                 emailQuoteToLeadSquare.setSenderType("UserEmailAddress");
