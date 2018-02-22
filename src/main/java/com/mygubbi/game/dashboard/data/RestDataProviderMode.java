@@ -88,7 +88,7 @@ public class RestDataProviderMode implements DataProviderMode {
 
         try {
 
-            return new Resty().json(url, form(data("opportunity_name", opportunity_name), data("estimated_project_cost_c", estimated_project_cost_c), data("quotation_number_c", quotation_number_c)));
+            return new Resty().json(url, form(data("opportunity_name", opportunity_name), data("estimated_project_cost_c", estimated_project_cost_c), data("quotation_number_c", quotation_number_c),data("proposal_link_c",proposal_link_c),data("presales_user_email",presales_user_email)));
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Error querying - " + url, e);
