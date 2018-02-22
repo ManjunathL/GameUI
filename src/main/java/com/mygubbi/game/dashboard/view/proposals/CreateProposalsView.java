@@ -465,6 +465,7 @@ public class CreateProposalsView extends Panel implements View {
                 proposalDataProvider.createProposalVersion(copyVersion);
                 proposalDataProvider.createNewProduct(copyVersion);
                 proposalDataProvider.createNewAddons(copyVersion);
+                copyVersion.setEventAddStatus(true);
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(copyVersion));
                 ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(proposalHeader.getId());
                     proposalHeader.setStatus(proposalVersionLatest.getStatus());
@@ -2067,12 +2068,12 @@ public class CreateProposalsView extends Panel implements View {
     @Subscribe
     public void versionCreated(final ProposalEvent.VersionCreated event) {
         List<ProposalVersion> proposalVersionList = proposalDataProvider.getProposalVersions(this.proposalHeader.getId());
-        for (ProposalVersion proposalVersionTest : proposalVersionList) {
-            LOG.debug("proposal Version list : " + proposalVersionTest.toString());
-        }
         proposalVersionList.remove(event.getProposalVersion());
         versionContainer.removeAllItems();
-        proposalVersionList.add(event.getProposalVersion());
+        if (event.getProposalVersion().isEventAddStatus())
+        {
+            proposalVersionList.add(event.getProposalVersion());
+        }
         refreshVersionsGrid(proposalVersionList);
 
     }

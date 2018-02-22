@@ -2261,6 +2261,7 @@ public class ProductAndAddons extends Window
                         proposalVersion = proposalVersionResponse;
                         SendToCRM sendToCRM = updatePriceInCRMOnConfirm(proposalVersionResponse.getQuoteFile());
                         proposalDataProvider.updateCrmPrice(sendToCRM);
+                        proposalVersion.setEventAddStatus(false);
                         ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
                         DashboardEventBus.post(event1);
                         close();
@@ -2404,6 +2405,7 @@ public class ProductAndAddons extends Window
 
             proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+            proposalVersion.setEventAddStatus(true);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
             close();
         } catch (Exception e) {
@@ -2425,6 +2427,7 @@ public class ProductAndAddons extends Window
 
             proposalVersion = proposalDataProvider.updateVersion(proposalVersion);
             NotificationUtil.showNotification("Saved successfully!", NotificationUtil.STYLE_BAR_SUCCESS_SMALL);
+            proposalVersion.setEventAddStatus(true);
             DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
         } catch (Exception e) {
             NotificationUtil.showNotification("Couldn't Save Proposal! Please contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -2760,6 +2763,7 @@ public class ProductAndAddons extends Window
                // proposalVersion.setRemarks(remarksTextArea.getValue());
                 proposalVersion.setTitle(ttitle.getValue());
                 proposalDataProvider.updateVersion(proposalVersion);
+                proposalVersion.setEventAddStatus(true);
 
                 DashboardEventBus.post(new ProposalEvent.VersionCreated(proposalVersion));
                 /*if (!(proposalVersion.getVersion().startsWith("2.")))

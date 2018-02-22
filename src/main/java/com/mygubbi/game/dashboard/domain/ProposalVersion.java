@@ -93,6 +93,7 @@ public class ProposalVersion implements Cloneable {
     private String city;
     private String quoteFile;
     private String quoteNo;
+    private boolean eventAddStatus;
 
     @Override
     public Object clone()  {
@@ -121,6 +122,14 @@ public class ProposalVersion implements Cloneable {
         int result = version.hashCode();
         result = 31 * result + proposalId;
         return result;
+    }
+
+    public boolean isEventAddStatus() {
+        return eventAddStatus;
+    }
+
+    public void setEventAddStatus(boolean eventAddStatus) {
+        this.eventAddStatus = eventAddStatus;
     }
 
     public String getQuoteNo() {
