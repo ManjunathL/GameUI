@@ -6,12 +6,11 @@ import com.mygubbi.game.dashboard.domain.ProposalHeader;
 import com.mygubbi.game.dashboard.domain.ProposalVersion;
 import com.mygubbi.game.dashboard.domain.SendToCRM;
 import com.mygubbi.game.dashboard.domain.SendToCRMOnPublish;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Shruthi on 7/24/2017.
@@ -27,12 +26,12 @@ public class PublishOnCRM
     }
     public SendToCRMOnPublish updatePriceInCRMOnPublish(String quoteLink) {
         Double amount=0.0;
-        String quoteNumberCRM="";
         SendToCRMOnPublish sendToCRM = new SendToCRMOnPublish();
         sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
         List<ProposalHeader> proposalHeaders=proposalDataProvider.getProposalHeadersByCrmIds(proposalHeader.getCrmId());
         List<ProposalVersion> proposalVersionList= new ArrayList<>();
         List<ProposalVersion> proposalVersionList1=new ArrayList<>();
+        List<String> quoteNumberCRMList = new ArrayList<>();
         for(ProposalHeader p:proposalHeaders)
         {
             proposalVersionList= new ArrayList<>();
@@ -76,9 +75,12 @@ public class PublishOnCRM
 
                 }
                 amount+=proposalVersionTobeConsidered.getFinalAmount();
-                quoteNumberCRM+=p.getQuoteNoNew();
+                quoteNumberCRMList.add(p.getQuoteNoNew());
+                /*quoteNumberCRM+=p.getQuoteNoNew();*/
             }
         }
+        Set<String> s = new LinkedHashSet<String>(quoteNumberCRMList);
+        String quoteNumberCRM= StringUtils.join(s,",");
         sendToCRM.setEstimated_project_cost_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
         sendToCRM.setProposal_link_c(quoteLink);
