@@ -1957,7 +1957,7 @@ public class CreateProposalsView extends Panel implements View {
 
     private void cityChanged(Property.ValueChangeEvent valueChangeEvent) {
         //LOG.info("City changed ");
-        getQuoteNum(false);
+//        getQuoteNum(false);
         //proposalHeader.setQuoteNoNew(QuoteNumNew);
         //         quotenew.setValue(QuoteNumNew);
     }
