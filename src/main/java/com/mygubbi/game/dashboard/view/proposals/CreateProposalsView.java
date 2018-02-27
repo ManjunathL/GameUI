@@ -535,7 +535,7 @@ public class CreateProposalsView extends Panel implements View {
             if("Yes".equals(proposalHeader.getPackageFlag()))
             {
                 proposalHeaderNew.setPackageFlag(proposalHeader.getPackageFlag());
-                proposalHeaderNew.setPackageFlag("No");
+                /*proposalHeaderNew.setPackageFlag("No");*/
                 proposalHeaderNew.setMaxDiscountPercentage(proposalHeader.getMaxDiscountPercentage());
                 proposalDataProvider.saveProposal(proposalHeaderNew);
             }
