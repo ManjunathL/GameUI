@@ -388,6 +388,20 @@ public class ProposalDataProvider {
         }
     }
 
+    public boolean getQuotationNumber(ProposalHeader proposalHeader)
+    {
+        try {
+
+            proposalHeader.setUpdatedBy(getUserId());
+            String proposalJson = this.mapper.writeValueAsString(proposalHeader);
+            JSONObject jsonObject = dataProviderMode.postResource("proposal/createQuoteNumber", proposalJson);
+            return !jsonObject.has("error");
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Couldn't save proposal", e);
+        }
+
+    }
     public ProposalVersion saveProposalOnConfirm(ProposalVersion proposalVersion) {
 
         try {

@@ -1185,6 +1185,25 @@ public class CreateProposalsView extends Panel implements View {
 
     private void save(Button.ClickEvent clickEvent) {
 
+        try {
+            binder.commit();
+            if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
+            {
+                LOG.info("proposal header city " +proposalHeader.getPcity());
+                proposalDataProvider.getQuotationNumber(this.proposalHeader);
+                List<ProposalCity> proposalCities=proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
+                for(ProposalCity proposalCity:proposalCities)
+                {
+                    LOG.info("quote number after save method " +proposalCity.getQuoteNo());
+                    proposalHeader.setQuoteNoNew(proposalCity.getQuoteNo());
+                    quotenew.setValue(proposalHeader.getQuoteNoNew());
+                }
+            }
+        } catch (FieldGroup.CommitException e) {
+            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
+
         if(Objects.equals(proposalHeader.getOfferType(),""))
         {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
@@ -1195,8 +1214,6 @@ public class CreateProposalsView extends Panel implements View {
             NotificationUtil.showNotification("# of days for Works completion should be minimum of "+MIN_WORK_COMPLETION_DAYS+" days.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
-        LOG.debug("Proposal Header inside save :" + this.proposalHeader.toString());
-
 
         List<Product> products = proposalDataProvider.getProposalProducts(proposalHeader.getId());
         if ((Objects.equals(proposalHeader.getQuoteNoNew(), "") || proposalHeader.getQuoteNoNew() == null || proposalHeader.getQuoteNoNew().isEmpty()) && !((products.size() == 0)))
@@ -1219,12 +1236,12 @@ public class CreateProposalsView extends Panel implements View {
             this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
 
-            checkQuoteNoNew();
-            this.proposalHeader.setQuoteNoNew(QuoteNumNew);
+            /*checkQuoteNoNew();
+            this.proposalHeader.setQuoteNoNew(QuoteNumNew);*/
             boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
-           // LOG.debug("This proposal header 2" + this.proposalHeader);
+            LOG.debug("This proposal header 2" + this.proposalHeader);
 
-            try {
+            /*try {
 
                 List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
                 if (!(insertCity.size() >= 1)) {
@@ -1242,7 +1259,7 @@ public class CreateProposalsView extends Panel implements View {
                 }
             } catch (Exception e) {
                 LOG.info(e);
-            }
+            }*/
 
             setMaxDiscountPercentange();
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
@@ -1273,8 +1290,8 @@ public class CreateProposalsView extends Panel implements View {
         }
         else {
 
-            /*LOG.debug("Inside else save");
-            LOG.debug("This proposal header 1" + this.proposalHeader);*/
+            LOG.debug("Inside else save");
+            LOG.debug("This proposal header 1" + this.proposalHeader);
 
             if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
                 this.proposalHeader.setTitle(NEW_TITLE);
@@ -1291,10 +1308,10 @@ public class CreateProposalsView extends Panel implements View {
             this.proposalHeader.setAmount(proposalVersionLatest.getFinalAmount());
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
 
-            checkQuoteNoNew();
-            this.proposalHeader.setQuoteNoNew(QuoteNumNew);
+           /* checkQuoteNoNew();
+            this.proposalHeader.setQuoteNoNew(QuoteNumNew);*/
 
-            try {
+            /*try {
 
                 List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
                 if (!(insertCity.size() >= 1)) {
@@ -1314,12 +1331,11 @@ public class CreateProposalsView extends Panel implements View {
                 }
             } catch (Exception e) {
                 LOG.info(e);
-            }
+            }*/
 
             setMaxDiscountPercentange();
             this.proposalHeader.setMaxDiscountPercentage(Double.valueOf(maxDiscountPercentage.getValue()));
             boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
-
 
             /*LOG.debug("Inside else save");
             LOG.debug("This proposal header 2" + this.proposalHeader);*/
@@ -1371,6 +1387,23 @@ public class CreateProposalsView extends Panel implements View {
             return;
         }*/
 
+        try {
+            binder.commit();
+            if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
+            {
+                proposalDataProvider.getQuotationNumber(this.proposalHeader);
+                List<ProposalCity> proposalCities=proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
+                for(ProposalCity proposalCity:proposalCities)
+                {
+                    proposalHeader.setQuoteNoNew(proposalCity.getQuoteNo());
+                    quotenew.setValue(proposalHeader.getQuoteNoNew());
+                }
+            }
+        } catch (FieldGroup.CommitException e) {
+            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            return;
+        }
+
         if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
             this.proposalHeader.setTitle(NEW_TITLE);
         }
@@ -1386,7 +1419,7 @@ public class CreateProposalsView extends Panel implements View {
         this.proposalHeader.setVersion(proposalVersionLatest.getVersion());
 
 
-        try {
+        /*try {
 
             List<ProposalCity> insertCity = proposalDataProvider.getCityDataTest(this.proposalHeader.getId());
             if (!(insertCity.size() >= 1)) {
@@ -1404,7 +1437,7 @@ public class CreateProposalsView extends Panel implements View {
             }
         } catch (Exception e) {
             LOG.info(e);
-        }
+        }*/
         boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
         cancelButton.setVisible(false);
         DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(false));
@@ -1956,7 +1989,8 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void cityChanged(Property.ValueChangeEvent valueChangeEvent) {
-        //LOG.info("City changed ");
+        LOG.info("City changed ");
+        proposalHeader.setPcity(valueChangeEvent.getProperty().getValue().toString());
 //        getQuoteNum(false);
         //proposalHeader.setQuoteNoNew(QuoteNumNew);
         //         quotenew.setValue(QuoteNumNew);
@@ -1984,7 +2018,7 @@ public class CreateProposalsView extends Panel implements View {
 
         int value = 0;
         List<ProposalCity> count = proposalDataProvider.getMonthCount(month, cityCode);
-        //LOG.info("Count size " +count.size());
+        LOG.info("Count size " +count.size());
         value = count.size();
 
         if (override==true)
@@ -1993,16 +2027,19 @@ public class CreateProposalsView extends Panel implements View {
         }
         String valueStr = null;
         valueStr = String.format("%04d", value + 2);
-
+        LOG.debug("Count size after override method : " + value);
+        LOG.debug("Vlaue STR : " + valueStr);
         String date = new SimpleDateFormat("yyyy-MM").format(new Date());
         String s = cityCode + "-" + date + "-" + valueStr;
         for(ProposalCity proposalCity : count)
         {
             if (Objects.equals(proposalCity.getQuoteNo(), s)){
                 valueStr = String.format("%04d", value + 2);
+                LOG.debug("Vlaue STR inside: " + valueStr);
                 s = cityCode + "-" + date + "-" + valueStr;
             }
         }
+        LOG.debug("S : " + s);
         QuoteNumNew = s;
     }
 
