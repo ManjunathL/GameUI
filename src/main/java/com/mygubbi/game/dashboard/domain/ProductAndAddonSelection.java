@@ -17,6 +17,7 @@ public class ProductAndAddonSelection {
     private String bookingFormFlag;
     private String worksContractFlag;
     private String city;
+    private String status;
 
     public String getBookingFormFlag() {
         return bookingFormFlag;
@@ -92,6 +93,14 @@ public class ProductAndAddonSelection {
 
     public void setWorksContractFlag(String worksContractFlag) {
         this.worksContractFlag = worksContractFlag;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
