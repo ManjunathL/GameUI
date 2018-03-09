@@ -1724,7 +1724,7 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private ComboBox getSalesPersonCombo() {
-        List<User> list = proposalDataProvider.getSalesUsers();
+        List<User> list = proposalDataProvider.getSalesAndDesigner();
         final BeanContainer<String, User> container =
                 new BeanContainer<>(User.class);
         container.setBeanIdProperty(User.NAME);
@@ -1804,7 +1804,8 @@ public class CreateProposalsView extends Panel implements View {
         return select;
     }
     private ComboBox getDesignPersonCombo() {
-        List<User> list = proposalDataProvider.getDesignerUsers();
+        //List<User> list = proposalDataProvider.getDesignerUsers();
+        List<User> list = proposalDataProvider.getSalesAndDesigner();
         final BeanContainer<String, User> container =
                 new BeanContainer<>(User.class);
         container.setBeanIdProperty(User.NAME);

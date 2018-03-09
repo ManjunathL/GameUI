@@ -610,6 +610,22 @@ public class ProposalDataProvider {
 
     }
 
+    public List<User> getSalesAndDesigner() {
+        JSONArray array = dataProviderMode.getResourceArray("user/listsalesanddesign", new HashMap<String, String>() {
+            {
+
+            }
+        });
+        try {
+            User[] items = this.mapper.readValue(array.toString(), User[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            NotificationUtil.showNotification("Lookup failed from Server, contact GAME Admin.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public List<CatalogueProductCategory> getCatalogueProductCategories() {
         JSONArray array = dataProviderMode.getResourceArray("categories", new HashMap<>());
         try {
