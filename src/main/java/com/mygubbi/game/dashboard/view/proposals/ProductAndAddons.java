@@ -2255,6 +2255,7 @@ public class ProductAndAddons extends Window
                 }
                 proposalVersionCopy.setCity(proposalHeader.getPcity());
                 proposalVersionCopy.setQuoteNo(proposalHeader.getQuoteNoNew());
+                proposalVersionCopy.setCrmId(proposalHeader.getCrmId());
                 ProposalVersion proposalVersionResponse = proposalDataProvider.saveProposalOnConfirm(proposalVersionCopy);
                 LOG.info("product and addon version response " +proposalVersionResponse.isConfirmedStatus());
                 if (proposalVersionResponse.isConfirmedStatus()) {

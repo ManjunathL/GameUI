@@ -52,6 +52,7 @@ public class ProposalVersion implements Cloneable {
     public static final String TO_VERSION="toVersion";
     public static final String QUOTE_FILE="quoteFile";
     public static final String QUOTE_NO="quoteNo";
+    public static final String CRM_ID="crmId";
 
     private String version;
     private int proposalId;
@@ -93,6 +94,7 @@ public class ProposalVersion implements Cloneable {
     private String city;
     private String quoteFile;
     private String quoteNo;
+    private String crmId;
     private boolean eventAddStatus;
 
     @Override
@@ -451,6 +453,15 @@ public class ProposalVersion implements Cloneable {
     public void setQuoteFile(String quoteFile)
     {
         this.quoteFile=quoteFile;
+    }
+
+
+    public String getCrmId() {
+        return crmId;
+    }
+
+    public void setCrmId(String crmId) {
+        this.crmId = crmId;
     }
 
     @Override
