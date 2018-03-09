@@ -88,6 +88,7 @@ public class ProposalVersion implements Cloneable {
     private String floorProtectionChargesApplied;
     private double projectHandlingQty;
     private boolean confirmedStatus;
+    private boolean responseMessageForM1Amount;
     private String responseMessage;
     private String bookingFormFlag;
     private String worksContractFlag;
@@ -406,6 +407,15 @@ public class ProposalVersion implements Cloneable {
         this.projectHandlingQty = projectHandlingQty;
     }
 
+    public boolean isResponseMessageForM1Amount()
+    {
+        return responseMessageForM1Amount;
+    }
+
+    public void setResponseMessageForM1Amount(boolean responseMessageForM1Amount)
+    {
+        this.responseMessageForM1Amount=responseMessageForM1Amount;
+    }
     public boolean isConfirmedStatus() {
         return confirmedStatus;
     }

@@ -2257,7 +2257,12 @@ public class ProductAndAddons extends Window
                 proposalVersionCopy.setQuoteNo(proposalHeader.getQuoteNoNew());
                 proposalVersionCopy.setCrmId(proposalHeader.getCrmId());
                 ProposalVersion proposalVersionResponse = proposalDataProvider.saveProposalOnConfirm(proposalVersionCopy);
-                LOG.info("product and addon version response " +proposalVersionResponse.isConfirmedStatus());
+                LOG.info("product and addon version response " +proposalVersionResponse.isResponseMessageForM1Amount());
+                if(proposalVersionResponse.isResponseMessageForM1Amount())
+                {
+                    NotificationUtil.showNotification("M1 value not present in CRM, please update it.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
                 if (proposalVersionResponse.isConfirmedStatus()) {
                         proposalVersion = proposalVersionResponse;
                         SendToCRM sendToCRM = updatePriceInCRMOnConfirm(proposalVersionResponse.getQuoteFile());
