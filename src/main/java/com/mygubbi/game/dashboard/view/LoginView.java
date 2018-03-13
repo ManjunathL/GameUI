@@ -32,9 +32,8 @@ public class LoginView extends VerticalLayout {
     }
 
     private Component buildTitle() {
-        Label logo = new Label("&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<strong>GAME</strong>",
-                ContentMode.HTML);
-        ThemeResource mygubbi_logo = new ThemeResource("img/myGubbi_Logo.png");
+        Label logo = new Label();
+        ThemeResource mygubbi_logo = new ThemeResource("img/myGubbi_Logo - Copy.png");
         logo.setIcon(mygubbi_logo);
         //logo.setStyleName("logo-margin");
         logo.setSizeUndefined();
@@ -90,7 +89,7 @@ public class LoginView extends VerticalLayout {
         CssLayout labels = new CssLayout();
         labels.addStyleName("labels");
 
-        Label welcome = new Label("Welcome");
+        Label welcome = new Label("GAME");
         welcome.setSizeUndefined();
         welcome.addStyleName(ValoTheme.LABEL_H4);
         welcome.addStyleName(ValoTheme.LABEL_COLORED);

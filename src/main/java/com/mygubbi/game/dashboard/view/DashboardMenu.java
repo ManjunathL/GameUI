@@ -71,7 +71,7 @@ public final class DashboardMenu extends CustomComponent {
     private Component buildTitle() {
         Label logo = new Label("<strong>GAME</strong>",
                 ContentMode.HTML);
-        logo.setIcon(new ThemeResource("img/myGubbi_Logo.png"));
+        logo.setIcon(new ThemeResource("img/myGubbi_Logo - Copy.png"));
         logo.addStyleName("v-label-undef-w-loginscreen");
         logo.addStyleName("v-icon-dashboardmenu-logo");
         logo.setSizeUndefined();

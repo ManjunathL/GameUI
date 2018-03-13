@@ -2258,11 +2258,11 @@ public class ProductAndAddons extends Window
                 proposalVersionCopy.setCrmId(proposalHeader.getCrmId());
                 ProposalVersion proposalVersionResponse = proposalDataProvider.saveProposalOnConfirm(proposalVersionCopy);
                 LOG.info("product and addon version response " +proposalVersionResponse.isResponseMessageForM1Amount());
-                if(proposalVersionResponse.isResponseMessageForM1Amount())
+                /*if(proposalVersionResponse.isResponseMessageForM1Amount())
                 {
                     NotificationUtil.showNotification("M1 value not present in CRM, please update it.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
-                }
+                }*/
                 if (proposalVersionResponse.isConfirmedStatus()) {
                         proposalVersion = proposalVersionResponse;
                         SendToCRM sendToCRM = updatePriceInCRMOnConfirm(proposalVersionResponse.getQuoteFile());
@@ -2729,8 +2729,7 @@ public class ProductAndAddons extends Window
             addonAddButton.setEnabled(false);
             customAddonAddButton.setEnabled(false);
             PHCQTY.setReadOnly(true);
-            FPCQTY.setReadOnly(true);
-            DCCQTY.setReadOnly(true);
+
 
             String role = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getRole();
             if (Objects.equals(proposalHeader.getAdminPackageFlag(), "Yes")) {

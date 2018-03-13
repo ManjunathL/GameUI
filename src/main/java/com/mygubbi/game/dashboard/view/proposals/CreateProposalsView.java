@@ -1187,6 +1187,12 @@ public class CreateProposalsView extends Panel implements View {
 
         try {
             binder.commit();
+            if(Objects.equals(proposalHeader.getOfferType(),"") || Objects.equals(proposalHeader.getPcity(),"") )
+            {
+                NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+
             if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
             {
                 LOG.info("proposal header city " +proposalHeader.getPcity());
@@ -1204,11 +1210,6 @@ public class CreateProposalsView extends Panel implements View {
             return;
         }
 
-        if(Objects.equals(proposalHeader.getOfferType(),""))
-        {
-            NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
-            return;
-        }
 
         if(Integer.parseInt(noOfDaysForWorkCompletion.getValue().toString()) < MIN_WORK_COMPLETION_DAYS){
             NotificationUtil.showNotification("# of days for Works completion should be minimum of "+MIN_WORK_COMPLETION_DAYS+" days.", NotificationUtil.STYLE_BAR_ERROR_SMALL);
