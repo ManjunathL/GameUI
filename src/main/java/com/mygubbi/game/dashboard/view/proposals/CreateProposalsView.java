@@ -1200,7 +1200,7 @@ public class CreateProposalsView extends Panel implements View {
             Date date = (Date)formatter.parse(dateStr);
             java.util.Calendar cal = java.util.Calendar.getInstance();
             cal.setTime(date);
-            if(date.before(proposalHeader.getPriceDate()))
+            if(date.before(proposalHeader.getPriceDate()) || Objects.equals(proposalHeader.getExpectedDeliveryDate(),"") )
             {
                 NotificationUtil.showNotification("Invalid Expected delivery date", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
@@ -1409,9 +1409,9 @@ public class CreateProposalsView extends Panel implements View {
 
             java.util.Calendar cal = java.util.Calendar.getInstance();
             cal.setTime(date);
-            if(date.before(proposalHeader.getPriceDate()))
+            if(date.before(proposalHeader.getPriceDate()) || Objects.equals(proposalHeader.getExpectedDeliveryDate(),"") )
             {
-                NotificationUtil.showNotification("Invalid date", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                NotificationUtil.showNotification("Invalid Expected delivery date", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
             }
             if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
