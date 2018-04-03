@@ -63,6 +63,7 @@ public class ProposalHeader {
     public static final String DEEP_CLEANING_CHRAGES_APPLIED = "deepClearingChargesApplied";
     public static final String FLOOR_PROTECTION_CHRAGES_APPLIED = "floorProtectionChargesApplied";
     public static final String  CUSTOM_ADDON_CHECK= "customAddonCheck";
+    public static final String  EXPECTED_DELIVERY_DATE= "expectedDeliveryDate";
 
 
     private int id;
@@ -116,6 +117,7 @@ public class ProposalHeader {
     private String deepClearingChargesApplied;
     private String floorProtectionChargesApplied;
     private String customAddonCheck;
+    private String expectedDeliveryDate;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -532,6 +534,14 @@ public class ProposalHeader {
 
     public void setCustomAddonCheck(String customAddonCheck) {
         this.customAddonCheck = customAddonCheck;
+    }
+
+    public String getExpectedDeliveryDate() {
+        return expectedDeliveryDate;
+    }
+
+    public void setExpectedDeliveryDate(String expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
     }
 
     @Override

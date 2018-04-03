@@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Authentication;
 import org.vaadin.gridutil.cell.GridCellFilter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -183,10 +185,17 @@ public class CRMsearchWindow extends Window
                         proposalHeader.setProjectHandlingChargesApplied("true");
                         proposalHeader.setFloorProtectionChargesApplied("false");
                         proposalHeader.setDeepClearingChargesApplied("true");
-
+                        try{
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                            Date date = new Date();
+                            String value=dateFormat.format(date);
+                            proposalHeader.setExpectedDeliveryDate(value);
+                        }
+                        catch (Exception e)
+                        {
+                            LOG.info("Exception in crm search window " +e);
+                        }
                         boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
-                       /* LOG.info("proposal create value in crm search window " +success);
-                        LOG.info("proposal header in crm window after save in crm search window" +proposalHeader);*/
                     }
                 }
                 UI.getCurrent().getNavigator().navigateTo("New Quotation/" + proposalHeader.getId());

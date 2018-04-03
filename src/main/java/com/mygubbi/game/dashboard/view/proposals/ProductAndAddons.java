@@ -29,6 +29,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.io.FileUtils;
@@ -1066,7 +1067,7 @@ public class ProductAndAddons extends Window
 
             }
             if (disPercent <= rateForDiscount) {
-                this.discountPercentage.setValue(String.valueOf(round(disPercent, 2)));
+                this.discountPercentage.setValue(String.valueOf(round(disPercent, 3)));
             } else {
                 NotificationUtil.showNotification("Discount should not exceed " + rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
@@ -1137,7 +1138,7 @@ public class ProductAndAddons extends Window
             discountAmount = (Double) this.discountAmount.getConvertedValue();
             discountPercent = (discountAmount / totalWoAccessories) * 100;
             if (discountPercent <= rateForDiscount) {
-                this.discountPercentage.setValue(String.valueOf(round(discountPercent, 2)));
+                this.discountPercentage.setValue(String.valueOf(round(discountPercent, 3)));
             } else {
                 NotificationUtil.showNotification("Discount should not exceed " + rateForDiscount.intValue(), NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;

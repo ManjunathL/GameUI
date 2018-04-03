@@ -24,6 +24,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Calendar;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
@@ -36,14 +37,12 @@ import us.monoid.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
@@ -103,6 +102,7 @@ public class CreateProposalsView extends Panel implements View {
     private Field<?> designPartnerContact;
 
     Button searchcrmid;
+    DateField expectedDeliveryDate;
 
     private Label proposalTitleLabel;
     private final BeanFieldGroup<ProposalHeader> binder = new BeanFieldGroup<>(ProposalHeader.class);
@@ -131,6 +131,7 @@ public class CreateProposalsView extends Panel implements View {
     int pid;
     String parameters;
     CheckBox PHCcheck,DCCcheck,FPCcheck;
+    Boolean dateComparision;
     public CreateProposalsView() {
     }
 
@@ -1193,6 +1194,17 @@ public class CreateProposalsView extends Panel implements View {
                 return;
             }
 
+            String dateStr = expectedDeliveryDate.getValue().toString();
+            DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+            DateFormat newDateFormat = new SimpleDateFormat("YYYY-MM-dd");
+            Date date = (Date)formatter.parse(dateStr);
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTime(date);
+            if(date.before(proposalHeader.getPriceDate()))
+            {
+                NotificationUtil.showNotification("Invalid Expected delivery date", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
             if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
             {
                 LOG.info("proposal header city " +proposalHeader.getPcity());
@@ -1205,7 +1217,7 @@ public class CreateProposalsView extends Panel implements View {
                     quotenew.setValue(proposalHeader.getQuoteNoNew());
                 }
             }
-        } catch (FieldGroup.CommitException e) {
+        } catch (Exception e) {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
@@ -1240,7 +1252,7 @@ public class CreateProposalsView extends Panel implements View {
             /*checkQuoteNoNew();
             this.proposalHeader.setQuoteNoNew(QuoteNumNew);*/
             boolean success = proposalDataProvider.saveProposal(this.proposalHeader);
-            LOG.debug("This proposal header 2" + this.proposalHeader);
+
 
             /*try {
 
@@ -1390,6 +1402,18 @@ public class CreateProposalsView extends Panel implements View {
 
         try {
             binder.commit();
+            String dateStr = expectedDeliveryDate.getValue().toString();
+            DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+            DateFormat newDateFormat = new SimpleDateFormat("YYYY-MM-dd");
+            Date date = (Date)formatter.parse(dateStr);
+
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTime(date);
+            if(date.before(proposalHeader.getPriceDate()))
+            {
+                NotificationUtil.showNotification("Invalid date", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
             if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
             {
                 proposalDataProvider.getQuotationNumber(this.proposalHeader);
@@ -1400,7 +1424,7 @@ public class CreateProposalsView extends Panel implements View {
                     quotenew.setValue(proposalHeader.getQuoteNoNew());
                 }
             }
-        } catch (FieldGroup.CommitException e) {
+        } catch (Exception e) {
             NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             return;
         }
@@ -1922,6 +1946,42 @@ public class CreateProposalsView extends Panel implements View {
         {
             horizontalLayoutForCheckMiscellaneous.setVisible(false);
         }
+
+        expectedDeliveryDate=new DateField("Expected Delivery Date");
+        expectedDeliveryDate.setWidth("50%");
+        if(proposalHeader.getExpectedDeliveryDate()!=null)
+        {
+            try
+            {
+                Date date1=new SimpleDateFormat("yyyy-MM-dd").parse(proposalHeader.getExpectedDeliveryDate());
+                expectedDeliveryDate.setValue(date1);
+            }
+            catch (Exception e)
+            {
+                LOG.info("Exception " +e);
+            }
+        }
+
+        expectedDeliveryDate.setDateFormat("yyyy-MM-dd");
+        expectedDeliveryDate.addValueChangeListener(valueChangeEvent -> {
+            try{
+                String dateStr = expectedDeliveryDate.getValue().toString();
+                DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+                DateFormat newDateFormat = new SimpleDateFormat("YYYY-MM-dd");
+                Date date = (Date)formatter.parse(dateStr);
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTime(date);
+                String formatedDate = cal.get(java.util.Calendar.YEAR) + "-" + (cal.get(java.util.Calendar.MONTH) + 1) + "-" + cal.get(java.util.Calendar.DATE);
+                String d1 = newDateFormat.format(newDateFormat.parse(formatedDate));
+                proposalHeader.setExpectedDeliveryDate(formatedDate);
+                dateComparision=date.before(proposalHeader.getPriceDate());
+            }
+            catch (Exception e)
+            {
+                LOG.info("exception in date parsing " +e);
+            }
+        });
+        formLayoutRight.addComponent(expectedDeliveryDate);
         return formLayoutRight;
     }
 
