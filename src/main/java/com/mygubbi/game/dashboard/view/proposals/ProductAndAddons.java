@@ -134,6 +134,9 @@ public class ProductAndAddons extends Window
     Label PHCAmount;
     String customAddonCheck="No";
     String quickProductCheck="No";
+    String offerCategory="";
+    String offerTitle="";
+    double minimumOfferAmount;
     public static void open(ProposalHeader proposalHeader, Proposal proposal, String vid, ProposalVersion proposalVersion )
     {
         DashboardEventBus.post(new DashboardEvent.CloseOpenWindowsEvent());
@@ -176,6 +179,16 @@ public class ProductAndAddons extends Window
         this.productAndAddonSelection = new ProductAndAddonSelection();
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
         this.productAndAddonSelection.setToVersion(this.proposalVersion.getVersion());
+
+        List<Offer> offerList=proposalDataProvider.getOfferDetails(proposalHeader.getOfferType());
+        for(Offer offer:offerList)
+        {
+            LOG.info("Offer data inside products and addon " +offer);
+            offerCategory=offer.getCategory();
+            offerTitle=offer.getTitle();
+            minimumOfferAmount=offer.getMinimumOrderValue();
+        }
+
         DashboardEventBus.register(this);
         setModal(true);
         setSizeFull();
@@ -707,6 +720,8 @@ public class ProductAndAddons extends Window
             }
         }
     }
+
+
 
     private void handleQuickProducts()
     {

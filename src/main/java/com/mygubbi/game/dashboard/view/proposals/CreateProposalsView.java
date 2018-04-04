@@ -1912,6 +1912,11 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutRight.addComponent(offerField);
         offerField.addValueChangeListener(this::offerFieldValueChanged);
 
+        noOfDaysForWorkCompletion = binder.buildAndBind("MyGubbi Works Completion Days", ProposalHeader.NO_OF_DAYS_FOR_WORK_COMPLETION);
+        noOfDaysForWorkCompletion.setRequired(true);
+        ((TextField) noOfDaysForWorkCompletion).setNullRepresentation("");
+        formLayoutRight.addComponent(noOfDaysForWorkCompletion);
+
         HorizontalLayout horizontalLayoutForCheckMiscellaneous=new HorizontalLayout();
         PHCcheck=new CheckBox("PHC");
         binder.bind(PHCcheck,PROJ_HANDLING_CHRAGES_APPLIED);
@@ -1947,41 +1952,7 @@ public class CreateProposalsView extends Panel implements View {
             horizontalLayoutForCheckMiscellaneous.setVisible(false);
         }
 
-        expectedDeliveryDate=new DateField("Expected Delivery Date");
-        expectedDeliveryDate.setWidth("50%");
-        if(proposalHeader.getExpectedDeliveryDate()!=null)
-        {
-            try
-            {
-                Date date1=new SimpleDateFormat("yyyy-MM-dd").parse(proposalHeader.getExpectedDeliveryDate());
-                expectedDeliveryDate.setValue(date1);
-            }
-            catch (Exception e)
-            {
-                LOG.info("Exception " +e);
-            }
-        }
 
-        expectedDeliveryDate.setDateFormat("yyyy-MM-dd");
-        expectedDeliveryDate.addValueChangeListener(valueChangeEvent -> {
-            try{
-                String dateStr = expectedDeliveryDate.getValue().toString();
-                DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
-                DateFormat newDateFormat = new SimpleDateFormat("YYYY-MM-dd");
-                Date date = (Date)formatter.parse(dateStr);
-                java.util.Calendar cal = java.util.Calendar.getInstance();
-                cal.setTime(date);
-                String formatedDate = cal.get(java.util.Calendar.YEAR) + "-" + (cal.get(java.util.Calendar.MONTH) + 1) + "-" + cal.get(java.util.Calendar.DATE);
-                String d1 = newDateFormat.format(newDateFormat.parse(formatedDate));
-                proposalHeader.setExpectedDeliveryDate(formatedDate);
-                dateComparision=date.before(proposalHeader.getPriceDate());
-            }
-            catch (Exception e)
-            {
-                LOG.info("exception in date parsing " +e);
-            }
-        });
-        formLayoutRight.addComponent(expectedDeliveryDate);
         return formLayoutRight;
     }
 
@@ -2020,10 +1991,46 @@ public class CreateProposalsView extends Panel implements View {
         maxDiscountPercentage.setValue(String.valueOf(proposalHeader.getMaxDiscountPercentage()));
         formLayoutLeft.addComponent(maxDiscountPercentage);
 
-        noOfDaysForWorkCompletion = binder.buildAndBind("# of days for Works Completion", ProposalHeader.NO_OF_DAYS_FOR_WORK_COMPLETION);
+       /* noOfDaysForWorkCompletion = binder.buildAndBind("# of days for Works Completion", ProposalHeader.NO_OF_DAYS_FOR_WORK_COMPLETION);
         noOfDaysForWorkCompletion.setRequired(true);
         ((TextField) noOfDaysForWorkCompletion).setNullRepresentation("");
-        formLayoutLeft.addComponent(noOfDaysForWorkCompletion);
+        formLayoutLeft.addComponent(noOfDaysForWorkCompletion);*/
+
+        expectedDeliveryDate=new DateField("Client Expected Works Completion Date");
+        expectedDeliveryDate.setWidth("50%");
+        if(proposalHeader.getExpectedDeliveryDate()!=null)
+        {
+            try
+            {
+                Date date1=new SimpleDateFormat("yyyy-MM-dd").parse(proposalHeader.getExpectedDeliveryDate());
+                expectedDeliveryDate.setValue(date1);
+            }
+            catch (Exception e)
+            {
+                LOG.info("Exception " +e);
+            }
+        }
+
+        expectedDeliveryDate.setDateFormat("yyyy-MM-dd");
+        expectedDeliveryDate.addValueChangeListener(valueChangeEvent -> {
+            try{
+                String dateStr = expectedDeliveryDate.getValue().toString();
+                DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+                DateFormat newDateFormat = new SimpleDateFormat("YYYY-MM-dd");
+                Date date = (Date)formatter.parse(dateStr);
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTime(date);
+                String formatedDate = cal.get(java.util.Calendar.YEAR) + "-" + (cal.get(java.util.Calendar.MONTH) + 1) + "-" + cal.get(java.util.Calendar.DATE);
+                String d1 = newDateFormat.format(newDateFormat.parse(formatedDate));
+                proposalHeader.setExpectedDeliveryDate(formatedDate);
+                dateComparision=date.before(proposalHeader.getPriceDate());
+            }
+            catch (Exception e)
+            {
+                LOG.info("exception in date parsing " +e);
+            }
+        });
+        formLayoutLeft.addComponent(expectedDeliveryDate);
 
         if(!(("admin").equals(role)) )
         {

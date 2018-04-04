@@ -2420,6 +2420,24 @@ public class ProposalDataProvider {
             return new ArrayList<>();
         }
     }
+
+    public List<Offer> getOfferDetails(String OfferName) {
+        try{
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/offerValidationDetails", new HashMap<String, String>() {
+                {
+                    put("offerName", URLEncoder.encode(OfferName,"UTF-8"));
+                }
+            });
+            Offer[] items = this.mapper.readValue(jsonArray.toString(), Offer[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     public List<PriceMaster> getDiscountAmount(String fromDate,String toDate)
     {
         try{
