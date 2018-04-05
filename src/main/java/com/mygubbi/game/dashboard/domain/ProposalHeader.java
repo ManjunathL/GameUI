@@ -62,6 +62,7 @@ public class ProposalHeader {
     public static final String PROJ_HANDLING_CHRAGES_APPLIED = "projectHandlingChargesApplied";
     public static final String DEEP_CLEANING_CHRAGES_APPLIED = "deepClearingChargesApplied";
     public static final String FLOOR_PROTECTION_CHRAGES_APPLIED = "floorProtectionChargesApplied";
+    public static final String OFFER_CODE = "offerCode";
     public static final String  CUSTOM_ADDON_CHECK= "customAddonCheck";
     public static final String  EXPECTED_DELIVERY_DATE= "expectedDeliveryDate";
 

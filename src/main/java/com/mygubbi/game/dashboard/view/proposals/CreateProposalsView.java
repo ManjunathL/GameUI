@@ -1742,7 +1742,6 @@ public class CreateProposalsView extends Panel implements View {
         proposalHeader.setOfferType(offerType);
         String offerCode = (String) offerField.getItem(offerField.getValue()).getItemProperty(OfferMaster.OFFER_CODE).getValue();
         proposalHeader.setOfferCode(offerCode);
-
         LOG.debug("MSC OFFER : " + offerCode + " : " + offerType);
 
     }
