@@ -2036,8 +2036,12 @@ public class CreateProposalsView extends Panel implements View {
                 cal.setTime(date);
                 String formatedDate = cal.get(java.util.Calendar.YEAR) + "-" + (cal.get(java.util.Calendar.MONTH) + 1) + "-" + cal.get(java.util.Calendar.DATE);
                 String d1 = newDateFormat.format(newDateFormat.parse(formatedDate));
-                proposalHeader.setExpectedDeliveryDate(formatedDate);
+                /*proposalHeader.setExpectedDeliveryDate(formatedDate);*/
                 dateComparision=date.before(proposalHeader.getPriceDate());
+                if(!date.before(proposalHeader.getPriceDate()) || Objects.equals(proposalHeader.getExpectedDeliveryDate(),"") )
+                {
+                    proposalHeader.setExpectedDeliveryDate(formatedDate);
+                }
             }
             catch (Exception e)
             {
