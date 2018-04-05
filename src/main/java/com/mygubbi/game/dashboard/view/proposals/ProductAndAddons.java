@@ -2063,6 +2063,12 @@ public class ProductAndAddons extends Window
 
                 response = proposalDataProvider.publishVersionOverride(proposalVersion, proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getBusinessDate(),proposalVersion.getDiscountPercentage(),proposalVersion.getDiscountAmount(),proposalHeader.getPcity(),proposalHeader.getQuoteNoNew(),proposalVersion.getFinalAmount(),proposalHeader.getOfferCode());
                 LOG.info("response " +response);
+                if (response.getString("status").equals("error")) {
+                    NotificationUtil.showNotification(response.getString("message"), NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+
+
                 ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
                 proposalHeader.setStatus(proposalVersionLatest.getStatus());
                 proposalHeader.setVersion(proposalVersionLatest.getVersion());
@@ -2070,7 +2076,7 @@ public class ProductAndAddons extends Window
                 proposalDataProvider.saveProposal(proposalHeader);
 
 
-            } catch (FieldGroup.CommitException e) {
+            } catch (FieldGroup.CommitException | JSONException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
             try

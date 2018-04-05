@@ -431,7 +431,7 @@ public class ProposalDataProvider {
             bookingFormFlag="No";
             worksContractFlag="Yes";
         }
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publishoverride", "{\"toVersion\": " +"\"" + version + "\""+ "," + "\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"businessDate\": " + "\"" + date + "\"" + ","+  "\"discountPercentage\": "  +discountPercentage + "," + "\"discountAmount\" :" + discountAmount +"," +"\"worksContractFlag\" : " +"\"" +worksContractFlag + "\""+ "," + "\"bookingFormFlag\" :" +"\"" + bookingFormFlag + "\"" + ","+  "\"city\" :" +"\""  +pcity+ "\"" + ","+ "\"quoteNo\" :" +"\"" + QuoteNo + "," + "\"finalAmount\" :" + finalAmount +"," +"\"offerCode\" : " +"\"" +offerCode + "\"" + "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publishoverride", "{\"toVersion\": " + "\"" + version + "\"" + "," + "\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"businessDate\": " + "\"" + date + "\"" + "," + "\"discountPercentage\": " + discountPercentage + "," + "\"discountAmount\" :" + discountAmount + "," + "\"worksContractFlag\" : " + "\"" + worksContractFlag + "\"" + "," + "\"bookingFormFlag\" :" + "\"" + bookingFormFlag + "\"" + "," + "\"city\" :" + "\"" + pcity + "\"" + "," + "\"quoteNo\" :" + "\"" + QuoteNo + "\"" + "," + "\"finalAmount\" :" + finalAmount + "," + "\"offerCode\" : " + "\"" + offerCode + "\"" + "}");
         return jsonObject;
     }
 
