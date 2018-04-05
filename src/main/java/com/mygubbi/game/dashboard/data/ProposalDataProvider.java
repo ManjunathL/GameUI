@@ -420,7 +420,7 @@ public class ProposalDataProvider {
         return jsonObject;
     }
 
-    public JSONObject publishVersionOverride(ProposalVersion proposalVersion, String version, int proposalId, String date,double discountPercentage,double discountAmount,String pcity,String QuoteNo) {
+    public JSONObject publishVersionOverride(ProposalVersion proposalVersion, String version, int proposalId, String date,double discountPercentage,double discountAmount,String pcity,String QuoteNo,double finalAmount,String offerCode  ) {
         String bookingFormFlag,worksContractFlag;
         if(version.startsWith("0."))
         {
@@ -431,7 +431,7 @@ public class ProposalDataProvider {
             bookingFormFlag="No";
             worksContractFlag="Yes";
         }
-        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publishoverride", "{\"toVersion\": " +"\"" + version + "\""+ "," + "\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"businessDate\": " + "\"" + date + "\"" + ","+  "\"discountPercentage\": "  +discountPercentage + "," + "\"discountAmount\" :" + discountAmount +"," +"\"worksContractFlag\" : " +"\"" +worksContractFlag + "\""+ "," + "\"bookingFormFlag\" :" +"\"" + bookingFormFlag + "\"" + ","+  "\"city\" :" +"\""  +pcity+ "\"" + ","+ "\"quoteNo\" :" +"\"" + QuoteNo + "\"" + "}");
+        JSONObject jsonObject = dataProviderMode.postResource("proposal/version/publishoverride", "{\"toVersion\": " +"\"" + version + "\""+ "," + "\"version\": " + version + "," + "\"proposalId\": " + proposalId + "," + "\"businessDate\": " + "\"" + date + "\"" + ","+  "\"discountPercentage\": "  +discountPercentage + "," + "\"discountAmount\" :" + discountAmount +"," +"\"worksContractFlag\" : " +"\"" +worksContractFlag + "\""+ "," + "\"bookingFormFlag\" :" +"\"" + bookingFormFlag + "\"" + ","+  "\"city\" :" +"\""  +pcity+ "\"" + ","+ "\"quoteNo\" :" +"\"" + QuoteNo + "," + "\"finalAmount\" :" + finalAmount +"," +"\"offerCode\" : " +"\"" +offerCode + "\"" + "}");
         return jsonObject;
     }
 

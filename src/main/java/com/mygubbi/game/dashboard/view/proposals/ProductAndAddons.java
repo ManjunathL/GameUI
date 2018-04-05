@@ -2061,7 +2061,7 @@ public class ProductAndAddons extends Window
                 proposalVersion.setBusinessDate(dtf.format(localDate));
 
 
-                response = proposalDataProvider.publishVersionOverride(proposalVersion, proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getBusinessDate(),proposalVersion.getDiscountPercentage(),proposalVersion.getDiscountAmount(),proposalHeader.getPcity(),proposalHeader.getQuoteNoNew());
+                response = proposalDataProvider.publishVersionOverride(proposalVersion, proposalVersion.getVersion(), proposalHeader.getId(), proposalVersion.getBusinessDate(),proposalVersion.getDiscountPercentage(),proposalVersion.getDiscountAmount(),proposalHeader.getPcity(),proposalHeader.getQuoteNoNew(),proposalVersion.getFinalAmount(),proposalHeader.getOfferCode());
                 LOG.info("response " +response);
                 ProposalVersion proposalVersionLatest = proposalDataProvider.getLatestVersion(this.proposalHeader.getId());
                 proposalHeader.setStatus(proposalVersionLatest.getStatus());
