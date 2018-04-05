@@ -2403,7 +2403,8 @@ public class ProposalDataProvider {
         }
         return !isError;
     }
-    public List<Offer> getOfferCombo(String fromDate,String toDate) {
+
+    public List<OfferMaster> getOfferCombo(String fromDate, String toDate) {
         try{
             JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/offerdetails", new HashMap<String, String>() {
                 {
@@ -2411,7 +2412,7 @@ public class ProposalDataProvider {
                     put("toDate" ,URLEncoder.encode(toDate,"UTF-8"));
                 }
             });
-            Offer[] items = this.mapper.readValue(jsonArray.toString(), Offer[].class);
+            OfferMaster[] items = this.mapper.readValue(jsonArray.toString(), OfferMaster[].class);
             return new ArrayList<>(Arrays.asList(items));
         }
         catch (Exception e)
@@ -2421,14 +2422,14 @@ public class ProposalDataProvider {
         }
     }
 
-    public List<Offer> getOfferDetails(String OfferName) {
+    public List<OfferMaster> getOfferDetails(String OfferName) {
         try{
             JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/offerValidationDetails", new HashMap<String, String>() {
                 {
                     put("offerName", URLEncoder.encode(OfferName,"UTF-8"));
                 }
             });
-            Offer[] items = this.mapper.readValue(jsonArray.toString(), Offer[].class);
+            OfferMaster[] items = this.mapper.readValue(jsonArray.toString(), OfferMaster[].class);
             return new ArrayList<>(Arrays.asList(items));
         }
         catch (Exception e)

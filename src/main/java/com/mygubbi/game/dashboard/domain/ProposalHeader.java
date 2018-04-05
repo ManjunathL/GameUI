@@ -118,6 +118,7 @@ public class ProposalHeader {
     private String floorProtectionChargesApplied;
     private String customAddonCheck;
     private String expectedDeliveryDate;
+    private String offerCode;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -542,6 +543,14 @@ public class ProposalHeader {
 
     public void setExpectedDeliveryDate(String expectedDeliveryDate) {
         this.expectedDeliveryDate = expectedDeliveryDate;
+    }
+
+    public String getOfferCode() {
+        return offerCode;
+    }
+
+    public void setOfferCode(String offerCode) {
+        this.offerCode = offerCode;
     }
 
     @Override

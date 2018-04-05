@@ -29,7 +29,6 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.io.FileUtils;
@@ -48,7 +47,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -180,13 +178,13 @@ public class ProductAndAddons extends Window
         this.productAndAddonSelection.setProposalId(this.proposalHeader.getId());
         this.productAndAddonSelection.setToVersion(this.proposalVersion.getVersion());
 
-        List<Offer> offerList=proposalDataProvider.getOfferDetails(proposalHeader.getOfferType());
-        for(Offer offer:offerList)
+        List<OfferMaster> offerMasterList = proposalDataProvider.getOfferDetails(proposalHeader.getOfferType());
+        for (OfferMaster offerMaster : offerMasterList)
         {
-            LOG.info("Offer data inside products and addon " +offer);
-            offerCategory=offer.getCategory();
-            offerTitle=offer.getTitle();
-            minimumOfferAmount=offer.getMinimumOrderValue();
+            LOG.info("OfferMaster data inside products and addon " + offerMaster);
+  /*          offerCategory= offerMaster.getCategory();
+            offerTitle= offerMaster.getTitle();
+            minimumOfferAmount= offerMaster.getMinimumOrderValue();*/
         }
 
         DashboardEventBus.register(this);

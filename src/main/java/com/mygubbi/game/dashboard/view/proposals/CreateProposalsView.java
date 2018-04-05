@@ -24,7 +24,6 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Calendar;
 import com.vaadin.ui.renderers.ClickableRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +31,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vaadin.gridutil.renderer.ViewButtonValueRenderer;
 import org.vaadin.gridutil.renderer.ViewEditButtonValueRenderer;
-import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
 import java.math.BigDecimal;
@@ -226,8 +224,6 @@ public class CreateProposalsView extends Panel implements View {
             tabs.addTab(buildBoq(), "BOQ");
         }
 
-
-
             vLayout.addComponent(tabs);
             setContent(vLayout);
             Responsive.makeResponsive(tabs);
@@ -239,7 +235,9 @@ public class CreateProposalsView extends Panel implements View {
     }
 
     private void setMaxDiscountPercentange() {
-        List<RateCard> discountratecode=proposalDataProvider.getFactorRateCodeDetails("F:DP");
+        String rateCardId = "F:" + proposalHeader.getOfferCode();
+        LOG.debug("String ratecard:" + rateCardId);
+        List<RateCard> discountratecode = proposalDataProvider.getFactorRateCodeDetails(rateCardId);
        // LOG.info("discount percentage details" +discountratecode);
         for (RateCard discountcode : discountratecode) {
             LOG.debug("Discount code : " + discountcode.getCode());
@@ -269,6 +267,7 @@ public class CreateProposalsView extends Panel implements View {
             quotenew.setReadOnly(true);
             projectCityField.setReadOnly(true);
             searchcrmid.setEnabled(false);
+            offerField.setReadOnly(true);
         }
     }
 
@@ -279,6 +278,7 @@ public class CreateProposalsView extends Panel implements View {
             if(Objects.equals(proposalHeader.getPcity(), "") || proposalHeader.getPcity() == null)
             {
                 projectCityField.setReadOnly(false);
+                offerField.setReadOnly(false);
                 quotenew.setReadOnly(false);
                 cancelButton.setVisible(true);
                 saveAndCloseButton.setVisible(false);
@@ -286,6 +286,7 @@ public class CreateProposalsView extends Panel implements View {
             {
                 projectCityField.setReadOnly(true);
                 quotenew.setReadOnly(true);
+                offerField.setReadOnly(true);
                 searchcrmid.setEnabled(false);
                 cancelButton.setVisible(false);
             }
@@ -1116,6 +1117,7 @@ public class CreateProposalsView extends Panel implements View {
         projectName.setReadOnly(readOnly);
         projectAddressLine1.setReadOnly(readOnly);
         projectCityField.setReadOnly(readOnly);
+        offerField.setReadOnly(readOnly);
         salesPerson.setReadOnly(readOnly);
         designPerson.setReadOnly(readOnly);
     }
@@ -1731,7 +1733,18 @@ public class CreateProposalsView extends Panel implements View {
 
     private void offerFieldValueChanged(Property.ValueChangeEvent valueChangeEvent)
     {
-        proposalHeader.setOfferType(valueChangeEvent.getProperty().getValue().toString());
+        /*proposalHeader.setOfferType(valueChangeEvent.getProperty().getValue().toString());
+        proposalHeader.setOfferCode(valueChangeEvent.getProperty().getClass().getName());*/
+        /*proposalHeader.setOfferCode(valueChangeEvent.getProperty().ge);*/
+
+
+        String offerType = (String) offerField.getItem(offerField.getValue()).getItemProperty(OfferMaster.OFFER_NAME).getValue();
+        proposalHeader.setOfferType(offerType);
+        String offerCode = (String) offerField.getItem(offerField.getValue()).getItemProperty(OfferMaster.OFFER_CODE).getValue();
+        proposalHeader.setOfferCode(offerCode);
+
+        LOG.debug("MSC OFFER : " + offerCode + " : " + offerType);
+
     }
 
     private void salesPersonChanged(Property.ValueChangeEvent valueChangeEvent) {
@@ -1809,16 +1822,17 @@ public class CreateProposalsView extends Panel implements View {
         else {
             this.priceDate = this.proposalHeader.getPriceDate();
         }
-        List<Offer> offers=proposalDataProvider.getOfferCombo(String.valueOf(priceDate),String.valueOf(priceDate));
-        final BeanContainer<String,Offer> container=new BeanContainer<>(Offer.class);
-        container.setBeanIdProperty(Offer.OFFER_NAME);
-        container.addAll(offers);
+        List<OfferMaster> offerMasters = proposalDataProvider.getOfferCombo(String.valueOf(priceDate), String.valueOf(priceDate));
+        final BeanContainer<String, OfferMaster> container = new BeanContainer<>(OfferMaster.class);
+        container.setBeanIdProperty(OfferMaster.OFFER_NAME);
+        container.addAll(offerMasters);
 
-        ComboBox select = new ComboBox("Offer Type");
+        ComboBox select = new ComboBox("OfferMaster Type");
         select.setWidth("300px");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId(Offer.OFFER_NAME);
+        select.setItemCaptionPropertyId(OfferMaster.OFFER_NAME);
+        select.setId(OfferMaster.OFFER_CODE);
 
         if (StringUtils.isNotEmpty(this.proposalHeader.getOfferType())) {
             select.setValue(this.proposalHeader.getOfferType());
@@ -2297,6 +2311,7 @@ public class CreateProposalsView extends Panel implements View {
         projectName.setReadOnly(true);
         projectAddressLine1.setReadOnly(true);
         projectCityField.setReadOnly(true);
+        offerField.setReadOnly(true);
         salesPerson.setReadOnly(true);
         designPerson.setReadOnly(true);
         offerField.setReadOnly(true);
