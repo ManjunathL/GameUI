@@ -533,6 +533,16 @@ public class CreateProposalsView extends Panel implements View {
             proposalHeaderNew = proposalDataProvider.createProposal();
             proposalHeaderNew.setFromProposal(proposalHeader.getId());
             proposalHeaderNew.setFromVersion(pVersion.getVersion());
+            try{
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                Date date1 = new Date();
+                String value=dateFormat.format(date1);
+                proposalHeaderNew.setExpectedDeliveryDate(value);
+            }
+            catch (Exception e)
+            {
+                LOG.info("Exception in crm search window " +e);
+            }
             proposalDataProvider.saveProposal(proposalHeaderNew);
             if("Yes".equals(proposalHeader.getPackageFlag()))
             {
