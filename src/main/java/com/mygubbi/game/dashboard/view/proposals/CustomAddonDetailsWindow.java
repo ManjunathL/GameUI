@@ -39,6 +39,7 @@ public class CustomAddonDetailsWindow extends Window {
     private TextArea title;
     private TextField uom;
     private TextField rate;
+    private TextField installationPrice;
     private TextField quantity;
     private TextField amount;
 
@@ -248,6 +249,11 @@ public class CustomAddonDetailsWindow extends Window {
         this.rate.addValueChangeListener(this::rateChanged);
         formLayout.addComponent(this.rate);
 
+        this.installationPrice = new TextField("Installation Price");
+        binder.bind(this.installationPrice, AddonProductItem.INSTALLATION_PRICE);
+        this.installationPrice.addValueChangeListener(this::installationValueChanged);
+        formLayout.addComponent(this.installationPrice);
+
         this.quantity = new TextField("Qty");
         this.quantity.setRequired(true);
         binder.bind(this.quantity, AddonProduct.QUANTITY);
@@ -269,22 +275,40 @@ public class CustomAddonDetailsWindow extends Window {
     private void rateChanged(Property.ValueChangeEvent valueChangeEvent) {
 
         String rateValue = this.rate.getValue().replaceAll(",", "");
+        String instValue = this.installationPrice.getValue().replaceAll(",", "");
         String quantityValue = this.quantity.getValue().replaceAll(",", "");
         this.amount.setReadOnly(false);
-        this.amount.setValue(String.valueOf(Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)));
+        this.amount.setValue(String.valueOf((Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)) + Double.parseDouble(instValue) * Double.parseDouble(quantityValue)));
         this.amount.setReadOnly(true);
 //        checkApply();
     }
 
-    private void quantityChanged(Property.ValueChangeEvent valueChangeEvent) {
+    private void installationValueChanged(Property.ValueChangeEvent valueChangeEvent) {
         String rateValue = this.rate.getValue().replaceAll(",", "");
+        String instValue = this.installationPrice.getValue().replaceAll(",", "");
         String quantityValue = this.quantity.getValue().replaceAll(",", "");
         if (Double.parseDouble(quantityValue) <= 0) {
             quantityValue = "1";
             this.quantity.setValue("1");
         }
         this.amount.setReadOnly(false);
-        this.amount.setValue(String.valueOf(Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)));
+        /*this.amount.setValue(String.valueOf(Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)));*/
+        this.amount.setValue(String.valueOf((Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)) + Double.parseDouble(instValue) * Double.parseDouble(quantityValue)));
+        this.amount.setReadOnly(true);
+//        checkApply();
+    }
+
+    private void quantityChanged(Property.ValueChangeEvent valueChangeEvent) {
+        String rateValue = this.rate.getValue().replaceAll(",", "");
+        String instValue = this.installationPrice.getValue().replaceAll(",", "");
+        String quantityValue = this.quantity.getValue().replaceAll(",", "");
+        if (Double.parseDouble(quantityValue) <= 0) {
+            quantityValue = "1";
+            this.quantity.setValue("1");
+        }
+        this.amount.setReadOnly(false);
+        /*this.amount.setValue(String.valueOf(Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)));*/
+        this.amount.setValue(String.valueOf((Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)) + Double.parseDouble(instValue) * Double.parseDouble(quantityValue)));
         this.amount.setReadOnly(true);
 //        checkApply();
     }
@@ -340,6 +364,14 @@ public class CustomAddonDetailsWindow extends Window {
 
                 try {
 
+                    if(this.installationPrice == null || this.installationPrice.isEmpty() || this.installationPrice.getValue().equals("0") )
+                    {
+                        if(this.category.getValue().equals("Chimney") || this.category.getValue().equals("Granite Counter top") || this.category.getValue().equals("Sink") || this.category.getValue().equals("Hob") || this.category.getValue().equals("Dado") || this.category.getValue().equals("Wall paper") || this.category.getValue().equals("Granite/ Marble") || this.category.getValue().equals("Appliances") || this.category.getValue().equals("Counter Top"))
+                        {
+                            NotificationUtil.showNotification("Installation price cannot be 0",NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                            return;
+                        }
+                    }
                     if (this.title == null || this.title.isEmpty())
                     {
                         NotificationUtil.showNotification("Title cannot be empty",NotificationUtil.STYLE_BAR_ERROR_SMALL);

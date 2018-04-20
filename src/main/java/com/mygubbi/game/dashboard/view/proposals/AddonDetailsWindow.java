@@ -52,6 +52,7 @@ public class AddonDetailsWindow extends Window {
     private TextArea title;
     private TextField uom;
     private TextField rate;
+    private TextField installationPrice;
     private TextField quantity;
     private TextField amount;
     private TextField description;
@@ -71,6 +72,7 @@ public class AddonDetailsWindow extends Window {
     private Date priceDate;
     private String city;
     Double rateToBeUsed;
+    Double installationPriceToBeUsed;
     Double addonsTotal=0.0;
     Double addonsTotalWOtax=0.0;
     Double addonsProfit=0.0;
@@ -298,6 +300,11 @@ public class AddonDetailsWindow extends Window {
         this.rate.addValueChangeListener(this::rateChanged);
         formLayoutRight.addComponent(this.rate);
 
+        this.installationPrice = new TextField("Installation Price");
+        this.installationPrice.setRequired(true);
+        binder.bind(this.installationPrice, AddonProductItem.INSTALLATION_PRICE);
+        formLayoutRight.addComponent(this.installationPrice);
+
         this.quantity = new TextField("Qty");
         this.quantity.setRequired(true);
         binder.bind(this.quantity, AddonProduct.QUANTITY);
@@ -333,8 +340,9 @@ public class AddonDetailsWindow extends Window {
 
         String rateValue = this.rate.getValue().replaceAll(",", "");
         String quantityValue = this.quantity.getValue().replaceAll(",", "");
+        String installationValue = this.installationPrice.getValue().replaceAll(",", "");
         this.amount.setReadOnly(false);
-        this.amount.setValue(String.valueOf(Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)));
+        this.amount.setValue(String.valueOf((Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)) + Double.parseDouble(installationValue) * Double.parseDouble(quantityValue)));
         this.amount.setReadOnly(true);
         checkApply();
     }
@@ -342,12 +350,14 @@ public class AddonDetailsWindow extends Window {
     private void quantityChanged(Property.ValueChangeEvent valueChangeEvent) {
         String rateValue = this.rate.getValue().replaceAll(",", "");
         String quantityValue = this.quantity.getValue().replaceAll(",", "");
+        String installationValue = this.installationPrice.getValue().replaceAll(",", "");
         if (Double.parseDouble(quantityValue) <= 0) {
             quantityValue = "1";
             this.quantity.setValue("1");
         }
         this.amount.setReadOnly(false);
-        this.amount.setValue(String.valueOf(Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)));
+        this.amount.setValue(String.valueOf((Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)) + Double.parseDouble(installationValue) * Double.parseDouble(quantityValue)));
+        //this.amount.setValue(String.valueOf(Double.parseDouble(rateValue) * Double.parseDouble(quantityValue)) + String.valueOf(Double.parseDouble(installationValue) * Double.parseDouble(quantityValue)));
         this.amount.setReadOnly(true);
         checkApply();
     }
@@ -483,16 +493,18 @@ public class AddonDetailsWindow extends Window {
             this.priceDate = new Date(System.currentTimeMillis());
         }
         PriceMaster rate = proposalDataProvider.getAddonRate(addonProductItem.getCode(),this.priceDate,this.city);
-       if (rate != null)
+        if (rate != null)
         {
             this.rateToBeUsed = rate.getPrice();
+            this.installationPriceToBeUsed=rate.getInstallationPrice();
         }
         else {
            NotificationUtil.showNotification("Error in Addon pricing",NotificationUtil.STYLE_BAR_ERROR_SMALL);
            return;
        }
-
-
+        this.installationPrice.setReadOnly(false);
+        this.installationPrice.setValue(this.installationPriceToBeUsed+"");
+        this.installationPrice.setReadOnly(true);
         this.rate.setReadOnly(false);
         this.rate.setValue(this.rateToBeUsed + "");
         this.rate.setReadOnly(true);

@@ -38,6 +38,7 @@ public class AddonProduct implements Cloneable {
     public static final String CUSTOM_ADDON_CATEGORY="customAddonCategory";
     public static final String SCOPEDISPLAYFLAG = "scopeDisplayFlag";
     public static final String ADDON_TYPE = "addonType";
+    public static final String INSTALLATION_PRICE = "installationPrice";
 
     private int seq;
     private int id;
@@ -57,6 +58,7 @@ public class AddonProduct implements Cloneable {
     private String brand;
     private String uom;
     private double amount;
+    private double installationPrice;
     private String imagePath;
     private int quantity;
     private double rate;
@@ -312,6 +314,14 @@ public class AddonProduct implements Cloneable {
         this.addonType = addonType;
     }
 
+    public double getInstallationPrice() {
+        return installationPrice;
+    }
+
+    public void setInstallationPrice(double installationPrice) {
+        this.installationPrice = installationPrice;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -348,23 +358,28 @@ public class AddonProduct implements Cloneable {
                 ", catalogueCode='" + catalogueCode + '\'' +
                 ", title='" + title + '\'' +
                 ", categoryCode='" + categoryCode + '\'' +
+                ", customAddonCategory='" + customAddonCategory + '\'' +
                 ", category='" + category + '\'' +
-                ", customAddonCategory='" + customAddonCategory  + '\'' +
+                ", product='" + product + '\'' +
                 ", productTypeCode='" + productTypeCode + '\'' +
                 ", productSubtypeCode='" + productSubtypeCode + '\'' +
                 ", productType='" + productType + '\'' +
-                ", product='" + product + '\'' +
                 ", brandCode='" + brandCode + '\'' +
                 ", brand='" + brand + '\'' +
                 ", uom='" + uom + '\'' +
                 ", amount=" + amount +
+                ", installationPrice=" + installationPrice +
                 ", imagePath='" + imagePath + '\'' +
                 ", quantity=" + quantity +
                 ", rate=" + rate +
                 ", updatedBy='" + updatedBy + '\'' +
                 ", description='" + description + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", spaceType='" + spaceType + '\'' +
+                ", roomcode='" + roomcode + '\'' +
+                ", scopeDisplayFlag='" + scopeDisplayFlag + '\'' +
+                ", addonType='" + addonType + '\'' +
                 ", add=" + add +
-                ", scopeDisplayFlag=" + scopeDisplayFlag +
                 '}';
     }
 }

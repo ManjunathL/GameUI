@@ -120,6 +120,8 @@ public class ProductAndAddons extends Window
     private Label productPrice;
     private Label productPriceAfterDiscount;
     private Label addonPrice;
+    private Label addonInstPrice;
+    private Label addonPricewithoutIns;
     private Label miscellaneousPrice;
     private Label totalPrice;
 
@@ -396,7 +398,7 @@ public class ProductAndAddons extends Window
                         return;
                     }
 
-                    if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
+                    if((proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)  && productsTotalAfterDiscount > 0)
                     {
                         NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                         return;
@@ -738,6 +740,7 @@ public class ProductAndAddons extends Window
         quickProductCheck="No";
         Double totalBeforeDiscount=0.0,totalAfterDiscount=0.0,productsTotal=0.0,addonsTotal=0.0,servicesTotal=0.0,disPercentage,disAmount=0.0,productTotalWOAccessories=0.0,deepClearingQty=0.0,deepClearingamount=0.0,floorProtectionQty=0.0,floorProtectionamount=0.0;
         Double projectHandlingCharges=0.0;
+        Double addonsTotalWithoutInsPrice=0.0,addonsInsPrice=0.0;
         disPercentage=proposalVersion.getDiscountPercentage();
         List<Product> products = proposalDataProvider.getVersionProducts(proposalVersion.getProposalId(), proposalVersion.getVersion());
         for (Product product : products) {
@@ -748,6 +751,8 @@ public class ProductAndAddons extends Window
         List<AddonProduct> addons=proposalDataProvider.getVersionAddons(proposalVersion.getProposalId(),proposalVersion.getVersion());
         for(AddonProduct addonProduct : addons)
         {
+            addonsTotalWithoutInsPrice+=addonProduct.getRate()*addonProduct.getQuantity();
+            addonsInsPrice+=addonProduct.getInstallationPrice();
             addonsTotal += addonProduct.getAmount();
         }
 
@@ -779,7 +784,7 @@ public class ProductAndAddons extends Window
 
         deepClearingQty=Double.valueOf(DCCQTY.getValue());
         if(productsTotalAfterDiscount > 0 )
-            deepClearingamount=deepClearingQty*deepCleaningChargesRate;
+        deepClearingamount=deepClearingQty*deepCleaningChargesRate;
         floorProtectionQty=Double.valueOf(FPCQTY.getValue());
         floorProtectionamount=floorProtectionQty*floorProtectionChargesRate;
 
@@ -791,6 +796,8 @@ public class ProductAndAddons extends Window
         productPrice.setValue(String.valueOf(productsTotal));
         productPriceAfterDiscount.setValue(String.valueOf(round(productsTotalAfterDiscount,2)));
         addonPrice.setValue(String.valueOf(addonsTotal));
+        addonPricewithoutIns.setValue(String.valueOf(addonsTotalWithoutInsPrice));
+        addonInstPrice.setValue(String.valueOf(addonsInsPrice));
         grandTotal.setValue(String.valueOf(totalBeforeDiscount.intValue()));
 
         discountTotal.setValue(String.valueOf(totalAfterDiscount));
@@ -798,7 +805,9 @@ public class ProductAndAddons extends Window
         if(productsTotalAfterDiscount > 0) {
             DCCAmount.setValue(String.valueOf(deepClearingamount));
             miscellaneousPrice.setValue(String.valueOf(this.round(servicesTotal, 2)));
+
         }else{
+            DCCQTY.setValue("0.0");
             miscellaneousPrice.setValue("0.0");
         }
 
@@ -1672,7 +1681,7 @@ public class ProductAndAddons extends Window
         addonsGrid.addSelectionListener(this::updateTotal);*/
         addonsGrid.setColumnReorderingAllowed(true);
         addonsGrid.setColumns(AddonProduct.SEQ, AddonProduct.ADDON_SPACE_TYPE, AddonProduct.ROOM_CODE, AddonProduct.ADDON_TYPE, AddonProduct.ADDON_CATEGORY_CODE, AddonProduct.PRODUCT_TYPE_CODE, AddonProduct.PRODUCT_SUBTYPE_CODE, AddonProduct.BRAND_CODE,
-                AddonProduct.PRODUCT, AddonProduct.UOM, AddonProduct.RATE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
+                AddonProduct.PRODUCT, AddonProduct.UOM, AddonProduct.RATE,AddonProduct.INSTALLATION_PRICE, AddonProduct.QUANTITY, AddonProduct.AMOUNT, "actions");
 
         List<Grid.Column> columns = addonsGrid.getColumns();
         int idx = 0;
@@ -1687,6 +1696,7 @@ public class ProductAndAddons extends Window
         columns.get(idx++).setHeaderCaption("Product Name");
         columns.get(idx++).setHeaderCaption("UOM");
         columns.get(idx++).setHeaderCaption("Rate");
+        columns.get(idx++).setHeaderCaption("Installation Price");
         columns.get(idx++).setHeaderCaption("Qty");
         columns.get(idx++).setHeaderCaption("Amount");
         Grid.Column actionColumn = columns.get(idx++);
@@ -1777,6 +1787,31 @@ public class ProductAndAddons extends Window
     }
     private Component buildAddonSummaryComponents() {
         HorizontalLayout addonSummaryLayout  = new HorizontalLayout();
+        addonSummaryLayout.setSpacing(true);
+        addonSummaryLayout.setSizeUndefined();
+
+        Label addonPricetitle1 = new Label("Addon Price : ");
+        addonPricetitle1.setStyleName("products-and-addons-summary-text");
+        addonSummaryLayout.addComponent(addonPricetitle1);
+        addonSummaryLayout.setComponentAlignment(addonPricetitle1, Alignment.TOP_LEFT);
+
+        this.addonPricewithoutIns = new Label();
+        this.addonPricewithoutIns.setConverter(getAmountConverter());
+        addonPricewithoutIns.setStyleName("products-and-addons-summary-text");
+        addonSummaryLayout.addComponent(addonPricewithoutIns);
+        addonSummaryLayout.setComponentAlignment(addonPricewithoutIns, Alignment.TOP_LEFT);
+
+        Label addonInstPricetitle = new Label("Addon Instalation Price : ");
+        addonInstPricetitle.setStyleName("products-and-addons-summary-text");
+        addonSummaryLayout.addComponent(addonInstPricetitle);
+        addonSummaryLayout.setComponentAlignment(addonInstPricetitle, Alignment.TOP_LEFT);
+
+        this.addonInstPrice = new Label();
+        this.addonInstPrice.setConverter(getAmountConverter());
+        addonInstPrice.setStyleName("products-and-addons-summary-text");
+        addonSummaryLayout.addComponent(addonInstPrice);
+        addonSummaryLayout.setComponentAlignment(addonInstPrice, Alignment.TOP_LEFT);
+
         Label addonPricetitle = new Label("Total Addon Price : ");
         addonPricetitle.setStyleName("products-and-addons-summary-text");
         addonSummaryLayout.addComponent(addonPricetitle);
@@ -2020,7 +2055,7 @@ public class ProductAndAddons extends Window
                     return;
                 }
 
-                if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
+                if((proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1) && productsTotalAfterDiscount > 0)
                 {
                     NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                     return;
@@ -2364,7 +2399,7 @@ public class ProductAndAddons extends Window
             {
                 NotificationUtil.showNotification("quick product has been added , Please delete the quick product", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-            }else if(proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1)
+            }else if((proposalHeader.getDeepClearingChargesApplied().equals("true") && deepCleaningQty < 1) && productsTotalAfterDiscount > 0)
             {
                 NotificationUtil.showNotification("House Keeping Quantity should be greater 0", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;

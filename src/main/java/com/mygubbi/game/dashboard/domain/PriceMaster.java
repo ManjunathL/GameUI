@@ -16,12 +16,16 @@ public class PriceMaster {
     public static final String FROM_DATE = "fromDate";
     public static final String TO_DATE = "toDate";
     public static final String SOURCE_PRICE = "sourcePrice";
+    public static final String INSTALLATION_PRICE = "installationPrice";
+    public static final String INSTALLATIONSOURCE_PRICE = "installationSourcePrice";
 
     private String rateType;
     private String rateId;
     private String city;
     private double price;
     private double sourcePrice;
+    private double installationPrice;
+    private double installationSourcePrice;
     private Date fromDate;
     private Date toDate;
 
@@ -81,6 +85,24 @@ public class PriceMaster {
         this.sourcePrice = sourcePrice;
     }
 
+    public double getInstallationPrice() {
+        return installationPrice;
+    }
+
+    public void setInstallationPrice(double installationPrice) {
+        this.installationPrice = installationPrice;
+    }
+
+    public double getInstallationSourcePrice()
+    {
+        return  installationSourcePrice;
+    }
+
+    public void setInstallationsourcePrice(double installationSourcePrice)
+    {
+        this.installationSourcePrice=installationSourcePrice;
+    }
+
     @Override
     public String toString() {
         return "PriceMaster{" +
@@ -89,6 +111,8 @@ public class PriceMaster {
                 ", city='" + city + '\'' +
                 ", price=" + price +
                 ", sourcePrice=" + sourcePrice +
+                ", installationPrice=" + installationPrice +
+                ", installationSourcePrice=" + installationSourcePrice +
                 ", fromDate=" + fromDate +
                 ", toDate=" + toDate +
                 '}';
