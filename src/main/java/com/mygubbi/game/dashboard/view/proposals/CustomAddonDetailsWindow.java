@@ -149,6 +149,7 @@ public class CustomAddonDetailsWindow extends Window {
         rate.setReadOnly(true);
         amount.setReadOnly(true);
         category.setReadOnly(true);
+        installationPrice.setReadOnly(true);
     }
     private void  setReadOnlyForUser() {
         spaceType.setReadOnly(true);
@@ -159,6 +160,7 @@ public class CustomAddonDetailsWindow extends Window {
         rate.setReadOnly(true);
         amount.setReadOnly(true);
         category.setReadOnly(true);
+        installationPrice.setReadOnly(true);
     }
     private void handlePackage()
     {
@@ -173,6 +175,7 @@ public class CustomAddonDetailsWindow extends Window {
             rate.setReadOnly(true);
             amount.setReadOnly(true);
             category.setReadOnly(true);
+            installationPrice.setReadOnly(true);
         }
         if(Objects.equals(proposalHeader.getPackageFlag(),"Yes") )
         {
@@ -184,6 +187,7 @@ public class CustomAddonDetailsWindow extends Window {
             rate.setReadOnly(true);
             amount.setReadOnly(true);
             category.setReadOnly(true);
+            installationPrice.setReadOnly(true);
         }
     }
     private Component buildAddonSelectionsComponent() {

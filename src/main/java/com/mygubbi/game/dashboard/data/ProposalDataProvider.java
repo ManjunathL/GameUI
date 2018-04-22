@@ -56,6 +56,7 @@ public class ProposalDataProvider {
     public static final String CUSTOM_ADDON_LOOKUP = "customAddCategory";
     public static final String OFFERTYPE_LOOKUP = "offerName";
     public static final String CRMID_LOOKUP = "crmId";
+    public static final String DATEAND_YEAR = "dateAndYear";
 
 
     public ProposalDataProvider(DataProviderMode dataProviderMode) {
