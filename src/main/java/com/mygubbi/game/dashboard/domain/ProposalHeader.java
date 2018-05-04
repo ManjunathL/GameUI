@@ -65,6 +65,7 @@ public class ProposalHeader {
     public static final String OFFER_CODE = "offerCode";
     public static final String  CUSTOM_ADDON_CHECK= "customAddonCheck";
     public static final String  EXPECTED_DELIVERY_DATE= "expectedDeliveryDate";
+    public static final String  BOOKINGORDER_MONTH= "bookingOrderMonth";
 
 
     private int id;
@@ -120,6 +121,7 @@ public class ProposalHeader {
     private String customAddonCheck;
     private String expectedDeliveryDate;
     private String offerCode;
+    private String bookingOrderMonth;
 
     private static final Logger LOG = LogManager.getLogger(ProposalHeader.class);
 
@@ -552,6 +554,14 @@ public class ProposalHeader {
 
     public void setOfferCode(String offerCode) {
         this.offerCode = offerCode;
+    }
+
+    public String getBookingOrderMonth() {
+        return bookingOrderMonth;
+    }
+
+    public void setBookingOrderMonth(String bookingOrderMonth) {
+        this.bookingOrderMonth = bookingOrderMonth;
     }
 
     @Override

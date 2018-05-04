@@ -41,6 +41,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Calendar;
 import java.util.stream.Collectors;
 
 import static com.mygubbi.game.dashboard.domain.ProposalHeader.*;
@@ -88,6 +89,7 @@ public class CreateProposalsView extends Panel implements View {
     private Field<?> projectAddressLine2;
     private ComboBox projectCityField;
     private ComboBox offerField;
+    private ComboBox bookingFormField;
 
     private ComboBox salesPerson;
     private Field<?> salesEmail;
@@ -130,9 +132,13 @@ public class CreateProposalsView extends Panel implements View {
     String parameters;
     CheckBox PHCcheck,DCCcheck,FPCcheck;
     Boolean dateComparision;
+    String selectedMonth,selectedYear,previousMonth,previousYear,BookingMonth,BookingYear;
     public CreateProposalsView() {
     }
-
+    public static String theMonth(int month){
+        String[] monthNames = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        return monthNames[month];
+    }
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         parameters = event.getParameters();
@@ -1317,6 +1323,59 @@ public class CreateProposalsView extends Panel implements View {
 
             LOG.debug("Inside else save");
             LOG.debug("This proposal header 1" + this.proposalHeader);
+            List<ProposalVersion> proposalVersions = proposalDataProvider.getversion(proposalHeader.getId(),"1.0");
+            String Bookingdate=null;
+            LOG.info("booking order month " +bookingFormField.getValue().toString() + proposalHeader.getBookingOrderMonth().equals(null));
+            if(!(StringUtils.isEmpty(this.proposalHeader.getBookingOrderMonth())))
+            {
+                for(ProposalVersion p : proposalVersions)
+                {
+                    if(p.getVersion().equalsIgnoreCase("1.0"))
+                    {
+                        Bookingdate=p.getBusinessDate().substring(0,10);
+                    }
+                    else
+                    {
+                        Bookingdate=null;
+                    }
+                }
+
+                LocalDate now = LocalDate.now(); // 2015-11-24
+                DateTimeFormatter currentFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate confirmDate = LocalDate.parse(Bookingdate, currentFormatter);
+                confirmDate.getMonth(); // java.time.Month = OCTOBER
+                confirmDate.getMonth().getValue(); // 10
+                int confirmdateyear=confirmDate.getYear() % 100; // 2015
+                //String str = "2015-01-15";
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate dateTime = LocalDate.parse(Bookingdate, formatter);
+                LOG.info("get month " +dateTime.getMonth()+ "get year " +dateTime.getYear()+ "get month value " +dateTime.getMonthValue());
+                LocalDate earlier = dateTime.minusMonths(1); // 2015-10-24
+                earlier.getMonth(); // java.time.Month = OCTOBER
+                earlier.getMonth().getValue(); // 10
+                int year=earlier.getYear() % 100; // 2015
+
+                selectedMonth=proposalHeader.getBookingOrderMonth().substring(0,3);
+                selectedYear=proposalHeader.getBookingOrderMonth().substring(4,6);
+                previousMonth=this.theMonth(earlier.getMonth().getValue()-1);
+                previousYear=String.valueOf(year);
+                BookingMonth=this.theMonth(confirmDate.getMonth().getValue()-1);
+                BookingYear=String.valueOf(confirmdateyear);
+
+                if((selectedMonth.equalsIgnoreCase(BookingMonth) && selectedYear.equalsIgnoreCase(BookingYear)))
+                {
+                    //NotificationUtil.showNotification("selected month s equal to booking month", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                }else if((selectedMonth.equalsIgnoreCase(previousMonth) && selectedYear.equalsIgnoreCase(previousYear)))
+                {
+                    //NotificationUtil.showNotification("selected month is equal to previous month", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                }
+                else
+                {
+                    NotificationUtil.showNotification("Incorrect month value 2nd case", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                    return;
+                }
+            }
 
             if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
                 this.proposalHeader.setTitle(NEW_TITLE);
@@ -1444,6 +1503,60 @@ public class CreateProposalsView extends Panel implements View {
         if (StringUtils.isEmpty(this.proposalHeader.getTitle())) {
             this.proposalHeader.setTitle(NEW_TITLE);
         }
+        List<ProposalVersion> proposalVersions = proposalDataProvider.getversion(proposalHeader.getId(),"1.0");
+        String Bookingdate=null;
+        LOG.info("booking order month " +bookingFormField.getValue().toString() + proposalHeader.getBookingOrderMonth().equals(null));
+        if(!(StringUtils.isEmpty(this.proposalHeader.getBookingOrderMonth())))
+        {
+            for(ProposalVersion p : proposalVersions)
+            {
+                if(p.getVersion().equalsIgnoreCase("1.0"))
+                {
+                    Bookingdate=p.getBusinessDate().substring(0,10);
+                }
+                else
+                {
+                    Bookingdate=null;
+                }
+            }
+
+            LocalDate now = LocalDate.now(); // 2015-11-24
+            DateTimeFormatter currentFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate confirmDate = LocalDate.parse(Bookingdate, currentFormatter);
+            confirmDate.getMonth(); // java.time.Month = OCTOBER
+            confirmDate.getMonth().getValue(); // 10
+            int confirmdateyear=confirmDate.getYear() % 100; // 2015
+            //String str = "2015-01-15";
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate dateTime = LocalDate.parse(Bookingdate, formatter);
+            LOG.info("get month " +dateTime.getMonth()+ "get year " +dateTime.getYear()+ "get month value " +dateTime.getMonthValue());
+            LocalDate earlier = dateTime.minusMonths(1); // 2015-10-24
+            earlier.getMonth(); // java.time.Month = OCTOBER
+            earlier.getMonth().getValue(); // 10
+            int year=earlier.getYear() % 100; // 2015
+
+            selectedMonth=proposalHeader.getBookingOrderMonth().substring(0,3);
+            selectedYear=proposalHeader.getBookingOrderMonth().substring(4,6);
+            previousMonth=this.theMonth(earlier.getMonth().getValue()-1);
+            previousYear=String.valueOf(year);
+            BookingMonth=this.theMonth(confirmDate.getMonth().getValue()-1);
+            BookingYear=String.valueOf(confirmdateyear);
+
+            if((selectedMonth.equalsIgnoreCase(BookingMonth) && selectedYear.equalsIgnoreCase(BookingYear)))
+            {
+                //NotificationUtil.showNotification("selected month s equal to booking month", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }else if((selectedMonth.equalsIgnoreCase(previousMonth) && selectedYear.equalsIgnoreCase(previousYear)))
+            {
+                //NotificationUtil.showNotification("selected month is equal to previous month", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }
+            else
+            {
+                NotificationUtil.showNotification("Incorrect month value 2nd case", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+                return;
+            }
+        }
+
         try {
             binder.commit();
         } catch (FieldGroup.CommitException e) {
@@ -1794,6 +1907,27 @@ public class CreateProposalsView extends Panel implements View {
         return select;
     }
 
+    private ComboBox getBookingMonthCombo()
+    {
+        List<LookupItem> list=proposalDataProvider.getLookupItems(ProposalDataProvider.DATEAND_YEAR);
+        final BeanContainer<String, LookupItem> container = new BeanContainer<>(LookupItem.class);
+        container.setBeanIdProperty(LookupItem.TITLE);
+        container.addAll(list);
+
+        ComboBox select = new ComboBox("Booking Month");
+        select.setWidth("300px");
+        select.setNullSelectionAllowed(false);
+        select.setContainerDataSource(container);
+        select.setItemCaptionPropertyId(LookupItem.TITLE);
+
+        if (StringUtils.isNotEmpty(this.proposalHeader.getBookingOrderMonth())) {
+            select.setValue(this.proposalHeader.getBookingOrderMonth());
+        } else if (container.size() == 1) {
+            select.setValue(select.getItemIds().iterator().next());
+        }
+
+        return select;
+    }
     private ComboBox getCityCombo() {
         List<LookupItem> list = proposalDataProvider.getLookupItems(ProposalDataProvider.CITY_LOOKUP);
         final BeanContainer<String, LookupItem> container =
@@ -2064,6 +2198,12 @@ public class CreateProposalsView extends Panel implements View {
             maxDiscountPercentage.setVisible(false);
         }
 
+        bookingFormField = getBookingMonthCombo();
+        binder.bind(bookingFormField, BOOKINGORDER_MONTH);
+       // bookingFormField.setRequired(true);
+        formLayoutLeft.addComponent(bookingFormField);
+        bookingFormField.addValueChangeListener(this::bookingFormFieldValueChanged);
+
         OptionGroup single = new OptionGroup("Package");
         single.addItems("Yes", "No");
         binder.bind(single,PACKAGE_FLAG);
@@ -2290,6 +2430,76 @@ public class CreateProposalsView extends Panel implements View {
         CRMsearchWindow.open(proposalHeader);
     }
 
+    private void bookingFormFieldValueChanged(Property.ValueChangeEvent valueChangeEvent)
+    {
+        List<ProposalVersion> proposalVersions = proposalDataProvider.getversion(proposalHeader.getId(),"1.0");
+        LOG.info("proposal version list size " +proposalVersions.size());
+        String Bookingdate=null;
+        for(ProposalVersion p : proposalVersions)
+        {
+            if(p.getVersion().equalsIgnoreCase("1.0"))
+            {
+                Bookingdate=p.getBusinessDate().substring(0,10);
+                /*String str = date.substring(0,10);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate dateTime = LocalDate.parse(str, formatter);
+                LOG.info("get month " +dateTime.getMonth()+ "get year " +dateTime.getYear()+ "get month value " +dateTime.getMonthValue());
+*/
+            }
+            else
+            {
+                Bookingdate=null;
+            }
+        }
+
+        try {
+
+            LocalDate now = LocalDate.now(); // 2015-11-24
+            DateTimeFormatter currentFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate confirmDate = LocalDate.parse(Bookingdate, currentFormatter);
+            confirmDate.getMonth(); // java.time.Month = OCTOBER
+            confirmDate.getMonth().getValue(); // 10
+            int confirmdateyear=confirmDate.getYear() % 100; // 2015
+            //String str = "2015-01-15";
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate dateTime = LocalDate.parse(Bookingdate, formatter);
+            LOG.info("get month " +dateTime.getMonth()+ "get year " +dateTime.getYear()+ "get month value " +dateTime.getMonthValue());
+            LocalDate earlier = dateTime.minusMonths(1); // 2015-10-24
+            earlier.getMonth(); // java.time.Month = OCTOBER
+            earlier.getMonth().getValue(); // 10
+            int year=earlier.getYear() % 100; // 2015
+
+            selectedMonth=valueChangeEvent.getProperty().getValue().toString().substring(0,3);
+            selectedYear=valueChangeEvent.getProperty().toString().substring(4,6);
+            previousMonth=this.theMonth(earlier.getMonth().getValue()-1);
+            previousYear=String.valueOf(year);
+            BookingMonth=this.theMonth(confirmDate.getMonth().getValue()-1);
+            BookingYear=String.valueOf(confirmdateyear);
+
+            LOG.info("Selecte month " +selectedMonth+ " selected year " +selectedYear);
+            LOG.info("previous month " +previousMonth+ " previous year " +previousYear);
+            LOG.info("Booking month " +BookingMonth+ " BookingYear " +BookingYear);
+
+            if((selectedMonth.equalsIgnoreCase(BookingMonth) && selectedYear.equalsIgnoreCase(BookingYear)))
+            {
+                //NotificationUtil.showNotification("selected month s equal to booking month", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }else if((selectedMonth.equalsIgnoreCase(previousMonth) && selectedYear.equalsIgnoreCase(previousYear)))
+            {
+                //NotificationUtil.showNotification("selected month is equal to previous month", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }
+            else
+            {
+                NotificationUtil.showNotification("Incorrect month value 2nd case", NotificationUtil.STYLE_BAR_ERROR_SMALL);
+            }
+
+        }
+        catch (Exception e)
+        {
+            LOG.info("Exception in booking form field value change" +e);
+        }
+
+    }
 
     private void packageselectionchanged(Property.ValueChangeEvent valueChangeEvent)
     {

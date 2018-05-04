@@ -2584,4 +2584,21 @@ public class ProposalDataProvider {
         }
     }
 
+    public List<ProposalVersion> getversion(int proposalId, String Vid) {
+        JSONArray arrayJson = dataProviderMode.getResourceArray("proposal/version/selectversion", new HashMap<String, String>() {
+            {
+                put("proposalId", proposalId + "");
+                put("version", Vid + "");
+            }
+        });
+        try {
+            ProposalVersion[] items = this.mapper.readValue(arrayJson.toString(), ProposalVersion[].class);
+            return new ArrayList<>(Arrays.asList(items));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
 }

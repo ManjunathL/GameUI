@@ -50,6 +50,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -2260,7 +2261,10 @@ public class ProductAndAddons extends Window
         sendToCRM.setPresales_user_email(proposalHeader.getDesignerEmail());
         return sendToCRM;
     }
-
+    public static String theMonth(int month){
+        String[] monthNames = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        return monthNames[month];
+    }
     private void confirm(Button.ClickEvent clickEvent) {
         LOG.info("Click event button" +clickEvent.getButton().getCaption() );
 
@@ -2329,7 +2333,11 @@ public class ProductAndAddons extends Window
                     } else {
                         VersionConfirmOrDiscardPopUpWindow.open(proposalVersionResponse, productAndAddonSelection, proposalHeader);
                     }
-
+                DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(false));
+                LOG.info("proposal.get Booking form " +proposalHeader.getBookingOrderMonth());
+                DashboardEventBus.post(new ProposalEvent.ProposalUpdated(proposalHeader));
+                /*DashboardEventBus.unregister(this);
+                close();*/
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }

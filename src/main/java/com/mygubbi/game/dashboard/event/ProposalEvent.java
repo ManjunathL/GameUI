@@ -8,8 +8,7 @@ import com.vaadin.ui.Window;
  */
 public abstract class ProposalEvent {
 
-    public static class ProposalUpdated {
-    }
+
 
     public static class ListItemAdded {
         private ProposalListViewItem proposalListViewItem;
@@ -101,6 +100,17 @@ public abstract class ProposalEvent {
 
         public Product getProduct() {
             return product;
+        }
+    }
+
+    public static class ProposalUpdated {
+        private ProposalHeader proposal;
+        public ProposalUpdated(ProposalHeader proposal) {
+            this.proposal = proposal;
+        }
+
+        public ProposalHeader getProposal() {
+            return proposal;
         }
     }
 
