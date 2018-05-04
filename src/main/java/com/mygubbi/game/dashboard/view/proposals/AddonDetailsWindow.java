@@ -462,7 +462,7 @@ public class AddonDetailsWindow extends Window {
 
         String prevCode = (String) this.product.getValue();
 
-        List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.category.getValue(), (String) this.productType.getValue(),(String) this.productSubtype.getValue(), (String) this.brand.getValue());
+        List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.category.getValue(), (String) this.productType.getValue(), (String) this.productSubtype.getValue(), (String) this.brand.getValue(), this.proposalHeader.getPriceDate());
         this.productCodeBeanContainer.removeAllItems();
         this.productCodeBeanContainer.addAll(list);
         Object next = this.product.getItemIds().iterator().next();
@@ -561,7 +561,7 @@ public class AddonDetailsWindow extends Window {
 
     private ComboBox getProductCodeCombo() {
 
-        List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.category.getValue(), (String) this.productType.getValue(),(String) this.productSubtype.getValue(), (String) this.brand.getValue());
+        List<AddonProductItem> list = proposalDataProvider.getAddonProductItems((String) this.category.getValue(), (String) this.productType.getValue(), (String) this.productSubtype.getValue(), (String) this.brand.getValue(), this.proposalHeader.getPriceDate());
         //LOG.info("list size" +list.size());
         productCodeBeanContainer = new BeanContainer<>(AddonProductItem.class);
         productCodeBeanContainer.setBeanIdProperty(AddonProductItem.PRODUCT);

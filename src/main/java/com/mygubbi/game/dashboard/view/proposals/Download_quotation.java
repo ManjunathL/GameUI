@@ -200,9 +200,8 @@ public class Download_quotation extends Window
         }
     }
     private StreamResource createQuoteResourcePdf() {
-        StreamResource.StreamSource source = () -> {
-            return getInputStreamPdf();
-        };
+        StreamResource.StreamSource source = () -> getInputStreamPdf();
+        LOG.debug("Stream resource : " + source.getStream());
         return new StreamResource(source, "Quotation.pdf");
     }
 
@@ -236,8 +235,8 @@ public class Download_quotation extends Window
         InputStream input = null;
         try {
             input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
-            DashboardEventBus.unregister(this);
-            close();
+//            DashboardEventBus.unregister(this);
+//            close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -261,8 +260,8 @@ public class Download_quotation extends Window
         InputStream input = null;
         try {
             input = new ByteArrayInputStream(FileUtils.readFileToByteArray(new File(quoteFile)));
-            DashboardEventBus.unregister(this);
-            close();
+//            DashboardEventBus.unregister(this);
+//            close();
         } catch (IOException e) {
             e.printStackTrace();
         }
