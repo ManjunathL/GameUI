@@ -896,7 +896,10 @@ public class ProposalDataProvider {
             productAndAddonSelection.setUserId(getUserId());
             String productSelectionsJson = this.mapper.writeValueAsString(productAndAddonSelection);
             JSONObject obj = dataProviderMode.postResource("proposal/downloadquoteandSow", productSelectionsJson);
-            return obj.getString("quoteFile");
+            String quoteFile = obj.getString("quoteFile");
+            LOG.debug("--------------------------------------");
+            LOG.debug("QUOTE FILE RESPONSE : " + quoteFile);
+            return quoteFile;
         } catch (JSONException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -1252,13 +1255,15 @@ public class ProposalDataProvider {
     }
 
     //addon/products
-    public List<AddonProductItem> getAddonProductItems(String categoryCode, String addonProductTypeCode, String addonProductSubTypeCode, String brandCode) {
+    public List<AddonProductItem> getAddonProductItems(String categoryCode, String addonProductTypeCode, String addonProductSubTypeCode, String brandCode, Date priceDate) {
         JSONArray array = dataProviderMode.getResourceArray("addon/products", new HashMap<String, String>() {
             {
                 put("categoryCode", urlEncode(categoryCode));
                 put("productTypeCode", urlEncode(addonProductTypeCode));
                 put("productSubtypeCode", urlEncode(addonProductSubTypeCode));
                 put("brandCode", urlEncode(brandCode));
+                put("priceDate", urlEncode(String.valueOf(priceDate)));
+                put("priceDate", urlEncode(String.valueOf(priceDate)));
             }
         });
         try {

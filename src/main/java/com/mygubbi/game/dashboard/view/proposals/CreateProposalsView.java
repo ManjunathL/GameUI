@@ -266,6 +266,7 @@ public class CreateProposalsView extends Panel implements View {
         if (("Yes").contains(cityStatus)) {
             quotenew.setReadOnly(true);
             projectCityField.setReadOnly(true);
+            customerNameField.setReadOnly(true);
             searchcrmid.setEnabled(false);
             offerField.setReadOnly(true);
         }
@@ -280,12 +281,14 @@ public class CreateProposalsView extends Panel implements View {
                 projectCityField.setReadOnly(false);
                 offerField.setReadOnly(false);
                 quotenew.setReadOnly(false);
+                customerNameField.setReadOnly(true);
                 cancelButton.setVisible(true);
                 saveAndCloseButton.setVisible(false);
             }else
             {
                 projectCityField.setReadOnly(true);
                 quotenew.setReadOnly(true);
+                customerNameField.setReadOnly(true);
                 offerField.setReadOnly(true);
                 searchcrmid.setEnabled(false);
                 cancelButton.setVisible(false);
@@ -1592,6 +1595,7 @@ public class CreateProposalsView extends Panel implements View {
         formLayoutLeft.addComponent(customerIdField);*/
         customerNameField = binder.buildAndBind("Customer Name", C_NAME);
         customerNameField.setRequired(true);
+        customerNameField.setReadOnly(true);
         ((TextField) customerNameField).setNullRepresentation("");
         formLayoutLeft.addComponent(customerNameField);
 
@@ -1613,11 +1617,11 @@ public class CreateProposalsView extends Panel implements View {
         customerEmailField = binder.buildAndBind("Email", C_EMAIL);
         ((TextField) customerEmailField).setNullRepresentation("");
         customerEmailField.setReadOnly(true);
-        formLayoutLeft.addComponent(customerEmailField);
+        //formLayoutLeft.addComponent(customerEmailField);
         customerNumberField1 = binder.buildAndBind("Phone", C_PHONE1);
         customerNumberField1.setReadOnly(true);
         ((TextField) customerNumberField1).setNullRepresentation("");
-        formLayoutLeft.addComponent(customerNumberField1);
+        //formLayoutLeft.addComponent(customerNumberField1);
         /*customerNumberField2 = binder.buildAndBind("Phone 2", C_PHONE2);
         ((TextField) customerNumberField2).setNullRepresentation("");
         formLayoutLeft.addComponent(customerNumberField2);*/
