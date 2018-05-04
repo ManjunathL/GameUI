@@ -11,6 +11,8 @@ public class  AddonProductItem {
     public static final String RATE = "rate";
     public static final String CODE = "code";
     public static final String SCOPE_DISPLAY_FLAG = "scopeDisplayFlag";
+    public static final String INSTALLATION_PRICE = "installationPrice";
+
     private String catalogueCode;
     private String room;
     private String product;
@@ -20,6 +22,7 @@ public class  AddonProductItem {
     private String imagePath;
     private String uom;
     private String scopeDisplayFlag;
+    private double installationPrice;
 
 
 
@@ -93,6 +96,14 @@ public class  AddonProductItem {
 
     public void setScopeDisplayFlag(String scopeDisplayFlag) {
         this.scopeDisplayFlag = scopeDisplayFlag;
+    }
+
+    public double getInstallationPrice() {
+        return installationPrice;
+    }
+
+    public void setInstallationPrice(double installationPrice) {
+        this.installationPrice = installationPrice;
     }
 
     @Override
