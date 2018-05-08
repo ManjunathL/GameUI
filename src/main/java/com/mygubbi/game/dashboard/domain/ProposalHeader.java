@@ -611,6 +611,7 @@ public class ProposalHeader {
                 ", offerType='" + offerType + '\'' +
                 ", fromProposal=" + fromProposal +
                 ", fromVersion='" + fromVersion + '\'' +
+                ", bookingOrderMonth='" + bookingOrderMonth + '\'' +
                 '}';
     }
 }

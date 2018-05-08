@@ -2372,6 +2372,23 @@ public class ProposalDataProvider {
         }
     }
 
+
+    public List<BookingMonth> getBookingMonthOptions(int proposalId) {
+        try {
+            JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/getbookingmonthoptions", new HashMap<String, String>() {
+                {
+                    put("proposalId", proposalId + "");
+                    put("version", "1.0" + "");
+                }
+            });
+            BookingMonth[] items = this.mapper.readValue(jsonArray.toString(), BookingMonth[].class);
+            return new ArrayList<>(Arrays.asList(items));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     public List<ProposalVersion> getAllProductDetails(int proposalId) {
         JSONArray jsonArray = dataProviderMode.getResourceArray("proposal/crm/getproduct", new HashMap<String, String>() {
             {

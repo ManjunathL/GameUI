@@ -2261,10 +2261,7 @@ public class ProductAndAddons extends Window
         sendToCRM.setPresales_user_email(proposalHeader.getDesignerEmail());
         return sendToCRM;
     }
-    public static String theMonth(int month){
-        String[] monthNames = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-        return monthNames[month];
-    }
+
     private void confirm(Button.ClickEvent clickEvent) {
         LOG.info("Click event button" +clickEvent.getButton().getCaption() );
 
@@ -2327,15 +2324,18 @@ public class ProductAndAddons extends Window
                         SendToCRM sendToCRM = updatePriceInCRMOnConfirm(proposalVersionResponse.getQuoteFile());
                         proposalDataProvider.updateCrmPrice(sendToCRM);
                         proposalVersion.setEventAddStatus(false);
-                        ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
-                        DashboardEventBus.post(event1);
+//                        ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
+                    LOG.info("DATE :" + proposalHeader.getBookingOrderMonth());
+                    proposalHeader.setBookingOrderMonth("May-18");
+                    DashboardEventBus.post(new ProposalEvent.ProposalUpdated(proposalHeader), new ProposalEvent.VersionCreated(proposalVersion));
+
+//                    DashboardEventBus.post(event1);
+//                        DashboardEventBus.post(event2);
                         close();
                     } else {
                         VersionConfirmOrDiscardPopUpWindow.open(proposalVersionResponse, productAndAddonSelection, proposalHeader);
                     }
-                DashboardEventBus.post(new ProposalEvent.DashboardMenuUpdated(false));
                 LOG.info("proposal.get Booking form " +proposalHeader.getBookingOrderMonth());
-                DashboardEventBus.post(new ProposalEvent.ProposalUpdated(proposalHeader));
                 /*DashboardEventBus.unregister(this);
                 close();*/
             } catch (FieldGroup.CommitException e) {

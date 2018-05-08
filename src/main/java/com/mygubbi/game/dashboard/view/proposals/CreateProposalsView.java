@@ -65,6 +65,7 @@ public class CreateProposalsView extends Panel implements View {
     private String status=null;
     private ProposalDataProvider proposalDataProvider = ServerManager.getInstance().getProposalDataProvider();
 
+    final BeanContainer<String, BookingMonth> container = new BeanContainer<>(BookingMonth.class);
     private Field<?> proposalTitleField;
     private TextField maxDiscountPercentage;
     private Field<?> noOfDaysForWorkCompletion;
@@ -132,7 +133,7 @@ public class CreateProposalsView extends Panel implements View {
     String parameters;
     CheckBox PHCcheck,DCCcheck,FPCcheck;
     Boolean dateComparision;
-    String selectedMonth,selectedYear,previousMonth,previousYear,BookingMonth,BookingYear;
+    String selectedMonth, selectedYear, previousMonth, previousYear, bookingMonth, BookingYear;
     public CreateProposalsView() {
     }
     public static String theMonth(int month){
@@ -1363,10 +1364,10 @@ public class CreateProposalsView extends Panel implements View {
                 selectedYear=proposalHeader.getBookingOrderMonth().substring(4,6);
                 previousMonth=this.theMonth(earlier.getMonth().getValue()-1);
                 previousYear=String.valueOf(year);
-                BookingMonth=this.theMonth(confirmDate.getMonth().getValue()-1);
+                bookingMonth = this.theMonth(confirmDate.getMonth().getValue() - 1);
                 BookingYear=String.valueOf(confirmdateyear);
 
-                if((selectedMonth.equalsIgnoreCase(BookingMonth) && selectedYear.equalsIgnoreCase(BookingYear)))
+                if ((selectedMonth.equalsIgnoreCase(bookingMonth) && selectedYear.equalsIgnoreCase(BookingYear)))
                 {
                     //NotificationUtil.showNotification("selected month s equal to booking month", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 }else if((selectedMonth.equalsIgnoreCase(previousMonth) && selectedYear.equalsIgnoreCase(previousYear)))
@@ -1543,10 +1544,10 @@ public class CreateProposalsView extends Panel implements View {
             selectedYear=proposalHeader.getBookingOrderMonth().substring(4,6);
             previousMonth=this.theMonth(earlier.getMonth().getValue()-1);
             previousYear=String.valueOf(year);
-            BookingMonth=this.theMonth(confirmDate.getMonth().getValue()-1);
+            bookingMonth = this.theMonth(confirmDate.getMonth().getValue() - 1);
             BookingYear=String.valueOf(confirmdateyear);
 
-            if((selectedMonth.equalsIgnoreCase(BookingMonth) && selectedYear.equalsIgnoreCase(BookingYear)))
+            if ((selectedMonth.equalsIgnoreCase(bookingMonth) && selectedYear.equalsIgnoreCase(BookingYear)))
             {
                 //NotificationUtil.showNotification("selected month s equal to booking month", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }else if((selectedMonth.equalsIgnoreCase(previousMonth) && selectedYear.equalsIgnoreCase(previousYear)))
@@ -1913,16 +1914,19 @@ public class CreateProposalsView extends Panel implements View {
 
     private ComboBox getBookingMonthCombo()
     {
-        List<LookupItem> list=proposalDataProvider.getLookupItems(ProposalDataProvider.DATEAND_YEAR);
-        final BeanContainer<String, LookupItem> container = new BeanContainer<>(LookupItem.class);
-        container.setBeanIdProperty(LookupItem.TITLE);
+
+        int id = this.proposalHeader.getId();
+        LOG.debug("Proposal Id :" + id);
+        List<BookingMonth> list = proposalDataProvider.getBookingMonthOptions(id);
+        LOG.info("list :" + list.size());
+        container.setBeanIdProperty(BookingMonth.MONTH);
         container.addAll(list);
 
         ComboBox select = new ComboBox("Booking Month");
         select.setWidth("300px");
         select.setNullSelectionAllowed(false);
         select.setContainerDataSource(container);
-        select.setItemCaptionPropertyId(LookupItem.TITLE);
+        select.setItemCaptionPropertyId(BookingMonth.MONTH);
 
         if (StringUtils.isNotEmpty(this.proposalHeader.getBookingOrderMonth())) {
             select.setValue(this.proposalHeader.getBookingOrderMonth());
@@ -2204,7 +2208,29 @@ public class CreateProposalsView extends Panel implements View {
 
         bookingFormField = getBookingMonthCombo();
         binder.bind(bookingFormField, BOOKINGORDER_MONTH);
-       // bookingFormField.setRequired(true);
+        java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());
+
+        PriceMaster noOfDaysEditable = null;
+
+        if (proposalHeader.getPriceDate() == null) {
+            noOfDaysEditable = proposalDataProvider.getFactorRatePriceDetails("BM", sqlDate, "all");
+        } else {
+            noOfDaysEditable = proposalDataProvider.getFactorRatePriceDetails("BM", this.proposalHeader.getPriceDate(), "all");
+        }
+
+        int noofDaysAllowed = (int) noOfDaysEditable.getPrice();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+
+        if (currentDay > noofDaysAllowed) {
+            bookingFormField.setReadOnly(true);
+        } else {
+            bookingFormField.setReadOnly(false);
+        }
+
+        // bookingFormField.setRequired(true);
         formLayoutLeft.addComponent(bookingFormField);
         bookingFormField.addValueChangeListener(this::bookingFormFieldValueChanged);
 
@@ -2355,6 +2381,31 @@ public class CreateProposalsView extends Panel implements View {
 
     }
 
+    @Subscribe
+    public void proposalUpdated(final ProposalEvent.ProposalUpdated event) {
+        proposalDataProvider.saveProposal(event.getProposal());
+        ProposalHeader proposalHeader = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
+        List<BookingMonth> list = new ArrayList<>();
+
+        LOG.debug("Proposal header event : " + event.getProposal());
+        LOG.debug("Proposal header : " + proposalHeader);
+        LOG.debug("Proposal header bm: " + this.proposalHeader.getBookingOrderMonth());
+        this.proposalHeader = proposalHeader;
+        list.add(new BookingMonth(proposalHeader.getBookingOrderMonth()));
+        bookingFormField.setReadOnly(false);
+        bookingFormField.getContainerDataSource().removeAllItems();
+        container.setBeanIdProperty(BookingMonth.MONTH);
+        container.addAll(list);
+
+        bookingFormField.setNullSelectionAllowed(false);
+        bookingFormField.setContainerDataSource(container);
+        bookingFormField.setItemCaptionPropertyId(BookingMonth.MONTH);
+
+        bookingFormField.setValue(this.proposalHeader.getBookingOrderMonth());
+
+
+    }
+
     /* @Subscribe
      public void productDelete(final ProposalEvent.ProductDeletedEvent event) {
          List<Product> products = proposal.getProducts();
@@ -2478,14 +2529,14 @@ public class CreateProposalsView extends Panel implements View {
             selectedYear=valueChangeEvent.getProperty().toString().substring(4,6);
             previousMonth=this.theMonth(earlier.getMonth().getValue()-1);
             previousYear=String.valueOf(year);
-            BookingMonth=this.theMonth(confirmDate.getMonth().getValue()-1);
+            bookingMonth = this.theMonth(confirmDate.getMonth().getValue() - 1);
             BookingYear=String.valueOf(confirmdateyear);
 
             LOG.info("Selecte month " +selectedMonth+ " selected year " +selectedYear);
             LOG.info("previous month " +previousMonth+ " previous year " +previousYear);
-            LOG.info("Booking month " +BookingMonth+ " BookingYear " +BookingYear);
+            LOG.info("Booking month " + bookingMonth + " BookingYear " + BookingYear);
 
-            if((selectedMonth.equalsIgnoreCase(BookingMonth) && selectedYear.equalsIgnoreCase(BookingYear)))
+            if ((selectedMonth.equalsIgnoreCase(bookingMonth) && selectedYear.equalsIgnoreCase(BookingYear)))
             {
                 //NotificationUtil.showNotification("selected month s equal to booking month", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }else if((selectedMonth.equalsIgnoreCase(previousMonth) && selectedYear.equalsIgnoreCase(previousYear)))
