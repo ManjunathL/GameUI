@@ -2191,7 +2191,8 @@ public class ProductAndAddons extends Window
         return sendToCRM;
     }
 
-    private SendToCRM updatePriceInCRMOnConfirm(String quoteLink) {
+    private SendToCRM updatePriceInCRMOnConfirm(String quoteLink,String DSOStaus) {
+        LOG.info("update price on confirm" );
         Double amount = 0.0;
         Double DSOAmount=0.0;
         List<String> quoteNumberCRMList = new ArrayList<>();
@@ -2201,19 +2202,18 @@ public class ProductAndAddons extends Window
         List<ProposalVersion> proposalVersionList = new ArrayList<>();
         List<ProposalVersion> proposalVersionListDSO=new ArrayList<>();
         List<ProposalHeader> proposalHeaders = proposalDataProvider.getProposalHeadersByCrmIds(proposalHeader.getCrmId());
+
         for (ProposalHeader p : proposalHeaders) {
             proposalVersionList = new ArrayList<>();
             proposalVersionListDSO=new ArrayList<>();
             List<ProposalVersion> pv = proposalDataProvider.getAllProductDetails(p.getId());
             for (ProposalVersion version : pv) {
                 if (version.getVersion().equals("2.0") && version.getStatus().equals("DSO")) {
-                    //proposalVersionList.add(version);
                     proposalVersionListDSO.add(version);
                 } else if (version.getVersion().equals("1.0") && version.getStatus().equals("Confirmed")) {
                     proposalVersionList.add(version);
                 }
             }
-            LOG.info("list 1" +proposalVersionList.size() + "list 2 " +proposalVersionListDSO.size());
             if (proposalVersionList.size() != 0) {
                 Date date = proposalVersionList.get(0).getUpdatedOn();
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
@@ -2246,25 +2246,23 @@ public class ProductAndAddons extends Window
         }
         Set<String> s = new LinkedHashSet<String>(quoteNumberCRMList);
         String quoteNumberCRM=StringUtils.join(s,",");
-        /*for(String s1:s)
-        {
-            quoteNumberCRM=quoteNumberCRM+s1+",";
-        }*/
-        LOG.info("quoteNumberCRM " +quoteNumberCRM);
+
         PublishOnCRM publishOnCRM = new PublishOnCRM(proposalHeader);
-        SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish(quoteLink);
+        SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish(quoteLink,DSOStaus);
         sendToCRM.setEstimated_project_cost_c(sendToCRMOnPublish.getEstimated_project_cost_c());
         sendToCRM.setFinal_proposal_amount_c(DSOAmount);
         sendToCRM.setBooking_order_value_c(amount);
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
         sendToCRM.setProposal_link_c(quoteLink);
         sendToCRM.setPresales_user_email(proposalHeader.getDesignerEmail());
+        sendToCRM.setNo_of_working_days(proposalHeader.getNoOfDaysForWorkCompletion());
+        sendToCRM.setDso_date(sendToCRMOnPublish.getDso_date());
         return sendToCRM;
     }
 
     private void confirm(Button.ClickEvent clickEvent) {
         LOG.info("Click event button" +clickEvent.getButton().getCaption() );
-
+        String DSOStatus="No";
         if (proposalHeader.getMaxDiscountPercentage() >= Double.valueOf(discountPercentage.getValue())) {
             try {
                 binder.commit();
@@ -2305,9 +2303,11 @@ public class ProductAndAddons extends Window
                 }
                 if(clickEvent.getButton().getCaption().equals("Design Sign off"))
                 {
+                    LOG.info("inside DSO");
                     proposalVersionCopy.setBookingFormFlag("No");
                     proposalVersionCopy.setWorksContractFlag("Yes");
                     proposalVersionCopy.setToVersion("2.0");
+                    DSOStatus="yes";
                 }
                 proposalVersionCopy.setCity(proposalHeader.getPcity());
                 proposalVersionCopy.setQuoteNo(proposalHeader.getQuoteNoNew());
@@ -2320,8 +2320,9 @@ public class ProductAndAddons extends Window
                     return;
                 }
                 if (proposalVersionResponse.isConfirmedStatus()) {
+                    LOG.info("inside the 1st if ");
                         proposalVersion = proposalVersionResponse;
-                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm(proposalVersionResponse.getQuoteFile());
+                        SendToCRM sendToCRM = updatePriceInCRMOnConfirm(proposalVersionResponse.getQuoteFile(),DSOStatus);
                         proposalDataProvider.updateCrmPrice(sendToCRM);
                         proposalVersion.setEventAddStatus(false);
 //                        ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
@@ -2333,6 +2334,7 @@ public class ProductAndAddons extends Window
 //                        DashboardEventBus.post(event2);
                         close();
                     } else {
+                    LOG.info("inside 2nd if");
                         VersionConfirmOrDiscardPopUpWindow.open(proposalVersionResponse, productAndAddonSelection, proposalHeader);
                     }
                 LOG.info("proposal.get Booking form " +proposalHeader.getBookingOrderMonth());
@@ -2837,7 +2839,7 @@ public class ProductAndAddons extends Window
                 /*if (!(proposalVersion.getVersion().startsWith("2.")))
                 {*/
                 PublishOnCRM publishOnCRM = new PublishOnCRM(proposalHeader);
-                SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish(quoteLink);
+                SendToCRMOnPublish sendToCRMOnPublish = publishOnCRM.updatePriceInCRMOnPublish(quoteLink,"No");
                 Boolean responseFromCRM=proposalDataProvider.updateCrmPriceOnPublish(sendToCRMOnPublish);
 
                 /*EmailQuoteToLeadSquare emailQuoteToLeadSquare=new EmailQuoteToLeadSquare();

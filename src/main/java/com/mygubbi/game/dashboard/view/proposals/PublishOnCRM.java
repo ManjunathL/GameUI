@@ -10,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -24,7 +26,7 @@ public class PublishOnCRM
     {
         this.proposalHeader=proposalHeader;
     }
-    public SendToCRMOnPublish updatePriceInCRMOnPublish(String quoteLink) {
+    public SendToCRMOnPublish updatePriceInCRMOnPublish(String quoteLink,String DSOStatus) {
         Double amount=0.0;
         SendToCRMOnPublish sendToCRM = new SendToCRMOnPublish();
         sendToCRM.setOpportunity_name(proposalHeader.getCrmId());
@@ -55,20 +57,16 @@ public class PublishOnCRM
                     proposalVersionList.add(version);
                 }
             }
-            LOG.info("List1 size : " +proposalVersionList.size());
             if(proposalVersionList.size()!=0)
             {
                 Date date = proposalVersionList.get(0).getUpdatedOn();
-                LOG.info("updated date " +date);
                 ProposalVersion proposalVersionTobeConsidered = proposalVersionList.get(0);
                 for(ProposalVersion proposalVersion:proposalVersionList)
                 {
-                    LOG.info("value " +(!proposalVersion.getInternalStatus().equals("Locked")));
                     if(!proposalVersion.getInternalStatus().equals("Locked"))
                     {
                         if (proposalVersion.getUpdatedOn().after(date) || proposalVersion.getUpdatedOn().equals(date))
                         {
-                            LOG.info("true value " +proposalVersion.getVersion() +" " +proposalVersion.getProposalId());
                             proposalVersionTobeConsidered = proposalVersion;
                         }
                     }
@@ -76,7 +74,6 @@ public class PublishOnCRM
                 }
                 amount+=proposalVersionTobeConsidered.getFinalAmount();
                 quoteNumberCRMList.add(p.getQuoteNoNew());
-                /*quoteNumberCRM+=p.getQuoteNoNew();*/
             }
         }
         Set<String> s = new LinkedHashSet<String>(quoteNumberCRMList);
@@ -85,6 +82,13 @@ public class PublishOnCRM
         sendToCRM.setQuotation_number_c(quoteNumberCRM);
         sendToCRM.setProposal_link_c(quoteLink);
         sendToCRM.setPresales_user_email(proposalHeader.getDesignerEmail());
+        if(DSOStatus.equalsIgnoreCase("Yes"))
+        {
+            sendToCRM.setNo_of_working_days(proposalHeader.getNoOfDaysForWorkCompletion());
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+            LocalDateTime localDate = LocalDateTime.now();
+            sendToCRM.setDso_date(dtf.format(localDate));
+        }
         LOG.info("CRM JSON ON PUBLISH " +sendToCRM.toString());
         return sendToCRM;
     }

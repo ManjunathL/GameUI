@@ -11,6 +11,8 @@ public class SendToCRMOnPublish {
     public static final String QUOTE_NO = "quotation_number_c";
     public static final String PROPOSAL_LINK_C="proposal_link_c";
     public static final String PRESALES_USER_EMAIL="presales_user_email";
+    public static final String NO_OF_WORKING_DAYS="no_of_working_days";
+    public static final String DSO__DATE="dso_date";
 
 
     private String opportunity_name;
@@ -18,6 +20,8 @@ public class SendToCRMOnPublish {
     private String quotation_number_c;
     private String proposal_link_c;
     private String presales_user_email;
+    private Double no_of_working_days;
+    private String dso_date;
 
 
     public String getOpportunity_name() {
@@ -60,6 +64,22 @@ public class SendToCRMOnPublish {
         this.presales_user_email = presales_user_email;
     }
 
+    public Double getNo_of_working_days() {
+        return no_of_working_days;
+    }
+
+    public void setNo_of_working_days(Double no_of_working_days) {
+        this.no_of_working_days = no_of_working_days;
+    }
+
+    public String getDso_date() {
+        return dso_date;
+    }
+
+    public void setDso_date(String dso_date) {
+        this.dso_date = dso_date;
+    }
+
     @Override
     public String toString() {
         return "SendToCRMOnPublish{" +
@@ -68,6 +88,8 @@ public class SendToCRMOnPublish {
                 ", quotation_number_c='" + quotation_number_c + '\'' +
                 ", proposal_link_c='" + proposal_link_c + '\'' +
                 ", presales_user_email='" + presales_user_email + '\'' +
+                ", no_of_working_days='" + no_of_working_days + '\'' +
+                ", dso_date='" + dso_date + '\'' +
                 '}';
     }
 }

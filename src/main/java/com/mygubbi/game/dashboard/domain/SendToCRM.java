@@ -15,6 +15,8 @@ public class SendToCRM {
     public static final String BOOKING_ORDER_VALUE="booking_order_value_c";
     public static final String PROPOSAL_LINK_C="proposal_link_c";
     public static final String PRESALES_USER_EMAIL="presales_user_email";
+    public static final String NO_OF_WORKING_DAYS="no_of_working_days";
+    public static final String DSO_DATE="dso_date";
 
 
     private String opportunity_name;
@@ -24,6 +26,8 @@ public class SendToCRM {
     private double booking_order_value_c;
     private String proposal_link_c;
     private String presales_user_email;
+    private double no_of_working_days;
+    private String dso_date;
 
     public String getOpportunity_name() {
         return opportunity_name;
@@ -81,6 +85,22 @@ public class SendToCRM {
         this.presales_user_email = presales_user_email;
     }
 
+    public double getNo_of_working_days() {
+        return no_of_working_days;
+    }
+
+    public void setNo_of_working_days(double no_of_working_days) {
+        this.no_of_working_days = no_of_working_days;
+    }
+
+    public String getDso_date() {
+        return dso_date;
+    }
+
+    public void setDso_date(String dso_date) {
+        this.dso_date = dso_date;
+    }
+
     @Override
     public String toString() {
         return "SendToCRM{" +
@@ -91,6 +111,8 @@ public class SendToCRM {
                 ", booking_order_value_c=" + booking_order_value_c +
                 ", proposal_link_c='" + proposal_link_c + '\'' +
                 ", presales_user_email='" + presales_user_email + '\'' +
+                ", no_of_working_days=" + no_of_working_days +
+                ", dso_date='" + dso_date + '\'' +
                 '}';
     }
 }
