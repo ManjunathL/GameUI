@@ -1869,11 +1869,12 @@ public class ProposalDataProvider {
             String final_amount = String.valueOf(sendToCRM.getFinal_proposal_amount_c());
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
             String booking_order_value_cost=String.valueOf(sendToCRM.getBooking_order_value_c());
-
+            String no_of_working_days=String.valueOf(sendToCRM.getBooking_order_value_c());
+            String dso_date=String.valueOf(sendToCRM.getDso_date());
         /*
                     JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
         */
-            JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrm(baseCrmUrl, sendToCRM.getOpportunity_name(),final_amount,estimated_project_cost,sendToCRM.getQuotation_number_c(),booking_order_value_cost,sendToCRM.getProposal_link_c(),sendToCRM.getPresales_user_email());
+            JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrm(baseCrmUrl, sendToCRM.getOpportunity_name(),final_amount,estimated_project_cost,sendToCRM.getQuotation_number_c(),booking_order_value_cost,sendToCRM.getProposal_link_c(),sendToCRM.getPresales_user_email(),String.valueOf(sendToCRM.getNo_of_working_days()),sendToCRM.getDso_date());
 //            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
             return true;
         } catch (Exception e) {

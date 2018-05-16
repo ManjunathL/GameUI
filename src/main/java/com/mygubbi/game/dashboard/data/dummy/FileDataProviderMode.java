@@ -46,7 +46,7 @@ public class FileDataProviderMode implements DataProviderMode {
     }
 
     @Override
-    public JSONResource postResourceWithUrlForCrm(String url, String opportunity_name, String final_proposal_amount_c, String estimated_project_cost_c, String quotation_number_c,String booking_order_value_cost,String proposal_link_c,String presales_user_email) {
+    public JSONResource postResourceWithUrlForCrm(String url, String opportunity_name, String final_proposal_amount_c, String estimated_project_cost_c, String quotation_number_c,String booking_order_value_cost,String proposal_link_c,String presales_user_email,String no_of_working_days,String dso_date) {
         return null;
     }
 
