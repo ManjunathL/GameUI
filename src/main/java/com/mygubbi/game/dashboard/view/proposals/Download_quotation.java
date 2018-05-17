@@ -53,6 +53,8 @@ public class Download_quotation extends Window
         this.productAndAddonSelection.setToVersion(this.proposalVersion.getVersion());
         this.productAndAddonSelection.setCity(proposalHeader.getPcity());
         this.productAndAddonSelection.setStatus(this.proposalVersion.getStatus());
+        this.productAndAddonSelection.setCrmId(this.proposalHeader.getCrmId());
+        this.productAndAddonSelection.setQuoteNumber(this.proposalHeader.getQuoteNoNew());
         DashboardEventBus.register(this);
         setModal(true);
         removeCloseShortcut(ShortcutAction.KeyCode.ESCAPE);

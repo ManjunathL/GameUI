@@ -18,6 +18,24 @@ public class ProductAndAddonSelection {
     private String worksContractFlag;
     private String city;
     private String status;
+    private String quoteNumber;
+    private String crmId;
+
+    public String getQuoteNumber() {
+        return quoteNumber;
+    }
+
+    public void setQuoteNumber(String quoteNumber) {
+        this.quoteNumber = quoteNumber;
+    }
+
+    public String getCrmId() {
+        return crmId;
+    }
+
+    public void setCrmId(String crmId) {
+        this.crmId = crmId;
+    }
 
     public String getBookingFormFlag() {
         return bookingFormFlag;
