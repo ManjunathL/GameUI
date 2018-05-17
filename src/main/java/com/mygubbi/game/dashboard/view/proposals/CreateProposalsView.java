@@ -1222,11 +1222,11 @@ public class CreateProposalsView extends Panel implements View {
             Date date = (Date)formatter.parse(dateStr);
             java.util.Calendar cal = java.util.Calendar.getInstance();
             cal.setTime(date);
-            if(date.before(proposalHeader.getPriceDate()) || Objects.equals(proposalHeader.getExpectedDeliveryDate(),"") )
+            /*if(date.before(proposalHeader.getPriceDate()) || Objects.equals(proposalHeader.getExpectedDeliveryDate(),"") )
             {
                 NotificationUtil.showNotification("Invalid Expected delivery date", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-            }
+            }*/
             if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
             {
                 LOG.info("proposal header city " +proposalHeader.getPcity());
@@ -1484,11 +1484,11 @@ public class CreateProposalsView extends Panel implements View {
 
             java.util.Calendar cal = java.util.Calendar.getInstance();
             cal.setTime(date);
-            if(date.before(proposalHeader.getPriceDate()) || Objects.equals(proposalHeader.getExpectedDeliveryDate(),"") )
+            /*if(date.before(proposalHeader.getPriceDate()) || Objects.equals(proposalHeader.getExpectedDeliveryDate(),"") )
             {
                 NotificationUtil.showNotification("Invalid Expected delivery date", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-            }
+            }*/
             if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
             {
                 proposalDataProvider.getQuotationNumber(this.proposalHeader);
@@ -2383,13 +2383,12 @@ public class CreateProposalsView extends Panel implements View {
 
     @Subscribe
     public void proposalUpdated(final ProposalEvent.ProposalUpdated event) {
-        proposalDataProvider.saveProposal(event.getProposal());
+        //proposalDataProvider.saveProposal(event.getProposal());
         ProposalHeader proposalHeader = proposalDataProvider.getProposalHeader(this.proposalHeader.getId());
         List<BookingMonth> list = new ArrayList<>();
-
-        LOG.debug("Proposal header event : " + event.getProposal());
+        /*LOG.debug("Proposal header event : " + event.getProposal());
         LOG.debug("Proposal header : " + proposalHeader);
-        LOG.debug("Proposal header bm: " + this.proposalHeader.getBookingOrderMonth());
+        LOG.debug("Proposal header bm: " +proposalHeader.getBookingOrderMonth());*/
         this.proposalHeader = proposalHeader;
         list.add(new BookingMonth(proposalHeader.getBookingOrderMonth()));
         bookingFormField.setReadOnly(false);
@@ -2400,10 +2399,7 @@ public class CreateProposalsView extends Panel implements View {
         bookingFormField.setNullSelectionAllowed(false);
         bookingFormField.setContainerDataSource(container);
         bookingFormField.setItemCaptionPropertyId(BookingMonth.MONTH);
-
         bookingFormField.setValue(this.proposalHeader.getBookingOrderMonth());
-
-
     }
 
     /* @Subscribe
@@ -2547,7 +2543,6 @@ public class CreateProposalsView extends Panel implements View {
             {
                 NotificationUtil.showNotification("Incorrect month value 2nd case", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
-
         }
         catch (Exception e)
         {

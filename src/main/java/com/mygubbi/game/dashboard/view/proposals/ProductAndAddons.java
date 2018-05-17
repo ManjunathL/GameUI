@@ -2320,26 +2320,15 @@ public class ProductAndAddons extends Window
                     return;
                 }
                 if (proposalVersionResponse.isConfirmedStatus()) {
-                    LOG.info("inside the 1st if ");
                         proposalVersion = proposalVersionResponse;
                         SendToCRM sendToCRM = updatePriceInCRMOnConfirm(proposalVersionResponse.getQuoteFile(),DSOStatus);
                         proposalDataProvider.updateCrmPrice(sendToCRM);
                         proposalVersion.setEventAddStatus(false);
-//                        ProposalEvent.VersionCreated event1 = new ProposalEvent.VersionCreated(proposalVersion);
-                    LOG.info("DATE :" + proposalHeader.getBookingOrderMonth());
-                    proposalHeader.setBookingOrderMonth("May-18");
-                    DashboardEventBus.post(new ProposalEvent.ProposalUpdated(proposalHeader), new ProposalEvent.VersionCreated(proposalVersion));
-
-//                    DashboardEventBus.post(event1);
-//                        DashboardEventBus.post(event2);
+                        DashboardEventBus.post(new ProposalEvent.ProposalUpdated(proposalHeader), new ProposalEvent.VersionCreated(proposalVersion));
                         close();
                     } else {
-                    LOG.info("inside 2nd if");
                         VersionConfirmOrDiscardPopUpWindow.open(proposalVersionResponse, productAndAddonSelection, proposalHeader);
                     }
-                LOG.info("proposal.get Booking form " +proposalHeader.getBookingOrderMonth());
-                /*DashboardEventBus.unregister(this);
-                close();*/
             } catch (FieldGroup.CommitException e) {
                 NotificationUtil.showNotification("Validation Error, please fill all mandatory fields!", NotificationUtil.STYLE_BAR_ERROR_SMALL);
             }
@@ -3192,6 +3181,10 @@ public class ProductAndAddons extends Window
             String quoteFile = proposalDataProvider.getProposalQuoteFilePdf(this.productAndAddonSelection);
             return quoteFile;
 
+    }
+    public static String theMonth(int month){
+        String[] monthNames = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        return monthNames[month];
     }
 }
 
