@@ -1509,7 +1509,6 @@ public class CreateProposalsView extends Panel implements View {
         }
         List<ProposalVersion> proposalVersions = proposalDataProvider.getversion(proposalHeader.getId(),"1.0");
         String Bookingdate=null;
-        LOG.info("booking order month " +bookingFormField.getValue().toString() + proposalHeader.getBookingOrderMonth().equals(null));
         if(!(StringUtils.isEmpty(this.proposalHeader.getBookingOrderMonth())))
         {
             for(ProposalVersion p : proposalVersions)
