@@ -1887,17 +1887,11 @@ public class ProposalDataProvider {
     {
         LOG.info("update price in crm on publish " +sendToCRM.toString());
         try {
-            /*String baseCrmUrl = "http://52.66.107.178/mygubbi_crm/rest_update_opp.php";*/
-          //  String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
 
             String baseCrmUrl = ConfigHolder.getInstance().getStringValue("baseCrmUrl", "https://suite.mygubbi.com/mygubbi_crm/rest_update_opp.php");
             LOG.info("url link " +baseCrmUrl);
-           // LOG.info("basecrmurl " +baseCrmUrl);
             String estimated_project_cost = String.valueOf(sendToCRM.getEstimated_project_cost_c());
-        /*
-                    JSONObject jsonObject = dataProviderMode.postResourceWithUrl("http://52.66.107.178/mygubbi_crm/rest_update_opp.php", "{\"opportunity_name\": " + "\"" + crmId + "\"" + "," + "\"final_proposal_amount_c\" : " + finalProposalAmount + "," + "\"estimated_project_cost_c\" : " + estimatedProjectCost  + "," + "\"estimated_project_cost_c\" : " + "\"" + quoteNo + "\""   + "}");
-        */
-            //LOG.info("sendToCRM.getOpportunity_name()" +sendToCRM.getOpportunity_name()+ "estimated_project_cost" +estimated_project_cost+ "sendToCRM.getQuotation_number_c()" +sendToCRM.getQuotation_number_c());
+
             JSONResource jsonObject = dataProviderMode.postResourceWithUrlForCrmOnPublish(baseCrmUrl, sendToCRM.getOpportunity_name(),estimated_project_cost,sendToCRM.getQuotation_number_c(),sendToCRM.getProposal_link_c(),sendToCRM.getPresales_user_email());
 //            return this.mapper.readValue(jsonObject.toString(), JSONObject.class);
             return true;

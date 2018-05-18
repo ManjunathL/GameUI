@@ -818,7 +818,9 @@ public class ProductAndAddons extends Window
             this.discountAmount.setValue(String.valueOf(disAmount.intValue()) + " ");
             this.discountAmount.setReadOnly(true);
         } else {
+            this.discountAmount.setReadOnly(false);
             this.discountAmount.setValue(String.valueOf(disAmount.intValue()) + " ");
+            this.discountAmount.setReadOnly(false);
         }
 
         double res = totalAfterDiscount - totalAfterDiscount % 10;
