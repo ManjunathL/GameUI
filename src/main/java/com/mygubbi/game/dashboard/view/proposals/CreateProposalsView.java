@@ -1216,7 +1216,7 @@ public class CreateProposalsView extends Panel implements View {
                 return;
             }
 
-            /*String dateStr = expectedDeliveryDate.getValue().toString();
+            String dateStr = expectedDeliveryDate.getValue().toString();
             DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
             DateFormat newDateFormat = new SimpleDateFormat("YYYY-MM-dd");
             Date date = (Date)formatter.parse(dateStr);
@@ -1226,7 +1226,7 @@ public class CreateProposalsView extends Panel implements View {
             {
                 NotificationUtil.showNotification("Invalid Expected delivery date", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-            }*/
+            }
             if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
             {
                 LOG.info("proposal header city " +proposalHeader.getPcity());
@@ -1477,7 +1477,7 @@ public class CreateProposalsView extends Panel implements View {
 
         try {
             binder.commit();
-            /*String dateStr = expectedDeliveryDate.getValue().toString();
+            String dateStr = expectedDeliveryDate.getValue().toString();
             DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
             DateFormat newDateFormat = new SimpleDateFormat("YYYY-MM-dd");
             Date date = (Date)formatter.parse(dateStr);
@@ -1488,7 +1488,7 @@ public class CreateProposalsView extends Panel implements View {
             {
                 NotificationUtil.showNotification("Invalid Expected delivery date", NotificationUtil.STYLE_BAR_ERROR_SMALL);
                 return;
-            }*/
+            }
             if(Objects.equals(proposalHeader.getQuoteNoNew(),""))
             {
                 proposalDataProvider.getQuotationNumber(this.proposalHeader);

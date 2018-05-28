@@ -223,6 +223,7 @@ public class CustomizedProductDetailsWindow extends Window {
         updatePsftCosts();
         updateTotalAmount();
         handlepackage();
+        handleQuickProducts();
         String email = ((User) VaadinSession.getCurrent().getAttribute(User.class.getName())).getEmail();
         List<User> userList=proposalDataProvider.getUsersViewOnlyAcess(email);
         for(User user:userList)
@@ -277,7 +278,7 @@ public class CustomizedProductDetailsWindow extends Window {
         this.productSelection = getSimpleItemFilledCombo("Product Category", ProposalDataProvider.CATEGORY_LOOKUP, null);
         productSelection.setRequired(true);
         binder.bind(productSelection, PRODUCT_CATEGORY_CODE);
-      /*  LOG.info("product.getProductCategoryLocked()" +product.getProductCategoryLocked());
+     /*   LOG.info("product.getProductCategoryLocked()" +product.getProductCategoryLocked());
         LOG.info("this.modules " +product.getModules().size());*/
         if (productSelection.size() > 0)
         {
@@ -288,10 +289,39 @@ public class CustomizedProductDetailsWindow extends Window {
         {
             productSelection.setReadOnly(true);
         }
+
+        /*if(product.getProductCategoryCode().startsWith("a"))
+        {
+            handleSelection.setReadOnly(true);
+            handleType.setReadOnly(true);
+            handle.setReadOnly(true);
+            thicknessfield.setReadOnly(true);
+            knob.setReadOnly(true);
+            knobType.setReadOnly(true);
+        }*/
+
         productSelection.addFocusListener(this::onFocusToproductselection);
 
         productSelection.addValueChangeListener(valueChangeEvent -> {
-//            LOG.info("inside value change " +productlocked);
+            //LOG.info("product selection value changed  " +valueChangeEvent.getProperty().toString());
+            String productCategory=valueChangeEvent.getProperty().toString();
+            if(productCategory.startsWith("a"))
+            {
+                handleSelection.setReadOnly(true);
+                handleType.setReadOnly(true);
+                handle.setReadOnly(true);
+                thicknessfield.setReadOnly(true);
+                knob.setReadOnly(true);
+                knobType.setReadOnly(true);
+            }else
+            {
+                handleSelection.setReadOnly(false);
+                handleType.setReadOnly(false);
+                handle.setReadOnly(false);
+                thicknessfield.setReadOnly(false);
+                knob.setReadOnly(false);
+                knobType.setReadOnly(false);
+            }
             if(productlocked.equals("Yes"))
             {
                 productSelection.setReadOnly(true);
@@ -688,7 +718,7 @@ public class CustomizedProductDetailsWindow extends Window {
                     double areainsft = 0;
                     double costwoaccessories = 0;
 
-                    LOG.debug("before Module for price :" + module.toString());
+                    //LOG.debug("before Module for price :" + module.toString());
                     try {
                         ModuleForPrice moduleForPrice = new ModuleForPrice();
 
@@ -2677,6 +2707,19 @@ public class CustomizedProductDetailsWindow extends Window {
             knobImage.setSource(new ExternalResource(h.getImagePath()));
         }
         refreshPrice(valueChangeEvent);
+    }
+    private void handleQuickProducts()
+    {
+        if(productSelection.getValue().toString().startsWith("a"))
+        {
+            handleSelection.setReadOnly(true);
+            handleType.setReadOnly(true);
+            handle.setReadOnly(true);
+            thicknessfield.setReadOnly(true);
+            knob.setReadOnly(true);
+            knobType.setReadOnly(true);
+        }
+
     }
     private void handlepackage()
     {

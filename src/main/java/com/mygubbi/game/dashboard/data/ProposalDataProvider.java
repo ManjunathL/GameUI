@@ -1133,7 +1133,7 @@ public class ProposalDataProvider {
     public ModulePrice getModulePrice(ModuleForPrice moduleForPrice) {
         try {
             String moduleForPriceJson = this.mapper.writeValueAsString(moduleForPrice);
-            LOG.debug("Module For price Json : " + moduleForPriceJson);
+            /*LOG.debug("Module For price Json : " + moduleForPriceJson);*/
             JSONObject jsonObject = dataProviderMode.postResource(
                     "module/pricev2", moduleForPriceJson);
             if (jsonObject.has("errors")) {

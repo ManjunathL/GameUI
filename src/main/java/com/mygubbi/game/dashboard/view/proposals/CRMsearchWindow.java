@@ -122,7 +122,7 @@ public class CRMsearchWindow extends Window
                         proposalHeader.setCemail(profile1.getEmail());
                         proposalHeader.setCphone1(profile1.getMobile());
 
-                        proposalHeader.setCname(profile1.getFirst_name());
+                        proposalHeader.setCname(profile1.getFirst_name() + profile1.getLast_name());
                         proposalHeader.setSalesEmail(profile1.getSalesExecUserId());
                         List<User> Salesusers=proposalDataProvider.getUsersByEmail(profile1.getSalesExecUserId());
                         if (Salesusers.size()==0)
