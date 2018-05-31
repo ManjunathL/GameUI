@@ -88,6 +88,10 @@ public class PublishOnCRM
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
             LocalDateTime localDate = LocalDateTime.now();
             sendToCRM.setDso_date(dtf.format(localDate));
+        }else
+        {
+            sendToCRM.setNo_of_working_days(0.0);
+            sendToCRM.setDso_date("0");
         }
         LOG.info("CRM JSON ON PUBLISH " +sendToCRM.toString());
         return sendToCRM;
