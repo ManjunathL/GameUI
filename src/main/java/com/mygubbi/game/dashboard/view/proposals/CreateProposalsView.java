@@ -2231,7 +2231,7 @@ public class CreateProposalsView extends Panel implements View {
 
         // bookingFormField.setRequired(true);
         formLayoutLeft.addComponent(bookingFormField);
-        bookingFormField.addValueChangeListener(this::bookingFormFieldValueChanged);
+        //bookingFormField.addValueChangeListener(this::bookingFormFieldValueChanged);
 
         OptionGroup single = new OptionGroup("Package");
         single.addItems("Yes", "No");
