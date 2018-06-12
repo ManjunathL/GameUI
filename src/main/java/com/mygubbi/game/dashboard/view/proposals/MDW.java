@@ -484,7 +484,14 @@ public class MDW extends Window {
         verticalLayout.setSizeFull();
         verticalLayout.setMargin(new MarginInfo(false, true, true, true));
         verticalLayout.setSpacing(false);
-        moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
+        File imagePath=new File(basePath + module.getImagePath());
+        if(imagePath.exists())
+        {
+            moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
+        }else
+        {
+            moduleImage = new Image("", new FileResource(new File(basePath + "modules/noimage.jpg")));
+        }
         moduleImage.setCaption(null);
         moduleImage.setSizeFull();
         moduleImage.setImmediate(true);
@@ -726,8 +733,14 @@ public class MDW extends Window {
             module.setRemarks("");
         }
 
-        moduleImage.setSource(new FileResource(new File(basePath + module.getImagePath())));
-
+        File imagePath=new File(basePath + module.getImagePath());
+        if(imagePath.exists())
+        {
+            moduleImage = new Image("", new FileResource(new File(basePath + module.getImagePath())));
+        }else
+        {
+            moduleImage = new Image("", new FileResource(new File(basePath + "modules/noimage.jpg")));
+        }
         module.setMgCode(mgModule.getCode());
         module.setHeight(mgModule.getHeight());
         module.setDepth(mgModule.getDepth());

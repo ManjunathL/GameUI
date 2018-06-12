@@ -691,11 +691,12 @@ public class AddonDetailsWindow extends Window {
 
                     addonProduct.setProposalId(proposalVersion.getProposalId());
 
-                        if (isProposalAddon) {
+                        /*if (isProposalAddon) {
                             DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));
                         } else {
                             DashboardEventBus.post(new ProposalEvent.AddonUpdated(addonProduct));
-                        }
+                        }*/
+                    DashboardEventBus.post(new ProposalEvent.ProposalAddonUpdated(addonProduct));
                     close();
                 } catch (FieldGroup.CommitException e) {
                     e.printStackTrace();
