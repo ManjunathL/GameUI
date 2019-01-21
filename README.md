@@ -1,2 +1,3 @@
 # GameUI
 test server
+WELCOME
